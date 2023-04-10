@@ -1,14 +1,7 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
 import { flattenDeep } from '../../../../src/Core/utils/array';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
 
 describe('Collection assignName Tests', function () {
 
@@ -68,84 +61,84 @@ describe('Collection assignName Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     })
-    cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     })
-    cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     })
-    cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
 
@@ -164,82 +157,82 @@ describe('Collection assignName Tests', function () {
         args: { x: 5, y: -5 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
 
@@ -254,82 +247,82 @@ describe('Collection assignName Tests', function () {
         args: { x: 9, y: 8 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
 
@@ -344,82 +337,82 @@ describe('Collection assignName Tests', function () {
         args: { x: 7, y: 0 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
 
@@ -434,82 +427,82 @@ describe('Collection assignName Tests', function () {
         args: { x: 4, y: 1 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,1)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,1)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,1)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
 
@@ -577,95 +570,95 @@ describe('Collection assignName Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     })
-    cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     })
-    cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     })
-    cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/pc').should('have.text', 'c: ')
-    cy.get('#\\/pw').should('have.text', 'w: ')
-    cy.get('#\\/pc1').should('have.text', 'c1: ')
-    cy.get('#\\/pv1').should('have.text', 'v1: ')
-    cy.get('#\\/px1').should('have.text', 'x1: ')
-    cy.get('#\\/pv3').should('have.text', 'v3: ')
-    cy.get('#\\/px3').should('have.text', 'x3: ')
-    cy.get('#\\/pv4').should('have.text', 'v4: ')
-    cy.get('#\\/px4').should('have.text', 'x4: ')
+    cy.get(cesc('#\\/pc')).should('have.text', 'c: ')
+    cy.get(cesc('#\\/pw')).should('have.text', 'w: ')
+    cy.get(cesc('#\\/pc1')).should('have.text', 'c1: ')
+    cy.get(cesc('#\\/pv1')).should('have.text', 'v1: ')
+    cy.get(cesc('#\\/px1')).should('have.text', 'x1: ')
+    cy.get(cesc('#\\/pv3')).should('have.text', 'v3: ')
+    cy.get(cesc('#\\/px3')).should('have.text', 'x3: ')
+    cy.get(cesc('#\\/pv4')).should('have.text', 'v4: ')
+    cy.get(cesc('#\\/px4')).should('have.text', 'x4: ')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -681,93 +674,93 @@ describe('Collection assignName Tests', function () {
         args: { x: 5, y: -5 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/pc').should('have.text', 'c: ')
-      cy.get('#\\/pw').should('have.text', 'w: ')
-      cy.get('#\\/pc1').should('have.text', 'c1: ')
-      cy.get('#\\/pv1').should('have.text', 'v1: ')
-      cy.get('#\\/px1').should('have.text', 'x1: ')
-      cy.get('#\\/pv3').should('have.text', 'v3: ')
-      cy.get('#\\/px3').should('have.text', 'x3: ')
-      cy.get('#\\/pv4').should('have.text', 'v4: ')
-      cy.get('#\\/px4').should('have.text', 'x4: ')
+      cy.get(cesc('#\\/pc')).should('have.text', 'c: ')
+      cy.get(cesc('#\\/pw')).should('have.text', 'w: ')
+      cy.get(cesc('#\\/pc1')).should('have.text', 'c1: ')
+      cy.get(cesc('#\\/pv1')).should('have.text', 'v1: ')
+      cy.get(cesc('#\\/px1')).should('have.text', 'x1: ')
+      cy.get(cesc('#\\/pv3')).should('have.text', 'v3: ')
+      cy.get(cesc('#\\/px3')).should('have.text', 'x3: ')
+      cy.get(cesc('#\\/pv4')).should('have.text', 'v4: ')
+      cy.get(cesc('#\\/px4')).should('have.text', 'x4: ')
 
     })
 
@@ -779,93 +772,93 @@ describe('Collection assignName Tests', function () {
         args: { x: 9, y: 8 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/pc').should('have.text', 'c: ')
-      cy.get('#\\/pw').should('have.text', 'w: ')
-      cy.get('#\\/pc1').should('have.text', 'c1: ')
-      cy.get('#\\/pv1').should('have.text', 'v1: ')
-      cy.get('#\\/px1').should('have.text', 'x1: ')
-      cy.get('#\\/pv3').should('have.text', 'v3: ')
-      cy.get('#\\/px3').should('have.text', 'x3: ')
-      cy.get('#\\/pv4').should('have.text', 'v4: ')
-      cy.get('#\\/px4').should('have.text', 'x4: ')
+      cy.get(cesc('#\\/pc')).should('have.text', 'c: ')
+      cy.get(cesc('#\\/pw')).should('have.text', 'w: ')
+      cy.get(cesc('#\\/pc1')).should('have.text', 'c1: ')
+      cy.get(cesc('#\\/pv1')).should('have.text', 'v1: ')
+      cy.get(cesc('#\\/px1')).should('have.text', 'x1: ')
+      cy.get(cesc('#\\/pv3')).should('have.text', 'v3: ')
+      cy.get(cesc('#\\/px3')).should('have.text', 'x3: ')
+      cy.get(cesc('#\\/pv4')).should('have.text', 'v4: ')
+      cy.get(cesc('#\\/px4')).should('have.text', 'x4: ')
 
     })
 
@@ -878,93 +871,93 @@ describe('Collection assignName Tests', function () {
         args: { x: 7, y: 0 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,8)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
-      cy.get('#\\/pc').should('have.text', 'c: ')
-      cy.get('#\\/pw').should('have.text', 'w: ')
-      cy.get('#\\/pc1').should('have.text', 'c1: ')
-      cy.get('#\\/pv1').should('have.text', 'v1: ')
-      cy.get('#\\/px1').should('have.text', 'x1: ')
-      cy.get('#\\/pv3').should('have.text', 'v3: ')
-      cy.get('#\\/px3').should('have.text', 'x3: ')
-      cy.get('#\\/pv4').should('have.text', 'v4: ')
-      cy.get('#\\/px4').should('have.text', 'x4: ')
+      cy.get(cesc('#\\/pc')).should('have.text', 'c: ')
+      cy.get(cesc('#\\/pw')).should('have.text', 'w: ')
+      cy.get(cesc('#\\/pc1')).should('have.text', 'c1: ')
+      cy.get(cesc('#\\/pv1')).should('have.text', 'v1: ')
+      cy.get(cesc('#\\/px1')).should('have.text', 'x1: ')
+      cy.get(cesc('#\\/pv3')).should('have.text', 'v3: ')
+      cy.get(cesc('#\\/px3')).should('have.text', 'x3: ')
+      cy.get(cesc('#\\/pv4')).should('have.text', 'v4: ')
+      cy.get(cesc('#\\/px4')).should('have.text', 'x4: ')
 
     })
 
@@ -977,93 +970,93 @@ describe('Collection assignName Tests', function () {
         args: { x: 4, y: 1 }
       });
 
-      cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,1)')
       })
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,1)')
       })
-      cy.get('#\\/a1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
       })
-      cy.get('#\\/b1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/b1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,1)')
       })
-      cy.get('#\\/u').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ushadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/vshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/u4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/v4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/pc').should('have.text', 'c: ')
-      cy.get('#\\/pw').should('have.text', 'w: ')
-      cy.get('#\\/pc1').should('have.text', 'c1: ')
-      cy.get('#\\/pv1').should('have.text', 'v1: ')
-      cy.get('#\\/px1').should('have.text', 'x1: ')
-      cy.get('#\\/pv3').should('have.text', 'v3: ')
-      cy.get('#\\/px3').should('have.text', 'x3: ')
-      cy.get('#\\/pv4').should('have.text', 'v4: ')
-      cy.get('#\\/px4').should('have.text', 'x4: ')
+      cy.get(cesc('#\\/pc')).should('have.text', 'c: ')
+      cy.get(cesc('#\\/pw')).should('have.text', 'w: ')
+      cy.get(cesc('#\\/pc1')).should('have.text', 'c1: ')
+      cy.get(cesc('#\\/pv1')).should('have.text', 'v1: ')
+      cy.get(cesc('#\\/px1')).should('have.text', 'x1: ')
+      cy.get(cesc('#\\/pv3')).should('have.text', 'v3: ')
+      cy.get(cesc('#\\/px3')).should('have.text', 'x3: ')
+      cy.get(cesc('#\\/pv4')).should('have.text', 'v4: ')
+      cy.get(cesc('#\\/px4')).should('have.text', 'x4: ')
 
     })
 
@@ -1127,162 +1120,162 @@ describe('Collection assignName Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0)')
     })
-    cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,1)')
     })
-    cy.get('#\\/cshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,3)')
     })
-    cy.get('#\\/dshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/dshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,1)')
     })
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/q').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/r')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/s').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/s')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/pshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/pshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/qshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/qshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/rshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/rshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/r1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/s1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/r1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/s1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
-    cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -1302,160 +1295,160 @@ describe('Collection assignName Tests', function () {
         args: { x: 5, y: -5 }
       });
 
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1)')
       })
-      cy.get('#\\/cshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,3)')
       })
-      cy.get('#\\/dshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/dshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
-      cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/s').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/pshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/pshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/qshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/qshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/rshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/rshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
@@ -1469,160 +1462,160 @@ describe('Collection assignName Tests', function () {
         args: { x: 7, y: 8 }
       });
 
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,8)')
       })
-      cy.get('#\\/cshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,3)')
       })
-      cy.get('#\\/dshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/dshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
-      cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/s').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/pshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/pshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/qshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/qshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/rshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/rshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
@@ -1636,160 +1629,160 @@ describe('Collection assignName Tests', function () {
         args: { x: -3, y: -6 }
       });
 
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,8)')
       })
-      cy.get('#\\/cshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−6)')
       })
-      cy.get('#\\/dshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/dshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
-      cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/s').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/pshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/pshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/qshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/qshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/rshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/rshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
@@ -1803,160 +1796,160 @@ describe('Collection assignName Tests', function () {
         args: { x: -9, y: 4 }
       });
 
-      cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/ashadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      cy.get('#\\/bshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/bshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,8)')
       })
-      cy.get('#\\/cshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−6)')
       })
-      cy.get('#\\/dshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/dshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,4)')
       })
-      cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/s').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/pshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/pshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/qshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/qshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/rshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/rshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sshadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/r1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
-      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       })
-      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
 
@@ -2056,267 +2049,267 @@ describe('Collection assignName Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/p1').should('not.exist');
-    cy.get('#\\/p2').should('not.exist');
-    cy.get('#\\/p3').should('not.exist');
-    cy.get('#\\/p4').should('not.exist');
+    cy.get(cesc('#\\/p1')).should('not.exist');
+    cy.get(cesc('#\\/p2')).should('not.exist');
+    cy.get(cesc('#\\/p3')).should('not.exist');
+    cy.get(cesc('#\\/p4')).should('not.exist');
 
-    cy.get('#\\/p1shadow').should('not.exist');
-    cy.get('#\\/p2shadow').should('not.exist');
-    cy.get('#\\/p3shadow').should('not.exist');
-    cy.get('#\\/p4shadow').should('not.exist');
+    cy.get(cesc('#\\/p1shadow')).should('not.exist');
+    cy.get(cesc('#\\/p2shadow')).should('not.exist');
+    cy.get(cesc('#\\/p3shadow')).should('not.exist');
+    cy.get(cesc('#\\/p4shadow')).should('not.exist');
 
-    cy.get('#\\/q1').should('not.exist');
-    cy.get('#\\/q2').should('not.exist');
-    cy.get('#\\/q3').should('not.exist');
-    cy.get('#\\/q4').should('not.exist');
-    cy.get('#\\/q5').should('not.exist');
-    cy.get('#\\/q6').should('not.exist');
+    cy.get(cesc('#\\/q1')).should('not.exist');
+    cy.get(cesc('#\\/q2')).should('not.exist');
+    cy.get(cesc('#\\/q3')).should('not.exist');
+    cy.get(cesc('#\\/q4')).should('not.exist');
+    cy.get(cesc('#\\/q5')).should('not.exist');
+    cy.get(cesc('#\\/q6')).should('not.exist');
 
-    cy.get('#\\/q1shadow').should('not.exist');
-    cy.get('#\\/q2shadow').should('not.exist');
-    cy.get('#\\/q3shadow').should('not.exist');
-    cy.get('#\\/q4shadow').should('not.exist');
-    cy.get('#\\/q5shadow').should('not.exist');
-    cy.get('#\\/q6shadow').should('not.exist');
+    cy.get(cesc('#\\/q1shadow')).should('not.exist');
+    cy.get(cesc('#\\/q2shadow')).should('not.exist');
+    cy.get(cesc('#\\/q3shadow')).should('not.exist');
+    cy.get(cesc('#\\/q4shadow')).should('not.exist');
+    cy.get(cesc('#\\/q5shadow')).should('not.exist');
+    cy.get(cesc('#\\/q6shadow')).should('not.exist');
 
-    cy.get('#\\/x11').should('not.exist');
-    cy.get('#\\/x12').should('not.exist');
-    cy.get('#\\/x13').should('not.exist');
-    cy.get('#\\/x14').should('not.exist');
-    cy.get('#\\/x15').should('not.exist');
-    cy.get('#\\/x16').should('not.exist');
+    cy.get(cesc('#\\/x11')).should('not.exist');
+    cy.get(cesc('#\\/x12')).should('not.exist');
+    cy.get(cesc('#\\/x13')).should('not.exist');
+    cy.get(cesc('#\\/x14')).should('not.exist');
+    cy.get(cesc('#\\/x15')).should('not.exist');
+    cy.get(cesc('#\\/x16')).should('not.exist');
 
-    cy.get('#\\/x11shadow').should('not.exist');
-    cy.get('#\\/x12shadow').should('not.exist');
-    cy.get('#\\/x13shadow').should('not.exist');
-    cy.get('#\\/x14shadow').should('not.exist');
-    cy.get('#\\/x15shadow').should('not.exist');
-    cy.get('#\\/x16shadow').should('not.exist');
+    cy.get(cesc('#\\/x11shadow')).should('not.exist');
+    cy.get(cesc('#\\/x12shadow')).should('not.exist');
+    cy.get(cesc('#\\/x13shadow')).should('not.exist');
+    cy.get(cesc('#\\/x14shadow')).should('not.exist');
+    cy.get(cesc('#\\/x15shadow')).should('not.exist');
+    cy.get(cesc('#\\/x16shadow')).should('not.exist');
 
-    cy.get('#\\/x21').should('not.exist');
-    cy.get('#\\/x22').should('not.exist');
-    cy.get('#\\/x23').should('not.exist');
-    cy.get('#\\/x24').should('not.exist');
+    cy.get(cesc('#\\/x21')).should('not.exist');
+    cy.get(cesc('#\\/x22')).should('not.exist');
+    cy.get(cesc('#\\/x23')).should('not.exist');
+    cy.get(cesc('#\\/x24')).should('not.exist');
 
-    cy.get('#\\/x21shadow').should('not.exist');
-    cy.get('#\\/x22shadow').should('not.exist');
-    cy.get('#\\/x23shadow').should('not.exist');
-    cy.get('#\\/x24shadow').should('not.exist');
+    cy.get(cesc('#\\/x21shadow')).should('not.exist');
+    cy.get(cesc('#\\/x22shadow')).should('not.exist');
+    cy.get(cesc('#\\/x23shadow')).should('not.exist');
+    cy.get(cesc('#\\/x24shadow')).should('not.exist');
 
-    cy.get('#\\/x31').should('not.exist');
-    cy.get('#\\/x32').should('not.exist');
-    cy.get('#\\/x33').should('not.exist');
-    cy.get('#\\/x34').should('not.exist');
+    cy.get(cesc('#\\/x31')).should('not.exist');
+    cy.get(cesc('#\\/x32')).should('not.exist');
+    cy.get(cesc('#\\/x33')).should('not.exist');
+    cy.get(cesc('#\\/x34')).should('not.exist');
 
-    cy.get('#\\/x31shadow').should('not.exist');
-    cy.get('#\\/x32shadow').should('not.exist');
-    cy.get('#\\/x33shadow').should('not.exist');
-    cy.get('#\\/x34shadow').should('not.exist');
+    cy.get(cesc('#\\/x31shadow')).should('not.exist');
+    cy.get(cesc('#\\/x32shadow')).should('not.exist');
+    cy.get(cesc('#\\/x33shadow')).should('not.exist');
+    cy.get(cesc('#\\/x34shadow')).should('not.exist');
 
-    cy.get('#\\/x41').should('not.exist');
-    cy.get('#\\/x42').should('not.exist');
-    cy.get('#\\/x43').should('not.exist');
-    cy.get('#\\/x44').should('not.exist');
+    cy.get(cesc('#\\/x41')).should('not.exist');
+    cy.get(cesc('#\\/x42')).should('not.exist');
+    cy.get(cesc('#\\/x43')).should('not.exist');
+    cy.get(cesc('#\\/x44')).should('not.exist');
 
-    cy.get('#\\/x41shadow').should('not.exist');
-    cy.get('#\\/x42shadow').should('not.exist');
-    cy.get('#\\/x43shadow').should('not.exist');
-    cy.get('#\\/x44shadow').should('not.exist');
+    cy.get(cesc('#\\/x41shadow')).should('not.exist');
+    cy.get(cesc('#\\/x42shadow')).should('not.exist');
+    cy.get(cesc('#\\/x43shadow')).should('not.exist');
+    cy.get(cesc('#\\/x44shadow')).should('not.exist');
 
-    cy.get('#\\/x51').should('not.exist');
-    cy.get('#\\/x52').should('not.exist');
-    cy.get('#\\/x53').should('not.exist');
-    cy.get('#\\/x54').should('not.exist');
-    cy.get('#\\/x55').should('not.exist');
-    cy.get('#\\/x56').should('not.exist');
+    cy.get(cesc('#\\/x51')).should('not.exist');
+    cy.get(cesc('#\\/x52')).should('not.exist');
+    cy.get(cesc('#\\/x53')).should('not.exist');
+    cy.get(cesc('#\\/x54')).should('not.exist');
+    cy.get(cesc('#\\/x55')).should('not.exist');
+    cy.get(cesc('#\\/x56')).should('not.exist');
 
-    cy.get('#\\/x51shadow').should('not.exist');
-    cy.get('#\\/x52shadow').should('not.exist');
-    cy.get('#\\/x53shadow').should('not.exist');
-    cy.get('#\\/x54shadow').should('not.exist');
-    cy.get('#\\/x55shadow').should('not.exist');
-    cy.get('#\\/x56shadow').should('not.exist');
+    cy.get(cesc('#\\/x51shadow')).should('not.exist');
+    cy.get(cesc('#\\/x52shadow')).should('not.exist');
+    cy.get(cesc('#\\/x53shadow')).should('not.exist');
+    cy.get(cesc('#\\/x54shadow')).should('not.exist');
+    cy.get(cesc('#\\/x55shadow')).should('not.exist');
+    cy.get(cesc('#\\/x56shadow')).should('not.exist');
 
 
     cy.log('Create 1 and 2 points');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}2{enter}', { force: true })
 
     // add window just so can collapse section
     cy.window().then(() => {
 
-      cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(2,1)')
-      cy.get('#\\/p2 .mjx-mrow').should('contain.text', '(−2,−1)')
-      cy.get('#\\/p3 .mjx-mrow').should('contain.text', '(−3,−2)')
+      cy.get(cesc('#\\/p1') + ' .mjx-mrow').should('contain.text', '(2,1)')
+      cy.get(cesc('#\\/p2') + ' .mjx-mrow').should('contain.text', '(−2,−1)')
+      cy.get(cesc('#\\/p3') + ' .mjx-mrow').should('contain.text', '(−3,−2)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−1)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−2)')
       })
-      cy.get('#\\/p4').should('not.exist');
+      cy.get(cesc('#\\/p4')).should('not.exist');
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−1)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−2)')
       })
-      cy.get('#\\/p4shadow').should('not.exist');
+      cy.get(cesc('#\\/p4shadow')).should('not.exist');
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−1)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−2)')
       })
-      cy.get('#\\/q4').should('not.exist');
-      cy.get('#\\/q5').should('not.exist');
-      cy.get('#\\/q6').should('not.exist');
+      cy.get(cesc('#\\/q4')).should('not.exist');
+      cy.get(cesc('#\\/q5')).should('not.exist');
+      cy.get(cesc('#\\/q6')).should('not.exist');
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−1)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−2)')
       })
-      cy.get('#\\/q4shadow').should('not.exist');
-      cy.get('#\\/q5shadow').should('not.exist');
-      cy.get('#\\/q6shadow').should('not.exist');
+      cy.get(cesc('#\\/q4shadow')).should('not.exist');
+      cy.get(cesc('#\\/q5shadow')).should('not.exist');
+      cy.get(cesc('#\\/q6shadow')).should('not.exist');
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x14').should('not.exist');
-      cy.get('#\\/x15').should('not.exist');
-      cy.get('#\\/x16').should('not.exist');
+      cy.get(cesc('#\\/x14')).should('not.exist');
+      cy.get(cesc('#\\/x15')).should('not.exist');
+      cy.get(cesc('#\\/x16')).should('not.exist');
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x14shadow').should('not.exist');
-      cy.get('#\\/x15shadow').should('not.exist');
-      cy.get('#\\/x16shadow').should('not.exist');
+      cy.get(cesc('#\\/x14shadow')).should('not.exist');
+      cy.get(cesc('#\\/x15shadow')).should('not.exist');
+      cy.get(cesc('#\\/x16shadow')).should('not.exist');
 
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x24').should('not.exist');
+      cy.get(cesc('#\\/x24')).should('not.exist');
 
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x24shadow').should('not.exist');
+      cy.get(cesc('#\\/x24shadow')).should('not.exist');
 
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x34').should('not.exist');
+      cy.get(cesc('#\\/x34')).should('not.exist');
 
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x34shadow').should('not.exist');
+      cy.get(cesc('#\\/x34shadow')).should('not.exist');
 
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x44').should('not.exist');
+      cy.get(cesc('#\\/x44')).should('not.exist');
 
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x44shadow').should('not.exist');
+      cy.get(cesc('#\\/x44shadow')).should('not.exist');
 
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x54').should('not.exist');
-      cy.get('#\\/x55').should('not.exist');
-      cy.get('#\\/x56').should('not.exist');
+      cy.get(cesc('#\\/x54')).should('not.exist');
+      cy.get(cesc('#\\/x55')).should('not.exist');
+      cy.get(cesc('#\\/x56')).should('not.exist');
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x54shadow').should('not.exist');
-      cy.get('#\\/x55shadow').should('not.exist');
-      cy.get('#\\/x56shadow').should('not.exist');
+      cy.get(cesc('#\\/x54shadow')).should('not.exist');
+      cy.get(cesc('#\\/x55shadow')).should('not.exist');
+      cy.get(cesc('#\\/x56shadow')).should('not.exist');
     })
 
     cy.log('Move point all three points');
@@ -2338,403 +2331,403 @@ describe('Collection assignName Tests', function () {
       });
 
 
-      cy.get('#\\/p3 .mjx-mrow').should('contain.text', '(5,6)')
+      cy.get(cesc('#\\/p3') + ' .mjx-mrow').should('contain.text', '(5,6)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
-      cy.get('#\\/p4').should('not.exist');
+      cy.get(cesc('#\\/p4')).should('not.exist');
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
-      cy.get('#\\/p4shadow').should('not.exist');
+      cy.get(cesc('#\\/p4shadow')).should('not.exist');
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
-      cy.get('#\\/q4').should('not.exist');
-      cy.get('#\\/q5').should('not.exist');
-      cy.get('#\\/q6').should('not.exist');
+      cy.get(cesc('#\\/q4')).should('not.exist');
+      cy.get(cesc('#\\/q5')).should('not.exist');
+      cy.get(cesc('#\\/q6')).should('not.exist');
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
-      cy.get('#\\/q4shadow').should('not.exist');
-      cy.get('#\\/q5shadow').should('not.exist');
-      cy.get('#\\/q6shadow').should('not.exist');
+      cy.get(cesc('#\\/q4shadow')).should('not.exist');
+      cy.get(cesc('#\\/q5shadow')).should('not.exist');
+      cy.get(cesc('#\\/q6shadow')).should('not.exist');
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x14').should('not.exist');
-      cy.get('#\\/x15').should('not.exist');
-      cy.get('#\\/x16').should('not.exist');
+      cy.get(cesc('#\\/x14')).should('not.exist');
+      cy.get(cesc('#\\/x15')).should('not.exist');
+      cy.get(cesc('#\\/x16')).should('not.exist');
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x14shadow').should('not.exist');
-      cy.get('#\\/x15shadow').should('not.exist');
-      cy.get('#\\/x16shadow').should('not.exist');
+      cy.get(cesc('#\\/x14shadow')).should('not.exist');
+      cy.get(cesc('#\\/x15shadow')).should('not.exist');
+      cy.get(cesc('#\\/x16shadow')).should('not.exist');
 
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x24').should('not.exist');
+      cy.get(cesc('#\\/x24')).should('not.exist');
 
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x24shadow').should('not.exist');
+      cy.get(cesc('#\\/x24shadow')).should('not.exist');
 
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x34').should('not.exist');
+      cy.get(cesc('#\\/x34')).should('not.exist');
 
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x34shadow').should('not.exist');
+      cy.get(cesc('#\\/x34shadow')).should('not.exist');
 
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x44').should('not.exist');
+      cy.get(cesc('#\\/x44')).should('not.exist');
 
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x44shadow').should('not.exist');
+      cy.get(cesc('#\\/x44shadow')).should('not.exist');
 
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x54').should('not.exist');
-      cy.get('#\\/x55').should('not.exist');
-      cy.get('#\\/x56').should('not.exist');
+      cy.get(cesc('#\\/x54')).should('not.exist');
+      cy.get(cesc('#\\/x55')).should('not.exist');
+      cy.get(cesc('#\\/x56')).should('not.exist');
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x54shadow').should('not.exist');
-      cy.get('#\\/x55shadow').should('not.exist');
-      cy.get('#\\/x56shadow').should('not.exist');
+      cy.get(cesc('#\\/x54shadow')).should('not.exist');
+      cy.get(cesc('#\\/x55shadow')).should('not.exist');
+      cy.get(cesc('#\\/x56shadow')).should('not.exist');
 
 
     })
 
 
     cy.log('2 and 4 points');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}2{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}4{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}4{enter}', { force: true })
 
     cy.window().then(() => {
 
-      cy.get('#\\/p4 .mjx-mrow').should('contain.text', '(5,6)')
+      cy.get(cesc('#\\/p4') + ' .mjx-mrow').should('contain.text', '(5,6)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,2)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,2)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/p4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,2)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/q4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
-      cy.get('#\\/q5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−3)')
       })
-      cy.get('#\\/q6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−4)')
       })
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,2)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/q4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       })
-      cy.get('#\\/q5shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−3)')
       })
-      cy.get('#\\/q6shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−4)')
       })
 
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x14shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x15shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x16shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
 
 
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x24').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
 
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x24shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
 
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x34').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
 
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x34shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
 
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
 
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
 
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x54').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x54')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x55').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x55')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x56').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x56')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x54shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x54shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x55shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x55shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x56shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x56shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
     })
@@ -2773,437 +2766,437 @@ describe('Collection assignName Tests', function () {
       });
 
 
-      cy.get('#\\/q6 .mjx-mrow').should('contain.text', '(−6,−4)')
+      cy.get(cesc('#\\/q6') + ' .mjx-mrow').should('contain.text', '(−6,−4)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/p4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/q4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
-      cy.get('#\\/q5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−5)')
       })
-      cy.get('#\\/q6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,−4)')
       })
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/q4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
-      cy.get('#\\/q5shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−5)')
       })
-      cy.get('#\\/q6shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,−4)')
       })
 
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x14shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x15shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x16shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
 
 
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x24').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
 
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x24shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
 
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x34').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
 
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x34shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
 
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
 
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
 
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x54').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x54')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x55').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x55')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x56').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x56')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x54shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x54shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x55shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x55shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x56shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x56shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
     })
 
     cy.log('Down to 1 and 3 points');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.window().then(async (win) => {
-      cy.get('#\\/p2 .mjx-mrow').should('contain.text', '(−3,−7)')
+      cy.get(cesc('#\\/p2') + ' .mjx-mrow').should('contain.text', '(−3,−7)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
-      cy.get('#\\/p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−5)')
       })
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
-      cy.get('#\\/p4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−5)')
       })
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
-      cy.get('#\\/q4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−5)')
       })
-      cy.get('#\\/q5').should('not.exist')
-      cy.get('#\\/q6').should('not.exist')
+      cy.get(cesc('#\\/q5')).should('not.exist')
+      cy.get(cesc('#\\/q6')).should('not.exist')
 
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,−6)')
       })
-      cy.get('#\\/q4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,−5)')
       })
-      cy.get('#\\/q5shadow').should('not.exist')
-      cy.get('#\\/q6shadow').should('not.exist')
+      cy.get(cesc('#\\/q5shadow')).should('not.exist')
+      cy.get(cesc('#\\/q6shadow')).should('not.exist')
 
 
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x15').should('not.exist')
-      cy.get('#\\/x16').should('not.exist')
+      cy.get(cesc('#\\/x15')).should('not.exist')
+      cy.get(cesc('#\\/x16')).should('not.exist')
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x14shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x15shadow').should('not.exist')
-      cy.get('#\\/x16shadow').should('not.exist')
+      cy.get(cesc('#\\/x15shadow')).should('not.exist')
+      cy.get(cesc('#\\/x16shadow')).should('not.exist')
 
 
 
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x24').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−1')
-      })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−3')
-      })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x24shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
 
-
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x34').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−1')
-      })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−3')
-      })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x34shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
 
 
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
 
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
 
 
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x54').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x55').should('not.exist')
-      cy.get('#\\/x56').should('not.exist')
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−1')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−3')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x54shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x55shadow').should('not.exist')
-      cy.get('#\\/x56shadow').should('not.exist')
+
+
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−1')
+      })
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x54')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x55')).should('not.exist')
+      cy.get(cesc('#\\/x56')).should('not.exist')
+
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−1')
+      })
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x54shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x55shadow')).should('not.exist')
+      cy.get(cesc('#\\/x56shadow')).should('not.exist')
 
     })
 
@@ -3233,470 +3226,470 @@ describe('Collection assignName Tests', function () {
       });
 
 
-      cy.get('#\\/p4 .mjx-mrow').should('contain.text', '(1,−8)')
+      cy.get(cesc('#\\/p4') + ' .mjx-mrow').should('contain.text', '(1,−8)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−6)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,−7)')
       })
-      cy.get('#\\/p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−6)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,−7)')
       })
-      cy.get('#\\/p4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−6)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,−7)')
       })
-      cy.get('#\\/q4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
-      cy.get('#\\/q5').should('not.exist')
-      cy.get('#\\/q6').should('not.exist')
+      cy.get(cesc('#\\/q5')).should('not.exist')
+      cy.get(cesc('#\\/q6')).should('not.exist')
 
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−6)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,−7)')
       })
-      cy.get('#\\/q4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
-      cy.get('#\\/q5shadow').should('not.exist')
-      cy.get('#\\/q6shadow').should('not.exist')
+      cy.get(cesc('#\\/q5shadow')).should('not.exist')
+      cy.get(cesc('#\\/q6shadow')).should('not.exist')
 
 
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x15').should('not.exist')
-      cy.get('#\\/x16').should('not.exist')
+      cy.get(cesc('#\\/x15')).should('not.exist')
+      cy.get(cesc('#\\/x16')).should('not.exist')
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x14shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x15shadow').should('not.exist')
-      cy.get('#\\/x16shadow').should('not.exist')
+      cy.get(cesc('#\\/x15shadow')).should('not.exist')
+      cy.get(cesc('#\\/x16shadow')).should('not.exist')
 
 
 
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x24').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      })
-
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      })
-      cy.get('#\\/x24shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
-
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x34').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      })
-
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      })
-      cy.get('#\\/x34shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
 
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x34shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
 
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x54').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x55').should('not.exist')
-      cy.get('#\\/x56').should('not.exist')
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
-      cy.get('#\\/x54shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x55shadow').should('not.exist')
-      cy.get('#\\/x56shadow').should('not.exist')
+
+
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get(cesc('#\\/x54')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get(cesc('#\\/x55')).should('not.exist')
+      cy.get(cesc('#\\/x56')).should('not.exist')
+
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get(cesc('#\\/x54shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get(cesc('#\\/x55shadow')).should('not.exist')
+      cy.get(cesc('#\\/x56shadow')).should('not.exist')
 
     })
 
     cy.log('4 and 2 points, remembers old 2nd value');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}4{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}4{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}2{enter}', { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/p2 .mjx-mrow').should('contain.text', '(−2,−8)')
+      cy.get(cesc('#\\/p2') + ' .mjx-mrow').should('contain.text', '(−2,−8)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,3)')
       })
-      cy.get('#\\/p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
       })
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,3)')
       })
-      cy.get('#\\/p4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
       })
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,3)')
       })
-      cy.get('#\\/q4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
       })
-      cy.get('#\\/q5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−6)')
       })
-      cy.get('#\\/q6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,−7)')
       })
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,−8)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,3)')
       })
-      cy.get('#\\/q4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
       })
-      cy.get('#\\/q5shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−6)')
       })
-      cy.get('#\\/q6shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,−7)')
       })
 
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x14shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x15shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x16shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      })
-
-
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x24').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x24shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x34').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x34shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-
-
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-
-
-
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−2')
-      })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      })
-      cy.get('#\\/x54').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5')
-      })
-      cy.get('#\\/x55').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      })
-      cy.get('#\\/x56').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
 
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−2')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
-      cy.get('#\\/x54shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
-      cy.get('#\\/x55shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x24shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+
+
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x34')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x34shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+
+
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+
+
+
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+
+
+
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x54')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get(cesc('#\\/x55')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      cy.get('#\\/x56shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x56')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+
+
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−2')
+      })
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(cesc('#\\/x54shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get(cesc('#\\/x55shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get(cesc('#\\/x56shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
     })
@@ -3736,651 +3729,651 @@ describe('Collection assignName Tests', function () {
       });
     })
 
-    cy.get('#\\/q6 .mjx-mrow').should('contain.text', '(−9,1)')
+    cy.get(cesc('#\\/q6') + ' .mjx-mrow').should('contain.text', '(−9,1)')
 
-    cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−4,6)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−5,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−6,4)')
     })
-    cy.get('#\\/p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,3)')
     })
 
-    cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−4,6)')
     })
-    cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−5,5)')
     })
-    cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−6,4)')
     })
-    cy.get('#\\/p4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,3)')
     })
 
-    cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−4,6)')
     })
-    cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−5,5)')
     })
-    cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−6,4)')
     })
-    cy.get('#\\/q4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,3)')
     })
-    cy.get('#\\/q5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−8,2)')
     })
-    cy.get('#\\/q6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9,1)')
     })
 
-    cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−4,6)')
     })
-    cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−5,5)')
     })
-    cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−6,4)')
     })
-    cy.get('#\\/q4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,3)')
     })
-    cy.get('#\\/q5shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q5shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−8,2)')
     })
-    cy.get('#\\/q6shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/q6shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9,1)')
     })
 
 
-    cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−4')
     })
-    cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−5')
     })
-    cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−6')
     })
-    cy.get('#\\/x14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−7')
     })
-    cy.get('#\\/x15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x15')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−8')
     })
-    cy.get('#\\/x16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x16')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−9')
     })
 
-    cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−4')
     })
-    cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−5')
     })
-    cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−6')
     })
-    cy.get('#\\/x14shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x14shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−7')
     })
-    cy.get('#\\/x15shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x15shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−8')
     })
-    cy.get('#\\/x16shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−9')
-    })
-
-
-    cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−4')
-    })
-    cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−5')
-    })
-    cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−6')
-    })
-    cy.get('#\\/x24').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7')
-    })
-
-    cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−4')
-    })
-    cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−5')
-    })
-    cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−6')
-    })
-    cy.get('#\\/x24shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7')
-    })
-
-
-    cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−4')
-    })
-    cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−5')
-    })
-    cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−6')
-    })
-    cy.get('#\\/x34').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7')
-    })
-
-    cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−4')
-    })
-    cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−5')
-    })
-    cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−6')
-    })
-    cy.get('#\\/x34shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7')
-    })
-
-
-    cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−4')
-    })
-    cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−5')
-    })
-    cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−6')
-    })
-    cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7')
-    })
-
-    cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−4')
-    })
-    cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−5')
-    })
-    cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−6')
-    })
-    cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7')
-    })
-
-
-    cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−4')
-    })
-    cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−5')
-    })
-    cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−6')
-    })
-    cy.get('#\\/x54').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7')
-    })
-    cy.get('#\\/x55').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−8')
-    })
-    cy.get('#\\/x56').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x16shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−9')
     })
 
 
-    cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−4')
     })
-    cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−5')
     })
-    cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−6')
     })
-    cy.get('#\\/x54shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x24')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−7')
     })
-    cy.get('#\\/x55shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+
+    cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−5')
+    })
+    cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−6')
+    })
+    cy.get(cesc('#\\/x24shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+
+
+    cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−5')
+    })
+    cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−6')
+    })
+    cy.get(cesc('#\\/x34')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+
+    cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−5')
+    })
+    cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−6')
+    })
+    cy.get(cesc('#\\/x34shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+
+
+    cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−5')
+    })
+    cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−6')
+    })
+    cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+
+    cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−5')
+    })
+    cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−6')
+    })
+    cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+
+
+    cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−5')
+    })
+    cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−6')
+    })
+    cy.get(cesc('#\\/x54')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+    cy.get(cesc('#\\/x55')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−8')
     })
-    cy.get('#\\/x56shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x56')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−9')
+    })
+
+
+    cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−5')
+    })
+    cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−6')
+    })
+    cy.get(cesc('#\\/x54shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+    cy.get(cesc('#\\/x55shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−8')
+    })
+    cy.get(cesc('#\\/x56shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−9')
     })
 
     cy.log('0 and 3 points, remembers old 3rd value');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}0{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}0{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(−8,2)')
+      cy.get(cesc('#\\/p1') + ' .mjx-mrow').should('contain.text', '(−8,2)')
 
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,1)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
-      cy.get('#\\/p4').should('not.exist')
+      cy.get(cesc('#\\/p4')).should('not.exist')
 
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,1)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
-      cy.get('#\\/p4shadow').should('not.exist')
+      cy.get(cesc('#\\/p4shadow')).should('not.exist')
 
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,1)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
-      cy.get('#\\/q4').should('not.exist')
-      cy.get('#\\/q5').should('not.exist')
-      cy.get('#\\/q6').should('not.exist')
+      cy.get(cesc('#\\/q4')).should('not.exist')
+      cy.get(cesc('#\\/q5')).should('not.exist')
+      cy.get(cesc('#\\/q6')).should('not.exist')
 
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,1)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
-      cy.get('#\\/q4shadow').should('not.exist')
-      cy.get('#\\/q5shadow').should('not.exist')
-      cy.get('#\\/q6shadow').should('not.exist')
+      cy.get(cesc('#\\/q4shadow')).should('not.exist')
+      cy.get(cesc('#\\/q5shadow')).should('not.exist')
+      cy.get(cesc('#\\/q6shadow')).should('not.exist')
 
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x14').should('not.exist')
-      cy.get('#\\/x15').should('not.exist')
-      cy.get('#\\/x16').should('not.exist')
+      cy.get(cesc('#\\/x14')).should('not.exist')
+      cy.get(cesc('#\\/x15')).should('not.exist')
+      cy.get(cesc('#\\/x16')).should('not.exist')
 
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x14shadow').should('not.exist')
-      cy.get('#\\/x15shadow').should('not.exist')
-      cy.get('#\\/x16shadow').should('not.exist')
+      cy.get(cesc('#\\/x14shadow')).should('not.exist')
+      cy.get(cesc('#\\/x15shadow')).should('not.exist')
+      cy.get(cesc('#\\/x16shadow')).should('not.exist')
 
 
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x24').should('not.exist')
+      cy.get(cesc('#\\/x24')).should('not.exist')
 
 
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x24shadow').should('not.exist')
+      cy.get(cesc('#\\/x24shadow')).should('not.exist')
 
 
 
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x34').should('not.exist')
+      cy.get(cesc('#\\/x34')).should('not.exist')
 
 
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x34shadow').should('not.exist')
+      cy.get(cesc('#\\/x34shadow')).should('not.exist')
 
 
 
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x44').should('not.exist')
+      cy.get(cesc('#\\/x44')).should('not.exist')
 
 
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x44shadow').should('not.exist')
+      cy.get(cesc('#\\/x44shadow')).should('not.exist')
 
 
 
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x44').should('not.exist')
-      cy.get('#\\/x45').should('not.exist')
-      cy.get('#\\/x46').should('not.exist')
+      cy.get(cesc('#\\/x44')).should('not.exist')
+      cy.get(cesc('#\\/x45')).should('not.exist')
+      cy.get(cesc('#\\/x46')).should('not.exist')
 
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      cy.get('#\\/x44shadow').should('not.exist')
-      cy.get('#\\/x45shadow').should('not.exist')
-      cy.get('#\\/x46shadow').should('not.exist')
+      cy.get(cesc('#\\/x44shadow')).should('not.exist')
+      cy.get(cesc('#\\/x45shadow')).should('not.exist')
+      cy.get(cesc('#\\/x46shadow')).should('not.exist')
 
 
     })
 
     cy.log('3 and 3 points');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(−4,6)')
-      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1') + ' .mjx-mrow').should('contain.text', '(−4,6)')
+      cy.get(cesc('#\\/p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,6)')
       })
-      cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,5)')
       })
-      cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,4)')
       })
-      cy.get('#\\/p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
 
-      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,6)')
       })
-      cy.get('#\\/p2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,5)')
       })
-      cy.get('#\\/p3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,4)')
       })
-      cy.get('#\\/p4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/p4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
 
-      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,6)')
       })
-      cy.get('#\\/q2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,5)')
       })
-      cy.get('#\\/q3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,4)')
       })
-      cy.get('#\\/q4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
-      cy.get('#\\/q5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,1)')
       })
-      cy.get('#\\/q6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
 
-      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q1shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,6)')
       })
-      cy.get('#\\/q2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q2shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,5)')
       })
-      cy.get('#\\/q3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q3shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,4)')
       })
-      cy.get('#\\/q4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q4shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
-      cy.get('#\\/q5shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q5shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,1)')
       })
-      cy.get('#\\/q6shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/q6shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−8)')
       })
 
-      cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/x14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
-      cy.get('#\\/x11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x11shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x12shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x13shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x13shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/x14shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x14shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x15shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x15shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x16shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      })
-
-
-      cy.get('#\\/x21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-      cy.get('#\\/x23').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−6')
-      })
-      cy.get('#\\/x24').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−8')
-      })
-
-      cy.get('#\\/x21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-      cy.get('#\\/x23shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−6')
-      })
-      cy.get('#\\/x24shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−8')
-      })
-
-
-      cy.get('#\\/x31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-      cy.get('#\\/x33').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−6')
-      })
-      cy.get('#\\/x34').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−8')
-      })
-
-      cy.get('#\\/x31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-      cy.get('#\\/x33shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−6')
-      })
-      cy.get('#\\/x34shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−8')
-      })
-
-
-      cy.get('#\\/x41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-      cy.get('#\\/x43').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−6')
-      })
-      cy.get('#\\/x44').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−8')
-      })
-
-      cy.get('#\\/x41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-      cy.get('#\\/x43shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−6')
-      })
-      cy.get('#\\/x44shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−8')
-      })
-
-
-      cy.get('#\\/x51').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get('#\\/x52').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−5')
-      })
-      cy.get('#\\/x53').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−6')
-      })
-      cy.get('#\\/x54').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−8')
-      })
-      cy.get('#\\/x55').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−9')
-      })
-      cy.get('#\\/x56').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x16shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
 
-      cy.get('#\\/x51shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x21')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−4')
       })
-      cy.get('#\\/x52shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−5')
       })
-      cy.get('#\\/x53shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x23')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−6')
       })
-      cy.get('#\\/x54shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x24')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8')
       })
-      cy.get('#\\/x55shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+
+      cy.get(cesc('#\\/x21shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x22shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x23shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get(cesc('#\\/x24shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−8')
+      })
+
+
+      cy.get(cesc('#\\/x31')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x32')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x33')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get(cesc('#\\/x34')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−8')
+      })
+
+      cy.get(cesc('#\\/x31shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x32shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x33shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get(cesc('#\\/x34shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−8')
+      })
+
+
+      cy.get(cesc('#\\/x41')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x42')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x43')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get(cesc('#\\/x44')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−8')
+      })
+
+      cy.get(cesc('#\\/x41shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x42shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x43shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get(cesc('#\\/x44shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−8')
+      })
+
+
+      cy.get(cesc('#\\/x51')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x52')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x53')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get(cesc('#\\/x54')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−8')
+      })
+      cy.get(cesc('#\\/x55')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
-      cy.get('#\\/x56shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x56')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+
+
+      cy.get(cesc('#\\/x51shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−4')
+      })
+      cy.get(cesc('#\\/x52shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get(cesc('#\\/x53shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get(cesc('#\\/x54shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−8')
+      })
+      cy.get(cesc('#\\/x55shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−9')
+      })
+      cy.get(cesc('#\\/x56shadow')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
     })
@@ -4502,7 +4495,7 @@ describe('Collection assignName Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     function checkValues(points1, points2) {
 
@@ -4525,110 +4518,110 @@ describe('Collection assignName Tests', function () {
 
         let pointa = points1[ind];
         if (pointa) {
-          cy.get(`#\\/pa${ind + 1}\\/_point1 .mjx-mrow`).should('contain.text', pointToString(pointa))
-          cy.get(`#\\/pa${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', pointToString(pointa) + ",")
-          cy.get(`#\\/pa${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', "," + pointToString(pointa))
-          cy.get(`#\\/pa${ind + 1}\\/_point1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/pa${ind + 1}\\/_point1`) + ` .mjx-mrow`).should('contain.text', pointToString(pointa))
+          cy.get(cesc(`#\\/pa${ind + 1}\\/_point1`) + ` .mjx-mrow`).should('not.contain.text', pointToString(pointa) + ",")
+          cy.get(cesc(`#\\/pa${ind + 1}\\/_point1`) + ` .mjx-mrow`).should('not.contain.text', "," + pointToString(pointa))
+          cy.get(cesc(`#\\/pa${ind + 1}\\/_point1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(pointa))
           })
         } else {
-          cy.get(`#\\/pa${ind + 1}\\/_point1`).should('not.exist')
+          cy.get(cesc(`#\\/pa${ind + 1}\\/_point1`)).should('not.exist')
         }
 
         let pointb = points2[ind];
         if (pointb) {
-          cy.get(`#\\/pb${ind + 1}\\/_point1 .mjx-mrow`).should('contain.text', pointToString(pointb))
-          cy.get(`#\\/pb${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', pointToString(pointb) + ",")
-          cy.get(`#\\/pb${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', "," + pointToString(pointb))
-          cy.get(`#\\/pb${ind + 1}\\/_point1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/pb${ind + 1}\\/_point1`) + ` .mjx-mrow`).should('contain.text', pointToString(pointb))
+          cy.get(cesc(`#\\/pb${ind + 1}\\/_point1`) + ` .mjx-mrow`).should('not.contain.text', pointToString(pointb) + ",")
+          cy.get(cesc(`#\\/pb${ind + 1}\\/_point1`) + ` .mjx-mrow`).should('not.contain.text', "," + pointToString(pointb))
+          cy.get(cesc(`#\\/pb${ind + 1}\\/_point1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(pointb))
           })
         } else {
-          cy.get(`#\\/pb${ind + 1}\\/_point1`).should('not.exist')
+          cy.get(cesc(`#\\/pb${ind + 1}\\/_point1`)).should('not.exist')
         }
       }
 
       for (let ind = 0; ind < 4; ind++) {
         let point = allPoints[ind];
         if (point) {
-          cy.get(`#\\/p${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/p${ind + 1}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(point))
           })
-          cy.get(`#\\/p${ind + 1}shadow`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/p${ind + 1}shadow`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(point))
           })
         } else {
-          cy.get(`#\\/p${ind + 1}`).should('not.exist')
-          cy.get(`#\\/p${ind + 1}shadow`).should('not.exist')
+          cy.get(cesc(`#\\/p${ind + 1}`)).should('not.exist')
+          cy.get(cesc(`#\\/p${ind + 1}shadow`)).should('not.exist')
         }
       }
 
       for (let ind = 0; ind < 6; ind++) {
         let point = allPoints[ind];
         if (point) {
-          cy.get(`#\\/q${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/q${ind + 1}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(point))
           })
-          cy.get(`#\\/q${ind + 1}shadow`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/q${ind + 1}shadow`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(point))
           })
         } else {
-          cy.get(`#\\/q${ind + 1}`).should('not.exist')
-          cy.get(`#\\/q${ind + 1}shadow`).should('not.exist')
+          cy.get(cesc(`#\\/q${ind + 1}`)).should('not.exist')
+          cy.get(cesc(`#\\/q${ind + 1}shadow`)).should('not.exist')
         }
       }
 
       for (let ind = 0; ind < 8; ind++) {
         let theX = allXs[ind];
         if (theX !== undefined) {
-          cy.get(`#\\/xs1${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs1${ind + 1}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs1${ind + 1}shadow`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs1${ind + 1}shadow`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs5${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs5${ind + 1}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs5${ind + 1}shadow`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs5${ind + 1}shadow`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
         } else {
-          cy.get(`#\\/xs1${ind + 1}`).should('not.exist')
-          cy.get(`#\\/xs1${ind + 1}shadow`).should('not.exist')
-          cy.get(`#\\/xs5${ind + 1}`).should('not.exist')
-          cy.get(`#\\/xs5${ind + 1}shadow`).should('not.exist')
+          cy.get(cesc(`#\\/xs1${ind + 1}`)).should('not.exist')
+          cy.get(cesc(`#\\/xs1${ind + 1}shadow`)).should('not.exist')
+          cy.get(cesc(`#\\/xs5${ind + 1}`)).should('not.exist')
+          cy.get(cesc(`#\\/xs5${ind + 1}shadow`)).should('not.exist')
         }
       }
 
       for (let ind = 0; ind < 6; ind++) {
         let theX = allXs[ind];
         if (theX !== undefined) {
-          cy.get(`#\\/xs2${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs2${ind + 1}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs2${ind + 1}shadow`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs2${ind + 1}shadow`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs3${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs3${ind + 1}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs3${ind + 1}shadow`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs3${ind + 1}shadow`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs4${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs4${ind + 1}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
-          cy.get(`#\\/xs4${ind + 1}shadow`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/xs4${ind + 1}shadow`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(theX))
           })
         } else {
-          cy.get(`#\\/xs2${ind + 1}`).should('not.exist')
-          cy.get(`#\\/xs2${ind + 1}shadow`).should('not.exist')
-          cy.get(`#\\/xs3${ind + 1}`).should('not.exist')
-          cy.get(`#\\/xs3${ind + 1}shadow`).should('not.exist')
-          cy.get(`#\\/xs4${ind + 1}`).should('not.exist')
-          cy.get(`#\\/xs4${ind + 1}shadow`).should('not.exist')
+          cy.get(cesc(`#\\/xs2${ind + 1}`)).should('not.exist')
+          cy.get(cesc(`#\\/xs2${ind + 1}shadow`)).should('not.exist')
+          cy.get(cesc(`#\\/xs3${ind + 1}`)).should('not.exist')
+          cy.get(cesc(`#\\/xs3${ind + 1}shadow`)).should('not.exist')
+          cy.get(cesc(`#\\/xs4${ind + 1}`)).should('not.exist')
+          cy.get(cesc(`#\\/xs4${ind + 1}shadow`)).should('not.exist')
         }
       }
     }
@@ -4639,8 +4632,8 @@ describe('Collection assignName Tests', function () {
     checkValues(points1, points2)
 
     cy.log('Create 1 and 2 points');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}2{enter}', { force: true })
 
     points1 = [[1, 2]];
     points2 = [[-1, -2, -3], [-2, -4, -6]];
@@ -4675,8 +4668,8 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Change dimensions to 3 and 2');
-    cy.get('#\\/nd1 textarea').type('{end}{backspace}3{enter}', { force: true })
-    cy.get('#\\/nd2 textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get(cesc('#\\/nd1') + ' textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#\\/nd2') + ' textarea').type('{end}{backspace}2{enter}', { force: true })
 
 
     points1 = [[3, 9, 3]];
@@ -4712,8 +4705,8 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Change to 2 and 1 points');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}2{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}1{enter}', { force: true })
 
     points1 = [[-1, 7, -9], [2, 4, 6]];
     points2 = [[5, 4]];
@@ -4748,8 +4741,8 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Change dimensions to 2 and 1');
-    cy.get('#\\/nd1 textarea').type('{end}{backspace}2{enter}', { force: true })
-    cy.get('#\\/nd2 textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get(cesc('#\\/nd1') + ' textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get(cesc('#\\/nd2') + ' textarea').type('{end}{backspace}1{enter}', { force: true })
 
     points1 = [[9, -8], [-6, 5]];
     points2 = [[3]];
@@ -4758,8 +4751,8 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Change to 1 and 3 points');
-    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
-    cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#\\/n1') + ' textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type('{end}{backspace}3{enter}', { force: true })
 
     points1 = [[9, -8]];
     points2 = [[3], [3], [-3]];

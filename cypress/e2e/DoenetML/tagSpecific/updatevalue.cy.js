@@ -1,4 +1,6 @@
 import me from 'math-expressions';
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('UpdateValue Tag Tests', function () {
 
@@ -32,7 +34,7 @@ describe('UpdateValue Tag Tests', function () {
     </updateValue>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let left = -10;
 
@@ -59,8 +61,8 @@ describe('UpdateValue Tag Tests', function () {
     });
 
     cy.log('double number');
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.get('#\\/count').should('have.text', '4')
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.get(cesc('#\\/count')).should('have.text', '4')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -84,8 +86,8 @@ describe('UpdateValue Tag Tests', function () {
     });
 
     cy.log('double number a second time');
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.get('#\\/count').should('have.text', '8')
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.get(cesc('#\\/count')).should('have.text', '8')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -109,8 +111,8 @@ describe('UpdateValue Tag Tests', function () {
     });
 
     cy.log('double number a third time');
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.get('#\\/count').should('have.text', '16')
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.get(cesc('#\\/count')).should('have.text', '16')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -147,16 +149,16 @@ describe('UpdateValue Tag Tests', function () {
     </updateValue>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
+    cy.get(cesc('#\\/b')).should('have.text', "false");
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.get('#\\/b').should('have.text', "true");
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
 
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.get('#\\/b').should('have.text', "false");
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "false");
 
   })
 
@@ -177,24 +179,24 @@ describe('UpdateValue Tag Tests', function () {
     </updateValue>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
+    cy.get(cesc('#\\/b')).should('have.text', "false");
 
-    cy.get('#\\/setTrue_button').click();
-    cy.get('#\\/b').should('have.text', "true");
+    cy.get(cesc('#\\/setTrue_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
 
-    cy.get('#\\/setTrue_button').click();
-    cy.get('#\\/b').should('have.text', "true");
+    cy.get(cesc('#\\/setTrue_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
 
-    cy.get('#\\/setFalse_button').click();
-    cy.get('#\\/b').should('have.text', "false");
+    cy.get(cesc('#\\/setFalse_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "false");
 
-    cy.get('#\\/setFalse_button').click();
-    cy.get('#\\/b').should('have.text', "false");
+    cy.get(cesc('#\\/setFalse_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "false");
 
-    cy.get('#\\/setTrue_button').click();
-    cy.get('#\\/b').should('have.text', "true");
+    cy.get(cesc('#\\/setTrue_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
 
   })
 
@@ -210,12 +212,12 @@ describe('UpdateValue Tag Tests', function () {
     </updateValue>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/n').should('have.text', "1");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
 
-    cy.get('#\\/setToSum_button').click();
-    cy.get('#\\/n').should('have.text', "2");
+    cy.get(cesc('#\\/setToSum_button')).click();
+    cy.get(cesc('#\\/n')).should('have.text', "2");
   })
 
   it('update property', () => {
@@ -234,19 +236,19 @@ describe('UpdateValue Tag Tests', function () {
     </updateValue>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.waitUntil(() => cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(2,2)'
     ))
 
-    cy.get('#\\/_updatevalue2_button').click();
-    cy.waitUntil(() => cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(4,2)'
     ))
   })
@@ -270,72 +272,72 @@ describe('UpdateValue Tag Tests', function () {
     <p><booleaninput name="bi" /><copy prop="value" source="bi" assignNames="b" /></p>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,0)')
     })
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.waitUntil(() => cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(6,5)'
     ))
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,0)')
     })
 
-    cy.get('#\\/_updatevalue1_button').click();
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'true');
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'true');
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,0)')
     })
 
 
-    cy.get('#\\/_updatevalue2_button').click();
-    cy.waitUntil(() => cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(6,5)'
     ))
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,0)')
     })
 
-    cy.get('#\\/_updatevalue2_button').click();
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'false');
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'false');
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,0)')
     })
 
@@ -357,35 +359,35 @@ describe('UpdateValue Tag Tests', function () {
     <p><booleaninput name="bi" /><copy prop="value" target="bi" assignNames="b" /></p>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2,1)')
     })
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.waitUntil(() => cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(3,6,1)'
     ))
 
-    cy.get('#\\/_updatevalue1_button').click();
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'true');
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'true');
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6,1)')
     })
 
-    cy.get('#\\/_updatevalue2_button').click();
-    cy.waitUntil(() => cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(3,6,6)'
     ))
 
-    cy.get('#\\/_updatevalue2_button').click();
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
     // nothing has changed even after wait for core to respond to booleaninput
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'false');
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'false');
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6,6)')
     })
   })
@@ -408,43 +410,43 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue target="col.x" newValue="2$(p.x)" />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,0)')
     })
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.waitUntil(() => cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(6,2)'
     ))
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,0)')
     })
 
-    cy.get('#\\/_updatevalue2_button').click();
-    cy.waitUntil(() => cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(12,2)'
     ))
-    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(12,2)')
     })
-    cy.get('#\\/p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(12,5)')
     })
-    cy.get('#\\/p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(12,0)')
     })
 
@@ -471,34 +473,34 @@ describe('UpdateValue Tag Tests', function () {
     </updateValue>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.waitUntil(() => cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(2,2)'
     ))
 
-    cy.get('#\\/_updatevalue2_button').click();
-    cy.waitUntil(() => cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(4,2)'
     ))
 
-    cy.get('#\\/_updatevalue3_button').click();
-    cy.waitUntil(() => cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue3_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(3,7)'
     ))
 
-    cy.get('#\\/_updatevalue1_button').click();
-    cy.waitUntil(() => cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue1_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(6,7)'
     ))
 
-    cy.get('#\\/_updatevalue2_button').click();
-    cy.waitUntil(() => cy.get('#\\/P').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+    cy.get(cesc('#\\/_updatevalue2_button')).click();
+    cy.waitUntil(() => cy.get(cesc('#\\/P')).find('.mjx-mrow').eq(0).invoke('text').then((text) =>
       text.trim() === '(12,7)'
     ))
 
@@ -520,36 +522,36 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="quad" target="y" newValue="4$y" triggerWith="trip" simplify />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
 
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
-    cy.get('#\\/trip_button').click();
-    cy.get('#\\/x').should('contain.text', '3x')
-    cy.get('#\\/y').should('contain.text', '4y')
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/trip_button')).click();
+    cy.get(cesc('#\\/x')).should('contain.text', '3x')
+    cy.get(cesc('#\\/y')).should('contain.text', '4y')
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4y')
     });
 
-    cy.get('#\\/trip_button').click();
+    cy.get(cesc('#\\/trip_button')).click();
 
-    cy.get('#\\/x').should('contain.text', '9x')
-    cy.get('#\\/y').should('contain.text', '16y')
+    cy.get(cesc('#\\/x')).should('contain.text', '9x')
+    cy.get(cesc('#\\/y')).should('contain.text', '16y')
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('16y')
     });
 
@@ -574,58 +576,58 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="quad" target="y" newValue="4$y" triggerWith="doub trip" simplify />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/z')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
 
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
-    cy.get('#\\/trip_button').click();
-    cy.get('#\\/x').should('contain.text', '3x');
-    cy.get('#\\/y').should('contain.text', '4y');
+    cy.get(cesc('#\\/trip_button')).click();
+    cy.get(cesc('#\\/x')).should('contain.text', '3x');
+    cy.get(cesc('#\\/y')).should('contain.text', '4y');
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3x')
     });
-    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/z')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4y')
     });
 
-    cy.get('#\\/doub_button').click();
-    cy.get('#\\/z').should('contain.text', '2z');
-    cy.get('#\\/y').should('contain.text', '16y');
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/doub_button')).click();
+    cy.get(cesc('#\\/z')).should('contain.text', '2z');
+    cy.get(cesc('#\\/y')).should('contain.text', '16y');
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3x')
     });
-    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/z')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2z')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('16y')
     });
 
-    cy.get('#\\/trip_button').click();
-    cy.get('#\\/x').should('contain.text', '9x');
-    cy.get('#\\/y').should('contain.text', '64y');
+    cy.get(cesc('#\\/trip_button')).click();
+    cy.get(cesc('#\\/x')).should('contain.text', '9x');
+    cy.get(cesc('#\\/y')).should('contain.text', '64y');
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9x')
     });
-    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/z')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2z')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('64y')
     });
 
@@ -645,13 +647,13 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhen="$(P.x)>0 and $(P.y)>0" />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
 
-    cy.get('#\\/trip').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -659,7 +661,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
@@ -670,7 +672,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
@@ -681,8 +683,8 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/x').should('contain.text', '3x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '3x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -693,7 +695,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -704,7 +706,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: 4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -715,7 +717,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: 5 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -726,8 +728,8 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/x').should('contain.text', '9x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '9x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
     })
@@ -738,7 +740,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
 
@@ -760,13 +762,13 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenObjectsClicked="P" />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
 
-    cy.get('#\\/trip').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -774,7 +776,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
@@ -784,8 +786,8 @@ describe('UpdateValue Tag Tests', function () {
         actionName: "pointClicked",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '3x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '3x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -796,7 +798,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -806,8 +808,8 @@ describe('UpdateValue Tag Tests', function () {
         actionName: "pointClicked",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '9x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '9x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
     })
@@ -818,7 +820,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
 
@@ -840,13 +842,13 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenObjectsFocused="P" />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
 
-    cy.get('#\\/trip').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -854,7 +856,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
@@ -864,8 +866,8 @@ describe('UpdateValue Tag Tests', function () {
         actionName: "pointFocused",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '3x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '3x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -876,7 +878,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
@@ -886,8 +888,8 @@ describe('UpdateValue Tag Tests', function () {
         actionName: "pointFocused",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '9x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '9x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
     })
@@ -898,7 +900,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
 
@@ -922,17 +924,17 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="quad" target="y" newValue="4$y" simplify triggerWith="trip"  />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
 
-    cy.get('#\\/trip').should('not.exist');
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -940,10 +942,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -954,10 +956,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -968,13 +970,13 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/x').should('contain.text', '3x');
-      cy.get('#\\/y').should('contain.text', '4y');
+      cy.get(cesc('#\\/x')).should('contain.text', '3x');
+      cy.get(cesc('#\\/y')).should('contain.text', '4y');
 
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -985,10 +987,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -999,10 +1001,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: 4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1013,10 +1015,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: 5 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1028,13 +1030,13 @@ describe('UpdateValue Tag Tests', function () {
         args: { x: 4, y: 2 }
       });
 
-      cy.get('#\\/x').should('contain.text', '9x');
-      cy.get('#\\/y').should('contain.text', '16y');
+      cy.get(cesc('#\\/x')).should('contain.text', '9x');
+      cy.get(cesc('#\\/y')).should('contain.text', '16y');
 
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -1045,10 +1047,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
 
@@ -1071,14 +1073,14 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="quad" target="x" newValue="4$x" simplify triggerWith="trip"  />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
 
-    cy.get('#\\/trip').should('not.exist');
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1086,7 +1088,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
@@ -1097,7 +1099,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
@@ -1109,8 +1111,8 @@ describe('UpdateValue Tag Tests', function () {
         args: { x: 1, y: 7 }
       });
       // since second change could be asynchronous, use other form so that cypress will wait
-      cy.get('#\\/x').find('.mjx-mrow').should('have.text', '12x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').should('have.text', '12x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
       });
     })
@@ -1121,7 +1123,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
       });
     })
@@ -1132,7 +1134,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: 4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
       });
     })
@@ -1143,7 +1145,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: 5 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
       });
     })
@@ -1156,8 +1158,8 @@ describe('UpdateValue Tag Tests', function () {
       });
       // since second change could be asynchronous, use other form so that cypress will wait
       // (keep other form of test to make it clear we aren't actually changing anything)
-      cy.get('#\\/x').find('.mjx-mrow').should('have.text', '144x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').should('have.text', '144x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('144x')
       });
     })
@@ -1168,7 +1170,7 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('144x')
       });
 
@@ -1192,17 +1194,17 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue name="quad" target="y" newValue="4$y" simplify triggerWith="trip" triggerWhen="$(P.x)<0 and $(P.y)<0" />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
 
-    cy.get('#\\/trip').should('not.exist');
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1210,11 +1212,11 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/y').should("contain.text", '4y')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).should("contain.text", '4y')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1225,10 +1227,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1239,11 +1241,11 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/x').should("contain.text", '3x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should("contain.text", '3x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1254,10 +1256,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1268,11 +1270,11 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: -4 }
       });
-      cy.get('#\\/y').should("contain.text", '16y')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).should("contain.text", '16y')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -1283,10 +1285,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: -5 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -1297,11 +1299,11 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/x').should("contain.text", '9x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should("contain.text", '9x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -1312,10 +1314,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
 
@@ -1343,26 +1345,26 @@ describe('UpdateValue Tag Tests', function () {
     </triggerSet>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', "");
-    cy.get('#\\/n').should('have.text', "1");
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', "");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "true");
-    cy.get('#\\/hello').should('have.text', " hello");
-    cy.get('#\\/n').should('have.text', "2");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello");
+    cy.get(cesc('#\\/n')).should('have.text', "2");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', " hello hello");
-    cy.get('#\\/n').should('have.text', "3");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+    cy.get(cesc('#\\/n')).should('have.text', "3");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "true");
-    cy.get('#\\/hello').should('have.text', " hello hello hello");
-    cy.get('#\\/n').should('have.text', "4");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
+    cy.get(cesc('#\\/n')).should('have.text', "4");
   })
 
   it('triggerSet and chain to updatevalue', () => {
@@ -1386,26 +1388,26 @@ describe('UpdateValue Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', "");
-    cy.get('#\\/n').should('have.text', "1");
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', "");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "true");
-    cy.get('#\\/hello').should('have.text', " hello");
-    cy.get('#\\/n').should('have.text', "2");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello");
+    cy.get(cesc('#\\/n')).should('have.text', "2");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', " hello hello");
-    cy.get('#\\/n').should('have.text', "3");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+    cy.get(cesc('#\\/n')).should('have.text', "3");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "true");
-    cy.get('#\\/hello').should('have.text', " hello hello hello");
-    cy.get('#\\/n').should('have.text', "4");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
+    cy.get(cesc('#\\/n')).should('have.text', "4");
   })
 
   it('triggerSet and chain to triggerset', () => {
@@ -1433,31 +1435,31 @@ describe('UpdateValue Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', "");
-    cy.get('#\\/n').should('have.text', "1");
-    cy.get('#\\/m').should('have.text', "5");
-    cy.get('#\\/_triggerset2').should('not.exist');
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', "");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
+    cy.get(cesc('#\\/m')).should('have.text', "5");
+    cy.get(cesc('#\\/_triggerset2')).should('not.exist');
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "true");
-    cy.get('#\\/hello').should('have.text', " hello");
-    cy.get('#\\/n').should('have.text', "2");
-    cy.get('#\\/m').should('have.text', "4");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello");
+    cy.get(cesc('#\\/n')).should('have.text', "2");
+    cy.get(cesc('#\\/m')).should('have.text', "4");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', " hello hello");
-    cy.get('#\\/n').should('have.text', "3");
-    cy.get('#\\/m').should('have.text', "3");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+    cy.get(cesc('#\\/n')).should('have.text', "3");
+    cy.get(cesc('#\\/m')).should('have.text', "3");
 
-    cy.get('#\\/_triggerset1_button').click();
-    cy.get('#\\/b').should('have.text', "true");
-    cy.get('#\\/hello').should('have.text', " hello hello hello");
-    cy.get('#\\/n').should('have.text', "4");
-    cy.get('#\\/m').should('have.text', "2");
+    cy.get(cesc('#\\/_triggerset1_button')).click();
+    cy.get(cesc('#\\/b')).should('have.text', "true");
+    cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
+    cy.get(cesc('#\\/n')).should('have.text', "4");
+    cy.get(cesc('#\\/m')).should('have.text', "2");
   })
 
   it('triggerSet based on trigger', () => {
@@ -1478,17 +1480,17 @@ describe('UpdateValue Tag Tests', function () {
   </triggerSet>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
 
-    cy.get('#\\/trip').should('not.exist');
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1496,10 +1498,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -1510,10 +1512,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -1524,12 +1526,12 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/x').should('contain.text', '3x');
-      cy.get('#\\/y').should('contain.text', '4y');
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '3x');
+      cy.get(cesc('#\\/y')).should('contain.text', '4y');
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1540,10 +1542,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1554,10 +1556,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: 4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1568,10 +1570,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: 5 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -1582,12 +1584,12 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/x').should('contain.text', '9x');
-      cy.get('#\\/y').should('contain.text', '16y');
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '9x');
+      cy.get(cesc('#\\/y')).should('contain.text', '16y');
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -1598,10 +1600,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
 
@@ -1638,14 +1640,14 @@ describe('UpdateValue Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', "");
-    cy.get('#\\/n').should('have.text', "1");
-    cy.get('#\\/m').should('have.text', "5");
-    cy.get('#\\/_triggerset1').should('not.exist');
-    cy.get('#\\/_triggerset2').should('not.exist');
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', "");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
+    cy.get(cesc('#\\/m')).should('have.text', "5");
+    cy.get(cesc('#\\/_triggerset1')).should('not.exist');
+    cy.get(cesc('#\\/_triggerset2')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1653,10 +1655,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -1665,10 +1667,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -1677,10 +1679,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
 
     })
 
@@ -1690,10 +1692,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -1702,10 +1704,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: -4 }
       });
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -1714,10 +1716,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: -5 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -1726,10 +1728,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -1738,10 +1740,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
 
     });
   })
@@ -1769,11 +1771,11 @@ describe('UpdateValue Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', "");
-    cy.get('#\\/n').should('have.text', "1");
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', "");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1781,9 +1783,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
     })
 
     cy.window().then(async (win) => {
@@ -1792,9 +1794,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
     })
 
     cy.window().then(async (win) => {
@@ -1803,9 +1805,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
 
     })
 
@@ -1815,9 +1817,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
     })
 
     cy.window().then(async (win) => {
@@ -1826,9 +1828,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: -4 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
     })
 
     cy.window().then(async (win) => {
@@ -1837,9 +1839,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: -5 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
     })
 
     cy.window().then(async (win) => {
@@ -1848,9 +1850,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -1859,9 +1861,9 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
 
     });
   })
@@ -1892,14 +1894,14 @@ describe('UpdateValue Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', "");
-    cy.get('#\\/n').should('have.text', "1");
-    cy.get('#\\/m').should('have.text', "5");
-    cy.get('#\\/_triggerset1').should('not.exist');
-    cy.get('#\\/uv').should('not.exist');
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', "");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
+    cy.get(cesc('#\\/m')).should('have.text', "5");
+    cy.get(cesc('#\\/_triggerset1')).should('not.exist');
+    cy.get(cesc('#\\/uv')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1907,10 +1909,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/m').should('have.text', "4");
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
     })
 
     cy.window().then(async (win) => {
@@ -1919,10 +1921,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -1931,10 +1933,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
 
     })
 
@@ -1944,10 +1946,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -1956,10 +1958,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: -4 }
       });
-      cy.get('#\\/m').should('have.text', "3");
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
     })
 
     cy.window().then(async (win) => {
@@ -1968,10 +1970,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: -5 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -1980,10 +1982,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -1992,10 +1994,10 @@ describe('UpdateValue Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
 
     });
   })
@@ -2013,11 +2015,11 @@ describe('UpdateValue Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/t').should('have.text', 'something')
-    cy.get('#\\/toBlank_button').click();
-    cy.get('#\\/t').should('have.text', '')
+    cy.get(cesc('#\\/t')).should('have.text', 'something')
+    cy.get(cesc('#\\/toBlank_button')).click();
+    cy.get(cesc('#\\/t')).should('have.text', '')
 
 
   })
@@ -2052,17 +2054,17 @@ describe('UpdateValue Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/m').should('have.text', '1');
-    cy.get('#\\/n').should('have.text', '10');
+    cy.get(cesc('#\\/m')).should('have.text', '1');
+    cy.get(cesc('#\\/n')).should('have.text', '10');
 
 
-    cy.get('#\\/incm_button').click();
-    cy.get('#\\/incn_button').click();
+    cy.get(cesc('#\\/incm_button')).click();
+    cy.get(cesc('#\\/incn_button')).click();
 
-    cy.get('#\\/m').should('have.text', '2');
-    cy.get('#\\/n').should('have.text', '20');
+    cy.get(cesc('#\\/m')).should('have.text', '2');
+    cy.get(cesc('#\\/n')).should('have.text', '20');
 
     cy.wait(2000);  // wait to make sure 1 second debounce occurred
 
@@ -2079,17 +2081,17 @@ describe('UpdateValue Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/incm_button').should('be.disabled')
-    cy.get('#\\/incn_button').should('not.be.disabled')
+    cy.get(cesc('#\\/incm_button')).should('be.disabled')
+    cy.get(cesc('#\\/incn_button')).should('not.be.disabled')
 
-    cy.get('#\\/m').should('have.text', '2');
-    cy.get('#\\/n').should('have.text', '20');
+    cy.get(cesc('#\\/m')).should('have.text', '2');
+    cy.get(cesc('#\\/n')).should('have.text', '20');
 
-    cy.get('#\\/incm_button').click();
-    cy.get('#\\/incn_button').click();
+    cy.get(cesc('#\\/incm_button')).click();
+    cy.get(cesc('#\\/incn_button')).click();
 
-    cy.get('#\\/m').should('have.text', '2');
-    cy.get('#\\/n').should('have.text', '30');
+    cy.get(cesc('#\\/m')).should('have.text', '2');
+    cy.get(cesc('#\\/n')).should('have.text', '30');
 
 
 
@@ -2108,9 +2110,9 @@ describe('UpdateValue Tag Tests', function () {
     </updateValue>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/update').should('contain.text', 'we have ∏3i=1yi')
+    cy.get(cesc('#\\/update')).should('contain.text', 'we have ∏3i=1yi')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2129,9 +2131,9 @@ describe('UpdateValue Tag Tests', function () {
     <updateValue target="b" newValue="not$b" type="boolean" name="SwapIt" labelIsName />
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/SwapIt').should('contain.text', 'Swap It')
+    cy.get(cesc('#\\/SwapIt')).should('contain.text', 'Swap It')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2149,16 +2151,16 @@ describe('UpdateValue Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/uv').should('contain.text', 'Button')
+    cy.get(cesc('#\\/uv')).should('contain.text', 'Button')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/uv'].stateValues.label).eq("");
     });
 
-    cy.get('#\\/uv').click();
+    cy.get(cesc('#\\/uv')).click();
 
-    cy.get('#\\/uv').should('contain.text', 'Hello!')
+    cy.get(cesc('#\\/uv')).should('contain.text', 'Hello!')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2184,23 +2186,23 @@ describe('UpdateValue Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_updatevalue1').should('contain.text', 'Move tail')
-    cy.get('#\\/_triggerset1').should('contain.text', 'Move both')
-    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(1,0)")
-    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/_updatevalue1')).should('contain.text', 'Move tail')
+    cy.get(cesc('#\\/_triggerset1')).should('contain.text', 'Move both')
+    cy.get(cesc('#\\/vh') + ' .mjx-mrow').eq(0).should('have.text', "(1,0)")
+    cy.get(cesc('#\\/vt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
 
-    cy.get('#\\/_updatevalue1').click();
+    cy.get(cesc('#\\/_updatevalue1')).click();
 
-    cy.get('#\\/vt .mjx-mrow').should('contain.text', "(3,4)")
+    cy.get(cesc('#\\/vt') + ' .mjx-mrow').should('contain.text', "(3,4)")
 
-    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(3,4)")
-    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(4,4)")
+    cy.get(cesc('#\\/vt') + ' .mjx-mrow').eq(0).should('have.text', "(3,4)")
+    cy.get(cesc('#\\/vh') + ' .mjx-mrow').eq(0).should('have.text', "(4,4)")
 
-    cy.get('#\\/_triggerset1').click();
-    cy.get('#\\/vt .mjx-mrow').should('contain.text', "(7,2)")
+    cy.get(cesc('#\\/_triggerset1')).click();
+    cy.get(cesc('#\\/vt') + ' .mjx-mrow').should('contain.text', "(7,2)")
 
-    cy.get('#\\/vt .mjx-mrow').eq(0).should('have.text', "(7,2)")
-    cy.get('#\\/vh .mjx-mrow').eq(0).should('have.text', "(9,4)")
+    cy.get(cesc('#\\/vt') + ' .mjx-mrow').eq(0).should('have.text', "(7,2)")
+    cy.get(cesc('#\\/vh') + ' .mjx-mrow').eq(0).should('have.text', "(9,4)")
 
 
   })
@@ -2263,17 +2265,17 @@ describe('UpdateValue Tag Tests', function () {
 
     // TODO: how to click on the buttons and test if they are disabled?
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
 
 
     cy.log("move updatevalues by dragging")
@@ -2291,37 +2293,37 @@ describe('UpdateValue Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move updatevalues by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move updatevalues by dragging')
@@ -2339,11 +2341,11 @@ describe('UpdateValue Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
 

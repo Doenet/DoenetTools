@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Numberlist Tag Tests', function () {
@@ -24,10 +20,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '5, 2, 3.141592654')
+    cy.get(cesc('#\\/_p1')).should('have.text', '5, 2, 3.141592654')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -50,10 +46,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '5, NaN, 2')
+    cy.get(cesc('#\\/_p1')).should('have.text', '5, NaN, 2')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -79,10 +75,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '5, 2')
+    cy.get(cesc('#\\/_p1')).should('have.text', '5, 2')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -107,10 +103,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '-1, 4, 5, 9, 2')
+    cy.get(cesc('#\\/_p1')).should('have.text', '-1, 4, 5, 9, 2')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -140,10 +136,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '5, 2')
+    cy.get(cesc('#\\/_p1')).should('have.text', '5, 2')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -186,10 +182,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
+    cy.get(cesc('#\\/_p1')).should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -221,19 +217,19 @@ describe('Numberlist Tag Tests', function () {
 
     cy.log('change values')
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-11{enter}", { force: true })
-    cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}-12{enter}", { force: true })
-    cy.get("#\\/_mathinput3 textarea").type("{end}{backspace}-13{enter}", { force: true })
-    cy.get("#\\/_mathinput4 textarea").type("{end}{backspace}-14{enter}", { force: true })
-    cy.get("#\\/_mathinput5 textarea").type("{end}{backspace}-15{enter}", { force: true })
-    cy.get("#\\/_mathinput6 textarea").type("{end}{backspace}-16{enter}", { force: true })
-    cy.get("#\\/_mathinput7 textarea").type("{end}{backspace}-17{enter}", { force: true })
-    cy.get("#\\/_mathinput8 textarea").type("{end}{backspace}-18{enter}", { force: true })
-    cy.get("#\\/_mathinput9 textarea").type("{end}{backspace}-19{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}-11{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput2") + " textarea").type("{end}{backspace}-12{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput3") + " textarea").type("{end}{backspace}-13{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput4") + " textarea").type("{end}{backspace}-14{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput5") + " textarea").type("{end}{backspace}-15{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput6") + " textarea").type("{end}{backspace}-16{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput7") + " textarea").type("{end}{backspace}-17{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput8") + " textarea").type("{end}{backspace}-18{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput9") + " textarea").type("{end}{backspace}-19{enter}", { force: true })
 
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '-11, -12, -13, -14, -15, -16, -17, -18, -19')
+    cy.get(cesc('#\\/_p1')).should('have.text', '-11, -12, -13, -14, -15, -16, -17, -18, -19')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -297,10 +293,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
+    cy.get(cesc('#\\/_p1')).should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -332,19 +328,19 @@ describe('Numberlist Tag Tests', function () {
 
     cy.log('change values')
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-11{enter}", { force: true })
-    cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}-12{enter}", { force: true })
-    cy.get("#\\/_mathinput3 textarea").type("{end}{backspace}-13{enter}", { force: true })
-    cy.get("#\\/_mathinput4 textarea").type("{end}{backspace}-14{enter}", { force: true })
-    cy.get("#\\/_mathinput5 textarea").type("{end}{backspace}-15{enter}", { force: true })
-    cy.get("#\\/_mathinput6 textarea").type("{end}{backspace}-16{enter}", { force: true })
-    cy.get("#\\/_mathinput7 textarea").type("{end}{backspace}-17{enter}", { force: true })
-    cy.get("#\\/_mathinput8 textarea").type("{end}{backspace}-18{enter}", { force: true })
-    cy.get("#\\/_mathinput9 textarea").type("{end}{backspace}-19{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}-11{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput2") + " textarea").type("{end}{backspace}-12{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput3") + " textarea").type("{end}{backspace}-13{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput4") + " textarea").type("{end}{backspace}-14{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput5") + " textarea").type("{end}{backspace}-15{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput6") + " textarea").type("{end}{backspace}-16{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput7") + " textarea").type("{end}{backspace}-17{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput8") + " textarea").type("{end}{backspace}-18{enter}", { force: true })
+    cy.get(cesc("#\\/_mathinput9") + " textarea").type("{end}{backspace}-19{enter}", { force: true })
 
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '-11, -12, -13, -14, -15, -16, -17, -18, -19')
+    cy.get(cesc('#\\/_p1')).should('have.text', '-11, -12, -13, -14, -15, -16, -17, -18, -19')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -413,7 +409,7 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -426,11 +422,11 @@ describe('Numberlist Tag Tests', function () {
 
       let mathinputAnchors = []
       for (let i in mapping) {
-        mathinputAnchors.push(`#\\/_mathinput${Number(i) + 1} textarea`)
+        mathinputAnchors.push(cesc(`#\\/_mathinput${Number(i) + 1}`) + ` textarea`)
       }
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_p1').should('have.text', mapping.map(x => vals[x]).join(", "))
+      cy.get(cesc('#\\/_p1')).should('have.text', mapping.map(x => vals[x]).join(", "))
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
@@ -447,7 +443,7 @@ describe('Numberlist Tag Tests', function () {
           cy.get(mathinputAnchors[changeInd]).type("{ctrl+home}{shift+end}{backspace}" + (100 + Number(changeInd)) + "{enter}", { force: true });
 
           cy.log('Test value displayed in browser')
-          cy.get('#\\/_p1').should('have.text', mapping.map(x => vals[x]).join(", "))
+          cy.get(cesc('#\\/_p1')).should('have.text', mapping.map(x => vals[x]).join(", "))
 
           cy.log('Test internal values are set to the correct values')
           cy.window().then(async (win) => {
@@ -485,10 +481,10 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 6, 7, 8, 10')
+    cy.get(cesc('#\\/_p1')).should('have.text', '1, 2, 3, 6, 7, 8, 10')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -535,13 +531,13 @@ describe('Numberlist Tag Tests', function () {
       ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/_p1').should('have.text', '1, 2')
-      cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4, 5')
+      cy.get(cesc('#\\/_p1')).should('have.text', '1, 2')
+      cy.get(cesc('#\\/_p2')).should('have.text', '1, 2, 3, 4, 5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -551,9 +547,9 @@ describe('Numberlist Tag Tests', function () {
     })
 
     cy.log("clear first maxnum")
-    cy.get('#\\/mn1 textarea').type("{end}{backspace}", { force: true }).blur();
-    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5')
-    cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4, 5')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("{end}{backspace}", { force: true }).blur();
+    cy.get(cesc('#\\/_p1')).should('have.text', '1, 2, 3, 4, 5')
+    cy.get(cesc('#\\/_p2')).should('have.text', '1, 2, 3, 4, 5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -563,9 +559,9 @@ describe('Numberlist Tag Tests', function () {
 
 
     cy.log("number in second maxnum")
-    cy.get('#\\/mn2 textarea').type("3{enter}", { force: true });
-    cy.get('#\\/_p2').should('have.text', '1, 2, 3')
-    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5')
+    cy.get(cesc('#\\/mn2') + ' textarea').type("3{enter}", { force: true });
+    cy.get(cesc('#\\/_p2')).should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/_p1')).should('have.text', '1, 2, 3, 4, 5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -575,9 +571,9 @@ describe('Numberlist Tag Tests', function () {
 
 
     cy.log("number in first maxnum")
-    cy.get('#\\/mn1 textarea').type("4{enter}", { force: true });
-    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4')
-    cy.get('#\\/_p2').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('have.text', '1, 2, 3, 4')
+    cy.get(cesc('#\\/_p2')).should('have.text', '1, 2, 3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -587,9 +583,9 @@ describe('Numberlist Tag Tests', function () {
 
 
     cy.log("change number in first maxnum")
-    cy.get('#\\/mn1 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/_p1').should('have.text', '1')
-    cy.get('#\\/_p2').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('have.text', '1')
+    cy.get(cesc('#\\/_p2')).should('have.text', '1, 2, 3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -621,17 +617,17 @@ describe('Numberlist Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
 
-    cy.get('#\\/_p1').should('have.text', '')
+    cy.get(cesc('#\\/_p1')).should('have.text', '')
 
-    cy.get('#\\/_p2').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/_p2')).should('have.text', '1, 2, 3')
 
-    cy.get('#\\/_p3').should('have.text', '4, 1, 2, 3, 1, 2, 3')
+    cy.get(cesc('#\\/_p3')).should('have.text', '4, 1, 2, 3, 1, 2, 3')
 
-    cy.get('#\\/_p4').should('have.text', '4, 1, 2, 3, 1')
+    cy.get(cesc('#\\/_p4')).should('have.text', '4, 1, 2, 3, 1')
 
 
     cy.log('Test internal values are set to the correct values')
@@ -683,7 +679,7 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -695,43 +691,43 @@ describe('Numberlist Tag Tests', function () {
       let numbers5 = stateVariables["/_numberlist5"].activeChildren.map(x => x.componentName);
       let numbers6 = stateVariables["/_numberlist6"].activeChildren.map(x => x.componentName);
 
-      cy.get(cesc('#' + numbers1[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers1[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers1[2])).should('have.text', '0.5')
-      cy.get(cesc('#' + numbers1[3])).should('have.text', '5.25 * 10^(-13)')
-      cy.get(cesc('#' + numbers1[4])).should('have.text', '6 * 10^(-21)')
+      cy.get(cesc2('#' + numbers1[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers1[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers1[2])).should('have.text', '0.5')
+      cy.get(cesc2('#' + numbers1[3])).should('have.text', '5.25 * 10^(-13)')
+      cy.get(cesc2('#' + numbers1[4])).should('have.text', '6 * 10^(-21)')
 
 
-      cy.get(cesc('#' + numbers2[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers2[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers2[2])).should('have.text', '0.500')
-      cy.get(cesc('#' + numbers2[3])).should('have.text', '5.25 * 10^(-13)')
-      cy.get(cesc('#' + numbers2[4])).should('have.text', '6.00 * 10^(-21)')
+      cy.get(cesc2('#' + numbers2[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers2[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers2[2])).should('have.text', '0.500')
+      cy.get(cesc2('#' + numbers2[3])).should('have.text', '5.25 * 10^(-13)')
+      cy.get(cesc2('#' + numbers2[4])).should('have.text', '6.00 * 10^(-21)')
 
 
-      cy.get(cesc('#' + numbers3[0])).should('have.text', '2345.154')
-      cy.get(cesc('#' + numbers3[1])).should('have.text', '3.523')
-      cy.get(cesc('#' + numbers3[2])).should('have.text', '0.5')
-      cy.get(cesc('#' + numbers3[3])).should('have.text', '0')
-      cy.get(cesc('#' + numbers3[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers3[0])).should('have.text', '2345.154')
+      cy.get(cesc2('#' + numbers3[1])).should('have.text', '3.523')
+      cy.get(cesc2('#' + numbers3[2])).should('have.text', '0.5')
+      cy.get(cesc2('#' + numbers3[3])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers3[4])).should('have.text', '0')
 
-      cy.get(cesc('#' + numbers4[0])).should('have.text', '2345.154')
-      cy.get(cesc('#' + numbers4[1])).should('have.text', '3.523')
-      cy.get(cesc('#' + numbers4[2])).should('have.text', '0.500')
-      cy.get(cesc('#' + numbers4[3])).should('have.text', '0.000')
-      cy.get(cesc('#' + numbers4[4])).should('have.text', '0.000')
+      cy.get(cesc2('#' + numbers4[0])).should('have.text', '2345.154')
+      cy.get(cesc2('#' + numbers4[1])).should('have.text', '3.523')
+      cy.get(cesc2('#' + numbers4[2])).should('have.text', '0.500')
+      cy.get(cesc2('#' + numbers4[3])).should('have.text', '0.000')
+      cy.get(cesc2('#' + numbers4[4])).should('have.text', '0.000')
 
-      cy.get(cesc('#' + numbers5[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers5[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers5[2])).should('have.text', '0.5')
-      cy.get(cesc('#' + numbers5[3])).should('have.text', '5.25 * 10^(-13)')
-      cy.get(cesc('#' + numbers5[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers5[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers5[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers5[2])).should('have.text', '0.5')
+      cy.get(cesc2('#' + numbers5[3])).should('have.text', '5.25 * 10^(-13)')
+      cy.get(cesc2('#' + numbers5[4])).should('have.text', '0')
 
-      cy.get(cesc('#' + numbers6[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers6[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers6[2])).should('have.text', '0.500')
-      cy.get(cesc('#' + numbers6[3])).should('have.text', '5.25 * 10^(-13)')
-      cy.get(cesc('#' + numbers6[4])).should('have.text', '0.00')
+      cy.get(cesc2('#' + numbers6[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers6[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers6[2])).should('have.text', '0.500')
+      cy.get(cesc2('#' + numbers6[3])).should('have.text', '5.25 * 10^(-13)')
+      cy.get(cesc2('#' + numbers6[4])).should('have.text', '0.00')
 
 
 
@@ -810,7 +806,7 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -825,62 +821,62 @@ describe('Numberlist Tag Tests', function () {
       let numbers8 = stateVariables["/ml8"].activeChildren.map(x => x.componentName);
       let numbers9 = stateVariables["/ml9"].activeChildren.map(x => x.componentName);
 
-      cy.get(cesc('#' + numbers1[0])).should('have.text', '2345.2')
-      cy.get(cesc('#' + numbers1[1])).should('have.text', '3.52343')
-      cy.get(cesc('#' + numbers1[2])).should('have.text', '5.0000')
-      cy.get(cesc('#' + numbers1[3])).should('have.text', '5.2523 * 10^(-16)')
-      cy.get(cesc('#' + numbers1[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers1[0])).should('have.text', '2345.2')
+      cy.get(cesc2('#' + numbers1[1])).should('have.text', '3.52343')
+      cy.get(cesc2('#' + numbers1[2])).should('have.text', '5.0000')
+      cy.get(cesc2('#' + numbers1[3])).should('have.text', '5.2523 * 10^(-16)')
+      cy.get(cesc2('#' + numbers1[4])).should('have.text', '0')
 
 
-      cy.get(cesc('#' + numbers2[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers2[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers2[2])).should('have.text', '5.00')
-      cy.get(cesc('#' + numbers2[3])).should('have.text', '5.25 * 10^(-16)')
-      cy.get(cesc('#' + numbers2[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers2[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers2[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers2[2])).should('have.text', '5.00')
+      cy.get(cesc2('#' + numbers2[3])).should('have.text', '5.25 * 10^(-16)')
+      cy.get(cesc2('#' + numbers2[4])).should('have.text', '0')
 
 
-      cy.get(cesc('#' + numbers3[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers3[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers3[2])).should('have.text', '5.00')
-      cy.get(cesc('#' + numbers3[3])).should('have.text', '5.25 * 10^(-16)')
-      cy.get(cesc('#' + numbers3[4])).should('have.text', '0.00')
+      cy.get(cesc2('#' + numbers3[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers3[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers3[2])).should('have.text', '5.00')
+      cy.get(cesc2('#' + numbers3[3])).should('have.text', '5.25 * 10^(-16)')
+      cy.get(cesc2('#' + numbers3[4])).should('have.text', '0.00')
 
-      cy.get(cesc('#' + numbers4[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers4[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers4[2])).should('have.text', '5')
-      cy.get(cesc('#' + numbers4[3])).should('have.text', '5.25 * 10^(-16)')
-      cy.get(cesc('#' + numbers4[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers4[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers4[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers4[2])).should('have.text', '5')
+      cy.get(cesc2('#' + numbers4[3])).should('have.text', '5.25 * 10^(-16)')
+      cy.get(cesc2('#' + numbers4[4])).should('have.text', '0')
 
-      cy.get(cesc('#' + numbers5[0])).should('have.text', '2345.154')
-      cy.get(cesc('#' + numbers5[1])).should('have.text', '3.523')
-      cy.get(cesc('#' + numbers5[2])).should('have.text', '5.000')
-      cy.get(cesc('#' + numbers5[3])).should('have.text', '0')
-      cy.get(cesc('#' + numbers5[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers5[0])).should('have.text', '2345.154')
+      cy.get(cesc2('#' + numbers5[1])).should('have.text', '3.523')
+      cy.get(cesc2('#' + numbers5[2])).should('have.text', '5.000')
+      cy.get(cesc2('#' + numbers5[3])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers5[4])).should('have.text', '0')
 
-      cy.get(cesc('#' + numbers6[0])).should('have.text', '2345.154')
-      cy.get(cesc('#' + numbers6[1])).should('have.text', '3.523')
-      cy.get(cesc('#' + numbers6[2])).should('have.text', '5.000')
-      cy.get(cesc('#' + numbers6[3])).should('have.text', '0.000')
-      cy.get(cesc('#' + numbers6[4])).should('have.text', '0.000')
+      cy.get(cesc2('#' + numbers6[0])).should('have.text', '2345.154')
+      cy.get(cesc2('#' + numbers6[1])).should('have.text', '3.523')
+      cy.get(cesc2('#' + numbers6[2])).should('have.text', '5.000')
+      cy.get(cesc2('#' + numbers6[3])).should('have.text', '0.000')
+      cy.get(cesc2('#' + numbers6[4])).should('have.text', '0.000')
 
-      cy.get(cesc('#' + numbers7[0])).should('have.text', '2345.154')
-      cy.get(cesc('#' + numbers7[1])).should('have.text', '3.523')
-      cy.get(cesc('#' + numbers7[2])).should('have.text', '5')
-      cy.get(cesc('#' + numbers7[3])).should('have.text', '0')
-      cy.get(cesc('#' + numbers7[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers7[0])).should('have.text', '2345.154')
+      cy.get(cesc2('#' + numbers7[1])).should('have.text', '3.523')
+      cy.get(cesc2('#' + numbers7[2])).should('have.text', '5')
+      cy.get(cesc2('#' + numbers7[3])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers7[4])).should('have.text', '0')
 
-      cy.get(cesc('#' + numbers8[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers8[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers8[2])).should('have.text', '5.00')
-      cy.get(cesc('#' + numbers8[3])).should('have.text', '0')
-      cy.get(cesc('#' + numbers8[4])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers8[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers8[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers8[2])).should('have.text', '5.00')
+      cy.get(cesc2('#' + numbers8[3])).should('have.text', '0')
+      cy.get(cesc2('#' + numbers8[4])).should('have.text', '0')
 
 
-      cy.get(cesc('#' + numbers9[0])).should('have.text', '2350')
-      cy.get(cesc('#' + numbers9[1])).should('have.text', '3.52')
-      cy.get(cesc('#' + numbers9[2])).should('have.text', '5.00')
-      cy.get(cesc('#' + numbers9[3])).should('have.text', '5.25 * 10^(-16)')
-      cy.get(cesc('#' + numbers9[4])).should('have.text', '6 * 10^(-21)')
+      cy.get(cesc2('#' + numbers9[0])).should('have.text', '2350')
+      cy.get(cesc2('#' + numbers9[1])).should('have.text', '3.52')
+      cy.get(cesc2('#' + numbers9[2])).should('have.text', '5.00')
+      cy.get(cesc2('#' + numbers9[3])).should('have.text', '5.25 * 10^(-16)')
+      cy.get(cesc2('#' + numbers9[4])).should('have.text', '6 * 10^(-21)')
 
 
     })
@@ -958,64 +954,64 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get(cesc('#/n11')).should('have.text', '2345.2')
-    cy.get(cesc('#/n12')).should('have.text', '3.52343')
-    cy.get(cesc('#/n13')).should('have.text', '5.0000')
-    cy.get(cesc('#/n14')).should('have.text', '5.2523 * 10^(-16)')
-    cy.get(cesc('#/n15')).should('have.text', '0')
-
-
-    cy.get(cesc('#/n21')).should('have.text', '2350')
-    cy.get(cesc('#/n22')).should('have.text', '3.52')
-    cy.get(cesc('#/n23')).should('have.text', '5.00')
-    cy.get(cesc('#/n24')).should('have.text', '5.25 * 10^(-16)')
-    cy.get(cesc('#/n25')).should('have.text', '0')
+    cy.get(cesc2('#/n11')).should('have.text', '2345.2')
+    cy.get(cesc2('#/n12')).should('have.text', '3.52343')
+    cy.get(cesc2('#/n13')).should('have.text', '5.0000')
+    cy.get(cesc2('#/n14')).should('have.text', '5.2523 * 10^(-16)')
+    cy.get(cesc2('#/n15')).should('have.text', '0')
 
 
-    cy.get(cesc('#/n31')).should('have.text', '2350')
-    cy.get(cesc('#/n32')).should('have.text', '3.52')
-    cy.get(cesc('#/n33')).should('have.text', '5.00')
-    cy.get(cesc('#/n34')).should('have.text', '5.25 * 10^(-16)')
-    cy.get(cesc('#/n35')).should('have.text', '0.00')
-
-    cy.get(cesc('#/n41')).should('have.text', '2350')
-    cy.get(cesc('#/n42')).should('have.text', '3.52')
-    cy.get(cesc('#/n43')).should('have.text', '5')
-    cy.get(cesc('#/n44')).should('have.text', '5.25 * 10^(-16)')
-    cy.get(cesc('#/n45')).should('have.text', '0')
-
-    cy.get(cesc('#/n51')).should('have.text', '2345.154')
-    cy.get(cesc('#/n52')).should('have.text', '3.523')
-    cy.get(cesc('#/n53')).should('have.text', '5.000')
-    cy.get(cesc('#/n54')).should('have.text', '0')
-    cy.get(cesc('#/n55')).should('have.text', '0')
-
-    cy.get(cesc('#/n61')).should('have.text', '2345.154')
-    cy.get(cesc('#/n62')).should('have.text', '3.523')
-    cy.get(cesc('#/n63')).should('have.text', '5.000')
-    cy.get(cesc('#/n64')).should('have.text', '0.000')
-    cy.get(cesc('#/n65')).should('have.text', '0.000')
-
-    cy.get(cesc('#/n71')).should('have.text', '2345.154')
-    cy.get(cesc('#/n72')).should('have.text', '3.523')
-    cy.get(cesc('#/n73')).should('have.text', '5')
-    cy.get(cesc('#/n74')).should('have.text', '0')
-    cy.get(cesc('#/n75')).should('have.text', '0')
-
-    cy.get(cesc('#/n81')).should('have.text', '2350')
-    cy.get(cesc('#/n82')).should('have.text', '3.52')
-    cy.get(cesc('#/n83')).should('have.text', '5.00')
-    cy.get(cesc('#/n84')).should('have.text', '0')
-    cy.get(cesc('#/n85')).should('have.text', '0')
+    cy.get(cesc2('#/n21')).should('have.text', '2350')
+    cy.get(cesc2('#/n22')).should('have.text', '3.52')
+    cy.get(cesc2('#/n23')).should('have.text', '5.00')
+    cy.get(cesc2('#/n24')).should('have.text', '5.25 * 10^(-16)')
+    cy.get(cesc2('#/n25')).should('have.text', '0')
 
 
-    cy.get(cesc('#/n91')).should('have.text', '2350')
-    cy.get(cesc('#/n92')).should('have.text', '3.52')
-    cy.get(cesc('#/n93')).should('have.text', '5.00')
-    cy.get(cesc('#/n94')).should('have.text', '5.25 * 10^(-16)')
-    cy.get(cesc('#/n95')).should('have.text', '6 * 10^(-21)')
+    cy.get(cesc2('#/n31')).should('have.text', '2350')
+    cy.get(cesc2('#/n32')).should('have.text', '3.52')
+    cy.get(cesc2('#/n33')).should('have.text', '5.00')
+    cy.get(cesc2('#/n34')).should('have.text', '5.25 * 10^(-16)')
+    cy.get(cesc2('#/n35')).should('have.text', '0.00')
+
+    cy.get(cesc2('#/n41')).should('have.text', '2350')
+    cy.get(cesc2('#/n42')).should('have.text', '3.52')
+    cy.get(cesc2('#/n43')).should('have.text', '5')
+    cy.get(cesc2('#/n44')).should('have.text', '5.25 * 10^(-16)')
+    cy.get(cesc2('#/n45')).should('have.text', '0')
+
+    cy.get(cesc2('#/n51')).should('have.text', '2345.154')
+    cy.get(cesc2('#/n52')).should('have.text', '3.523')
+    cy.get(cesc2('#/n53')).should('have.text', '5.000')
+    cy.get(cesc2('#/n54')).should('have.text', '0')
+    cy.get(cesc2('#/n55')).should('have.text', '0')
+
+    cy.get(cesc2('#/n61')).should('have.text', '2345.154')
+    cy.get(cesc2('#/n62')).should('have.text', '3.523')
+    cy.get(cesc2('#/n63')).should('have.text', '5.000')
+    cy.get(cesc2('#/n64')).should('have.text', '0.000')
+    cy.get(cesc2('#/n65')).should('have.text', '0.000')
+
+    cy.get(cesc2('#/n71')).should('have.text', '2345.154')
+    cy.get(cesc2('#/n72')).should('have.text', '3.523')
+    cy.get(cesc2('#/n73')).should('have.text', '5')
+    cy.get(cesc2('#/n74')).should('have.text', '0')
+    cy.get(cesc2('#/n75')).should('have.text', '0')
+
+    cy.get(cesc2('#/n81')).should('have.text', '2350')
+    cy.get(cesc2('#/n82')).should('have.text', '3.52')
+    cy.get(cesc2('#/n83')).should('have.text', '5.00')
+    cy.get(cesc2('#/n84')).should('have.text', '0')
+    cy.get(cesc2('#/n85')).should('have.text', '0')
+
+
+    cy.get(cesc2('#/n91')).should('have.text', '2350')
+    cy.get(cesc2('#/n92')).should('have.text', '3.52')
+    cy.get(cesc2('#/n93')).should('have.text', '5.00')
+    cy.get(cesc2('#/n94')).should('have.text', '5.25 * 10^(-16)')
+    cy.get(cesc2('#/n95')).should('have.text', '6 * 10^(-21)')
 
 
   })
@@ -1034,15 +1030,15 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get("#\\/ml1").should("have.text", "34.24502348, 250")
+    cy.get(cesc("#\\/ml1")).should("have.text", "34.24502348, 250")
 
-    cy.get("#\\/ml1Dig4").should("have.text", "34.25, 245.2")
-    cy.get("#\\/ml1Dig4a").should("have.text", "34.25, 245.2")
+    cy.get(cesc("#\\/ml1Dig4")).should("have.text", "34.25, 245.2")
+    cy.get(cesc("#\\/ml1Dig4a")).should("have.text", "34.25, 245.2")
 
-    cy.get("#\\/ml1Dec6").should("have.text", "34.245023, 245.238234")
-    cy.get("#\\/ml1Dec6a").should("have.text", "34.245023, 245.238234")
+    cy.get(cesc("#\\/ml1Dec6")).should("have.text", "34.245023, 245.238234")
+    cy.get(cesc("#\\/ml1Dec6a")).should("have.text", "34.245023, 245.238234")
 
   })
 
@@ -1060,16 +1056,16 @@ describe('Numberlist Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_number1').should('have.text', '1');
-    cy.get('#\\/_number2').should('have.text', '2');
-    cy.get('#\\/_number3').should('have.text', '3');
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_number1')).should('have.text', '1');
+    cy.get(cesc('#\\/_number2')).should('have.text', '2');
+    cy.get(cesc('#\\/_number3')).should('have.text', '3');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1,2,3')
     })
-    cy.get("#\\/_text2").should('have.text', '1, 2, 3')
+    cy.get(cesc("#\\/_text2")).should('have.text', '1, 2, 3')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {

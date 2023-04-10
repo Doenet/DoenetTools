@@ -1,12 +1,8 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 function nInDOM(n) {
@@ -23,8 +19,8 @@ async function testLineCopiedTwice({ x1, y1, x2, y2,
   point1InDomName = "/p1", point2InDomName = "/p2"
 }) {
 
-  cy.get(`#${cesc(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-  cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+  cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+  cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
@@ -51,10 +47,10 @@ async function testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope,
   point1InDomName = "/p1", point2InDomName = "/p2"
 }) {
 
-  cy.get(`#${cesc(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1).substring(0, 6)}`)
-  cy.get(`#${cesc(point1InDomName)} .mjx-mrow`).should('contain.text', `,${nInDOM(y1).substring(0, 6)}`)
-  cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2).substring(0, 6)}`)
-  cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `,${nInDOM(y2).substring(0, 6)}`)
+  cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1).substring(0, 6)}`)
+  cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should('contain.text', `,${nInDOM(y1).substring(0, 6)}`)
+  cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2).substring(0, 6)}`)
+  cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should('contain.text', `,${nInDOM(y2).substring(0, 6)}`)
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
@@ -118,9 +114,9 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/p1a .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(5)})`)
+    cy.get(cesc("#\\/p1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(5)})`)
 
     cy.log('move point P to (5,-5)')
     cy.window().then(async (win) => {
@@ -131,7 +127,7 @@ describe('Line Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/p1a .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(-5)})`)
+    cy.get(cesc("#\\/p1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(-5)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -158,7 +154,7 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.log('points are where they should be')
@@ -192,7 +188,7 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -225,9 +221,9 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/p1 .mjx-mrow").should('be.visible'); // to make sure MathJax rendered
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('be.visible'); // to make sure MathJax rendered
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {
@@ -268,8 +264,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -303,9 +299,9 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/p1 .mjx-mrow").should('be.visible'); // to make sure MathJax rendered
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('be.visible'); // to make sure MathJax rendered
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {
@@ -347,8 +343,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -383,7 +379,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.log('equation is what it should be')
@@ -416,7 +412,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.log('equation is what it should be')
@@ -446,7 +442,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.log('equation is what it should be')
@@ -476,9 +472,9 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -521,8 +517,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -557,9 +553,9 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -603,8 +599,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -637,9 +633,9 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5x')
     })
 
@@ -671,14 +667,14 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.log('equation and line variable are what they should be')
-    cy.get("#\\/var1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/var1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('u')
     })
-    cy.get("#\\/var2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/var2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('v')
     })
 
@@ -730,8 +726,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -764,7 +760,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -817,7 +813,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let point2x = 5;
     let point2y = 3;
@@ -827,7 +823,7 @@ describe('Line Tag Tests', function () {
     let slope = (point1y - point2y) / (point1x - point2x);
     let yintercept = point2y - slope * point2x;
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
 
     cy.log('points and line match constraints')
     cy.window().then(async (win) => {
@@ -865,10 +861,10 @@ describe('Line Tag Tests', function () {
         args: { x: point1x, y: point1y }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1y).substring(0, 4)}`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(point2x).substring(0, 4)}`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `,${nInDOM(point2y).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1y).substring(0, 4)}`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(point2x).substring(0, 4)}`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `,${nInDOM(point2y).substring(0, 4)}`)
 
 
       cy.window().then(async (win) => {
@@ -941,10 +937,10 @@ describe('Line Tag Tests', function () {
       slope = (point1y - point2y) / (point1x - point2x);
       yintercept = point2y - slope * point2x;
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1y).substring(0, 4)}`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(point2x).substring(0, 4)}`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `,${nInDOM(point2y).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1y).substring(0, 4)}`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(point2x).substring(0, 4)}`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `,${nInDOM(point2y).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -984,12 +980,12 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.log('line starts off correctly')
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(0)},${nInDOM(0)}`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(0)},${nInDOM(0)}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1013,8 +1009,8 @@ describe('Line Tag Tests', function () {
 
     })
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(-3)},${nInDOM(5)}`)
-    cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(1)}`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(-3)},${nInDOM(5)}`)
+    cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(1)}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1053,8 +1049,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1095,8 +1091,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1126,11 +1122,11 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.log('line starts off correctly')
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(-0.8)}`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(-0.8)}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1173,8 +1169,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
 
       cy.window().then(async (win) => {
@@ -1218,8 +1214,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1252,7 +1248,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1268,7 +1264,7 @@ describe('Line Tag Tests', function () {
       expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
       expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
     })
 
     cy.log('move first individually copied point');
@@ -1281,7 +1277,7 @@ describe('Line Tag Tests', function () {
         args: { x: p1x, y: p1y }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1308,7 +1304,7 @@ describe('Line Tag Tests', function () {
         args: { x: p2x, y: p2y }
       })
 
-      cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
+      cy.get(cesc("#\\/p2b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1335,7 +1331,7 @@ describe('Line Tag Tests', function () {
         args: { x: p2x, y: p2y }
       })
 
-      cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
+      cy.get(cesc("#\\/p2b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1362,7 +1358,7 @@ describe('Line Tag Tests', function () {
         args: { x: p1x, y: p1y }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1409,8 +1405,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1445,7 +1441,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -1466,7 +1462,7 @@ describe('Line Tag Tests', function () {
       expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
       expect(stateVariables['/_line2'].stateValues.points[0]).eqls([p1x, p1y]);
       expect(stateVariables['/_line2'].stateValues.points[1]).eqls([p2x, p2y]);
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
     })
 
     cy.log('move first line up and to the right')
@@ -1499,8 +1495,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1557,8 +1553,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1603,22 +1599,22 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
-    cy.get("#\\/var1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/var1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get("#\\/var2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/var2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     })
-    cy.get("#\\/xintercept").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/xintercept")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get("#\\/yintercept").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/yintercept")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
-    cy.get("#\\/slope").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/slope")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−2')
     })
 
@@ -1663,10 +1659,10 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(1)})`)
-    cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(5)})`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(1)})`)
+    cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(5)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1709,8 +1705,8 @@ describe('Line Tag Tests', function () {
         args: { x: 6, y: 8 }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(4)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(6)},${nInDOM(8)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(4)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(6)},${nInDOM(8)})`)
 
 
       cy.window().then(async (win) => {
@@ -1763,7 +1759,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x = 1, y = 2;
 
@@ -1788,8 +1784,8 @@ describe('Line Tag Tests', function () {
         args: { x }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1814,8 +1810,8 @@ describe('Line Tag Tests', function () {
         args: { x: y }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1839,8 +1835,8 @@ describe('Line Tag Tests', function () {
         args: { y }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1864,8 +1860,8 @@ describe('Line Tag Tests', function () {
         args: { y: x }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1900,13 +1896,13 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 1, y1 = 0;
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
-    cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+    cy.get(cesc("#\\/p11") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1930,7 +1926,7 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p11") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1954,7 +1950,7 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get("#\\/p12 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p12") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1978,7 +1974,7 @@ describe('Line Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get("#\\/p21 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc("#\\/p21") + " .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2002,7 +1998,7 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p22 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p22") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2026,7 +2022,7 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get("#\\/p31 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p31") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2050,7 +2046,7 @@ describe('Line Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get("#\\/p32 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc("#\\/p32") + " .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2089,7 +2085,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 1, y1 = 0;
     let x2 = 0, y2 = 0;
@@ -2276,7 +2272,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = 1, y1 = 0;
@@ -2463,7 +2459,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = -5, y1 = 9;
@@ -2651,7 +2647,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = 0, y1 = 0;
@@ -2856,16 +2852,16 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     async function checkLines({ x11, y11, x12, y12, x2, y2 }) {
 
-      cy.get("#\\/x11 .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
-      cy.get("#\\/y11 .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
-      cy.get("#\\/x2 .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
-      cy.get("#\\/y2 .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
-      cy.get("#\\/x12 .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
-      cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
+      cy.get(cesc("#\\/x11") + " .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
+      cy.get(cesc("#\\/y11") + " .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
+      cy.get(cesc("#\\/x2") + " .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
+      cy.get(cesc("#\\/y2") + " .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
+      cy.get(cesc("#\\/x12") + " .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
+      cy.get(cesc("#\\/y12") + " .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3220,16 +3216,16 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     async function checkLines({ x11, y11, x12, y12, x2, y2 }) {
 
-      cy.get("#\\/x11 .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
-      cy.get("#\\/y11 .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
-      cy.get("#\\/x2 .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
-      cy.get("#\\/y2 .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
-      cy.get("#\\/x12 .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
-      cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
+      cy.get(cesc("#\\/x11") + " .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
+      cy.get(cesc("#\\/y11") + " .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
+      cy.get(cesc("#\\/x2") + " .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
+      cy.get(cesc("#\\/y2") + " .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
+      cy.get(cesc("#\\/x12") + " .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
+      cy.get(cesc("#\\/y12") + " .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3525,7 +3521,7 @@ describe('Line Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b_input').check({ force: true });
+    cy.get(cesc('#\\/b_input')).check({ force: true });
 
 
     cy.window().then(async (win) => {
@@ -3791,7 +3787,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = -5, y1 = 9;
     let x2 = 0, y2 = 0;
@@ -3984,7 +3980,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = 1, y1 = 0;
@@ -4151,7 +4147,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('add first through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x1 = 1;
@@ -4313,7 +4309,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('add second through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x2 = 2;
@@ -4469,7 +4465,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('remove second through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x2 = x2Essential;
@@ -4625,7 +4621,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('remove first through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}0{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x1 = x1Essential;
@@ -4818,7 +4814,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 1, y1 = 0;
     let x2 = 0, y2 = 0;
@@ -4984,7 +4980,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('add first through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x1 = 1;
@@ -5131,7 +5127,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('add second through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x2 = 2;
@@ -5260,7 +5256,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('remove second through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x2 = x2Essential;
@@ -5404,7 +5400,7 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('remove first through point')
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}0{enter}", { force: true })
 
     cy.window().then(async (win) => {
       x1 = x1Essential;
@@ -5585,12 +5581,12 @@ describe('Line Tag Tests', function () {
     // it causes a state variable to become unresolved right in the middle
     // of the algorithm processing the consequences of it becoming resolved
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 3, y1 = 3;
     let x2 = 4, y2 = 5;
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5617,7 +5613,7 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5644,7 +5640,7 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5672,7 +5668,7 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5700,7 +5696,7 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5735,8 +5731,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5771,8 +5767,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5810,13 +5806,13 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = 3, y1 = 3;
     let x2 = 4, y2 = 5;
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5843,7 +5839,7 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5870,7 +5866,7 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5898,7 +5894,7 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5926,7 +5922,7 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5961,8 +5957,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5997,8 +5993,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6040,14 +6036,14 @@ describe('Line Tag Tests', function () {
     // Another torture test with state variables becoming unresolved
     // while being processed
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let y2 = 1;
     let x1 = 2 * y2 + 1;
     let x2 = x1 + 1;
     let y1 = 2 * x2 + 1;
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6078,8 +6074,8 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6110,8 +6106,8 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6143,8 +6139,8 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6176,8 +6172,8 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6216,8 +6212,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6256,8 +6252,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6298,7 +6294,7 @@ describe('Line Tag Tests', function () {
     // Another torture test with state variables becoming unresolved
     // while being processed
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let y2 = 1;
@@ -6306,7 +6302,7 @@ describe('Line Tag Tests', function () {
     let x2 = x1 + 1;
     let y1 = 2 * x2 + 1;
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6337,8 +6333,8 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6369,8 +6365,8 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6402,8 +6398,8 @@ describe('Line Tag Tests', function () {
         args: { x: x1, y: y1try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6435,8 +6431,8 @@ describe('Line Tag Tests', function () {
         args: { x: x2, y: y2try }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6475,8 +6471,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6515,8 +6511,8 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6557,7 +6553,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = -5, y1 = 9;
@@ -6651,7 +6647,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}0.5{enter}", { force: true });
+      cy.get(cesc('#\\/slope') + ' textarea').type("{end}{backspace}0.5{enter}", { force: true });
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -6764,7 +6760,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/slope') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -6838,17 +6834,17 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
 
-      cy.get("#\\/x1 .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
-      cy.get("#\\/y1 .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
-      cy.get("#\\/x21 .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
-      cy.get("#\\/y21 .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
-      cy.get("#\\/x22 .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
-      cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
+      cy.get(cesc("#\\/x1") + " .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
+      cy.get(cesc("#\\/y1") + " .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
+      cy.get(cesc("#\\/x21") + " .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
+      cy.get(cesc("#\\/y21") + " .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
+      cy.get(cesc("#\\/x22") + " .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
+      cy.get(cesc("#\\/y22") + " .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7020,7 +7016,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      cy.get('#\\/slope1 textarea').type("{end}{backspace}{backspace}0.5{enter}", { force: true })
+      cy.get(cesc('#\\/slope1') + ' textarea').type("{end}{backspace}{backspace}0.5{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7147,7 +7143,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/slope2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7361,17 +7357,17 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
 
-      cy.get("#\\/x1 .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
-      cy.get("#\\/y1 .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
-      cy.get("#\\/x21 .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
-      cy.get("#\\/y21 .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
-      cy.get("#\\/x22 .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
-      cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
+      cy.get(cesc("#\\/x1") + " .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
+      cy.get(cesc("#\\/y1") + " .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
+      cy.get(cesc("#\\/x21") + " .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
+      cy.get(cesc("#\\/y21") + " .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
+      cy.get(cesc("#\\/x22") + " .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
+      cy.get(cesc("#\\/y22") + " .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7646,7 +7642,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/slope') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7833,7 +7829,7 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 0, y1 = 0;
     let x2 = 1 / Math.sqrt(2), y2 = 1 / Math.sqrt(2);
@@ -7926,7 +7922,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}0.5{enter}", { force: true });
+      cy.get(cesc('#\\/slope') + ' textarea').type("{end}{backspace}0.5{enter}", { force: true });
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -8039,7 +8035,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/slope') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -8113,16 +8109,16 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
 
-      cy.get("#\\/x1 .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
-      cy.get("#\\/y1 .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
-      cy.get("#\\/x21 .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
-      cy.get("#\\/y21 .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
-      cy.get("#\\/x22 .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
-      cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
+      cy.get(cesc("#\\/x1") + " .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
+      cy.get(cesc("#\\/y1") + " .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
+      cy.get(cesc("#\\/x21") + " .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
+      cy.get(cesc("#\\/y21") + " .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
+      cy.get(cesc("#\\/x22") + " .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
+      cy.get(cesc("#\\/y22") + " .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8298,7 +8294,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      cy.get('#\\/slope1 textarea').type("{end}{backspace}{backspace}0.5{enter}", { force: true })
+      cy.get(cesc('#\\/slope1') + ' textarea').type("{end}{backspace}{backspace}0.5{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -8426,7 +8422,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/slope2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -8642,19 +8638,19 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     async function checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope }) {
 
-      cy.get("#\\/x11 .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
-      cy.get("#\\/y11 .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
-      cy.get("#\\/x21 .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
-      cy.get("#\\/y21 .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
-      cy.get("#\\/x12 .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
-      cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
-      cy.get("#\\/x22 .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
-      cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
+      cy.get(cesc("#\\/x11") + " .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
+      cy.get(cesc("#\\/y11") + " .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
+      cy.get(cesc("#\\/x21") + " .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
+      cy.get(cesc("#\\/y21") + " .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
+      cy.get(cesc("#\\/x12") + " .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
+      cy.get(cesc("#\\/y12") + " .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
+      cy.get(cesc("#\\/x22") + " .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
+      cy.get(cesc("#\\/y22") + " .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8936,7 +8932,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + d * Math.cos(theta);
       y21 = y11 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/slope') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
       await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope })
 
     })
@@ -9138,17 +9134,17 @@ describe('Line Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
 
-      cy.get("#\\/x1 .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
-      cy.get("#\\/y1 .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
-      cy.get("#\\/x21 .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
-      cy.get("#\\/y21 .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
-      cy.get("#\\/x22 .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
-      cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
+      cy.get(cesc("#\\/x1") + " .mjx-mrow").should('contain.text', `${nInDOM(x1).substring(0, 6)}`)
+      cy.get(cesc("#\\/y1") + " .mjx-mrow").should('contain.text', `${nInDOM(y1).substring(0, 6)}`)
+      cy.get(cesc("#\\/x21") + " .mjx-mrow").should('contain.text', `${nInDOM(x21).substring(0, 6)}`)
+      cy.get(cesc("#\\/y21") + " .mjx-mrow").should('contain.text', `${nInDOM(y21).substring(0, 6)}`)
+      cy.get(cesc("#\\/x22") + " .mjx-mrow").should('contain.text', `${nInDOM(x22).substring(0, 6)}`)
+      cy.get(cesc("#\\/y22") + " .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9423,7 +9419,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/slope') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -9603,11 +9599,11 @@ describe('Line Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`point on line, close to origin`);
 
-    cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.00')
+    cy.get(cesc('#\\/P1a') + ' .mjx-mrow').should('contain.text', ',0.00')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9628,7 +9624,7 @@ describe('Line Tag Tests', function () {
         args: { x: -100, y: 0.05 }
       })
 
-      cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.04')
+      cy.get(cesc('#\\/P1a') + ' .mjx-mrow').should('contain.text', ',0.04')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9668,10 +9664,10 @@ describe('Line Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(1,2)')
-    cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(3,4)')
+    cy.get(cesc('#\\/Ac') + ' .mjx-mrow').should('contain.text', '(1,2)')
+    cy.get(cesc('#\\/Bc') + ' .mjx-mrow').should('contain.text', '(3,4)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9692,8 +9688,8 @@ describe('Line Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(9,8)')
-    cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/Ac') + ' .mjx-mrow').should('contain.text', '(9,8)')
+    cy.get(cesc('#\\/Bc') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9712,7 +9708,7 @@ describe('Line Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -9720,8 +9716,8 @@ describe('Line Tag Tests', function () {
       return stateVariables["/A"];
     }))
 
-    cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(9,8)')
-    cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/Ac') + ' .mjx-mrow').should('contain.text', '(9,8)')
+    cy.get(cesc('#\\/Bc') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9738,8 +9734,8 @@ describe('Line Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(0.5,3.5)')
-    cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/Ac') + ' .mjx-mrow').should('contain.text', '(0.5,3.5)')
+    cy.get(cesc('#\\/Bc') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9759,7 +9755,7 @@ describe('Line Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -9767,8 +9763,8 @@ describe('Line Tag Tests', function () {
       return stateVariables["/A"];
     }))
 
-    cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(0.5,3.5)')
-    cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/Ac') + ' .mjx-mrow').should('contain.text', '(0.5,3.5)')
+    cy.get(cesc('#\\/Bc') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9785,8 +9781,8 @@ describe('Line Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(8.5,1.5)')
-    cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/Ac') + ' .mjx-mrow').should('contain.text', '(8.5,1.5)')
+    cy.get(cesc('#\\/Bc') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9815,30 +9811,30 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
 
-    cy.get('#\\/P1').should('not.exist');
-    cy.get('#\\/P2').should('not.exist');
-    cy.get('#\\/x').should('not.exist');
+    cy.get(cesc('#\\/P1')).should('not.exist');
+    cy.get(cesc('#\\/P2')).should('not.exist');
+    cy.get(cesc('#\\/x')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -9863,34 +9859,34 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
 
-    cy.get('#\\/P1').should('not.exist');
-    cy.get('#\\/P2').should('not.exist');
-    cy.get('#\\/x').should('not.exist');
-    cy.get('#\\/xa').should('not.exist');
+    cy.get(cesc('#\\/P1')).should('not.exist');
+    cy.get(cesc('#\\/P2')).should('not.exist');
+    cy.get(cesc('#\\/x')).should('not.exist');
+    cy.get(cesc('#\\/xa')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -9912,15 +9908,15 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/l .mjx-mrow').eq(0).should('have.text', '0=52.82340235x+2.235980242y+0.486234234')
-    cy.get('#\\/ldg3 .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
-    cy.get('#\\/ldg3a .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
-    cy.get('#\\/ldg3b .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
-    cy.get('#\\/ldc5 .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
-    cy.get('#\\/ldc5a .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
-    cy.get('#\\/ldc5b .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
+    cy.get(cesc('#\\/l') + ' .mjx-mrow').eq(0).should('have.text', '0=52.82340235x+2.235980242y+0.486234234')
+    cy.get(cesc('#\\/ldg3') + ' .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
+    cy.get(cesc('#\\/ldg3a') + ' .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
+    cy.get(cesc('#\\/ldg3b') + ' .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
+    cy.get(cesc('#\\/ldc5') + ' .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
+    cy.get(cesc('#\\/ldc5a') + ' .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
+    cy.get(cesc('#\\/ldc5b') + ' .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
 
 
   });
@@ -9953,22 +9949,22 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
 
-    cy.get('#\\/pPos').should('have.text', 'Position: upperright')
-    cy.get('#\\/pLabel').should('contain.text', 'Label: line segment')
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: upperright')
+    cy.get(cesc('#\\/pLabel')).should('contain.text', 'Label: line segment')
 
-    cy.get('#\\/label_input').clear().type("nothing{enter}")
-    cy.get('#\\/pLabel').should('contain.text', 'Label: nothing')
+    cy.get(cesc('#\\/label_input')).clear().type("nothing{enter}")
+    cy.get(cesc('#\\/pLabel')).should('contain.text', 'Label: nothing')
 
-    cy.get('#\\/labelPos').select("upperLeft")
-    cy.get('#\\/pPos').should('have.text', 'Position: upperleft')
-    cy.get('#\\/labelPos').select("lowerRight")
-    cy.get('#\\/pPos').should('have.text', 'Position: lowerright')
-    cy.get('#\\/labelPos').select("lowerLeft")
-    cy.get('#\\/pPos').should('have.text', 'Position: lowerleft')
+    cy.get(cesc('#\\/labelPos')).select("upperLeft")
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: upperleft')
+    cy.get(cesc('#\\/labelPos')).select("lowerRight")
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: lowerright')
+    cy.get(cesc('#\\/labelPos')).select("lowerLeft")
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: lowerleft')
 
   });
 
@@ -9994,9 +9990,9 @@ describe('Line Tag Tests', function () {
     });
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Line A is thick brown.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red line.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black line.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Line A is thick brown.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a dark red line.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin black line.');
 
     cy.log('set dark mode')
     cy.get('#testRunner_toggleControls').click();
@@ -10005,9 +10001,9 @@ describe('Line Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Line A is thick yellow.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red line.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white line.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Line A is thick yellow.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a light red line.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin white line.');
 
 
   });
@@ -10038,78 +10034,78 @@ describe('Line Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'black');
-    cy.get('#\\/tc_variable_style').should('have.text', 'black');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
     // TODO: how to test color in graph
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'green');
-    cy.get('#\\/tc_variable_style').should('have.text', 'green');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'red with a blue background');
-    cy.get('#\\/tc_variable_style').should('have.text', 'red');
-    cy.get('#\\/bc_variable_style').should('have.text', 'blue');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'red with a blue background');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'red');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'blue');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(255, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgb(0, 0, 255)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
 
 
   })

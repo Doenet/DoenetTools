@@ -1,12 +1,8 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 function nInDOM(n) {
@@ -50,15 +46,15 @@ describe('FunctionIterates Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=3av')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=3va2')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=3va3')
     })
 
@@ -70,22 +66,22 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change function, nIterates, and initial')
-    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}bx^2{enter}", { force: true });
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/u textarea').type("{end}{backspace}{backspace}w{enter}", { force: true });
+    cy.get(cesc('#\\/fformula') + ' textarea').type("{end}{backspace}{backspace}bx^2{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/u') + ' textarea').type("{end}{backspace}{backspace}w{enter}", { force: true });
 
-    cy.get('#\\/l1').should('contain.text', 'f1(u)=bw2')
+    cy.get(cesc('#\\/l1')).should('contain.text', 'f1(u)=bw2')
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=bw2')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=b3w4')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=b7w8')
     })
-    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f4(u)=b15w16')
     })
 
@@ -98,20 +94,20 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change variable')
-    cy.get('#\\/x textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
 
-    cy.get('#\\/l1').should('contain.text', 'f1(u)=bx2')
+    cy.get(cesc('#\\/l1')).should('contain.text', 'f1(u)=bx2')
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=bx2')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=bx2')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=bx2')
     })
-    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f4(u)=bx2')
     })
 
@@ -124,24 +120,24 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change function to match variable')
-    cy.get('#\\/fformula textarea').type("{ctrl+home}{shift+end}{backspace}y+q{enter}", { force: true });
-    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/fformula') + ' textarea').type("{ctrl+home}{shift+end}{backspace}y+q{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
 
-    cy.get('#\\/l5').should('contain.text', 'f5(u)=5q+w')
+    cy.get(cesc('#\\/l5')).should('contain.text', 'f5(u)=5q+w')
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=q+w')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=2q+w')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=3q+w')
     })
-    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f4(u)=4q+w')
     })
-    cy.get('#\\/l5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f5(u)=5q+w')
     })
 
@@ -179,15 +175,15 @@ describe('FunctionIterates Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=6')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=18')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=54')
     })
 
@@ -199,22 +195,22 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change function, nIterates, and initial')
-    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}2x^2{enter}", { force: true });
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/u textarea').type("{end}{backspace}{backspace}1/4{enter}", { force: true });
+    cy.get(cesc('#\\/fformula') + ' textarea').type("{end}{backspace}{backspace}2x^2{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/u') + ' textarea').type("{end}{backspace}{backspace}1/4{enter}", { force: true });
 
-    cy.get('#\\/l1').should('contain.text', 'f1(u)=0.125')
+    cy.get(cesc('#\\/l1')).should('contain.text', 'f1(u)=0.125')
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=0.125')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=0.03125')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=0.001953125')
     })
-    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f4(u)=0.000007629394531')
     })
 
@@ -227,20 +223,20 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change variable')
-    cy.get('#\\/x textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
 
-    cy.get('#\\/l1').should('contain.text', 'f1(u)=NaN')
+    cy.get(cesc('#\\/l1')).should('contain.text', 'f1(u)=NaN')
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=NaN')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=NaN')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=NaN')
     })
-    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f4(u)=NaN')
     })
 
@@ -253,24 +249,24 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change function to match variable')
-    cy.get('#\\/fformula textarea').type("{ctrl+home}{shift+end}{backspace}y+5{enter}", { force: true });
-    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/fformula') + ' textarea').type("{ctrl+home}{shift+end}{backspace}y+5{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
 
-    cy.get('#\\/l5').should('contain.text', 'f5(u)=25.25')
+    cy.get(cesc('#\\/l5')).should('contain.text', 'f5(u)=25.25')
 
-    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=5.25')
     })
-    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f2(u)=10.25')
     })
-    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f3(u)=15.25')
     })
-    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f4(u)=20.25')
     })
-    cy.get('#\\/l5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/l5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f5(u)=25.25')
     })
 
@@ -302,7 +298,7 @@ describe('FunctionIterates Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
     function checkIterates({ a, b, c, d, u1, u2, n }) {
@@ -314,7 +310,7 @@ describe('FunctionIterates Tag Tests', function () {
         let x = me.math.matrix([[u1], [u2]]);
 
         let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-        let iterAnchors = iterNames.map(x => cesc('#' + x))
+        let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
 
         for (let i = 0; i < n; i++) {
@@ -334,16 +330,16 @@ describe('FunctionIterates Tag Tests', function () {
     checkIterates({ a: 3, b: -2, c: 1, d: 4, u1: 2, u2: 1, n: 3 })
 
     cy.log(`change values`)
-    cy.get('#\\/x textarea').type("{end}{backspace}q{enter}", { force: true })
-    cy.get('#\\/y textarea').type("{end}{backspace}r{enter}", { force: true })
-    cy.get('#\\/a textarea').type("{end}{backspace}{backspace}-4{enter}", { force: true })
-    cy.get('#\\/b textarea').type("{end}{backspace}{backspace}7{enter}", { force: true })
-    cy.get('#\\/c textarea').type("{end}{backspace}{backspace}6{enter}", { force: true })
-    cy.get('#\\/d textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
-    cy.get('#\\/u textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}-8, 9{enter}", { force: true })
-    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true })
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}q{enter}", { force: true })
+    cy.get(cesc('#\\/y') + ' textarea').type("{end}{backspace}r{enter}", { force: true })
+    cy.get(cesc('#\\/a') + ' textarea').type("{end}{backspace}{backspace}-4{enter}", { force: true })
+    cy.get(cesc('#\\/b') + ' textarea').type("{end}{backspace}{backspace}7{enter}", { force: true })
+    cy.get(cesc('#\\/c') + ' textarea').type("{end}{backspace}{backspace}6{enter}", { force: true })
+    cy.get(cesc('#\\/d') + ' textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
+    cy.get(cesc('#\\/u') + ' textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}-8, 9{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true })
 
-    cy.get('#\\/n2').should('contain.text', '5')
+    cy.get(cesc('#\\/n2')).should('contain.text', '5')
 
     checkIterates({ a: -4, b: 7, c: 6, d: -1, u1: -8, u2: 9, n: 5 })
 
@@ -367,7 +363,7 @@ describe('FunctionIterates Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
     function checkIterates({ a, b, c, d, u1, u2, n }) {
@@ -379,7 +375,7 @@ describe('FunctionIterates Tag Tests', function () {
         let x = me.math.matrix([[u1], [u2]]);
 
         let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-        let iterAnchors = iterNames.map(x => cesc('#' + x))
+        let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
 
         for (let i = 0; i < n; i++) {
@@ -399,16 +395,16 @@ describe('FunctionIterates Tag Tests', function () {
     checkIterates({ a: 3, b: -2, c: 1, d: 4, u1: 2, u2: 1, n: 3 })
 
     cy.log(`change values`)
-    cy.get('#\\/x textarea').type("{end}{backspace}q{enter}", { force: true })
-    cy.get('#\\/y textarea').type("{end}{backspace}r{enter}", { force: true })
-    cy.get('#\\/a textarea').type("{end}{backspace}{backspace}-4{enter}", { force: true })
-    cy.get('#\\/b textarea').type("{end}{backspace}{backspace}7{enter}", { force: true })
-    cy.get('#\\/c textarea').type("{end}{backspace}{backspace}6{enter}", { force: true })
-    cy.get('#\\/d textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
-    cy.get('#\\/u textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}-8, 9{enter}", { force: true })
-    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true })
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}q{enter}", { force: true })
+    cy.get(cesc('#\\/y') + ' textarea').type("{end}{backspace}r{enter}", { force: true })
+    cy.get(cesc('#\\/a') + ' textarea').type("{end}{backspace}{backspace}-4{enter}", { force: true })
+    cy.get(cesc('#\\/b') + ' textarea').type("{end}{backspace}{backspace}7{enter}", { force: true })
+    cy.get(cesc('#\\/c') + ' textarea').type("{end}{backspace}{backspace}6{enter}", { force: true })
+    cy.get(cesc('#\\/d') + ' textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
+    cy.get(cesc('#\\/u') + ' textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}-8, 9{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true })
 
-    cy.get('#\\/n2').should('contain.text', '5')
+    cy.get(cesc('#\\/n2')).should('contain.text', '5')
 
     checkIterates({ a: -4, b: 7, c: 6, d: -1, u1: -8, u2: 9, n: 5 })
 
@@ -436,14 +432,14 @@ describe('FunctionIterates Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, 3]);
@@ -464,15 +460,15 @@ describe('FunctionIterates Tag Tests', function () {
     });
 
     cy.log(`add component to function`)
-    cy.get('#\\/fformula textarea').type("{end}{leftArrow}z, x-z{enter}", { force: true });
+    cy.get(cesc('#\\/fformula') + ' textarea').type("{end}{leftArrow}z, x-z{enter}", { force: true });
 
-    cy.get('#\\/fformula2').should('contain.text', 'x+yz,')
+    cy.get(cesc('#\\/fformula2')).should('contain.text', 'x+yz,')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(0);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
@@ -493,14 +489,14 @@ describe('FunctionIterates Tag Tests', function () {
     });
 
     cy.log(`add variable to function`)
-    cy.get('#\\/vars textarea').type("{end}, z{enter}", { force: true });
-    cy.get('#\\/vars2').should('contain.text', 'x,y,z')
+    cy.get(cesc('#\\/vars') + ' textarea').type("{end}, z{enter}", { force: true });
+    cy.get(cesc('#\\/vars2')).should('contain.text', 'x,y,z')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
@@ -521,15 +517,15 @@ describe('FunctionIterates Tag Tests', function () {
     });
 
     cy.log(`add component to initial condition`)
-    cy.get('#\\/u textarea').type("{end}{leftArrow}, -4{enter}", { force: true });
-    cy.get('#\\/u2').should('contain.text', '2,1,')
+    cy.get(cesc('#\\/u') + ' textarea').type("{end}{leftArrow}, -4{enter}", { force: true });
+    cy.get(cesc('#\\/u2')).should('contain.text', '2,1,')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, -2, 6]);
@@ -571,14 +567,14 @@ describe('FunctionIterates Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, 3]);
@@ -599,14 +595,14 @@ describe('FunctionIterates Tag Tests', function () {
 
 
     cy.log(`non-numeric initial condition`)
-    cy.get('#\\/u textarea').type("{end}{leftArrow}a{enter}", { force: true });
-    cy.get('#\\/u2').should('contain.text', "(2,1a)")
+    cy.get(cesc('#\\/u') + ' textarea').type("{end}{leftArrow}a{enter}", { force: true });
+    cy.get(cesc('#\\/u2')).should('contain.text', "(2,1a)")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
 
@@ -624,15 +620,15 @@ describe('FunctionIterates Tag Tests', function () {
 
 
     cy.log(`add component to function`)
-    cy.get('#\\/u textarea').type("{backspace}{enter}", { force: true });
-    cy.get('#\\/fformula textarea').type("{end}{leftArrow}z, x-z{enter}", { force: true });
-    cy.get('#\\/fformula2').should('contain.text', "x+yz,")
+    cy.get(cesc('#\\/u') + ' textarea').type("{backspace}{enter}", { force: true });
+    cy.get(cesc('#\\/fformula') + ' textarea').type("{end}{leftArrow}z, x-z{enter}", { force: true });
+    cy.get(cesc('#\\/fformula2')).should('contain.text', "x+yz,")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(0);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
@@ -653,14 +649,14 @@ describe('FunctionIterates Tag Tests', function () {
     });
 
     cy.log(`add variable to function`)
-    cy.get('#\\/vars textarea').type("{end}, z{enter}", { force: true });
-    cy.get('#\\/vars2').should('contain.text', "x,y,z")
+    cy.get(cesc('#\\/vars') + ' textarea').type("{end}, z{enter}", { force: true });
+    cy.get(cesc('#\\/vars2')).should('contain.text', "x,y,z")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
@@ -681,15 +677,15 @@ describe('FunctionIterates Tag Tests', function () {
     });
 
     cy.log(`add component to initial condition`)
-    cy.get('#\\/u textarea').type("{end}{leftArrow}, -4{enter}", { force: true });
-    cy.get('#\\/u2').should('contain.text', "(2,1,")
+    cy.get(cesc('#\\/u') + ' textarea').type("{end}{leftArrow}, -4{enter}", { force: true });
+    cy.get(cesc('#\\/u2')).should('contain.text', "(2,1,")
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let iterNames = stateVariables["/iterates"].replacements.map(x => x.componentName);
-      let iterAnchors = iterNames.map(x => cesc('#' + x))
+      let iterAnchors = iterNames.map(x => cesc2('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, -2, 6]);

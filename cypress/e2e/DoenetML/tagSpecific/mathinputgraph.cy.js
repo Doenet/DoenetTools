@@ -1,12 +1,8 @@
-import cssesc from 'cssesc';
 import me from 'math-expressions';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('MathInput Graph Tests', function () {
@@ -35,11 +31,11 @@ describe('MathInput Graph Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coordsAnchor = cesc('#' + stateVariables["/coords"].replacements[0].componentName);
+      let coordsAnchor = cesc2('#' + stateVariables["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -57,7 +53,7 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log("Enter -3 for x");
-      cy.get('#\\/x textarea').type('{end}{backspace}-3{enter}', { force: true });
+      cy.get(cesc('#\\/x') + ' textarea').type('{end}{backspace}-3{enter}', { force: true });
       cy.get(coordsAnchor).should('contain.text', '(−3,2)')
 
       cy.log('Test values displayed in browser')
@@ -76,7 +72,7 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log("Enter -4 for y");
-      cy.get('#\\/y textarea').type('{end}{backspace}-4{enter}', { force: true });
+      cy.get(cesc('#\\/y') + ' textarea').type('{end}{backspace}-4{enter}', { force: true });
       cy.get(coordsAnchor).should('contain.text', '(−3,−4)')
 
       cy.log('Test values displayed in browser')
@@ -135,11 +131,11 @@ describe('MathInput Graph Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coordsAnchor = cesc('#' + stateVariables["/coords"].replacements[0].componentName);
+      let coordsAnchor = cesc2('#' + stateVariables["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -157,7 +153,7 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log("Enter -1.2 for x");
-      cy.get('#\\/x textarea').type('{end}{backspace}-1.2{enter}', { force: true });
+      cy.get(cesc('#\\/x') + ' textarea').type('{end}{backspace}-1.2{enter}', { force: true });
       cy.get(coordsAnchor).should('contain.text', '(1.44,2)')
 
       cy.log('Test values displayed in browser')
@@ -216,11 +212,11 @@ describe('MathInput Graph Tests', function () {
     <copy prop="coords" target="_point1" name="coords" />`}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coordsAnchor = cesc('#' + stateVariables["/coords"].replacements[0].componentName);
+      let coordsAnchor = cesc2('#' + stateVariables["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -238,7 +234,7 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log("Enter -1.5 for a");
-      cy.get('#\\/a textarea').type('{end}{backspace}{backspace}-1.5{enter}', { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type('{end}{backspace}{backspace}-1.5{enter}', { force: true });
       cy.get(coordsAnchor).should('contain.text', '(−3,−7)')
 
       cy.log('Test values displayed in browser')
@@ -297,11 +293,11 @@ describe('MathInput Graph Tests', function () {
     <copy prop="coords" target="_point1" name="coords" />`}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coordsAnchor = cesc('#' + stateVariables["/coords"].replacements[0].componentName);
+      let coordsAnchor = cesc2('#' + stateVariables["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -319,7 +315,7 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log("Enter -1.5 for a");
-      cy.get('#\\/a textarea').type('{end}{backspace}{backspace}-1.5{enter}', { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type('{end}{backspace}{backspace}-1.5{enter}', { force: true });
       cy.get(coordsAnchor).should('contain.text', '(−3,−7)')
 
       cy.log('Test values displayed in browser')

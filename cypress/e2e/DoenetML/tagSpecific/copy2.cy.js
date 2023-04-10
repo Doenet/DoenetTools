@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 function nInDOM(n) {
@@ -61,29 +57,29 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/p1').should('not.exist');
+    cy.get(cesc('#\\/p1')).should('not.exist');
 
-    cy.get('#\\/p2').should('have.text', 'Text revealed by default: secret password');
-    cy.get('#\\/p3').should('have.text', 'Because source attributes to ignore are: hide');
-    cy.get('#\\/p4').should('have.text', 'Check attributes: false true true');
-    cy.get('#\\/p5').should('have.text', 'Check if new namespace copied: password')
+    cy.get(cesc('#\\/p2')).should('have.text', 'Text revealed by default: secret password');
+    cy.get(cesc('#\\/p3')).should('have.text', 'Because source attributes to ignore are: hide');
+    cy.get(cesc('#\\/p4')).should('have.text', 'Check attributes: false true true');
+    cy.get(cesc('#\\/p5')).should('have.text', 'Check if new namespace copied: password')
 
-    cy.get('#\\/p6').should('have.text', 'Hidden text: ')
-    cy.get('#\\/p7').should('have.text', 'Because source attributes to ignore are: hide')
-    cy.get('#\\/p8').should('have.text', 'Check attributes: false true true true true true');
-    cy.get('#\\/p9').should('have.text', 'Check if inner new namespace copied: password')
+    cy.get(cesc('#\\/p6')).should('have.text', 'Hidden text: ')
+    cy.get(cesc('#\\/p7')).should('have.text', 'Because source attributes to ignore are: hide')
+    cy.get(cesc('#\\/p8')).should('have.text', 'Check attributes: false true true true true true');
+    cy.get(cesc('#\\/p9')).should('have.text', 'Check if inner new namespace copied: password')
 
-    cy.get('#\\/p10').should('have.text', 'Now text stays hidden: ');
-    cy.get('#\\/p11').should('have.text', 'Because source attributes to ignore are: newNamespace, fixed');
-    cy.get('#\\/p12').should('have.text', 'Check attributes: true false false');
-    cy.get('#\\/p13').should('have.text', 'Check that new namespace not copied: ')
+    cy.get(cesc('#\\/p10')).should('have.text', 'Now text stays hidden: ');
+    cy.get(cesc('#\\/p11')).should('have.text', 'Because source attributes to ignore are: newNamespace, fixed');
+    cy.get(cesc('#\\/p12')).should('have.text', 'Check attributes: true false false');
+    cy.get(cesc('#\\/p13')).should('have.text', 'Check that new namespace not copied: ')
 
-    cy.get('#\\/p14').should('not.exist');
-    cy.get('#\\/p15').should('have.text', 'Because source attributes to ignore are: newNamespace, fixed');
-    cy.get('#\\/p16').should('have.text', 'Check attributes: true false false');
-    cy.get('#\\/p17').should('have.text', 'Check that outer new namespace not copied: ')
+    cy.get(cesc('#\\/p14')).should('not.exist');
+    cy.get(cesc('#\\/p15')).should('have.text', 'Because source attributes to ignore are: newNamespace, fixed');
+    cy.get(cesc('#\\/p16')).should('have.text', 'Check attributes: true false false');
+    cy.get(cesc('#\\/p17')).should('have.text', 'Check that outer new namespace not copied: ')
 
     // TODO: is there a way to check that inner new namespace was maintained?
 
@@ -118,22 +114,22 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/p1').should('not.exist');
+    cy.get(cesc('#\\/p1')).should('not.exist');
 
-    cy.get('#\\/p2').should('have.text', 'The text: ');
-    cy.get('#\\/p3').should('have.text', 'Because source attributes to ignore recursively are: isResponse');
-    cy.get('#\\/p4').should('have.text', 'Check attributes: false true false true true false');
+    cy.get(cesc('#\\/p2')).should('have.text', 'The text: ');
+    cy.get(cesc('#\\/p3')).should('have.text', 'Because source attributes to ignore recursively are: isResponse');
+    cy.get(cesc('#\\/p4')).should('have.text', 'Check attributes: false true false true true false');
 
-    cy.get('#\\/p5').should('have.text', 'The text: secret');
-    cy.get('#\\/p6').should('have.text', 'Because source attributes to ignore recursively are: hide, fixed');
-    cy.get('#\\/p7').should('have.text', 'Check attributes: false false true false false true');
+    cy.get(cesc('#\\/p5')).should('have.text', 'The text: secret');
+    cy.get(cesc('#\\/p6')).should('have.text', 'Because source attributes to ignore recursively are: hide, fixed');
+    cy.get(cesc('#\\/p7')).should('have.text', 'Check attributes: false false true false false true');
 
-    cy.get('#\\/p8').should('have.text', 'The text: secret');
-    cy.get('#\\/p9').should('have.text', 'Because source attributes to ignore recursively are: hide');
-    cy.get('#\\/p10').should('have.text', 'And source attributes to ignore are: fixed, isResponse');
-    cy.get('#\\/p11').should('have.text', 'Check attributes: false false false false true true');
+    cy.get(cesc('#\\/p8')).should('have.text', 'The text: secret');
+    cy.get(cesc('#\\/p9')).should('have.text', 'Because source attributes to ignore recursively are: hide');
+    cy.get(cesc('#\\/p10')).should('have.text', 'And source attributes to ignore are: fixed, isResponse');
+    cy.get(cesc('#\\/p11')).should('have.text', 'Check attributes: false false false false true true');
 
   });
 
@@ -188,13 +184,13 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let P1 = [1, 2];
     let P2 = [3, 4]
 
-    cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
-    cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
+    cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
+    cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
 
 
 
@@ -249,8 +245,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P1[0], y: P1[1] }
         })
 
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
 
       })
 
@@ -301,8 +297,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P2[0], y: P2[1] }
         })
 
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
       })
 
       cy.window().then(async (win) => {
@@ -353,8 +349,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P1[0], y: P1[1] }
         })
 
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
 
       })
 
@@ -406,8 +402,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P2[0], y: P2[1] }
         })
 
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
       })
 
 
@@ -504,13 +500,13 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let P1 = [1, 2];
     let P2 = [3, 4]
 
-    cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
-    cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
+    cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
+    cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
 
 
 
@@ -565,8 +561,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P1[0], y: P1[1] }
         })
 
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
 
       })
 
@@ -617,8 +613,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P2[0], y: P2[1] }
         })
 
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
       })
 
       cy.window().then(async (win) => {
@@ -669,8 +665,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P1[0], y: P1[1] }
         })
 
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
 
       })
 
@@ -722,8 +718,8 @@ describe('Copy Tag Tests', function () {
           args: { x: P2[0], y: P2[1] }
         })
 
-        cy.get(cesc('#/P2x')).contains(`${P2[0]}`);
-        cy.get(cesc('#/P1x')).contains(`${P1[0]}`);
+        cy.get(cesc2('#/P2x')).contains(`${P2[0]}`);
+        cy.get(cesc2('#/P1x')).contains(`${P1[0]}`);
       })
 
 
@@ -800,61 +796,61 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/ca')).contains('0')
-    cy.get(cesc('#/p2/cao')).contains('0')
-    cy.get(cesc('#/p3/ca')).contains('0')
-    cy.get(cesc('#/p4/cao')).contains('0')
+    cy.get(cesc2('#/ca')).contains('0')
+    cy.get(cesc2('#/p2/cao')).contains('0')
+    cy.get(cesc2('#/p3/ca')).contains('0')
+    cy.get(cesc2('#/p4/cao')).contains('0')
 
-    cy.get(cesc('#/cao')).contains('0')
-    cy.get(cesc('#/p2/ca')).contains('0')
-    cy.get(cesc('#/p3/cao')).contains('0')
-    cy.get(cesc('#/p4/ca')).contains('0')
+    cy.get(cesc2('#/cao')).contains('0')
+    cy.get(cesc2('#/p2/ca')).contains('0')
+    cy.get(cesc2('#/p3/cao')).contains('0')
+    cy.get(cesc2('#/p4/ca')).contains('0')
 
-    cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-    cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-    cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-    cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinputoutsideName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputoutsideAnchor = cesc('#' + mathinputoutsideName) + " textarea";
-      let mathinputoutsideSubmitAnchor = cesc('#' + mathinputoutsideName + '_submit');
-      let mathinputoutsideCorrectAnchor = cesc('#' + mathinputoutsideName + '_correct');
-      let mathinputoutsideIncorrectAnchor = cesc('#' + mathinputoutsideName + '_incorrect');
-      let mathinputoutsideFieldAnchor = cesc('#' + mathinputoutsideName) + ' .mq-editable-field';
+      let mathinputoutsideAnchor = cesc2('#' + mathinputoutsideName) + " textarea";
+      let mathinputoutsideSubmitAnchor = cesc2('#' + mathinputoutsideName + '_submit');
+      let mathinputoutsideCorrectAnchor = cesc2('#' + mathinputoutsideName + '_correct');
+      let mathinputoutsideIncorrectAnchor = cesc2('#' + mathinputoutsideName + '_incorrect');
+      let mathinputoutsideFieldAnchor = cesc2('#' + mathinputoutsideName) + ' .mq-editable-field';
 
       let mathinputp1Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinputp1Anchor = cesc('#' + mathinputp1Name) + " textarea";
-      let mathinputp1SubmitAnchor = cesc('#' + mathinputp1Name + '_submit');
-      let mathinputp1CorrectAnchor = cesc('#' + mathinputp1Name + '_correct');
-      let mathinputp1IncorrectAnchor = cesc('#' + mathinputp1Name + '_incorrect');
-      let mathinputp1FieldAnchor = cesc('#' + mathinputp1Name) + ' .mq-editable-field';
+      let mathinputp1Anchor = cesc2('#' + mathinputp1Name) + " textarea";
+      let mathinputp1SubmitAnchor = cesc2('#' + mathinputp1Name + '_submit');
+      let mathinputp1CorrectAnchor = cesc2('#' + mathinputp1Name + '_correct');
+      let mathinputp1IncorrectAnchor = cesc2('#' + mathinputp1Name + '_incorrect');
+      let mathinputp1FieldAnchor = cesc2('#' + mathinputp1Name) + ' .mq-editable-field';
 
       let mathinputp2Name = stateVariables['/p2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputp2Anchor = cesc('#' + mathinputp2Name) + " textarea";
-      let mathinputp2SubmitAnchor = cesc('#' + mathinputp2Name + '_submit');
-      let mathinputp2CorrectAnchor = cesc('#' + mathinputp2Name + '_correct');
-      let mathinputp2IncorrectAnchor = cesc('#' + mathinputp2Name + '_incorrect');
-      let mathinputp2FieldAnchor = cesc('#' + mathinputp2Name) + ' .mq-editable-field';
+      let mathinputp2Anchor = cesc2('#' + mathinputp2Name) + " textarea";
+      let mathinputp2SubmitAnchor = cesc2('#' + mathinputp2Name + '_submit');
+      let mathinputp2CorrectAnchor = cesc2('#' + mathinputp2Name + '_correct');
+      let mathinputp2IncorrectAnchor = cesc2('#' + mathinputp2Name + '_incorrect');
+      let mathinputp2FieldAnchor = cesc2('#' + mathinputp2Name) + ' .mq-editable-field';
 
       let mathinputp3Name = stateVariables['/p3/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinputp3Anchor = cesc('#' + mathinputp3Name) + " textarea";
-      let mathinputp3SubmitAnchor = cesc('#' + mathinputp3Name + '_submit');
-      let mathinputp3CorrectAnchor = cesc('#' + mathinputp3Name + '_correct');
-      let mathinputp3IncorrectAnchor = cesc('#' + mathinputp3Name + '_incorrect');
-      let mathinputp3FieldAnchor = cesc('#' + mathinputp3Name) + ' .mq-editable-field';
+      let mathinputp3Anchor = cesc2('#' + mathinputp3Name) + " textarea";
+      let mathinputp3SubmitAnchor = cesc2('#' + mathinputp3Name + '_submit');
+      let mathinputp3CorrectAnchor = cesc2('#' + mathinputp3Name + '_correct');
+      let mathinputp3IncorrectAnchor = cesc2('#' + mathinputp3Name + '_incorrect');
+      let mathinputp3FieldAnchor = cesc2('#' + mathinputp3Name) + ' .mq-editable-field';
 
       let mathinputp4Name = stateVariables['/p4/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputp4Anchor = cesc('#' + mathinputp4Name) + " textarea";
-      let mathinputp4SubmitAnchor = cesc('#' + mathinputp4Name + '_submit');
-      let mathinputp4CorrectAnchor = cesc('#' + mathinputp4Name + '_correct');
-      let mathinputp4IncorrectAnchor = cesc('#' + mathinputp4Name + '_incorrect');
-      let mathinputp4FieldAnchor = cesc('#' + mathinputp4Name) + ' .mq-editable-field';
+      let mathinputp4Anchor = cesc2('#' + mathinputp4Name) + " textarea";
+      let mathinputp4SubmitAnchor = cesc2('#' + mathinputp4Name + '_submit');
+      let mathinputp4CorrectAnchor = cesc2('#' + mathinputp4Name + '_correct');
+      let mathinputp4IncorrectAnchor = cesc2('#' + mathinputp4Name + '_incorrect');
+      let mathinputp4FieldAnchor = cesc2('#' + mathinputp4Name) + ' .mq-editable-field';
 
       expect(stateVariables['/ca'].stateValues.value).eq(0);
       expect(stateVariables['/p2/cao'].stateValues.value).eq(0);
@@ -895,20 +891,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp3FieldAnchor).should('have.text', 'y')
       cy.get(mathinputp4FieldAnchor).should('have.text', '')
 
-      cy.get(cesc('#/ca')).contains('1')
-      cy.get(cesc('#/p2/cao')).contains('1')
-      cy.get(cesc('#/p3/ca')).contains('1')
-      cy.get(cesc('#/p4/cao')).contains('1')
+      cy.get(cesc2('#/ca')).contains('1')
+      cy.get(cesc2('#/p2/cao')).contains('1')
+      cy.get(cesc2('#/p3/ca')).contains('1')
+      cy.get(cesc2('#/p4/cao')).contains('1')
 
-      cy.get(cesc('#/cao')).contains('0')
-      cy.get(cesc('#/p2/ca')).contains('0')
-      cy.get(cesc('#/p3/cao')).contains('0')
-      cy.get(cesc('#/p4/ca')).contains('0')
+      cy.get(cesc2('#/cao')).contains('0')
+      cy.get(cesc2('#/p2/ca')).contains('0')
+      cy.get(cesc2('#/p3/cao')).contains('0')
+      cy.get(cesc2('#/p4/ca')).contains('0')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -943,20 +939,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp3FieldAnchor).should('have.text', 'y')
       cy.get(mathinputp4FieldAnchor).should('have.text', 'z')
 
-      cy.get(cesc('#/ca')).contains('1')
-      cy.get(cesc('#/p2/cao')).contains('1')
-      cy.get(cesc('#/p3/ca')).contains('1')
-      cy.get(cesc('#/p4/cao')).contains('1')
+      cy.get(cesc2('#/ca')).contains('1')
+      cy.get(cesc2('#/p2/cao')).contains('1')
+      cy.get(cesc2('#/p3/ca')).contains('1')
+      cy.get(cesc2('#/p4/cao')).contains('1')
 
-      cy.get(cesc('#/cao')).contains('1')
-      cy.get(cesc('#/p2/ca')).contains('1')
-      cy.get(cesc('#/p3/cao')).contains('1')
-      cy.get(cesc('#/p4/ca')).contains('1')
+      cy.get(cesc2('#/cao')).contains('1')
+      cy.get(cesc2('#/p2/ca')).contains('1')
+      cy.get(cesc2('#/p3/cao')).contains('1')
+      cy.get(cesc2('#/p4/ca')).contains('1')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -991,20 +987,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp2FieldAnchor).should('have.text', 'z')
       cy.get(mathinputp4FieldAnchor).should('have.text', 'z')
 
-      cy.get(cesc('#/ca')).contains('0')
-      cy.get(cesc('#/p2/cao')).contains('0')
-      cy.get(cesc('#/p3/ca')).contains('0')
-      cy.get(cesc('#/p4/cao')).contains('0')
+      cy.get(cesc2('#/ca')).contains('0')
+      cy.get(cesc2('#/p2/cao')).contains('0')
+      cy.get(cesc2('#/p3/ca')).contains('0')
+      cy.get(cesc2('#/p4/cao')).contains('0')
 
-      cy.get(cesc('#/cao')).contains('1')
-      cy.get(cesc('#/p2/ca')).contains('1')
-      cy.get(cesc('#/p3/cao')).contains('1')
-      cy.get(cesc('#/p4/ca')).contains('1')
+      cy.get(cesc2('#/cao')).contains('1')
+      cy.get(cesc2('#/p2/ca')).contains('1')
+      cy.get(cesc2('#/p3/cao')).contains('1')
+      cy.get(cesc2('#/p4/ca')).contains('1')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1039,20 +1035,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp2FieldAnchor).should('have.text', 'b')
       cy.get(mathinputp3FieldAnchor).should('have.text', 'a')
 
-      cy.get(cesc('#/ca')).contains('0')
-      cy.get(cesc('#/p2/cao')).contains('0')
-      cy.get(cesc('#/p3/ca')).contains('0')
-      cy.get(cesc('#/p4/cao')).contains('0')
+      cy.get(cesc2('#/ca')).contains('0')
+      cy.get(cesc2('#/p2/cao')).contains('0')
+      cy.get(cesc2('#/p3/ca')).contains('0')
+      cy.get(cesc2('#/p4/cao')).contains('0')
 
-      cy.get(cesc('#/cao')).contains('0')
-      cy.get(cesc('#/p2/ca')).contains('0')
-      cy.get(cesc('#/p3/cao')).contains('0')
-      cy.get(cesc('#/p4/ca')).contains('0')
+      cy.get(cesc2('#/cao')).contains('0')
+      cy.get(cesc2('#/p2/ca')).contains('0')
+      cy.get(cesc2('#/p3/cao')).contains('0')
+      cy.get(cesc2('#/p4/ca')).contains('0')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1074,11 +1070,11 @@ describe('Copy Tag Tests', function () {
 
 
       cy.log('change mathinput')
-      cy.get(cesc("#/mi") + " textarea").type("{end}{backspace}q{enter}", { force: true })
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2("#/mi") + " textarea").type("{end}{backspace}q{enter}", { force: true })
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
 
 
       cy.window().then(async (win) => {
@@ -1127,61 +1123,61 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/ca')).contains('0')
-    cy.get(cesc('#/p2/cao')).contains('0')
-    cy.get(cesc('#/p3/ca')).contains('0')
-    cy.get(cesc('#/p4/cao')).contains('0')
+    cy.get(cesc2('#/ca')).contains('0')
+    cy.get(cesc2('#/p2/cao')).contains('0')
+    cy.get(cesc2('#/p3/ca')).contains('0')
+    cy.get(cesc2('#/p4/cao')).contains('0')
 
-    cy.get(cesc('#/cao')).contains('0')
-    cy.get(cesc('#/p2/ca')).contains('0')
-    cy.get(cesc('#/p3/cao')).contains('0')
-    cy.get(cesc('#/p4/ca')).contains('0')
+    cy.get(cesc2('#/cao')).contains('0')
+    cy.get(cesc2('#/p2/ca')).contains('0')
+    cy.get(cesc2('#/p3/cao')).contains('0')
+    cy.get(cesc2('#/p4/ca')).contains('0')
 
-    cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-    cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-    cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-    cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+    cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinputoutsideName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputoutsideAnchor = cesc('#' + mathinputoutsideName) + " textarea";
-      let mathinputoutsideSubmitAnchor = cesc('#' + mathinputoutsideName + '_submit');
-      let mathinputoutsideCorrectAnchor = cesc('#' + mathinputoutsideName + '_correct');
-      let mathinputoutsideIncorrectAnchor = cesc('#' + mathinputoutsideName + '_incorrect');
-      let mathinputoutsideFieldAnchor = cesc('#' + mathinputoutsideName) + ' .mq-editable-field';
+      let mathinputoutsideAnchor = cesc2('#' + mathinputoutsideName) + " textarea";
+      let mathinputoutsideSubmitAnchor = cesc2('#' + mathinputoutsideName + '_submit');
+      let mathinputoutsideCorrectAnchor = cesc2('#' + mathinputoutsideName + '_correct');
+      let mathinputoutsideIncorrectAnchor = cesc2('#' + mathinputoutsideName + '_incorrect');
+      let mathinputoutsideFieldAnchor = cesc2('#' + mathinputoutsideName) + ' .mq-editable-field';
 
       let mathinputp1Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinputp1Anchor = cesc('#' + mathinputp1Name) + " textarea";
-      let mathinputp1SubmitAnchor = cesc('#' + mathinputp1Name + '_submit');
-      let mathinputp1CorrectAnchor = cesc('#' + mathinputp1Name + '_correct');
-      let mathinputp1IncorrectAnchor = cesc('#' + mathinputp1Name + '_incorrect');
-      let mathinputp1FieldAnchor = cesc('#' + mathinputp1Name) + ' .mq-editable-field';
+      let mathinputp1Anchor = cesc2('#' + mathinputp1Name) + " textarea";
+      let mathinputp1SubmitAnchor = cesc2('#' + mathinputp1Name + '_submit');
+      let mathinputp1CorrectAnchor = cesc2('#' + mathinputp1Name + '_correct');
+      let mathinputp1IncorrectAnchor = cesc2('#' + mathinputp1Name + '_incorrect');
+      let mathinputp1FieldAnchor = cesc2('#' + mathinputp1Name) + ' .mq-editable-field';
 
       let mathinputp2Name = stateVariables['/p2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputp2Anchor = cesc('#' + mathinputp2Name) + " textarea";
-      let mathinputp2SubmitAnchor = cesc('#' + mathinputp2Name + '_submit');
-      let mathinputp2CorrectAnchor = cesc('#' + mathinputp2Name + '_correct');
-      let mathinputp2IncorrectAnchor = cesc('#' + mathinputp2Name + '_incorrect');
-      let mathinputp2FieldAnchor = cesc('#' + mathinputp2Name) + ' .mq-editable-field';
+      let mathinputp2Anchor = cesc2('#' + mathinputp2Name) + " textarea";
+      let mathinputp2SubmitAnchor = cesc2('#' + mathinputp2Name + '_submit');
+      let mathinputp2CorrectAnchor = cesc2('#' + mathinputp2Name + '_correct');
+      let mathinputp2IncorrectAnchor = cesc2('#' + mathinputp2Name + '_incorrect');
+      let mathinputp2FieldAnchor = cesc2('#' + mathinputp2Name) + ' .mq-editable-field';
 
       let mathinputp3Name = stateVariables['/p3/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinputp3Anchor = cesc('#' + mathinputp3Name) + " textarea";
-      let mathinputp3SubmitAnchor = cesc('#' + mathinputp3Name + '_submit');
-      let mathinputp3CorrectAnchor = cesc('#' + mathinputp3Name + '_correct');
-      let mathinputp3IncorrectAnchor = cesc('#' + mathinputp3Name + '_incorrect');
-      let mathinputp3FieldAnchor = cesc('#' + mathinputp3Name) + ' .mq-editable-field';
+      let mathinputp3Anchor = cesc2('#' + mathinputp3Name) + " textarea";
+      let mathinputp3SubmitAnchor = cesc2('#' + mathinputp3Name + '_submit');
+      let mathinputp3CorrectAnchor = cesc2('#' + mathinputp3Name + '_correct');
+      let mathinputp3IncorrectAnchor = cesc2('#' + mathinputp3Name + '_incorrect');
+      let mathinputp3FieldAnchor = cesc2('#' + mathinputp3Name) + ' .mq-editable-field';
 
       let mathinputp4Name = stateVariables['/p4/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputp4Anchor = cesc('#' + mathinputp4Name) + " textarea";
-      let mathinputp4SubmitAnchor = cesc('#' + mathinputp4Name + '_submit');
-      let mathinputp4CorrectAnchor = cesc('#' + mathinputp4Name + '_correct');
-      let mathinputp4IncorrectAnchor = cesc('#' + mathinputp4Name + '_incorrect');
-      let mathinputp4FieldAnchor = cesc('#' + mathinputp4Name) + ' .mq-editable-field';
+      let mathinputp4Anchor = cesc2('#' + mathinputp4Name) + " textarea";
+      let mathinputp4SubmitAnchor = cesc2('#' + mathinputp4Name + '_submit');
+      let mathinputp4CorrectAnchor = cesc2('#' + mathinputp4Name + '_correct');
+      let mathinputp4IncorrectAnchor = cesc2('#' + mathinputp4Name + '_incorrect');
+      let mathinputp4FieldAnchor = cesc2('#' + mathinputp4Name) + ' .mq-editable-field';
 
       expect(stateVariables['/ca'].stateValues.value).eq(0);
       expect(stateVariables['/p2/cao'].stateValues.value).eq(0);
@@ -1222,20 +1218,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp3FieldAnchor).should('have.text', 'y')
       cy.get(mathinputp4FieldAnchor).should('have.text', '')
 
-      cy.get(cesc('#/ca')).contains('1')
-      cy.get(cesc('#/p2/cao')).contains('1')
-      cy.get(cesc('#/p3/ca')).contains('1')
-      cy.get(cesc('#/p4/cao')).contains('1')
+      cy.get(cesc2('#/ca')).contains('1')
+      cy.get(cesc2('#/p2/cao')).contains('1')
+      cy.get(cesc2('#/p3/ca')).contains('1')
+      cy.get(cesc2('#/p4/cao')).contains('1')
 
-      cy.get(cesc('#/cao')).contains('0')
-      cy.get(cesc('#/p2/ca')).contains('0')
-      cy.get(cesc('#/p3/cao')).contains('0')
-      cy.get(cesc('#/p4/ca')).contains('0')
+      cy.get(cesc2('#/cao')).contains('0')
+      cy.get(cesc2('#/p2/ca')).contains('0')
+      cy.get(cesc2('#/p3/cao')).contains('0')
+      cy.get(cesc2('#/p4/ca')).contains('0')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1270,20 +1266,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp3FieldAnchor).should('have.text', 'y')
       cy.get(mathinputp4FieldAnchor).should('have.text', 'z')
 
-      cy.get(cesc('#/ca')).contains('1')
-      cy.get(cesc('#/p2/cao')).contains('1')
-      cy.get(cesc('#/p3/ca')).contains('1')
-      cy.get(cesc('#/p4/cao')).contains('1')
+      cy.get(cesc2('#/ca')).contains('1')
+      cy.get(cesc2('#/p2/cao')).contains('1')
+      cy.get(cesc2('#/p3/ca')).contains('1')
+      cy.get(cesc2('#/p4/cao')).contains('1')
 
-      cy.get(cesc('#/cao')).contains('1')
-      cy.get(cesc('#/p2/ca')).contains('1')
-      cy.get(cesc('#/p3/cao')).contains('1')
-      cy.get(cesc('#/p4/ca')).contains('1')
+      cy.get(cesc2('#/cao')).contains('1')
+      cy.get(cesc2('#/p2/ca')).contains('1')
+      cy.get(cesc2('#/p3/cao')).contains('1')
+      cy.get(cesc2('#/p4/ca')).contains('1')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1318,20 +1314,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp2FieldAnchor).should('have.text', 'z')
       cy.get(mathinputp4FieldAnchor).should('have.text', 'z')
 
-      cy.get(cesc('#/ca')).contains('0')
-      cy.get(cesc('#/p2/cao')).contains('0')
-      cy.get(cesc('#/p3/ca')).contains('0')
-      cy.get(cesc('#/p4/cao')).contains('0')
+      cy.get(cesc2('#/ca')).contains('0')
+      cy.get(cesc2('#/p2/cao')).contains('0')
+      cy.get(cesc2('#/p3/ca')).contains('0')
+      cy.get(cesc2('#/p4/cao')).contains('0')
 
-      cy.get(cesc('#/cao')).contains('1')
-      cy.get(cesc('#/p2/ca')).contains('1')
-      cy.get(cesc('#/p3/cao')).contains('1')
-      cy.get(cesc('#/p4/ca')).contains('1')
+      cy.get(cesc2('#/cao')).contains('1')
+      cy.get(cesc2('#/p2/ca')).contains('1')
+      cy.get(cesc2('#/p3/cao')).contains('1')
+      cy.get(cesc2('#/p4/ca')).contains('1')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1366,20 +1362,20 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputp2FieldAnchor).should('have.text', 'b')
       cy.get(mathinputp3FieldAnchor).should('have.text', 'a')
 
-      cy.get(cesc('#/ca')).contains('0')
-      cy.get(cesc('#/p2/cao')).contains('0')
-      cy.get(cesc('#/p3/ca')).contains('0')
-      cy.get(cesc('#/p4/cao')).contains('0')
+      cy.get(cesc2('#/ca')).contains('0')
+      cy.get(cesc2('#/p2/cao')).contains('0')
+      cy.get(cesc2('#/p3/ca')).contains('0')
+      cy.get(cesc2('#/p4/cao')).contains('0')
 
-      cy.get(cesc('#/cao')).contains('0')
-      cy.get(cesc('#/p2/ca')).contains('0')
-      cy.get(cesc('#/p3/cao')).contains('0')
-      cy.get(cesc('#/p4/ca')).contains('0')
+      cy.get(cesc2('#/cao')).contains('0')
+      cy.get(cesc2('#/p2/ca')).contains('0')
+      cy.get(cesc2('#/p3/cao')).contains('0')
+      cy.get(cesc2('#/p4/ca')).contains('0')
 
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'p')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1401,11 +1397,11 @@ describe('Copy Tag Tests', function () {
 
 
       cy.log('change mathinput')
-      cy.get(cesc("#/mi") + " textarea").type("{end}{backspace}q{enter}", { force: true })
-      cy.get(cesc('#/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
-      cy.get(cesc('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
-      cy.get(cesc('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
-      cy.get(cesc('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2("#/mi") + " textarea").type("{end}{backspace}q{enter}", { force: true })
+      cy.get(cesc2('#/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2('#/p2/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2('#/p3/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
+      cy.get(cesc2('#/p4/m') + " .mjx-mrow").eq(0).should('have.text', 'q')
 
 
       cy.window().then(async (win) => {
@@ -1448,40 +1444,40 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/n2')).contains('2')
-    cy.get(cesc('#/n3')).contains('2')
+    cy.get(cesc2('#/n2')).contains('2')
+    cy.get(cesc2('#/n3')).contains('2')
 
-    cy.get(cesc("#/p1")).contains('Hello 1!');
-    cy.get(cesc("#/p1/_number1")).contains('1');
-    cy.get(cesc("#/p1/_math1")).contains('＿');
-    cy.get(cesc("#/p2")).contains('Hello 2!');
-    cy.get(cesc("#/p2/_number1")).contains('2');
-    cy.get(cesc("#/p2/_math1")).contains('＿');
-    cy.get(cesc("#/p3")).should('not.exist')
-    cy.get(cesc("#/p3/_number1")).should('not.exist')
-    cy.get(cesc("#/p3/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1")).contains('Hello 1!');
+    cy.get(cesc2("#/p1/_number1")).contains('1');
+    cy.get(cesc2("#/p1/_math1")).contains('＿');
+    cy.get(cesc2("#/p2")).contains('Hello 2!');
+    cy.get(cesc2("#/p2/_number1")).contains('2');
+    cy.get(cesc2("#/p2/_math1")).contains('＿');
+    cy.get(cesc2("#/p3")).should('not.exist')
+    cy.get(cesc2("#/p3/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3/_math1")).should('not.exist')
 
-    cy.get(cesc("#/p1a")).contains('Hello 1!');
-    cy.get(cesc("#/p1a/_number1")).contains('1');
-    cy.get(cesc("#/p1a/_math1")).contains('＿');
-    cy.get(cesc("#/p2a")).contains('Hello 2!');
-    cy.get(cesc("#/p2a/_number1")).contains('2');
-    cy.get(cesc("#/p2a/_math1")).contains('＿');
-    cy.get(cesc("#/p3a")).should('not.exist')
-    cy.get(cesc("#/p3a/_number1")).should('not.exist')
-    cy.get(cesc("#/p3a/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1a")).contains('Hello 1!');
+    cy.get(cesc2("#/p1a/_number1")).contains('1');
+    cy.get(cesc2("#/p1a/_math1")).contains('＿');
+    cy.get(cesc2("#/p2a")).contains('Hello 2!');
+    cy.get(cesc2("#/p2a/_number1")).contains('2');
+    cy.get(cesc2("#/p2a/_math1")).contains('＿');
+    cy.get(cesc2("#/p3a")).should('not.exist')
+    cy.get(cesc2("#/p3a/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3a/_math1")).should('not.exist')
 
-    cy.get(cesc("#/p1b")).contains('Hello 1!');
-    cy.get(cesc("#/p1b/_number1")).contains('1');
-    cy.get(cesc("#/p1b/_math1")).contains('＿');
-    cy.get(cesc("#/p2b")).contains('Hello 2!');
-    cy.get(cesc("#/p2b/_number1")).contains('2');
-    cy.get(cesc("#/p2b/_math1")).contains('＿');
-    cy.get(cesc("#/p3b")).should('not.exist')
-    cy.get(cesc("#/p3b/_number1")).should('not.exist')
-    cy.get(cesc("#/p3b/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1b")).contains('Hello 1!');
+    cy.get(cesc2("#/p1b/_number1")).contains('1');
+    cy.get(cesc2("#/p1b/_math1")).contains('＿');
+    cy.get(cesc2("#/p2b")).contains('Hello 2!');
+    cy.get(cesc2("#/p2b/_number1")).contains('2');
+    cy.get(cesc2("#/p2b/_math1")).contains('＿');
+    cy.get(cesc2("#/p3b")).should('not.exist')
+    cy.get(cesc2("#/p3b/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3b/_math1")).should('not.exist')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1512,37 +1508,37 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('type x in first mathinput')
-    cy.get(cesc('#/p1/x') + " textarea").type("x{enter}", { force: true });
+    cy.get(cesc2('#/p1/x') + " textarea").type("x{enter}", { force: true });
 
-    cy.get(cesc("#/p1")).contains('Hello 1!');
-    cy.get(cesc("#/p1/_number1")).contains('1');
-    cy.get(cesc("#/p1/_math1")).contains('x');
-    cy.get(cesc("#/p2")).contains('Hello 2!');
-    cy.get(cesc("#/p2/_number1")).contains('2');
-    cy.get(cesc("#/p2/_math1")).contains('＿');
-    cy.get(cesc("#/p3")).should('not.exist')
-    cy.get(cesc("#/p3/_number1")).should('not.exist')
-    cy.get(cesc("#/p3/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1")).contains('Hello 1!');
+    cy.get(cesc2("#/p1/_number1")).contains('1');
+    cy.get(cesc2("#/p1/_math1")).contains('x');
+    cy.get(cesc2("#/p2")).contains('Hello 2!');
+    cy.get(cesc2("#/p2/_number1")).contains('2');
+    cy.get(cesc2("#/p2/_math1")).contains('＿');
+    cy.get(cesc2("#/p3")).should('not.exist')
+    cy.get(cesc2("#/p3/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3/_math1")).should('not.exist')
 
-    cy.get(cesc("#/p1a")).contains('Hello 1!');
-    cy.get(cesc("#/p1a/_number1")).contains('1');
-    cy.get(cesc("#/p1a/_math1")).contains('x');
-    cy.get(cesc("#/p2a")).contains('Hello 2!');
-    cy.get(cesc("#/p2a/_number1")).contains('2');
-    cy.get(cesc("#/p2a/_math1")).contains('＿');
-    cy.get(cesc("#/p3a")).should('not.exist')
-    cy.get(cesc("#/p3a/_number1")).should('not.exist')
-    cy.get(cesc("#/p3a/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1a")).contains('Hello 1!');
+    cy.get(cesc2("#/p1a/_number1")).contains('1');
+    cy.get(cesc2("#/p1a/_math1")).contains('x');
+    cy.get(cesc2("#/p2a")).contains('Hello 2!');
+    cy.get(cesc2("#/p2a/_number1")).contains('2');
+    cy.get(cesc2("#/p2a/_math1")).contains('＿');
+    cy.get(cesc2("#/p3a")).should('not.exist')
+    cy.get(cesc2("#/p3a/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3a/_math1")).should('not.exist')
 
-    cy.get(cesc("#/p1b")).contains('Hello 1!');
-    cy.get(cesc("#/p1b/_number1")).contains('1');
-    cy.get(cesc("#/p1b/_math1")).contains('x');
-    cy.get(cesc("#/p2b")).contains('Hello 2!');
-    cy.get(cesc("#/p2b/_number1")).contains('2');
-    cy.get(cesc("#/p2b/_math1")).contains('＿');
-    cy.get(cesc("#/p3b")).should('not.exist')
-    cy.get(cesc("#/p3b/_number1")).should('not.exist')
-    cy.get(cesc("#/p3b/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1b")).contains('Hello 1!');
+    cy.get(cesc2("#/p1b/_number1")).contains('1');
+    cy.get(cesc2("#/p1b/_math1")).contains('x');
+    cy.get(cesc2("#/p2b")).contains('Hello 2!');
+    cy.get(cesc2("#/p2b/_number1")).contains('2');
+    cy.get(cesc2("#/p2b/_math1")).contains('＿');
+    cy.get(cesc2("#/p3b")).should('not.exist')
+    cy.get(cesc2("#/p3b/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3b/_math1")).should('not.exist')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1573,37 +1569,37 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('type y in second mathinput')
-    cy.get(cesc('#/p2b/x') + " textarea").type("y{enter}", { force: true });
+    cy.get(cesc2('#/p2b/x') + " textarea").type("y{enter}", { force: true });
 
-    cy.get(cesc("#/p1")).contains('Hello 1!');
-    cy.get(cesc("#/p1/_number1")).contains('1');
-    cy.get(cesc("#/p1/_math1")).contains('x');
-    cy.get(cesc("#/p2")).contains('Hello 2!');
-    cy.get(cesc("#/p2/_number1")).contains('2');
-    cy.get(cesc("#/p2/_math1")).contains('y');
-    cy.get(cesc("#/p3")).should('not.exist')
-    cy.get(cesc("#/p3/_number1")).should('not.exist')
-    cy.get(cesc("#/p3/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1")).contains('Hello 1!');
+    cy.get(cesc2("#/p1/_number1")).contains('1');
+    cy.get(cesc2("#/p1/_math1")).contains('x');
+    cy.get(cesc2("#/p2")).contains('Hello 2!');
+    cy.get(cesc2("#/p2/_number1")).contains('2');
+    cy.get(cesc2("#/p2/_math1")).contains('y');
+    cy.get(cesc2("#/p3")).should('not.exist')
+    cy.get(cesc2("#/p3/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3/_math1")).should('not.exist')
 
-    cy.get(cesc("#/p1a")).contains('Hello 1!');
-    cy.get(cesc("#/p1a/_number1")).contains('1');
-    cy.get(cesc("#/p1a/_math1")).contains('x');
-    cy.get(cesc("#/p2a")).contains('Hello 2!');
-    cy.get(cesc("#/p2a/_number1")).contains('2');
-    cy.get(cesc("#/p2a/_math1")).contains('y');
-    cy.get(cesc("#/p3a")).should('not.exist')
-    cy.get(cesc("#/p3a/_number1")).should('not.exist')
-    cy.get(cesc("#/p3a/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1a")).contains('Hello 1!');
+    cy.get(cesc2("#/p1a/_number1")).contains('1');
+    cy.get(cesc2("#/p1a/_math1")).contains('x');
+    cy.get(cesc2("#/p2a")).contains('Hello 2!');
+    cy.get(cesc2("#/p2a/_number1")).contains('2');
+    cy.get(cesc2("#/p2a/_math1")).contains('y');
+    cy.get(cesc2("#/p3a")).should('not.exist')
+    cy.get(cesc2("#/p3a/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3a/_math1")).should('not.exist')
 
-    cy.get(cesc("#/p1b")).contains('Hello 1!');
-    cy.get(cesc("#/p1b/_number1")).contains('1');
-    cy.get(cesc("#/p1b/_math1")).contains('x');
-    cy.get(cesc("#/p2b")).contains('Hello 2!');
-    cy.get(cesc("#/p2b/_number1")).contains('2');
-    cy.get(cesc("#/p2b/_math1")).contains('y');
-    cy.get(cesc("#/p3b")).should('not.exist')
-    cy.get(cesc("#/p3b/_number1")).should('not.exist')
-    cy.get(cesc("#/p3b/_math1")).should('not.exist')
+    cy.get(cesc2("#/p1b")).contains('Hello 1!');
+    cy.get(cesc2("#/p1b/_number1")).contains('1');
+    cy.get(cesc2("#/p1b/_math1")).contains('x');
+    cy.get(cesc2("#/p2b")).contains('Hello 2!');
+    cy.get(cesc2("#/p2b/_number1")).contains('2');
+    cy.get(cesc2("#/p2b/_math1")).contains('y');
+    cy.get(cesc2("#/p3b")).should('not.exist')
+    cy.get(cesc2("#/p3b/_number1")).should('not.exist')
+    cy.get(cesc2("#/p3b/_math1")).should('not.exist')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1634,40 +1630,40 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('increase n')
-    cy.get(cesc('#/n') + " textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc2('#/n') + " textarea").type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get(cesc('#/n2')).contains('3')
-    cy.get(cesc('#/n3')).contains('3')
+    cy.get(cesc2('#/n2')).contains('3')
+    cy.get(cesc2('#/n3')).contains('3')
 
-    cy.get(cesc("#/p1")).contains('Hello 1!');
-    cy.get(cesc("#/p1/_number1")).contains('1');
-    cy.get(cesc("#/p1/_math1")).contains('x');
-    cy.get(cesc("#/p2")).contains('Hello 2!');
-    cy.get(cesc("#/p2/_number1")).contains('2');
-    cy.get(cesc("#/p2/_math1")).contains('y');
-    cy.get(cesc("#/p3")).contains('Hello 3!');
-    cy.get(cesc("#/p3/_number1")).contains('3');
-    cy.get(cesc("#/p3/_math1")).contains('＿');
+    cy.get(cesc2("#/p1")).contains('Hello 1!');
+    cy.get(cesc2("#/p1/_number1")).contains('1');
+    cy.get(cesc2("#/p1/_math1")).contains('x');
+    cy.get(cesc2("#/p2")).contains('Hello 2!');
+    cy.get(cesc2("#/p2/_number1")).contains('2');
+    cy.get(cesc2("#/p2/_math1")).contains('y');
+    cy.get(cesc2("#/p3")).contains('Hello 3!');
+    cy.get(cesc2("#/p3/_number1")).contains('3');
+    cy.get(cesc2("#/p3/_math1")).contains('＿');
 
-    cy.get(cesc("#/p1a")).contains('Hello 1!');
-    cy.get(cesc("#/p1a/_number1")).contains('1');
-    cy.get(cesc("#/p1a/_math1")).contains('x');
-    cy.get(cesc("#/p2a")).contains('Hello 2!');
-    cy.get(cesc("#/p2a/_number1")).contains('2');
-    cy.get(cesc("#/p2a/_math1")).contains('y');
-    cy.get(cesc("#/p3a")).contains('Hello 3!');
-    cy.get(cesc("#/p3a/_number1")).contains('3');
-    cy.get(cesc("#/p3a/_math1")).contains('＿');
+    cy.get(cesc2("#/p1a")).contains('Hello 1!');
+    cy.get(cesc2("#/p1a/_number1")).contains('1');
+    cy.get(cesc2("#/p1a/_math1")).contains('x');
+    cy.get(cesc2("#/p2a")).contains('Hello 2!');
+    cy.get(cesc2("#/p2a/_number1")).contains('2');
+    cy.get(cesc2("#/p2a/_math1")).contains('y');
+    cy.get(cesc2("#/p3a")).contains('Hello 3!');
+    cy.get(cesc2("#/p3a/_number1")).contains('3');
+    cy.get(cesc2("#/p3a/_math1")).contains('＿');
 
-    cy.get(cesc("#/p1b")).contains('Hello 1!');
-    cy.get(cesc("#/p1b/_number1")).contains('1');
-    cy.get(cesc("#/p1b/_math1")).contains('x');
-    cy.get(cesc("#/p2b")).contains('Hello 2!');
-    cy.get(cesc("#/p2b/_number1")).contains('2');
-    cy.get(cesc("#/p2b/_math1")).contains('y');
-    cy.get(cesc("#/p3b")).contains('Hello 3!');
-    cy.get(cesc("#/p3b/_number1")).contains('3');
-    cy.get(cesc("#/p3b/_math1")).contains('＿');
+    cy.get(cesc2("#/p1b")).contains('Hello 1!');
+    cy.get(cesc2("#/p1b/_number1")).contains('1');
+    cy.get(cesc2("#/p1b/_math1")).contains('x');
+    cy.get(cesc2("#/p2b")).contains('Hello 2!');
+    cy.get(cesc2("#/p2b/_number1")).contains('2');
+    cy.get(cesc2("#/p2b/_math1")).contains('y');
+    cy.get(cesc2("#/p3b")).contains('Hello 3!');
+    cy.get(cesc2("#/p3b/_number1")).contains('3');
+    cy.get(cesc2("#/p3b/_math1")).contains('＿');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1697,38 +1693,38 @@ describe('Copy Tag Tests', function () {
     });
 
     cy.log('type z in third mathinput')
-    cy.get(cesc('#/p3a/x') + " textarea").type("z{enter}", { force: true });
+    cy.get(cesc2('#/p3a/x') + " textarea").type("z{enter}", { force: true });
 
 
-    cy.get(cesc("#/p1")).contains('Hello 1!');
-    cy.get(cesc("#/p1/_number1")).contains('1');
-    cy.get(cesc("#/p1/_math1")).contains('x');
-    cy.get(cesc("#/p2")).contains('Hello 2!');
-    cy.get(cesc("#/p2/_number1")).contains('2');
-    cy.get(cesc("#/p2/_math1")).contains('y');
-    cy.get(cesc("#/p3")).contains('Hello 3!');
-    cy.get(cesc("#/p3/_number1")).contains('3');
-    cy.get(cesc("#/p3/_math1")).contains('z');
+    cy.get(cesc2("#/p1")).contains('Hello 1!');
+    cy.get(cesc2("#/p1/_number1")).contains('1');
+    cy.get(cesc2("#/p1/_math1")).contains('x');
+    cy.get(cesc2("#/p2")).contains('Hello 2!');
+    cy.get(cesc2("#/p2/_number1")).contains('2');
+    cy.get(cesc2("#/p2/_math1")).contains('y');
+    cy.get(cesc2("#/p3")).contains('Hello 3!');
+    cy.get(cesc2("#/p3/_number1")).contains('3');
+    cy.get(cesc2("#/p3/_math1")).contains('z');
 
-    cy.get(cesc("#/p1a")).contains('Hello 1!');
-    cy.get(cesc("#/p1a/_number1")).contains('1');
-    cy.get(cesc("#/p1a/_math1")).contains('x');
-    cy.get(cesc("#/p2a")).contains('Hello 2!');
-    cy.get(cesc("#/p2a/_number1")).contains('2');
-    cy.get(cesc("#/p2a/_math1")).contains('y');
-    cy.get(cesc("#/p3a")).contains('Hello 3!');
-    cy.get(cesc("#/p3a/_number1")).contains('3');
-    cy.get(cesc("#/p3a/_math1")).contains('z');
+    cy.get(cesc2("#/p1a")).contains('Hello 1!');
+    cy.get(cesc2("#/p1a/_number1")).contains('1');
+    cy.get(cesc2("#/p1a/_math1")).contains('x');
+    cy.get(cesc2("#/p2a")).contains('Hello 2!');
+    cy.get(cesc2("#/p2a/_number1")).contains('2');
+    cy.get(cesc2("#/p2a/_math1")).contains('y');
+    cy.get(cesc2("#/p3a")).contains('Hello 3!');
+    cy.get(cesc2("#/p3a/_number1")).contains('3');
+    cy.get(cesc2("#/p3a/_math1")).contains('z');
 
-    cy.get(cesc("#/p1b")).contains('Hello 1!');
-    cy.get(cesc("#/p1b/_number1")).contains('1');
-    cy.get(cesc("#/p1b/_math1")).contains('x');
-    cy.get(cesc("#/p2b")).contains('Hello 2!');
-    cy.get(cesc("#/p2b/_number1")).contains('2');
-    cy.get(cesc("#/p2b/_math1")).contains('y');
-    cy.get(cesc("#/p3b")).contains('Hello 3!');
-    cy.get(cesc("#/p3b/_number1")).contains('3');
-    cy.get(cesc("#/p3b/_math1")).contains('z');
+    cy.get(cesc2("#/p1b")).contains('Hello 1!');
+    cy.get(cesc2("#/p1b/_number1")).contains('1');
+    cy.get(cesc2("#/p1b/_math1")).contains('x');
+    cy.get(cesc2("#/p2b")).contains('Hello 2!');
+    cy.get(cesc2("#/p2b/_number1")).contains('2');
+    cy.get(cesc2("#/p2b/_math1")).contains('y');
+    cy.get(cesc2("#/p3b")).contains('Hello 3!');
+    cy.get(cesc2("#/p3b/_number1")).contains('3');
+    cy.get(cesc2("#/p3b/_math1")).contains('z');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1788,23 +1784,23 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/m1') + ' .mjx-mrow').eq(0).contains('2');
-    cy.get(cesc('#/m2') + ' .mjx-mrow').eq(0).contains('2');
+    cy.get(cesc2('#/m1') + ' .mjx-mrow').eq(0).contains('2');
+    cy.get(cesc2('#/m2') + ' .mjx-mrow').eq(0).contains('2');
 
-    cy.get(cesc('#/n1')).contains('2');
-    cy.get(cesc('#/n2')).contains('2');
+    cy.get(cesc2('#/n1')).contains('2');
+    cy.get(cesc2('#/n2')).contains('2');
 
-    cy.get(cesc('#/c1') + ' .mjx-mrow').eq(0).contains('(x,y)');
-    cy.get(cesc('#/c2') + ' .mjx-mrow').eq(0).contains('(x,y)');
-    cy.get(cesc('#/c3') + ' .mjx-mrow').eq(0).contains('(x,y)');
-    cy.get(cesc('#/c4') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/c1') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/c2') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/c3') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/c4') + ' .mjx-mrow').eq(0).contains('(x,y)');
 
-    cy.get(cesc('#/mc1') + ' .mjx-mrow').eq(0).contains('(x,y)');
-    cy.get(cesc('#/mc2') + ' .mjx-mrow').eq(0).contains('(x,y)');
-    cy.get(cesc('#/mc3') + ' .mjx-mrow').eq(0).contains('(x,y)');
-    cy.get(cesc('#/mc4') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/mc1') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/mc2') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/mc3') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc2('#/mc4') + ' .mjx-mrow').eq(0).contains('(x,y)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1828,15 +1824,15 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('enter a')
-    cy.get(cesc('#/mi') + " textarea").type("{end}{backspace}a{enter}", { force: true });
+    cy.get(cesc2('#/mi') + " textarea").type("{end}{backspace}a{enter}", { force: true });
 
-    cy.get(cesc('#/m1') + ' .mjx-mrow').should('contain.text', 'a');
+    cy.get(cesc2('#/m1') + ' .mjx-mrow').should('contain.text', 'a');
 
-    cy.get(cesc('#/m1') + ' .mjx-mrow').eq(0).contains('a');
-    cy.get(cesc('#/m2') + ' .mjx-mrow').eq(0).contains('a');
+    cy.get(cesc2('#/m1') + ' .mjx-mrow').eq(0).contains('a');
+    cy.get(cesc2('#/m2') + ' .mjx-mrow').eq(0).contains('a');
 
-    cy.get(cesc('#/n1')).contains('NaN');
-    cy.get(cesc('#/n2')).contains('NaN');
+    cy.get(cesc2('#/n1')).contains('NaN');
+    cy.get(cesc2('#/n2')).contains('NaN');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1872,10 +1868,10 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/Pcoords') + ' .mjx-mrow').eq(0).contains('(0,0)');
-    cy.get(cesc('#/g2Pcoords') + ' .mjx-mrow').eq(0).contains('(0,0)');
+    cy.get(cesc2('#/Pcoords') + ' .mjx-mrow').eq(0).contains('(0,0)');
+    cy.get(cesc2('#/g2Pcoords') + ' .mjx-mrow').eq(0).contains('(0,0)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1906,8 +1902,8 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/g2Pcoords') + ' .mjx-mrow').should('contain.text', '(7,6)');
-    cy.get(cesc('#/Pcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc2('#/g2Pcoords') + ' .mjx-mrow').should('contain.text', '(7,6)');
+    cy.get(cesc2('#/Pcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1982,22 +1978,22 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc2('#/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
-    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc2('#/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
-    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc2('#/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
-    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc2('#/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
     let P1aName;
 
@@ -2104,22 +2100,22 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').should('contain.text', '(7,2)');
+    cy.get(cesc2('#/v4displacement') + ' .mjx-mrow').should('contain.text', '(7,2)');
 
-    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(3,5)');
-    cy.get(cesc('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
+    cy.get(cesc2('#/P1coords') + ' .mjx-mrow').eq(0).contains('(3,5)');
+    cy.get(cesc2('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
 
-    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(6,0)');
-    cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(6,0)');
-    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
+    cy.get(cesc2('#/P2coords') + ' .mjx-mrow').eq(0).contains('(6,0)');
+    cy.get(cesc2('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(6,0)');
+    cy.get(cesc2('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
 
-    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(5,8)');
-    cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(5,8)');
-    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
+    cy.get(cesc2('#/P3coords') + ' .mjx-mrow').eq(0).contains('(5,8)');
+    cy.get(cesc2('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(5,8)');
+    cy.get(cesc2('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
 
-    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(0,3)');
-    cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(0,3)');
-    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
+    cy.get(cesc2('#/P4coords') + ' .mjx-mrow').eq(0).contains('(0,3)');
+    cy.get(cesc2('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(0,3)');
+    cy.get(cesc2('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
 
     cy.window().then(async (win) => {
 
@@ -2178,22 +2174,22 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/P4coords') + ' .mjx-mrow').should('contain.text', '(7,6)');
+    cy.get(cesc2('#/P4coords') + ' .mjx-mrow').should('contain.text', '(7,6)');
 
-    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(2,1)');
-    cy.get(cesc('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
+    cy.get(cesc2('#/P1coords') + ' .mjx-mrow').eq(0).contains('(2,1)');
+    cy.get(cesc2('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
 
-    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(5,4)');
-    cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(5,4)');
-    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
+    cy.get(cesc2('#/P2coords') + ' .mjx-mrow').eq(0).contains('(5,4)');
+    cy.get(cesc2('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(5,4)');
+    cy.get(cesc2('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
 
-    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(9,7)');
-    cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(9,7)');
-    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
+    cy.get(cesc2('#/P3coords') + ' .mjx-mrow').eq(0).contains('(9,7)');
+    cy.get(cesc2('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(9,7)');
+    cy.get(cesc2('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
 
-    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(7,6)');
-    cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(7,6)');
-    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
+    cy.get(cesc2('#/P4coords') + ' .mjx-mrow').eq(0).contains('(7,6)');
+    cy.get(cesc2('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(7,6)');
+    cy.get(cesc2('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
 
     cy.window().then(async (win) => {
 
@@ -2279,24 +2275,24 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
-    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
-    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v4nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
+    cy.get(cesc2('#/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc2('#/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc2('#/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/v4nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
 
-    cy.get(cesc('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
-    cy.get(cesc('#/grp2ps/v2nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
-    cy.get(cesc('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
-    cy.get(cesc('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/grp2ps/v4nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
+    cy.get(cesc2('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc2('#/grp2ps/v2nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
+    cy.get(cesc2('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc2('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc2('#/grp2ps/v4nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2455,74 +2451,74 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let P = [1, 2];
     let v = [4, 5];
     let vH = [4, 5];
     let c0 = [0, 0];
 
-    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
 
 
-    cy.get(cesc('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
 
 
-    cy.get(cesc('#/grp3ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp3ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp3ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
 
 
-    cy.get(cesc('#/grp3ps/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P7coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l7point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l7point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v7head') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P7coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l7point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l7point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v7head') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2617,70 +2613,70 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').should('contain.text', '(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').should('contain.text', '(' + c0 + ')');
 
 
-    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
 
 
-    cy.get(cesc('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
 
 
-    cy.get(cesc('#/grp3ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp3ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp3ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
 
 
-    cy.get(cesc('#/grp3ps/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/P7coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l7point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/l7point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v7head') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
-    cy.get(cesc('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/P7coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l7point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/l7point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v7head') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc2('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2799,43 +2795,43 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p3')).should('have.text', "nothing: ")
-    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p4')).should('contain.text', ').');
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p5')).should('contain.text', ').1');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '2');
-    cy.get(cesc('#/p7') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p8')).should('have.text', "nothing: ");
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '2');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p11')).should('have.text', "nothing: ");
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p3')).should('have.text', "nothing: ")
+    cy.get(cesc2('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p4')).should('contain.text', ').');
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p5')).should('contain.text', ').1');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc2('#/p7') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p8')).should('have.text', "nothing: ");
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p11')).should('have.text', "nothing: ");
 
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p13')).should('contain.text', ').x');
-    cy.get(cesc('#/p14')).should('have.text', "no match: $(P.)");
-    cy.get(cesc('#/p15')).should('have.text', "nothing: ");
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '2');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p18') + ' .mjx-mrow').eq(0).should('have.text', '2');
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p13')).should('contain.text', ').x');
+    cy.get(cesc2('#/p14')).should('have.text', "no match: $(P.)");
+    cy.get(cesc2('#/p15')).should('have.text', "nothing: ");
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p18') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '3');
 
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p21') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p22')).should('have.text', "nothing: ")
-    cy.get(cesc('#/p23')).should('have.text', "nothing: ")
-    cy.get(cesc('#/p24')).should('have.text', "nothing: ")
-    cy.get(cesc('#/p25') + ' .mjx-mrow').eq(0).should('have.text', '2');
-    cy.get(cesc('#/p26') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p27')).should('have.text', "nothing: ")
-    cy.get(cesc('#/p28') + ' .mjx-mrow').eq(0).should('have.text', '2');
-    cy.get(cesc('#/p29') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p30')).should('have.text', "nothing: ");
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p21') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc2('#/p22')).should('have.text', "nothing: ")
+    cy.get(cesc2('#/p23')).should('have.text', "nothing: ")
+    cy.get(cesc2('#/p24')).should('have.text', "nothing: ")
+    cy.get(cesc2('#/p25') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc2('#/p26') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p27')).should('have.text', "nothing: ")
+    cy.get(cesc2('#/p28') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc2('#/p29') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p30')).should('have.text', "nothing: ");
 
 
   });
@@ -2910,79 +2906,79 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(5,6)');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '5');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '6');
-    cy.get(cesc('#/p4')).should('have.text', '')
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '5');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '6');
-    cy.get(cesc('#/p7')).should('have.text', '')
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(5,6)');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc2('#/p4')).should('have.text', '')
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc2('#/p7')).should('have.text', '')
 
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p11')).should('have.text', '')
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p14')).should('have.text', '')
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p11')).should('have.text', '')
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p14')).should('have.text', '')
 
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)');
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p18')).should('have.text', '')
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p21')).should('have.text', '')
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)');
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p18')).should('have.text', '')
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p21')).should('have.text', '')
 
-    cy.get(cesc('#/p22')).should('have.text', '')
-    cy.get(cesc('#/p23')).should('have.text', '')
-    cy.get(cesc('#/p24')).should('have.text', '')
-    cy.get(cesc('#/p25')).should('have.text', '')
-    cy.get(cesc('#/p26')).should('have.text', '')
-    cy.get(cesc('#/p27')).should('have.text', '')
-    cy.get(cesc('#/p28')).should('have.text', '')
+    cy.get(cesc2('#/p22')).should('have.text', '')
+    cy.get(cesc2('#/p23')).should('have.text', '')
+    cy.get(cesc2('#/p24')).should('have.text', '')
+    cy.get(cesc2('#/p25')).should('have.text', '')
+    cy.get(cesc2('#/p26')).should('have.text', '')
+    cy.get(cesc2('#/p27')).should('have.text', '')
+    cy.get(cesc2('#/p28')).should('have.text', '')
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)');
-    cy.get(cesc('#/p30')).should('have.text', '\\frac{2}{3}5');
-    cy.get(cesc('#/p31')).should('have.text', '36');
-    cy.get(cesc('#/p32')).should('have.text', '')
-    cy.get(cesc('#/p33')).should('have.text', '\\frac{2}{3}5');
-    cy.get(cesc('#/p34')).should('have.text', '36');
-    cy.get(cesc('#/p35')).should('have.text', '')
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)');
+    cy.get(cesc2('#/p30')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc2('#/p31')).should('have.text', '36');
+    cy.get(cesc2('#/p32')).should('have.text', '')
+    cy.get(cesc2('#/p33')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc2('#/p34')).should('have.text', '36');
+    cy.get(cesc2('#/p35')).should('have.text', '')
 
-    cy.get(cesc('#/p36')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)');
-    cy.get(cesc('#/p37')).should('have.text', '\\frac{2}{3}');
-    cy.get(cesc('#/p38')).should('have.text', '3');
-    cy.get(cesc('#/p39')).should('have.text', '')
-    cy.get(cesc('#/p40')).should('have.text', '\\frac{2}{3}');
-    cy.get(cesc('#/p41')).should('have.text', '3');
-    cy.get(cesc('#/p42')).should('have.text', '')
+    cy.get(cesc2('#/p36')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)');
+    cy.get(cesc2('#/p37')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc2('#/p38')).should('have.text', '3');
+    cy.get(cesc2('#/p39')).should('have.text', '')
+    cy.get(cesc2('#/p40')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc2('#/p41')).should('have.text', '3');
+    cy.get(cesc2('#/p42')).should('have.text', '')
 
-    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p47')).should('have.text', '')
-    cy.get(cesc('#/p48')).should('have.text', '')
-    cy.get(cesc('#/p49')).should('have.text', '')
-    cy.get(cesc('#/p50')).should('have.text', '')
+    cy.get(cesc2('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p47')).should('have.text', '')
+    cy.get(cesc2('#/p48')).should('have.text', '')
+    cy.get(cesc2('#/p49')).should('have.text', '')
+    cy.get(cesc2('#/p50')).should('have.text', '')
 
 
     cy.log('move points');
@@ -2998,79 +2994,79 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '9');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '0');
-    cy.get(cesc('#/p4')).should('have.text', '')
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '9');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '0');
-    cy.get(cesc('#/p7')).should('have.text', '')
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc2('#/p4')).should('have.text', '')
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc2('#/p7')).should('have.text', '')
 
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p11')).should('have.text', '')
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p14')).should('have.text', '')
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p11')).should('have.text', '')
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p14')).should('have.text', '')
 
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p18')).should('have.text', '')
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p21')).should('have.text', '')
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p18')).should('have.text', '')
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p21')).should('have.text', '')
 
-    cy.get(cesc('#/p22')).should('have.text', '')
-    cy.get(cesc('#/p23')).should('have.text', '')
-    cy.get(cesc('#/p24')).should('have.text', '')
-    cy.get(cesc('#/p25')).should('have.text', '')
-    cy.get(cesc('#/p26')).should('have.text', '')
-    cy.get(cesc('#/p27')).should('have.text', '')
-    cy.get(cesc('#/p28')).should('have.text', '')
+    cy.get(cesc2('#/p22')).should('have.text', '')
+    cy.get(cesc2('#/p23')).should('have.text', '')
+    cy.get(cesc2('#/p24')).should('have.text', '')
+    cy.get(cesc2('#/p25')).should('have.text', '')
+    cy.get(cesc2('#/p26')).should('have.text', '')
+    cy.get(cesc2('#/p27')).should('have.text', '')
+    cy.get(cesc2('#/p28')).should('have.text', '')
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
-    cy.get(cesc('#/p30')).should('have.text', '79');
-    cy.get(cesc('#/p31')).should('have.text', '80');
-    cy.get(cesc('#/p32')).should('have.text', '')
-    cy.get(cesc('#/p33')).should('have.text', '79');
-    cy.get(cesc('#/p34')).should('have.text', '80');
-    cy.get(cesc('#/p35')).should('have.text', '')
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+    cy.get(cesc2('#/p30')).should('have.text', '79');
+    cy.get(cesc2('#/p31')).should('have.text', '80');
+    cy.get(cesc2('#/p32')).should('have.text', '')
+    cy.get(cesc2('#/p33')).should('have.text', '79');
+    cy.get(cesc2('#/p34')).should('have.text', '80');
+    cy.get(cesc2('#/p35')).should('have.text', '')
 
-    cy.get(cesc('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
-    cy.get(cesc('#/p37')).should('have.text', '7');
-    cy.get(cesc('#/p38')).should('have.text', '8');
-    cy.get(cesc('#/p39')).should('have.text', '')
-    cy.get(cesc('#/p40')).should('have.text', '7');
-    cy.get(cesc('#/p41')).should('have.text', '8');
-    cy.get(cesc('#/p42')).should('have.text', '')
+    cy.get(cesc2('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
+    cy.get(cesc2('#/p37')).should('have.text', '7');
+    cy.get(cesc2('#/p38')).should('have.text', '8');
+    cy.get(cesc2('#/p39')).should('have.text', '')
+    cy.get(cesc2('#/p40')).should('have.text', '7');
+    cy.get(cesc2('#/p41')).should('have.text', '8');
+    cy.get(cesc2('#/p42')).should('have.text', '')
 
-    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get(cesc('#/p47')).should('have.text', '')
-    cy.get(cesc('#/p48')).should('have.text', '')
-    cy.get(cesc('#/p49')).should('have.text', '')
-    cy.get(cesc('#/p50')).should('have.text', '')
+    cy.get(cesc2('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc2('#/p47')).should('have.text', '')
+    cy.get(cesc2('#/p48')).should('have.text', '')
+    cy.get(cesc2('#/p49')).should('have.text', '')
+    cy.get(cesc2('#/p50')).should('have.text', '')
 
   });
 
@@ -3143,79 +3139,79 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(5,6)');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '5');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '6');
-    cy.get(cesc('#/p4')).should('have.text', '')
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '5');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '6');
-    cy.get(cesc('#/p7')).should('have.text', '')
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(5,6)');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc2('#/p4')).should('have.text', '')
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc2('#/p7')).should('have.text', '')
 
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p11')).should('have.text', '')
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p14')).should('have.text', '')
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p11')).should('have.text', '')
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p14')).should('have.text', '')
 
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)');
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p18')).should('have.text', '')
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p21')).should('have.text', '')
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)');
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p18')).should('have.text', '')
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p21')).should('have.text', '')
 
-    cy.get(cesc('#/p22')).should('have.text', '')
-    cy.get(cesc('#/p23')).should('have.text', '')
-    cy.get(cesc('#/p24')).should('have.text', '')
-    cy.get(cesc('#/p25')).should('have.text', '')
-    cy.get(cesc('#/p26')).should('have.text', '')
-    cy.get(cesc('#/p27')).should('have.text', '')
-    cy.get(cesc('#/p28')).should('have.text', '')
+    cy.get(cesc2('#/p22')).should('have.text', '')
+    cy.get(cesc2('#/p23')).should('have.text', '')
+    cy.get(cesc2('#/p24')).should('have.text', '')
+    cy.get(cesc2('#/p25')).should('have.text', '')
+    cy.get(cesc2('#/p26')).should('have.text', '')
+    cy.get(cesc2('#/p27')).should('have.text', '')
+    cy.get(cesc2('#/p28')).should('have.text', '')
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)');
-    cy.get(cesc('#/p30')).should('have.text', '\\frac{2}{3}5');
-    cy.get(cesc('#/p31')).should('have.text', '36');
-    cy.get(cesc('#/p32')).should('have.text', '')
-    cy.get(cesc('#/p33')).should('have.text', '\\frac{2}{3}5');
-    cy.get(cesc('#/p34')).should('have.text', '36');
-    cy.get(cesc('#/p35')).should('have.text', '')
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)');
+    cy.get(cesc2('#/p30')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc2('#/p31')).should('have.text', '36');
+    cy.get(cesc2('#/p32')).should('have.text', '')
+    cy.get(cesc2('#/p33')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc2('#/p34')).should('have.text', '36');
+    cy.get(cesc2('#/p35')).should('have.text', '')
 
-    cy.get(cesc('#/p36')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)');
-    cy.get(cesc('#/p37')).should('have.text', '\\frac{2}{3}');
-    cy.get(cesc('#/p38')).should('have.text', '3');
-    cy.get(cesc('#/p39')).should('have.text', '')
-    cy.get(cesc('#/p40')).should('have.text', '\\frac{2}{3}');
-    cy.get(cesc('#/p41')).should('have.text', '3');
-    cy.get(cesc('#/p42')).should('have.text', '')
+    cy.get(cesc2('#/p36')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)');
+    cy.get(cesc2('#/p37')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc2('#/p38')).should('have.text', '3');
+    cy.get(cesc2('#/p39')).should('have.text', '')
+    cy.get(cesc2('#/p40')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc2('#/p41')).should('have.text', '3');
+    cy.get(cesc2('#/p42')).should('have.text', '')
 
-    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '23');
-    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p47')).should('have.text', '')
-    cy.get(cesc('#/p48')).should('have.text', '')
-    cy.get(cesc('#/p49')).should('have.text', '')
-    cy.get(cesc('#/p50')).should('have.text', '')
+    cy.get(cesc2('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc2('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc2('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p47')).should('have.text', '')
+    cy.get(cesc2('#/p48')).should('have.text', '')
+    cy.get(cesc2('#/p49')).should('have.text', '')
+    cy.get(cesc2('#/p50')).should('have.text', '')
 
     cy.log('move points');
 
@@ -3230,79 +3226,79 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '9');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '0');
-    cy.get(cesc('#/p4')).should('have.text', '')
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '9');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '0');
-    cy.get(cesc('#/p7')).should('have.text', '')
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc2('#/p4')).should('have.text', '')
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc2('#/p7')).should('have.text', '')
 
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p11')).should('have.text', '')
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p14')).should('have.text', '')
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p11')).should('have.text', '')
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p14')).should('have.text', '')
 
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p18')).should('have.text', '')
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p21')).should('have.text', '')
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p18')).should('have.text', '')
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p21')).should('have.text', '')
 
-    cy.get(cesc('#/p22')).should('have.text', '')
-    cy.get(cesc('#/p23')).should('have.text', '')
-    cy.get(cesc('#/p24')).should('have.text', '')
-    cy.get(cesc('#/p25')).should('have.text', '')
-    cy.get(cesc('#/p26')).should('have.text', '')
-    cy.get(cesc('#/p27')).should('have.text', '')
-    cy.get(cesc('#/p28')).should('have.text', '')
+    cy.get(cesc2('#/p22')).should('have.text', '')
+    cy.get(cesc2('#/p23')).should('have.text', '')
+    cy.get(cesc2('#/p24')).should('have.text', '')
+    cy.get(cesc2('#/p25')).should('have.text', '')
+    cy.get(cesc2('#/p26')).should('have.text', '')
+    cy.get(cesc2('#/p27')).should('have.text', '')
+    cy.get(cesc2('#/p28')).should('have.text', '')
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
-    cy.get(cesc('#/p30')).should('have.text', '79');
-    cy.get(cesc('#/p31')).should('have.text', '80');
-    cy.get(cesc('#/p32')).should('have.text', '')
-    cy.get(cesc('#/p33')).should('have.text', '79');
-    cy.get(cesc('#/p34')).should('have.text', '80');
-    cy.get(cesc('#/p35')).should('have.text', '')
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+    cy.get(cesc2('#/p30')).should('have.text', '79');
+    cy.get(cesc2('#/p31')).should('have.text', '80');
+    cy.get(cesc2('#/p32')).should('have.text', '')
+    cy.get(cesc2('#/p33')).should('have.text', '79');
+    cy.get(cesc2('#/p34')).should('have.text', '80');
+    cy.get(cesc2('#/p35')).should('have.text', '')
 
-    cy.get(cesc('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
-    cy.get(cesc('#/p37')).should('have.text', '7');
-    cy.get(cesc('#/p38')).should('have.text', '8');
-    cy.get(cesc('#/p39')).should('have.text', '')
-    cy.get(cesc('#/p40')).should('have.text', '7');
-    cy.get(cesc('#/p41')).should('have.text', '8');
-    cy.get(cesc('#/p42')).should('have.text', '')
+    cy.get(cesc2('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
+    cy.get(cesc2('#/p37')).should('have.text', '7');
+    cy.get(cesc2('#/p38')).should('have.text', '8');
+    cy.get(cesc2('#/p39')).should('have.text', '')
+    cy.get(cesc2('#/p40')).should('have.text', '7');
+    cy.get(cesc2('#/p41')).should('have.text', '8');
+    cy.get(cesc2('#/p42')).should('have.text', '')
 
-    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '7');
-    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '8');
-    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get(cesc('#/p47')).should('have.text', '')
-    cy.get(cesc('#/p48')).should('have.text', '')
-    cy.get(cesc('#/p49')).should('have.text', '')
-    cy.get(cesc('#/p50')).should('have.text', '')
+    cy.get(cesc2('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc2('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc2('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc2('#/p47')).should('have.text', '')
+    cy.get(cesc2('#/p48')).should('have.text', '')
+    cy.get(cesc2('#/p49')).should('have.text', '')
+    cy.get(cesc2('#/p50')).should('have.text', '')
 
 
   });
@@ -3364,78 +3360,78 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(3.9,9.8)');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(0.91,33)');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '3.9');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '0.91');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '9.8');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '33');
-    cy.get(cesc('#/p4')).should('have.text', '')
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '3.9');
-    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '0.91');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '9.8');
-    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '33');
-    cy.get(cesc('#/p7')).should('have.text', '')
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(3.9,9.8)');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(0.91,33)');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '3.9');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '0.91');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '9.8');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '33');
+    cy.get(cesc2('#/p4')).should('have.text', '')
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '3.9');
+    cy.get(cesc2('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '0.91');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '9.8');
+    cy.get(cesc2('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '33');
+    cy.get(cesc2('#/p7')).should('have.text', '')
 
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
-    cy.get(cesc('#/p11')).should('have.text', '')
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
-    cy.get(cesc('#/p14')).should('have.text', '')
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p9') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p10') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc2('#/p11')).should('have.text', '')
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p12') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p13') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc2('#/p14')).should('have.text', '')
 
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p18')).should('have.text', '')
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p21')).should('have.text', '')
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p18')).should('have.text', '')
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p21')).should('have.text', '')
 
-    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
-    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
-    cy.get(cesc('#/p23') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p23') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
-    cy.get(cesc('#/p24') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p24') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
-    cy.get(cesc('#/p25')).should('have.text', '')
-    cy.get(cesc('#/p26') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p26') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
-    cy.get(cesc('#/p27') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p27') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
-    cy.get(cesc('#/p28')).should('have.text', '')
+    cy.get(cesc2('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc2('#/p22') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
+    cy.get(cesc2('#/p23') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p23') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc2('#/p24') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p24') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc2('#/p25')).should('have.text', '')
+    cy.get(cesc2('#/p26') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p26') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc2('#/p27') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p27') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc2('#/p28')).should('have.text', '')
 
-    cy.get(cesc('#/p29') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
-    cy.get(cesc('#/p29') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p30') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p30') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p31') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p31') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p32')).should('have.text', '')
-    cy.get(cesc('#/p33') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
-    cy.get(cesc('#/p33') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p34') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
-    cy.get(cesc('#/p34') + ' .mjx-mrow').eq(1).should('not.exist');
-    cy.get(cesc('#/p35')).should('have.text', '')
+    cy.get(cesc2('#/p29') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc2('#/p29') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p30') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p30') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p31') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p31') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p32')).should('have.text', '')
+    cy.get(cesc2('#/p33') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc2('#/p33') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p34') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc2('#/p34') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc2('#/p35')).should('have.text', '')
 
-    cy.get(cesc('#/p36')).should('have.text', '0 = -23.1058 x - 3.0203 y + 120.4105');
-    cy.get(cesc('#/p37') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
-    cy.get(cesc('#/p37') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
-    cy.get(cesc('#/p38') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
-    cy.get(cesc('#/p38') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p36')).should('have.text', '0 = -23.1058 x - 3.0203 y + 120.4105');
+    cy.get(cesc2('#/p37') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc2('#/p37') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
+    cy.get(cesc2('#/p38') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc2('#/p38') + ' .mjx-mrow').eq(3).should('not.exist');
 
   });
 
@@ -3461,10 +3457,10 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
 
     cy.window().then(async (win) => {
 
@@ -3479,9 +3475,9 @@ describe('Copy Tag Tests', function () {
 
     })
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').should('contain.text', '8.48273');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').should('contain.text', '8.48273');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
 
     cy.window().then(async (win) => {
 
@@ -3496,9 +3492,9 @@ describe('Copy Tag Tests', function () {
 
     })
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').should('contain.text', '8.483');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').should('contain.text', '8.483');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
 
 
 
@@ -3573,68 +3569,68 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,34)');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(58,35)');
-    cy.get(cesc('#/p2')).should('have.text', '0.67, 0.63');
-    cy.get(cesc('#/p3')).should('have.text', '0.75, 0.6');
-    cy.get(cesc('#/p4')).should('have.text', 'NaN, NaN')
-    cy.get(cesc('#/p5')).should('have.text', '0.67, 0.63');
-    cy.get(cesc('#/p6')).should('have.text', '0.75, 0.6');
-    cy.get(cesc('#/p7')).should('have.text', 'NaN, NaN')
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,34)');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(58,35)');
+    cy.get(cesc2('#/p2')).should('have.text', '0.67, 0.63');
+    cy.get(cesc2('#/p3')).should('have.text', '0.75, 0.6');
+    cy.get(cesc2('#/p4')).should('have.text', 'NaN, NaN')
+    cy.get(cesc2('#/p5')).should('have.text', '0.67, 0.63');
+    cy.get(cesc2('#/p6')).should('have.text', '0.75, 0.6');
+    cy.get(cesc2('#/p7')).should('have.text', 'NaN, NaN')
 
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,34)');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p9')).should('have.text', '0.67');
-    cy.get(cesc('#/p10')).should('have.text', '0.75');
-    cy.get(cesc('#/p11')).should('have.text', 'NaN')
-    cy.get(cesc('#/p12')).should('have.text', '0.67');
-    cy.get(cesc('#/p13')).should('have.text', '0.75');
-    cy.get(cesc('#/p14')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,34)');
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p9')).should('have.text', '0.67');
+    cy.get(cesc2('#/p10')).should('have.text', '0.75');
+    cy.get(cesc2('#/p11')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p12')).should('have.text', '0.67');
+    cy.get(cesc2('#/p13')).should('have.text', '0.75');
+    cy.get(cesc2('#/p14')).should('have.text', 'NaN')
 
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(58,35)');
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p16')).should('have.text', '0.63');
-    cy.get(cesc('#/p17')).should('have.text', '0.6');
-    cy.get(cesc('#/p18')).should('have.text', 'NaN')
-    cy.get(cesc('#/p19')).should('have.text', '0.63');
-    cy.get(cesc('#/p20')).should('have.text', '0.6');
-    cy.get(cesc('#/p21')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(58,35)');
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p16')).should('have.text', '0.63');
+    cy.get(cesc2('#/p17')).should('have.text', '0.6');
+    cy.get(cesc2('#/p18')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p19')).should('have.text', '0.63');
+    cy.get(cesc2('#/p20')).should('have.text', '0.6');
+    cy.get(cesc2('#/p21')).should('have.text', 'NaN')
 
-    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
-    cy.get(cesc('#/p23')).should('have.text', 'NaN')
-    cy.get(cesc('#/p24')).should('have.text', 'NaN')
-    cy.get(cesc('#/p25')).should('have.text', 'NaN')
-    cy.get(cesc('#/p26')).should('have.text', 'NaN')
-    cy.get(cesc('#/p27')).should('have.text', 'NaN')
-    cy.get(cesc('#/p28')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/p23')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p24')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p25')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p26')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p27')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p28')).should('have.text', 'NaN')
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( \\frac{2}{3}, \\frac{3}{4} \\right), \\left( \\frac{5}{8}, \\frac{3}{5} \\right)');
-    cy.get(cesc('#/p30')).should('have.text', '\\frac{2}{3}, \\frac{5}{8}');
-    cy.get(cesc('#/p31')).should('have.text', '\\frac{3}{4}, \\frac{3}{5}');
-    cy.get(cesc('#/p32')).should('have.text', ', ')
-    cy.get(cesc('#/p33')).should('have.text', '\\frac{2}{3}, \\frac{5}{8}');
-    cy.get(cesc('#/p34')).should('have.text', '\\frac{3}{4}, \\frac{3}{5}');
-    cy.get(cesc('#/p35')).should('have.text', ', ')
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( \\frac{2}{3}, \\frac{3}{4} \\right), \\left( \\frac{5}{8}, \\frac{3}{5} \\right)');
+    cy.get(cesc2('#/p30')).should('have.text', '\\frac{2}{3}, \\frac{5}{8}');
+    cy.get(cesc2('#/p31')).should('have.text', '\\frac{3}{4}, \\frac{3}{5}');
+    cy.get(cesc2('#/p32')).should('have.text', ', ')
+    cy.get(cesc2('#/p33')).should('have.text', '\\frac{2}{3}, \\frac{5}{8}');
+    cy.get(cesc2('#/p34')).should('have.text', '\\frac{3}{4}, \\frac{3}{5}');
+    cy.get(cesc2('#/p35')).should('have.text', ', ')
 
-    cy.get(cesc('#/p36')).should('have.text', '\\left( \\frac{2}{3}, \\frac{3}{4} \\right)');
-    cy.get(cesc('#/p37')).should('have.text', '\\frac{2}{3}');
-    cy.get(cesc('#/p38')).should('have.text', '\\frac{3}{4}');
-    cy.get(cesc('#/p39')).should('have.text', '')
-    cy.get(cesc('#/p40')).should('have.text', '\\frac{2}{3}');
-    cy.get(cesc('#/p41')).should('have.text', '\\frac{3}{4}');
-    cy.get(cesc('#/p42')).should('have.text', '')
+    cy.get(cesc2('#/p36')).should('have.text', '\\left( \\frac{2}{3}, \\frac{3}{4} \\right)');
+    cy.get(cesc2('#/p37')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc2('#/p38')).should('have.text', '\\frac{3}{4}');
+    cy.get(cesc2('#/p39')).should('have.text', '')
+    cy.get(cesc2('#/p40')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc2('#/p41')).should('have.text', '\\frac{3}{4}');
+    cy.get(cesc2('#/p42')).should('have.text', '')
 
-    cy.get(cesc('#/p43')).should('have.text', '0.67');
-    cy.get(cesc('#/p44')).should('have.text', '0.75');
-    cy.get(cesc('#/p45')).should('have.text', '0.63');
-    cy.get(cesc('#/p46')).should('have.text', '0.6');
-    cy.get(cesc('#/p47')).should('have.text', 'NaN');
-    cy.get(cesc('#/p48')).should('have.text', 'NaN');
-    cy.get(cesc('#/p49')).should('have.text', 'NaN');
-    cy.get(cesc('#/p50')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p43')).should('have.text', '0.67');
+    cy.get(cesc2('#/p44')).should('have.text', '0.75');
+    cy.get(cesc2('#/p45')).should('have.text', '0.63');
+    cy.get(cesc2('#/p46')).should('have.text', '0.6');
+    cy.get(cesc2('#/p47')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p48')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p49')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p50')).should('have.text', 'NaN');
 
     cy.log('move points');
 
@@ -3649,67 +3645,67 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right), \\left( 9, 0 \\right)');
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( 7, 8 \\right), \\left( 9, 0 \\right)');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
-    cy.get(cesc('#/p2')).should('have.text', '7, 9');
-    cy.get(cesc('#/p3')).should('have.text', '8, 0');
-    cy.get(cesc('#/p4')).should('have.text', 'NaN, NaN')
-    cy.get(cesc('#/p5')).should('have.text', '7, 9');
-    cy.get(cesc('#/p6')).should('have.text', '8, 0');
-    cy.get(cesc('#/p7')).should('have.text', 'NaN, NaN')
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
+    cy.get(cesc2('#/p2')).should('have.text', '7, 9');
+    cy.get(cesc2('#/p3')).should('have.text', '8, 0');
+    cy.get(cesc2('#/p4')).should('have.text', 'NaN, NaN')
+    cy.get(cesc2('#/p5')).should('have.text', '7, 9');
+    cy.get(cesc2('#/p6')).should('have.text', '8, 0');
+    cy.get(cesc2('#/p7')).should('have.text', 'NaN, NaN')
 
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p9')).should('have.text', '7');
-    cy.get(cesc('#/p10')).should('have.text', '8');
-    cy.get(cesc('#/p11')).should('have.text', 'NaN')
-    cy.get(cesc('#/p12')).should('have.text', '7');
-    cy.get(cesc('#/p13')).should('have.text', '8');
-    cy.get(cesc('#/p14')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc2('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p9')).should('have.text', '7');
+    cy.get(cesc2('#/p10')).should('have.text', '8');
+    cy.get(cesc2('#/p11')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p12')).should('have.text', '7');
+    cy.get(cesc2('#/p13')).should('have.text', '8');
+    cy.get(cesc2('#/p14')).should('have.text', 'NaN')
 
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
-    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
-    cy.get(cesc('#/p16')).should('have.text', '9');
-    cy.get(cesc('#/p17')).should('have.text', '0');
-    cy.get(cesc('#/p18')).should('have.text', 'NaN')
-    cy.get(cesc('#/p19')).should('have.text', '9');
-    cy.get(cesc('#/p20')).should('have.text', '0');
-    cy.get(cesc('#/p21')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
+    cy.get(cesc2('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc2('#/p16')).should('have.text', '9');
+    cy.get(cesc2('#/p17')).should('have.text', '0');
+    cy.get(cesc2('#/p18')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p19')).should('have.text', '9');
+    cy.get(cesc2('#/p20')).should('have.text', '0');
+    cy.get(cesc2('#/p21')).should('have.text', 'NaN')
 
-    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
-    cy.get(cesc('#/p23')).should('have.text', 'NaN')
-    cy.get(cesc('#/p24')).should('have.text', 'NaN')
-    cy.get(cesc('#/p25')).should('have.text', 'NaN')
-    cy.get(cesc('#/p26')).should('have.text', 'NaN')
-    cy.get(cesc('#/p27')).should('have.text', 'NaN')
-    cy.get(cesc('#/p28')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/p23')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p24')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p25')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p26')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p27')).should('have.text', 'NaN')
+    cy.get(cesc2('#/p28')).should('have.text', 'NaN')
 
-    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right), \\left( 9, 0 \\right)');
-    cy.get(cesc('#/p30')).should('have.text', '7, 9');
-    cy.get(cesc('#/p31')).should('have.text', '8, 0');
-    cy.get(cesc('#/p32')).should('have.text', ', ')
-    cy.get(cesc('#/p33')).should('have.text', '7, 9');
-    cy.get(cesc('#/p34')).should('have.text', '8, 0');
-    cy.get(cesc('#/p35')).should('have.text', ', ')
+    cy.get(cesc2('#/p29')).should('have.text', '\\left( 7, 8 \\right), \\left( 9, 0 \\right)');
+    cy.get(cesc2('#/p30')).should('have.text', '7, 9');
+    cy.get(cesc2('#/p31')).should('have.text', '8, 0');
+    cy.get(cesc2('#/p32')).should('have.text', ', ')
+    cy.get(cesc2('#/p33')).should('have.text', '7, 9');
+    cy.get(cesc2('#/p34')).should('have.text', '8, 0');
+    cy.get(cesc2('#/p35')).should('have.text', ', ')
 
-    cy.get(cesc('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
-    cy.get(cesc('#/p37')).should('have.text', '7');
-    cy.get(cesc('#/p38')).should('have.text', '8');
-    cy.get(cesc('#/p39')).should('have.text', '')
-    cy.get(cesc('#/p40')).should('have.text', '7');
-    cy.get(cesc('#/p41')).should('have.text', '8');
-    cy.get(cesc('#/p42')).should('have.text', '')
+    cy.get(cesc2('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
+    cy.get(cesc2('#/p37')).should('have.text', '7');
+    cy.get(cesc2('#/p38')).should('have.text', '8');
+    cy.get(cesc2('#/p39')).should('have.text', '')
+    cy.get(cesc2('#/p40')).should('have.text', '7');
+    cy.get(cesc2('#/p41')).should('have.text', '8');
+    cy.get(cesc2('#/p42')).should('have.text', '')
 
-    cy.get(cesc('#/p43')).should('have.text', '7');
-    cy.get(cesc('#/p44')).should('have.text', '8');
-    cy.get(cesc('#/p45')).should('have.text', '9');
-    cy.get(cesc('#/p46')).should('have.text', '0');
-    cy.get(cesc('#/p47')).should('have.text', 'NaN');
-    cy.get(cesc('#/p48')).should('have.text', 'NaN');
-    cy.get(cesc('#/p49')).should('have.text', 'NaN');
-    cy.get(cesc('#/p50')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p43')).should('have.text', '7');
+    cy.get(cesc2('#/p44')).should('have.text', '8');
+    cy.get(cesc2('#/p45')).should('have.text', '9');
+    cy.get(cesc2('#/p46')).should('have.text', '0');
+    cy.get(cesc2('#/p47')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p48')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p49')).should('have.text', 'NaN');
+    cy.get(cesc2('#/p50')).should('have.text', 'NaN');
 
 
   });
@@ -3742,54 +3738,54 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '1');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '1');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '1');
-    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get(cesc2('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '1');
 
-    cy.get(cesc('#/ln') + " textarea").type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc2('#/ln') + " textarea").type("{end}{backspace}{enter}", { force: true })
 
-    cy.get(cesc('#/p1')).should('have.text', '');
-    cy.get(cesc('#/p2')).should('have.text', '');
-    cy.get(cesc('#/p3')).should('have.text', '');
-    cy.get(cesc('#/p4')).should('have.text', '');
+    cy.get(cesc2('#/p1')).should('have.text', '');
+    cy.get(cesc2('#/p2')).should('have.text', '');
+    cy.get(cesc2('#/p3')).should('have.text', '');
+    cy.get(cesc2('#/p4')).should('have.text', '');
 
-    cy.get(cesc('#/ln') + " textarea").type("2{enter}", { force: true })
+    cy.get(cesc2('#/ln') + " textarea").type("2{enter}", { force: true })
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '5');
-    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc2('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '5');
 
-    cy.get(cesc('#/pn') + " textarea").type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc2('#/pn') + " textarea").type("{end}{backspace}{enter}", { force: true })
 
-    cy.get(cesc('#/p1')).should('have.text', '');
-    cy.get(cesc('#/p2')).should('have.text', '');
-    cy.get(cesc('#/p3')).should('have.text', '');
-    cy.get(cesc('#/p4')).should('have.text', '');
+    cy.get(cesc2('#/p1')).should('have.text', '');
+    cy.get(cesc2('#/p2')).should('have.text', '');
+    cy.get(cesc2('#/p3')).should('have.text', '');
+    cy.get(cesc2('#/p4')).should('have.text', '');
 
-    cy.get(cesc('#/pn') + " textarea").type("2{enter}", { force: true })
+    cy.get(cesc2('#/pn') + " textarea").type("2{enter}", { force: true })
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '9');
-    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc2('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '9');
 
-    cy.get(cesc('#/cn') + " textarea").type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc2('#/cn') + " textarea").type("{end}{backspace}{enter}", { force: true })
 
-    cy.get(cesc('#/p1')).should('have.text', '');
-    cy.get(cesc('#/p2')).should('have.text', '');
-    cy.get(cesc('#/p3')).should('have.text', '');
-    cy.get(cesc('#/p4')).should('have.text', '');
+    cy.get(cesc2('#/p1')).should('have.text', '');
+    cy.get(cesc2('#/p2')).should('have.text', '');
+    cy.get(cesc2('#/p3')).should('have.text', '');
+    cy.get(cesc2('#/p4')).should('have.text', '');
 
-    cy.get(cesc('#/cn') + " textarea").type("2{enter}", { force: true })
+    cy.get(cesc2('#/cn') + " textarea").type("2{enter}", { force: true })
 
-    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '6');
-    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc2('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '6');
 
   });
 
@@ -3822,7 +3818,7 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let Pxs = [2, 3, 4, 5, 6];
     let Pys = [3, 4, 5, 6, 7];
@@ -3832,55 +3828,55 @@ describe('Copy Tag Tests', function () {
     function checkResult(n, tn, pn, cn) {
       if (!(n >= 1 && tn <= n)) {
         // we have nothing
-        cy.get("#\\/pt").should("contain.text", "are:  and .")
-        cy.get("#\\/pp").should("contain.text", " from the line in that template is: .")
-        cy.get("#\\/pc").should('contain.text', "from that point is .")
-        cy.get("#\\/pc2").should('contain.text', "from that point is .")
+        cy.get(cesc("#\\/pt")).should("contain.text", "are:  and .")
+        cy.get(cesc("#\\/pp")).should("contain.text", " from the line in that template is: .")
+        cy.get(cesc("#\\/pc")).should('contain.text', "from that point is .")
+        cy.get(cesc("#\\/pc2")).should('contain.text', "from that point is .")
 
       } else {
-        cy.get("#\\/pt .mjx-mrow").should('contain.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
-        cy.get("#\\/pt .mjx-mrow").should('contain.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
-        cy.get("#\\/pt .mjx-mrow").eq(1).should('have.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
-        cy.get("#\\/pt .mjx-mrow").eq(4).should('have.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+        cy.get(cesc("#\\/pt") + " .mjx-mrow").should('contain.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+        cy.get(cesc("#\\/pt") + " .mjx-mrow").should('contain.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+        cy.get(cesc("#\\/pt") + " .mjx-mrow").eq(1).should('have.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+        cy.get(cesc("#\\/pt") + " .mjx-mrow").eq(4).should('have.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
 
         if (pn === 1) {
-          cy.get("#\\/pp .mjx-mrow").should('contain.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
-          cy.get("#\\/pp .mjx-mrow").eq(1).should('have.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+          cy.get(cesc("#\\/pp") + " .mjx-mrow").should('contain.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+          cy.get(cesc("#\\/pp") + " .mjx-mrow").eq(1).should('have.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
           if (cn === 1) {
-            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Pxs[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Pxs[tn - 1]}`);
-            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Pxs[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Pxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").should('contain.text', `${Pxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").should('contain.text', `${Pxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").eq(1).should('have.text', `${Pxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").eq(1).should('have.text', `${Pxs[tn - 1]}`);
           } else if (cn === 2) {
-            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Pys[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Pys[tn - 1]}`);
-            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Pys[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Pys[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").should('contain.text', `${Pys[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").should('contain.text', `${Pys[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").eq(1).should('have.text', `${Pys[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").eq(1).should('have.text', `${Pys[tn - 1]}`);
           } else {
-            cy.get("#\\/pc").should('contain.text', "from that point is .")
-            cy.get("#\\/pc2").should('contain.text', "from that point is .")
+            cy.get(cesc("#\\/pc")).should('contain.text', "from that point is .")
+            cy.get(cesc("#\\/pc2")).should('contain.text', "from that point is .")
           }
         } else if (pn === 2) {
-          cy.get("#\\/pp .mjx-mrow").should('contain.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
-          cy.get("#\\/pp .mjx-mrow").eq(1).should('have.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+          cy.get(cesc("#\\/pp") + " .mjx-mrow").should('contain.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+          cy.get(cesc("#\\/pp") + " .mjx-mrow").eq(1).should('have.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
           if (cn === 1) {
-            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Qxs[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Qxs[tn - 1]}`);
-            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Qxs[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Qxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").should('contain.text', `${Qxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").should('contain.text', `${Qxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").eq(1).should('have.text', `${Qxs[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").eq(1).should('have.text', `${Qxs[tn - 1]}`);
           } else if (cn === 2) {
-            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Qys[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Qys[tn - 1]}`);
-            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Qys[tn - 1]}`);
-            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Qys[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").should('contain.text', `${Qys[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").should('contain.text', `${Qys[tn - 1]}`);
+            cy.get(cesc("#\\/pc") + " .mjx-mrow").eq(1).should('have.text', `${Qys[tn - 1]}`);
+            cy.get(cesc("#\\/pc2") + " .mjx-mrow").eq(1).should('have.text', `${Qys[tn - 1]}`);
           } else {
-            cy.get("#\\/pc").should('contain.text', "from that point is .")
-            cy.get("#\\/pc2").should('contain.text', "from that point is .")
+            cy.get(cesc("#\\/pc")).should('contain.text', "from that point is .")
+            cy.get(cesc("#\\/pc2")).should('contain.text', "from that point is .")
           }
         } else {
-          cy.get("#\\/pp").should("contain.text", " from the line in that template is: .")
-          cy.get("#\\/pc").should('contain.text', "from that point is .")
-          cy.get("#\\/pc2").should('contain.text', "from that point is .")
+          cy.get(cesc("#\\/pp")).should("contain.text", " from the line in that template is: .")
+          cy.get(cesc("#\\/pc")).should('contain.text', "from that point is .")
+          cy.get(cesc("#\\/pc2")).should('contain.text', "from that point is .")
         }
 
       }
@@ -3888,34 +3884,34 @@ describe('Copy Tag Tests', function () {
 
     checkResult(2, 1, 1, 1)
 
-    cy.get("#\\/tn textarea").type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc("#\\/tn") + " textarea").type("{end}{backspace}2{enter}", { force: true })
     checkResult(2, 2, 1, 1)
 
-    cy.get("#\\/tn textarea").type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc("#\\/tn") + " textarea").type("{end}{backspace}3{enter}", { force: true })
     checkResult(2, 3, 1, 1)
 
-    cy.get("#\\/n textarea").type("{end}{backspace}4{enter}", { force: true })
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}4{enter}", { force: true })
     checkResult(4, 3, 1, 1)
 
-    cy.get("#\\/pn textarea").type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc("#\\/pn") + " textarea").type("{end}{backspace}3{enter}", { force: true })
     checkResult(4, 3, 3, 1)
 
-    cy.get("#\\/pn textarea").type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc("#\\/pn") + " textarea").type("{end}{backspace}2{enter}", { force: true })
     checkResult(4, 3, 2, 1)
 
-    cy.get("#\\/cn textarea").type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc("#\\/cn") + " textarea").type("{end}{backspace}3{enter}", { force: true })
     checkResult(4, 3, 2, 3)
 
-    cy.get("#\\/cn textarea").type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc("#\\/cn") + " textarea").type("{end}{backspace}2{enter}", { force: true })
     checkResult(4, 3, 2, 2)
 
-    cy.get("#\\/n textarea").type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}3{enter}", { force: true })
     checkResult(3, 3, 2, 2)
 
-    cy.get("#\\/n textarea").type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}1{enter}", { force: true })
     checkResult(1, 3, 2, 2)
 
-    cy.get("#\\/tn textarea").type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc("#\\/tn") + " textarea").type("{end}{backspace}1{enter}", { force: true })
     checkResult(1, 1, 2, 2)
 
   });
@@ -3938,15 +3934,15 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/pmacro1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
-    cy.get(cesc('#/pmacro2') + " .mjx-mrow").eq(0).should('have.text', '2x');
+    cy.get(cesc2('#/pmacro1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
+    cy.get(cesc2('#/pmacro2') + " .mjx-mrow").eq(0).should('have.text', '2x');
 
-    cy.get(cesc('#/pcopy1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
-    cy.get(cesc('#/pcopy2') + " .mjx-mrow").eq(0).should('have.text', '2x');
-    cy.get(cesc('#/pcopy3') + " .mjx-mrow").eq(0).should('have.text', '2x');
-    cy.get(cesc('#/pcopy4') + " .mq-editable-field").eq(0).should('have.text', 'x+x');
+    cy.get(cesc2('#/pcopy1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
+    cy.get(cesc2('#/pcopy2') + " .mjx-mrow").eq(0).should('have.text', '2x');
+    cy.get(cesc2('#/pcopy3') + " .mjx-mrow").eq(0).should('have.text', '2x');
+    cy.get(cesc2('#/pcopy4') + " .mq-editable-field").eq(0).should('have.text', 'x+x');
 
 
     cy.window().then(async (win) => {
@@ -4000,19 +3996,19 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pmacro') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pmacro') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pmacro2') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pmacro2') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pmacro2') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pmacro2') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pcopy2') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pcopy2') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pcopy2') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pcopy2') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
 
     cy.window().then(async (win) => {
@@ -4070,25 +4066,25 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pmacro') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pmacro') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pmacroInd') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pmacroInd') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pmacroInd') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pmacroInd') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pcopyInd') + " .mq-editable-field").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pcopyInd') + " .mq-editable-field").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pcopyInd') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pcopyInd') + " .mq-editable-field").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pmacroSubname') + " .mjx-mrow").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pmacroSubname') + " .mjx-mrow").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pmacroSubname') + " .mjx-mrow").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pmacroSubname') + " .mjx-mrow").eq(1).should('have.text', 'y');
 
-    cy.get(cesc('#/pcopySubname') + " .mjx-mrow").eq(0).should('have.text', 'x');
-    cy.get(cesc('#/pcopySubname') + " .mjx-mrow").eq(1).should('have.text', 'y');
+    cy.get(cesc2('#/pcopySubname') + " .mjx-mrow").eq(0).should('have.text', 'x');
+    cy.get(cesc2('#/pcopySubname') + " .mjx-mrow").eq(1).should('have.text', 'y');
 
 
 
@@ -4150,12 +4146,12 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/p1') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
-    cy.get(cesc('#/p2') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
-    cy.get(cesc('#/p3') + " .mjx-mrow").eq(0).should('have.text', 'y');
-    cy.get(cesc('#/p4') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
+    cy.get(cesc2('#/p1') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
+    cy.get(cesc2('#/p2') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
+    cy.get(cesc2('#/p3') + " .mjx-mrow").eq(0).should('have.text', 'y');
+    cy.get(cesc2('#/p4') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
 
 
     cy.window().then(async (win) => {
@@ -4187,54 +4183,54 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '\uff3f')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let mi3Anchor = cesc('#' + stateVariables["/_p2"].activeChildren[0].componentName);
-      let m2Anchor = cesc('#' + stateVariables["/_p2"].activeChildren[2].componentName);
-      let m3Anchor = cesc('#' + stateVariables["/_p2"].activeChildren[4].componentName);
+      let mi3Anchor = cesc2('#' + stateVariables["/_p2"].activeChildren[0].componentName);
+      let m2Anchor = cesc2('#' + stateVariables["/_p2"].activeChildren[2].componentName);
+      let m3Anchor = cesc2('#' + stateVariables["/_p2"].activeChildren[4].componentName);
 
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
 
 
       cy.log('mathinputs change with immediate value')
-      cy.get('#\\/mi textarea').type("x", { force: true })
+      cy.get(cesc('#\\/mi') + ' textarea').type("x", { force: true })
 
-      cy.get('#\\/_mathinput2 .mq-editable-field').should('have.text', 'x')
+      cy.get(cesc('#\\/_mathinput2') + ' .mq-editable-field').should('have.text', 'x')
       cy.get(mi3Anchor + ' .mq-editable-field').should('have.text', 'x')
 
-      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '\uff3f')
+      cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '\uff3f')
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', '\uff3f')
 
       cy.log('maths change with value')
-      cy.get('#\\/mi textarea').blur();
+      cy.get(cesc('#\\/mi') + ' textarea').blur();
 
-      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'x')
+      cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', 'x')
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'x')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'x')
 
 
       cy.log('mathinputs change with immediate value')
-      cy.get('#\\/_mathinput2 textarea').type("{end}{backspace}y", { force: true })
+      cy.get(cesc('#\\/_mathinput2') + ' textarea').type("{end}{backspace}y", { force: true })
 
-      cy.get('#\\/mi .mq-editable-field').should('have.text', 'y')
+      cy.get(cesc('#\\/mi') + ' .mq-editable-field').should('have.text', 'y')
       cy.get(mi3Anchor + ' .mq-editable-field').should('have.text', 'y')
 
-      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'x')
+      cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', 'x')
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'x')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'x')
 
       cy.log('maths change with value')
-      cy.get('#\\/_mathinput2 textarea').blur();
+      cy.get(cesc('#\\/_mathinput2') + ' textarea').blur();
 
-      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'y')
+      cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', 'y')
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'y')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'y')
 
@@ -4242,17 +4238,17 @@ describe('Copy Tag Tests', function () {
       cy.log('mathinputs change with immediate value')
       cy.get(mi3Anchor + ' textarea').type("{end}{backspace}z", { force: true })
 
-      cy.get('#\\/mi .mq-editable-field').should('have.text', 'z')
-      cy.get('#\\/_mathinput2 .mq-editable-field').should('have.text', 'z')
+      cy.get(cesc('#\\/mi') + ' .mq-editable-field').should('have.text', 'z')
+      cy.get(cesc('#\\/_mathinput2') + ' .mq-editable-field').should('have.text', 'z')
 
-      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'y')
+      cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', 'y')
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'y')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'y')
 
       cy.log('maths change with value')
       cy.get(mi3Anchor + ' textarea').blur();
 
-      cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'z')
+      cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', 'z')
       cy.get(m2Anchor + " .mjx-mrow").should('contain.text', 'z')
       cy.get(m3Anchor + " .mjx-mrow").should('contain.text', 'z')
 
@@ -4287,14 +4283,14 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', '8.853729375')
-    cy.get('#\\/n2').should('have.text', '8.85')
-    cy.get('#\\/_number1').should('have.text', '8.853729375')
-    cy.get('#\\/n4').should('have.text', '8.85')
-    cy.get('#\\/_p5').should('have.text', '8.853729375')
-    cy.get('#\\/_copy4\\/n6').should('have.text', '8.85')
-    cy.get('#\\/_number3').should('have.text', '8.853729375')
-    cy.get('#\\/n8').should('have.text', '8.85')
+    cy.get(cesc('#\\/_p1')).should('have.text', '8.853729375')
+    cy.get(cesc('#\\/n2')).should('have.text', '8.85')
+    cy.get(cesc('#\\/_number1')).should('have.text', '8.853729375')
+    cy.get(cesc('#\\/n4')).should('have.text', '8.85')
+    cy.get(cesc('#\\/_p5')).should('have.text', '8.853729375')
+    cy.get(cesc('#\\/_copy4\\/n6')).should('have.text', '8.85')
+    cy.get(cesc('#\\/_number3')).should('have.text', '8.853729375')
+    cy.get(cesc('#\\/n8')).should('have.text', '8.85')
 
 
 
@@ -4311,13 +4307,13 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/num').should('have.text', 'NaN')
+    cy.get(cesc('#\\/num')).should('have.text', 'NaN')
 
-    cy.get('#\\/ans textarea').type("4{enter}", { force: true });
-    cy.get('#\\/num').should('have.text', '4')
+    cy.get(cesc('#\\/ans') + ' textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/num')).should('have.text', '4')
 
-    cy.get('#\\/ans textarea').type("7{enter}", { force: true });
-    cy.get('#\\/num').should('have.text', '47')
+    cy.get(cesc('#\\/ans') + ' textarea').type("7{enter}", { force: true });
+    cy.get(cesc('#\\/num')).should('have.text', '47')
 
   });
 

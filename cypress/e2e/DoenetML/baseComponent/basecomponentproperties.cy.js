@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('base component property Tests', function () {
 
@@ -30,8 +22,8 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? false');
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? false');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -41,11 +33,11 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log('have point fixed')
-    cy.get('#\\/makeFixed').click();
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? true');
+    cy.get(cesc('#\\/makeFixed')).click();
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? true');
 
     cy.log('point does not move')
     cy.window().then(async (win) => {
@@ -56,14 +48,14 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'true')
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log('have point not fixed')
-    cy.get('#\\/makeNotFixed').click();
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? false');
+    cy.get(cesc('#\\/makeNotFixed')).click();
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? false');
 
     cy.log('point does moves')
     cy.window().then(async (win) => {
@@ -74,7 +66,7 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(5,6)');
 
   })
 
@@ -93,8 +85,8 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? false');
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? false');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -104,11 +96,11 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log('have point fixed')
-    cy.get('#\\/makeFixed').click();
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? true');
+    cy.get(cesc('#\\/makeFixed')).click();
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? true');
 
     cy.log('point does not move')
     cy.window().then(async (win) => {
@@ -119,14 +111,14 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'true')
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log('have point not fixed')
-    cy.get('#\\/makeNotFixed').click();
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? false');
+    cy.get(cesc('#\\/makeNotFixed')).click();
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? false');
 
     cy.log('point does moves')
     cy.window().then(async (win) => {
@@ -137,7 +129,7 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(5,6)');
 
   })
 
@@ -156,8 +148,8 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? true');
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? true');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -167,15 +159,15 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'true')
 
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.log('have point not fixed')
-    cy.get('#\\/makeNotFixed').click();
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? false');
+    cy.get(cesc('#\\/makeNotFixed')).click();
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? false');
 
     cy.log('point does move')
     cy.window().then(async (win) => {
@@ -186,11 +178,11 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(3,4)');
 
     cy.log('have point fixed again')
-    cy.get('#\\/makeFixed').click();
-    cy.get('#\\/pIsFixed').should('have.text', 'Is fixed? true');
+    cy.get(cesc('#\\/makeFixed')).click();
+    cy.get(cesc('#\\/pIsFixed')).should('have.text', 'Is fixed? true');
 
     cy.log('point does not move')
     cy.window().then(async (win) => {
@@ -201,10 +193,10 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'false')
 
-    cy.get('#\\/pCoords .mjx-mrow').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/pCoords') + ' .mjx-mrow').should('contain.text', '(3,4)');
 
   })
 
@@ -238,14 +230,14 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pgIsFixed').should('have.text', 'Is g fixed? false');
-    cy.get('#\\/pAIsFixed').should('have.text', 'Is A fixed? false');
-    cy.get('#\\/pBIsFixed').should('have.text', 'Is B fixed? false');
-    cy.get('#\\/pCIsFixed').should('have.text', 'Is C fixed? true');
+    cy.get(cesc('#\\/pgIsFixed')).should('have.text', 'Is g fixed? false');
+    cy.get(cesc('#\\/pAIsFixed')).should('have.text', 'Is A fixed? false');
+    cy.get(cesc('#\\/pBIsFixed')).should('have.text', 'Is B fixed? false');
+    cy.get(cesc('#\\/pCIsFixed')).should('have.text', 'Is C fixed? true');
 
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(1,2)');
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(3,4)');
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(5,6)');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -266,20 +258,20 @@ describe('base component property Tests', function () {
     })
 
 
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(−3,−4)');
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(−1,−2)');
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(−3,−4)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(−1,−2)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(5,6)');
 
 
     cy.log('A changes fixed with g')
 
-    cy.get('#\\/makegFixed').click();
+    cy.get(cesc('#\\/makegFixed')).click();
 
 
-    cy.get('#\\/pgIsFixed').should('have.text', 'Is g fixed? true');
-    cy.get('#\\/pAIsFixed').should('have.text', 'Is A fixed? true');
-    cy.get('#\\/pBIsFixed').should('have.text', 'Is B fixed? false');
-    cy.get('#\\/pCIsFixed').should('have.text', 'Is C fixed? true');
+    cy.get(cesc('#\\/pgIsFixed')).should('have.text', 'Is g fixed? true');
+    cy.get(cesc('#\\/pAIsFixed')).should('have.text', 'Is A fixed? true');
+    cy.get(cesc('#\\/pBIsFixed')).should('have.text', 'Is B fixed? false');
+    cy.get(cesc('#\\/pCIsFixed')).should('have.text', 'Is C fixed? true');
 
 
     cy.window().then(async (win) => {
@@ -300,21 +292,21 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(8,7)');
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(−1,−2)');
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(8,7)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(−1,−2)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(5,6)');
 
 
     cy.log('change fixed of points')
 
-    cy.get('#\\/makeANotFixed').click();
-    cy.get('#\\/pAIsFixed').should('have.text', 'Is A fixed? false');
+    cy.get(cesc('#\\/makeANotFixed')).click();
+    cy.get(cesc('#\\/pAIsFixed')).should('have.text', 'Is A fixed? false');
 
-    cy.get('#\\/makeBFixed').click();
-    cy.get('#\\/pBIsFixed').should('have.text', 'Is B fixed? true');
+    cy.get(cesc('#\\/makeBFixed')).click();
+    cy.get(cesc('#\\/pBIsFixed')).should('have.text', 'Is B fixed? true');
 
-    cy.get('#\\/makeCNotFixed').click();
-    cy.get('#\\/pCIsFixed').should('have.text', 'Is C fixed? false');
+    cy.get(cesc('#\\/makeCNotFixed')).click();
+    cy.get(cesc('#\\/pCIsFixed')).should('have.text', 'Is C fixed? false');
 
 
     cy.window().then(async (win) => {
@@ -335,27 +327,27 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(6,5)');
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(10,9)');
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(8,7)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(6,5)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(10,9)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(8,7)');
 
 
     cy.log('changing fixed of g does not affect points')
 
-    cy.get('#\\/makegNotFixed').click();
+    cy.get(cesc('#\\/makegNotFixed')).click();
 
 
-    cy.get('#\\/pgIsFixed').should('have.text', 'Is g fixed? false');
-    cy.get('#\\/pAIsFixed').should('have.text', 'Is A fixed? false');
-    cy.get('#\\/pBIsFixed').should('have.text', 'Is B fixed? true');
-    cy.get('#\\/pCIsFixed').should('have.text', 'Is C fixed? false');
+    cy.get(cesc('#\\/pgIsFixed')).should('have.text', 'Is g fixed? false');
+    cy.get(cesc('#\\/pAIsFixed')).should('have.text', 'Is A fixed? false');
+    cy.get(cesc('#\\/pBIsFixed')).should('have.text', 'Is B fixed? true');
+    cy.get(cesc('#\\/pCIsFixed')).should('have.text', 'Is C fixed? false');
 
-    cy.get('#\\/makegFixed').click();
+    cy.get(cesc('#\\/makegFixed')).click();
 
-    cy.get('#\\/pgIsFixed').should('have.text', 'Is g fixed? true');
-    cy.get('#\\/pAIsFixed').should('have.text', 'Is A fixed? false');
-    cy.get('#\\/pBIsFixed').should('have.text', 'Is B fixed? true');
-    cy.get('#\\/pCIsFixed').should('have.text', 'Is C fixed? false');
+    cy.get(cesc('#\\/pgIsFixed')).should('have.text', 'Is g fixed? true');
+    cy.get(cesc('#\\/pAIsFixed')).should('have.text', 'Is A fixed? false');
+    cy.get(cesc('#\\/pBIsFixed')).should('have.text', 'Is B fixed? true');
+    cy.get(cesc('#\\/pCIsFixed')).should('have.text', 'Is C fixed? false');
 
   })
 
@@ -413,23 +405,23 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pAIsFixed').should('have.text', 'Is A fixed? false');
-    cy.get('#\\/pBIsFixed').should('have.text', 'Is B fixed? false');
-    cy.get('#\\/pCIsFixed').should('have.text', 'Is C fixed? true');
-    cy.get('#\\/pDIsFixed').should('have.text', 'Is D fixed? false');
-    cy.get('#\\/pA2IsFixed').should('have.text', 'Is A2 fixed? false');
-    cy.get('#\\/pB2IsFixed').should('have.text', 'Is B2 fixed? false');
-    cy.get('#\\/pC2IsFixed').should('have.text', 'Is C2 fixed? true');
-    cy.get('#\\/pD2IsFixed').should('have.text', 'Is D2 fixed? false');
-    cy.get('#\\/pA3IsFixed').should('have.text', 'Is A3 fixed? false');
-    cy.get('#\\/pB3IsFixed').should('have.text', 'Is B3 fixed? false');
-    cy.get('#\\/pC3IsFixed').should('have.text', 'Is C3 fixed? false');
-    cy.get('#\\/pD3IsFixed').should('have.text', 'Is D3 fixed? false');
+    cy.get(cesc('#\\/pAIsFixed')).should('have.text', 'Is A fixed? false');
+    cy.get(cesc('#\\/pBIsFixed')).should('have.text', 'Is B fixed? false');
+    cy.get(cesc('#\\/pCIsFixed')).should('have.text', 'Is C fixed? true');
+    cy.get(cesc('#\\/pDIsFixed')).should('have.text', 'Is D fixed? false');
+    cy.get(cesc('#\\/pA2IsFixed')).should('have.text', 'Is A2 fixed? false');
+    cy.get(cesc('#\\/pB2IsFixed')).should('have.text', 'Is B2 fixed? false');
+    cy.get(cesc('#\\/pC2IsFixed')).should('have.text', 'Is C2 fixed? true');
+    cy.get(cesc('#\\/pD2IsFixed')).should('have.text', 'Is D2 fixed? false');
+    cy.get(cesc('#\\/pA3IsFixed')).should('have.text', 'Is A3 fixed? false');
+    cy.get(cesc('#\\/pB3IsFixed')).should('have.text', 'Is B3 fixed? false');
+    cy.get(cesc('#\\/pC3IsFixed')).should('have.text', 'Is C3 fixed? false');
+    cy.get(cesc('#\\/pD3IsFixed')).should('have.text', 'Is D3 fixed? false');
 
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(0,0)');
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(1,2)');
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(0,0)');
-    cy.get('#\\/pDCoords .mjx-mrow').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pDCoords') + ' .mjx-mrow').should('contain.text', '(3,4)');
 
 
     cy.log('can change coords of all but fixed C2')
@@ -458,10 +450,10 @@ describe('base component property Tests', function () {
     })
 
 
-    cy.get('#\\/pDCoords .mjx-mrow').should('contain.text', '(−7,−8)');
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(−1,−2)');
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(−3,−4)');
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pDCoords') + ' .mjx-mrow').should('contain.text', '(−7,−8)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(−1,−2)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(−3,−4)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
 
     cy.log('cannot change coords of C3 even though not fixed')
@@ -490,33 +482,33 @@ describe('base component property Tests', function () {
     })
 
 
-    cy.get('#\\/pDCoords .mjx-mrow').should('contain.text', '(4,3)');
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(10,9)');
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(8,7)');
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/pDCoords') + ' .mjx-mrow').should('contain.text', '(4,3)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(10,9)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(8,7)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
 
 
     cy.log('toggle fixed')
 
-    cy.get('#\\/toggleAFixed').click();
-    cy.get('#\\/toggleBFixed').click();
-    cy.get('#\\/toggleCFixed').click();
-    cy.get('#\\/toggleDFixed').click();
+    cy.get(cesc('#\\/toggleAFixed')).click();
+    cy.get(cesc('#\\/toggleBFixed')).click();
+    cy.get(cesc('#\\/toggleCFixed')).click();
+    cy.get(cesc('#\\/toggleDFixed')).click();
 
 
-    cy.get('#\\/pDIsFixed').should('have.text', 'Is D fixed? true');
-    cy.get('#\\/pAIsFixed').should('have.text', 'Is A fixed? true');
-    cy.get('#\\/pBIsFixed').should('have.text', 'Is B fixed? true');
-    cy.get('#\\/pCIsFixed').should('have.text', 'Is C fixed? false');
-    cy.get('#\\/pA2IsFixed').should('have.text', 'Is A2 fixed? true');
-    cy.get('#\\/pB2IsFixed').should('have.text', 'Is B2 fixed? true');
-    cy.get('#\\/pC2IsFixed').should('have.text', 'Is C2 fixed? false');
-    cy.get('#\\/pD2IsFixed').should('have.text', 'Is D2 fixed? true');
-    cy.get('#\\/pA3IsFixed').should('have.text', 'Is A3 fixed? false');
-    cy.get('#\\/pB3IsFixed').should('have.text', 'Is B3 fixed? false');
-    cy.get('#\\/pC3IsFixed').should('have.text', 'Is C3 fixed? false');
-    cy.get('#\\/pD3IsFixed').should('have.text', 'Is D3 fixed? false');
+    cy.get(cesc('#\\/pDIsFixed')).should('have.text', 'Is D fixed? true');
+    cy.get(cesc('#\\/pAIsFixed')).should('have.text', 'Is A fixed? true');
+    cy.get(cesc('#\\/pBIsFixed')).should('have.text', 'Is B fixed? true');
+    cy.get(cesc('#\\/pCIsFixed')).should('have.text', 'Is C fixed? false');
+    cy.get(cesc('#\\/pA2IsFixed')).should('have.text', 'Is A2 fixed? true');
+    cy.get(cesc('#\\/pB2IsFixed')).should('have.text', 'Is B2 fixed? true');
+    cy.get(cesc('#\\/pC2IsFixed')).should('have.text', 'Is C2 fixed? false');
+    cy.get(cesc('#\\/pD2IsFixed')).should('have.text', 'Is D2 fixed? true');
+    cy.get(cesc('#\\/pA3IsFixed')).should('have.text', 'Is A3 fixed? false');
+    cy.get(cesc('#\\/pB3IsFixed')).should('have.text', 'Is B3 fixed? false');
+    cy.get(cesc('#\\/pC3IsFixed')).should('have.text', 'Is C3 fixed? false');
+    cy.get(cesc('#\\/pD3IsFixed')).should('have.text', 'Is D3 fixed? false');
 
 
     cy.log('can only change coords of C2')
@@ -545,10 +537,10 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(9,8)');
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(10,9)');
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(8,7)');
-    cy.get('#\\/pDCoords .mjx-mrow').should('contain.text', '(4,3)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(9,8)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(10,9)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(8,7)');
+    cy.get(cesc('#\\/pDCoords') + ' .mjx-mrow').should('contain.text', '(4,3)');
 
 
 
@@ -578,10 +570,10 @@ describe('base component property Tests', function () {
       })
     })
 
-    cy.get('#\\/pCCoords .mjx-mrow').should('contain.text', '(7,−8)');
-    cy.get('#\\/pACoords .mjx-mrow').should('contain.text', '(10,9)');
-    cy.get('#\\/pBCoords .mjx-mrow').should('contain.text', '(8,7)');
-    cy.get('#\\/pDCoords .mjx-mrow').should('contain.text', '(4,3)');
+    cy.get(cesc('#\\/pCCoords') + ' .mjx-mrow').should('contain.text', '(7,−8)');
+    cy.get(cesc('#\\/pACoords') + ' .mjx-mrow').should('contain.text', '(10,9)');
+    cy.get(cesc('#\\/pBCoords') + ' .mjx-mrow').should('contain.text', '(8,7)');
+    cy.get(cesc('#\\/pDCoords') + ' .mjx-mrow').should('contain.text', '(4,3)');
 
 
 
@@ -601,25 +593,25 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pIsDisabled').should('have.text', 'Is disabled? false');
-    cy.get('#\\/pText').should('have.text', 'Text: a');
+    cy.get(cesc('#\\/pIsDisabled')).should('have.text', 'Is disabled? false');
+    cy.get(cesc('#\\/pText')).should('have.text', 'Text: a');
 
-    cy.get('#\\/ti_input').type("{end}{backspace}b{enter}");
-    cy.get('#\\/pText').should('have.text', 'Text: b');
+    cy.get(cesc('#\\/ti_input')).type("{end}{backspace}b{enter}");
+    cy.get(cesc('#\\/pText')).should('have.text', 'Text: b');
 
     cy.log('disable input')
-    cy.get('#\\/makeDisabled').click();
-    cy.get('#\\/pIsDisabled').should('have.text', 'Is disabled? true');
+    cy.get(cesc('#\\/makeDisabled')).click();
+    cy.get(cesc('#\\/pIsDisabled')).should('have.text', 'Is disabled? true');
 
-    cy.get('#\\/ti_input').should('be.disabled');
+    cy.get(cesc('#\\/ti_input')).should('be.disabled');
 
 
     cy.log('enable input')
-    cy.get('#\\/makeNotDisabled').click();
-    cy.get('#\\/pIsDisabled').should('have.text', 'Is disabled? false');
+    cy.get(cesc('#\\/makeNotDisabled')).click();
+    cy.get(cesc('#\\/pIsDisabled')).should('have.text', 'Is disabled? false');
 
-    cy.get('#\\/ti_input').type("{end}{backspace}c{enter}");
-    cy.get('#\\/pText').should('have.text', 'Text: c');
+    cy.get(cesc('#\\/ti_input')).type("{end}{backspace}c{enter}");
+    cy.get(cesc('#\\/pText')).should('have.text', 'Text: c');
 
 
   })
@@ -654,77 +646,77 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? false');
-    cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? true');
-    cy.get('#\\/pti3IsDisabled').should('have.text', 'Is ti3 disabled? false');
-    cy.get('#\\/psIsDisabled').should('have.text', 'Is s disabled? false');
-    cy.get('#\\/pti1Text').should('have.text', 'Text: a');
-    cy.get('#\\/pti2Text').should('have.text', 'Text: b');
-    cy.get('#\\/pti3Text').should('have.text', 'Text: c');
+    cy.get(cesc('#\\/pti1IsDisabled')).should('have.text', 'Is ti1 disabled? false');
+    cy.get(cesc('#\\/pti2IsDisabled')).should('have.text', 'Is ti2 disabled? true');
+    cy.get(cesc('#\\/pti3IsDisabled')).should('have.text', 'Is ti3 disabled? false');
+    cy.get(cesc('#\\/psIsDisabled')).should('have.text', 'Is s disabled? false');
+    cy.get(cesc('#\\/pti1Text')).should('have.text', 'Text: a');
+    cy.get(cesc('#\\/pti2Text')).should('have.text', 'Text: b');
+    cy.get(cesc('#\\/pti3Text')).should('have.text', 'Text: c');
 
 
-    cy.get('#\\/ti1_input').type("{end}{backspace}d{enter}");
-    cy.get('#\\/pti1Text').should('have.text', 'Text: d');
+    cy.get(cesc('#\\/ti1_input')).type("{end}{backspace}d{enter}");
+    cy.get(cesc('#\\/pti1Text')).should('have.text', 'Text: d');
 
-    cy.get('#\\/ti2_input').should('be.disabled');
+    cy.get(cesc('#\\/ti2_input')).should('be.disabled');
 
-    cy.get('#\\/ti3_input').type("{end}{backspace}e{enter}");
-    cy.get('#\\/pti3Text').should('have.text', 'Text: e');
+    cy.get(cesc('#\\/ti3_input')).type("{end}{backspace}e{enter}");
+    cy.get(cesc('#\\/pti3Text')).should('have.text', 'Text: e');
 
 
     cy.log('ti1 changed disabled with s')
 
-    cy.get('#\\/makesDisabled').click();
+    cy.get(cesc('#\\/makesDisabled')).click();
 
-    cy.get('#\\/psIsDisabled').should('have.text', 'Is s disabled? true');
-    cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? true');
-    cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? true');
-    cy.get('#\\/pti3IsDisabled').should('have.text', 'Is ti3 disabled? false');
+    cy.get(cesc('#\\/psIsDisabled')).should('have.text', 'Is s disabled? true');
+    cy.get(cesc('#\\/pti1IsDisabled')).should('have.text', 'Is ti1 disabled? true');
+    cy.get(cesc('#\\/pti2IsDisabled')).should('have.text', 'Is ti2 disabled? true');
+    cy.get(cesc('#\\/pti3IsDisabled')).should('have.text', 'Is ti3 disabled? false');
 
-    cy.get('#\\/ti1_input').should('be.disabled');
-    cy.get('#\\/ti2_input').should('be.disabled');
+    cy.get(cesc('#\\/ti1_input')).should('be.disabled');
+    cy.get(cesc('#\\/ti2_input')).should('be.disabled');
 
-    cy.get('#\\/ti3_input').type("{end}{backspace}f{enter}");
-    cy.get('#\\/pti3Text').should('have.text', 'Text: f');
+    cy.get(cesc('#\\/ti3_input')).type("{end}{backspace}f{enter}");
+    cy.get(cesc('#\\/pti3Text')).should('have.text', 'Text: f');
 
 
     cy.log('change disabled of inputs')
 
-    cy.get('#\\/maketi1NotDisabled').click();
-    cy.get('#\\/maketi2NotDisabled').click();
-    cy.get('#\\/maketi3Disabled').click();
+    cy.get(cesc('#\\/maketi1NotDisabled')).click();
+    cy.get(cesc('#\\/maketi2NotDisabled')).click();
+    cy.get(cesc('#\\/maketi3Disabled')).click();
 
 
-    cy.get('#\\/pti3IsDisabled').should('have.text', 'Is ti3 disabled? true');
-    cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? false');
-    cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? false');
+    cy.get(cesc('#\\/pti3IsDisabled')).should('have.text', 'Is ti3 disabled? true');
+    cy.get(cesc('#\\/pti1IsDisabled')).should('have.text', 'Is ti1 disabled? false');
+    cy.get(cesc('#\\/pti2IsDisabled')).should('have.text', 'Is ti2 disabled? false');
 
 
-    cy.get('#\\/ti1_input').type("{end}{backspace}g{enter}");
-    cy.get('#\\/pti1Text').should('have.text', 'Text: g');
+    cy.get(cesc('#\\/ti1_input')).type("{end}{backspace}g{enter}");
+    cy.get(cesc('#\\/pti1Text')).should('have.text', 'Text: g');
 
-    cy.get('#\\/ti2_input').type("{end}{backspace}h{enter}");
-    cy.get('#\\/pti2Text').should('have.text', 'Text: h');
+    cy.get(cesc('#\\/ti2_input')).type("{end}{backspace}h{enter}");
+    cy.get(cesc('#\\/pti2Text')).should('have.text', 'Text: h');
 
-    cy.get('#\\/ti3_input').should('be.disabled');
+    cy.get(cesc('#\\/ti3_input')).should('be.disabled');
 
 
     cy.log('changing fixed of s does not affect inputs')
 
-    cy.get('#\\/makesNotDisabled').click();
+    cy.get(cesc('#\\/makesNotDisabled')).click();
 
-    cy.get('#\\/psIsDisabled').should('have.text', 'Is s disabled? false');
-    cy.get('#\\/pti3IsDisabled').should('have.text', 'Is ti3 disabled? true');
-    cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? false');
-    cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? false');
+    cy.get(cesc('#\\/psIsDisabled')).should('have.text', 'Is s disabled? false');
+    cy.get(cesc('#\\/pti3IsDisabled')).should('have.text', 'Is ti3 disabled? true');
+    cy.get(cesc('#\\/pti1IsDisabled')).should('have.text', 'Is ti1 disabled? false');
+    cy.get(cesc('#\\/pti2IsDisabled')).should('have.text', 'Is ti2 disabled? false');
 
 
-    cy.get('#\\/makesDisabled').click();
+    cy.get(cesc('#\\/makesDisabled')).click();
 
-    cy.get('#\\/psIsDisabled').should('have.text', 'Is s disabled? true');
-    cy.get('#\\/pti3IsDisabled').should('have.text', 'Is ti3 disabled? true');
-    cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? false');
-    cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? false');
+    cy.get(cesc('#\\/psIsDisabled')).should('have.text', 'Is s disabled? true');
+    cy.get(cesc('#\\/pti3IsDisabled')).should('have.text', 'Is ti3 disabled? true');
+    cy.get(cesc('#\\/pti1IsDisabled')).should('have.text', 'Is ti1 disabled? false');
+    cy.get(cesc('#\\/pti2IsDisabled')).should('have.text', 'Is ti2 disabled? false');
 
 
   })
@@ -773,58 +765,58 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? false');
-    cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? true');
-    cy.get('#\\/pti3IsDisabled').should('have.text', 'Is ti3 disabled? false');
-    cy.get('#\\/pti12IsDisabled').should('have.text', 'Is ti12 disabled? false');
-    cy.get('#\\/pti22IsDisabled').should('have.text', 'Is ti22 disabled? true');
-    cy.get('#\\/pti32IsDisabled').should('have.text', 'Is ti32 disabled? false');
-    cy.get('#\\/pti13IsDisabled').should('have.text', 'Is ti13 disabled? false');
-    cy.get('#\\/pti23IsDisabled').should('have.text', 'Is ti23 disabled? false');
-    cy.get('#\\/pti33IsDisabled').should('have.text', 'Is ti33 disabled? false');
+    cy.get(cesc('#\\/pti1IsDisabled')).should('have.text', 'Is ti1 disabled? false');
+    cy.get(cesc('#\\/pti2IsDisabled')).should('have.text', 'Is ti2 disabled? true');
+    cy.get(cesc('#\\/pti3IsDisabled')).should('have.text', 'Is ti3 disabled? false');
+    cy.get(cesc('#\\/pti12IsDisabled')).should('have.text', 'Is ti12 disabled? false');
+    cy.get(cesc('#\\/pti22IsDisabled')).should('have.text', 'Is ti22 disabled? true');
+    cy.get(cesc('#\\/pti32IsDisabled')).should('have.text', 'Is ti32 disabled? false');
+    cy.get(cesc('#\\/pti13IsDisabled')).should('have.text', 'Is ti13 disabled? false');
+    cy.get(cesc('#\\/pti23IsDisabled')).should('have.text', 'Is ti23 disabled? false');
+    cy.get(cesc('#\\/pti33IsDisabled')).should('have.text', 'Is ti33 disabled? false');
 
 
-    cy.get('#\\/ti1_input').should('not.be.disabled');
-    cy.get('#\\/ti2_input').should('be.disabled');
-    cy.get('#\\/ti3_input').should('not.be.disabled');
+    cy.get(cesc('#\\/ti1_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti2_input')).should('be.disabled');
+    cy.get(cesc('#\\/ti3_input')).should('not.be.disabled');
 
-    cy.get('#\\/ti12_input').should('not.be.disabled');
-    cy.get('#\\/ti22_input').should('be.disabled');
-    cy.get('#\\/ti32_input').should('not.be.disabled');
+    cy.get(cesc('#\\/ti12_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti22_input')).should('be.disabled');
+    cy.get(cesc('#\\/ti32_input')).should('not.be.disabled');
 
-    cy.get('#\\/ti13_input').should('not.be.disabled');
-    cy.get('#\\/ti23_input').should('not.be.disabled');
-    cy.get('#\\/ti33_input').should('not.be.disabled');
+    cy.get(cesc('#\\/ti13_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti23_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti33_input')).should('not.be.disabled');
 
     cy.log('toggle disabled')
 
-    cy.get('#\\/toggleti1Disabled').click();
-    cy.get('#\\/toggleti2Disabled').click();
-    cy.get('#\\/toggleti3Disabled').click();
+    cy.get(cesc('#\\/toggleti1Disabled')).click();
+    cy.get(cesc('#\\/toggleti2Disabled')).click();
+    cy.get(cesc('#\\/toggleti3Disabled')).click();
 
 
-    cy.get('#\\/pti3IsDisabled').should('have.text', 'Is ti3 disabled? true');
-    cy.get('#\\/pti1IsDisabled').should('have.text', 'Is ti1 disabled? true');
-    cy.get('#\\/pti2IsDisabled').should('have.text', 'Is ti2 disabled? false');
-    cy.get('#\\/pti12IsDisabled').should('have.text', 'Is ti12 disabled? true');
-    cy.get('#\\/pti22IsDisabled').should('have.text', 'Is ti22 disabled? false');
-    cy.get('#\\/pti32IsDisabled').should('have.text', 'Is ti32 disabled? true');
-    cy.get('#\\/pti13IsDisabled').should('have.text', 'Is ti13 disabled? false');
-    cy.get('#\\/pti23IsDisabled').should('have.text', 'Is ti23 disabled? false');
-    cy.get('#\\/pti33IsDisabled').should('have.text', 'Is ti33 disabled? false');
+    cy.get(cesc('#\\/pti3IsDisabled')).should('have.text', 'Is ti3 disabled? true');
+    cy.get(cesc('#\\/pti1IsDisabled')).should('have.text', 'Is ti1 disabled? true');
+    cy.get(cesc('#\\/pti2IsDisabled')).should('have.text', 'Is ti2 disabled? false');
+    cy.get(cesc('#\\/pti12IsDisabled')).should('have.text', 'Is ti12 disabled? true');
+    cy.get(cesc('#\\/pti22IsDisabled')).should('have.text', 'Is ti22 disabled? false');
+    cy.get(cesc('#\\/pti32IsDisabled')).should('have.text', 'Is ti32 disabled? true');
+    cy.get(cesc('#\\/pti13IsDisabled')).should('have.text', 'Is ti13 disabled? false');
+    cy.get(cesc('#\\/pti23IsDisabled')).should('have.text', 'Is ti23 disabled? false');
+    cy.get(cesc('#\\/pti33IsDisabled')).should('have.text', 'Is ti33 disabled? false');
 
 
-    cy.get('#\\/ti1_input').should('be.disabled');
-    cy.get('#\\/ti2_input').should('not.be.disabled');
-    cy.get('#\\/ti3_input').should('be.disabled');
+    cy.get(cesc('#\\/ti1_input')).should('be.disabled');
+    cy.get(cesc('#\\/ti2_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti3_input')).should('be.disabled');
 
-    cy.get('#\\/ti12_input').should('be.disabled');
-    cy.get('#\\/ti22_input').should('not.be.disabled');
-    cy.get('#\\/ti32_input').should('be.disabled');
+    cy.get(cesc('#\\/ti12_input')).should('be.disabled');
+    cy.get(cesc('#\\/ti22_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti32_input')).should('be.disabled');
 
-    cy.get('#\\/ti13_input').should('not.be.disabled');
-    cy.get('#\\/ti23_input').should('not.be.disabled');
-    cy.get('#\\/ti33_input').should('not.be.disabled');
+    cy.get(cesc('#\\/ti13_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti23_input')).should('not.be.disabled');
+    cy.get(cesc('#\\/ti33_input')).should('not.be.disabled');
 
 
 
@@ -844,25 +836,25 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/pIsHidden').should('have.text', 'Is hidden? false');
-    cy.get('#\\/pText').should('have.text', 'Text: a');
+    cy.get(cesc('#\\/pIsHidden')).should('have.text', 'Is hidden? false');
+    cy.get(cesc('#\\/pText')).should('have.text', 'Text: a');
 
-    cy.get('#\\/ti_input').type("{end}{backspace}b{enter}");
-    cy.get('#\\/pText').should('have.text', 'Text: b');
+    cy.get(cesc('#\\/ti_input')).type("{end}{backspace}b{enter}");
+    cy.get(cesc('#\\/pText')).should('have.text', 'Text: b');
 
     cy.log('hide input')
-    cy.get('#\\/makeHidden').click();
-    cy.get('#\\/pIsHidden').should('have.text', 'Is hidden? true');
+    cy.get(cesc('#\\/makeHidden')).click();
+    cy.get(cesc('#\\/pIsHidden')).should('have.text', 'Is hidden? true');
 
-    cy.get('#\\/ti_input').should('not.exist');
+    cy.get(cesc('#\\/ti_input')).should('not.exist');
 
 
     cy.log('show input')
-    cy.get('#\\/makeNotHidden').click();
-    cy.get('#\\/pIsHidden').should('have.text', 'Is hidden? false');
+    cy.get(cesc('#\\/makeNotHidden')).click();
+    cy.get(cesc('#\\/pIsHidden')).should('have.text', 'Is hidden? false');
 
-    cy.get('#\\/ti_input').type("{end}{backspace}c{enter}");
-    cy.get('#\\/pText').should('have.text', 'Text: c');
+    cy.get(cesc('#\\/ti_input')).type("{end}{backspace}c{enter}");
+    cy.get(cesc('#\\/pText')).should('have.text', 'Text: c');
 
 
   })
@@ -882,9 +874,9 @@ describe('base component property Tests', function () {
     });
 
 
-    cy.get('#\\/_p1').should('have.text', 'Hi');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hi');
 
-    cy.get('#\\/_p2').should('have.text', 'Permids: s, p, pids');
+    cy.get(cesc('#\\/_p2')).should('have.text', 'Permids: s, p, pids');
 
   })
 

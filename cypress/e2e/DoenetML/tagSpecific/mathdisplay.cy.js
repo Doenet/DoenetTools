@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Math Display Tag Tests', function () {
@@ -25,14 +21,14 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(x)')
     })
     // not sure how to test that it is centered
-    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_me1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('cos(x)')
     })
 
@@ -59,45 +55,45 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/e1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/e1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(x)(1)')
     })
-    cy.get('#\\/e2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/e2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('cos(x)(2)')
     })
-    cy.get('#\\/e3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/e3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('tan(x)(3)')
     })
-    cy.get('#\\/_p1').should('have.text', 'We have equation (1), equation (2), and equation (3).')
-    cy.get('#\\/re1').should('have.text', '(1)')
-    cy.get('#\\/re2').should('have.text', '(2)')
-    cy.get('#\\/re3').should('have.text', '(3)')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'We have equation (1), equation (2), and equation (3).')
+    cy.get(cesc('#\\/re1')).should('have.text', '(1)')
+    cy.get(cesc('#\\/re2')).should('have.text', '(2)')
+    cy.get(cesc('#\\/re3')).should('have.text', '(3)')
 
-    cy.get('#\\/_p2').should('have.text', 'From copying properties: 1, 2, and 3.')
-    cy.get('#\\/te1').should('have.text', '1')
-    cy.get('#\\/te2').should('have.text', '2')
-    cy.get('#\\/te3').should('have.text', '3')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'From copying properties: 1, 2, and 3.')
+    cy.get(cesc('#\\/te1')).should('have.text', '1')
+    cy.get(cesc('#\\/te2')).should('have.text', '2')
+    cy.get(cesc('#\\/te3')).should('have.text', '3')
 
-    cy.get('#\\/re1').click();
+    cy.get(cesc('#\\/re1')).click();
 
-    cy.get('#\\/e1').then(el => {
+    cy.get(cesc('#\\/e1')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(-1).lt(5)
     })
 
-    cy.get('#\\/re2').click();
+    cy.get(cesc('#\\/re2')).click();
 
-    cy.get('#\\/e2').then(el => {
+    cy.get(cesc('#\\/e2')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(-1).lt(5)
     })
 
-    cy.get('#\\/re3').click();
+    cy.get(cesc('#\\/re3')).click();
 
-    cy.get('#\\/e3').then(el => {
+    cy.get(cesc('#\\/e3')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(-1).lt(5)
     })
@@ -147,7 +143,7 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
 
@@ -155,14 +151,14 @@ describe('Math Display Tag Tests', function () {
 
       let counter = 1;
 
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`x(${counter})`)
       })
-      cy.get('#\\/px').should('have.text', `x: ${counter}, equation (${counter})`)
-      cy.get('#\\/etx').should('have.text', `${counter}`)
-      cy.get('#\\/rx').should('have.text', `(${counter})`)
-      cy.get('#\\/rx').click();
-      cy.get('#\\/x').then(el => {
+      cy.get(cesc('#\\/px')).should('have.text', `x: ${counter}, equation (${counter})`)
+      cy.get(cesc('#\\/etx')).should('have.text', `${counter}`)
+      cy.get(cesc('#\\/rx')).should('have.text', `(${counter})`)
+      cy.get(cesc('#\\/rx')).click();
+      cy.get(cesc('#\\/x')).then(el => {
         let rect = el[0].getBoundingClientRect();
         expect(rect.top).gt(-1).lt(5)
       })
@@ -170,15 +166,15 @@ describe('Math Display Tag Tests', function () {
       for (let i = 1; i <= m; i++) {
         cy.window().then(async (win) => {
           counter++;
-          cy.get(`#\\/m${i}\\/eq`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/m${i}\\/eq`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}m(${counter})`)
           })
           if (i <= 6) {
-            cy.get(`#\\/pm${i}`).should('have.text', `m${i}: ${counter}, equation (${counter})`)
-            cy.get(`#\\/etm${i}`).should('have.text', `${counter}`)
-            cy.get(`#\\/rm${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rm${i}`).click();
-            cy.get(`#\\/m${i}\\/eq`).then(el => {
+            cy.get(cesc(`#\\/pm${i}`)).should('have.text', `m${i}: ${counter}, equation (${counter})`)
+            cy.get(cesc(`#\\/etm${i}`)).should('have.text', `${counter}`)
+            cy.get(cesc(`#\\/rm${i}`)).should('have.text', `(${counter})`)
+            cy.get(cesc(`#\\/rm${i}`)).click();
+            cy.get(cesc(`#\\/m${i}\\/eq`)).then(el => {
               let rect = el[0].getBoundingClientRect();
               expect(rect.top).gt(-1).lt(5)
             })
@@ -187,10 +183,10 @@ describe('Math Display Tag Tests', function () {
       }
       for (let i = m + 1; i <= 6; i++) {
         cy.window().then(async (win) => {
-          cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
-          cy.get(`#\\/etm${i}`).should('not.exist')
-          cy.get(`#\\/rm${i}`).should('have.text', `???`)
-          cy.get(`#\\/rm${i}`).click();
+          cy.get(cesc(`#\\/pm${i}`)).should('have.text', `m${i}: , equation ???`)
+          cy.get(cesc(`#\\/etm${i}`)).should('not.exist')
+          cy.get(cesc(`#\\/rm${i}`)).should('have.text', `???`)
+          cy.get(cesc(`#\\/rm${i}`)).click();
           cy.window().then(async (win) => {
             expect(win.scrollY).eq(0);
           })
@@ -199,14 +195,14 @@ describe('Math Display Tag Tests', function () {
 
       cy.window().then(async (win) => {
         counter++;
-        cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
         })
-        cy.get('#\\/py').should('have.text', `y: ${counter}, equation (${counter})`)
-        cy.get('#\\/ety').should('have.text', `${counter}`)
-        cy.get('#\\/ry').should('have.text', `(${counter})`)
-        cy.get('#\\/ry').click();
-        cy.get('#\\/y').then(el => {
+        cy.get(cesc('#\\/py')).should('have.text', `y: ${counter}, equation (${counter})`)
+        cy.get(cesc('#\\/ety')).should('have.text', `${counter}`)
+        cy.get(cesc('#\\/ry')).should('have.text', `(${counter})`)
+        cy.get(cesc('#\\/ry')).click();
+        cy.get(cesc('#\\/y')).then(el => {
           let rect = el[0].getBoundingClientRect();
           expect(rect.top).gt(-1).lt(5)
         })
@@ -215,15 +211,15 @@ describe('Math Display Tag Tests', function () {
       for (let i = 1; i <= n; i++) {
         cy.window().then(async (win) => {
           counter++;
-          cy.get(`#\\/n${i}\\/eq`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#\\/n${i}\\/eq`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}n(${counter})`)
           })
           if (i <= 6) {
-            cy.get(`#\\/pn${i}`).should('have.text', `n${i}: ${counter}, equation (${counter})`)
-            cy.get(`#\\/etn${i}`).should('have.text', `${counter}`)
-            cy.get(`#\\/rn${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rn${i}`).click();
-            cy.get(`#\\/n${i}\\/eq`).then(el => {
+            cy.get(cesc(`#\\/pn${i}`)).should('have.text', `n${i}: ${counter}, equation (${counter})`)
+            cy.get(cesc(`#\\/etn${i}`)).should('have.text', `${counter}`)
+            cy.get(cesc(`#\\/rn${i}`)).should('have.text', `(${counter})`)
+            cy.get(cesc(`#\\/rn${i}`)).click();
+            cy.get(cesc(`#\\/n${i}\\/eq`)).then(el => {
               let rect = el[0].getBoundingClientRect();
               expect(rect.top).gt(-1).lt(5)
             })
@@ -233,10 +229,10 @@ describe('Math Display Tag Tests', function () {
 
       for (let i = n + 1; i <= 6; i++) {
         cy.window().then(async (win) => {
-          cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
-          cy.get(`#\\/etn${i}`).should('not.exist')
-          cy.get(`#\\/rn${i}`).should('have.text', `???`)
-          cy.get(`#\\/rn${i}`).click();
+          cy.get(cesc(`#\\/pn${i}`)).should('have.text', `n${i}: , equation ???`)
+          cy.get(cesc(`#\\/etn${i}`)).should('not.exist')
+          cy.get(cesc(`#\\/rn${i}`)).should('have.text', `???`)
+          cy.get(cesc(`#\\/rn${i}`)).click();
           cy.window().then(async (win) => {
             expect(win.scrollY).eq(0);
           })
@@ -246,14 +242,14 @@ describe('Math Display Tag Tests', function () {
 
       cy.window().then(async (win) => {
         counter++;
-        cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/z')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
         })
-        cy.get('#\\/pz').should('have.text', `z: ${counter}, equation (${counter})`)
-        cy.get('#\\/etz').should('have.text', `${counter}`)
-        cy.get('#\\/rz').should('have.text', `(${counter})`)
-        cy.get('#\\/rz').click();
-        cy.get('#\\/z').then(el => {
+        cy.get(cesc('#\\/pz')).should('have.text', `z: ${counter}, equation (${counter})`)
+        cy.get(cesc('#\\/etz')).should('have.text', `${counter}`)
+        cy.get(cesc('#\\/rz')).should('have.text', `(${counter})`)
+        cy.get(cesc('#\\/rz')).click();
+        cy.get(cesc('#\\/z')).then(el => {
           let rect = el[0].getBoundingClientRect();
           expect(rect.top).gt(-1).lt(5)
         })
@@ -263,28 +259,28 @@ describe('Math Display Tag Tests', function () {
     checkEquationNumbering(2, 1)
 
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '4')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '2')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}2{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '0')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '6')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '3')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '1')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
@@ -301,16 +297,16 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x')
     })
-    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_me1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2y')
     })
-    cy.get('#\\/_men1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_men1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2z(1)')
     })
 
@@ -330,25 +326,25 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_me1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/_men1').find('.mjx-mtd').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_men1')).find('.mjx-mtd').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3+4i')
     })
-    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5+i')
     })
-    cy.get('#\\/_me2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_me2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6−i')
     })
-    cy.get('#\\/_men2').find('.mjx-mtd').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_men2')).find('.mjx-mtd').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−i')
     })
 
@@ -378,43 +374,43 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('q=sin(x)')
     })
-    cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('cos(x)=z')
     })
-    cy.get('#\\/_mdn1').find('.mjx-mlabeledtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mdn1')).find('.mjx-mlabeledtr').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('q=sin(x)')
     })
-    cy.get('#\\/_mdn1').find('.mjx-mlabeledtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mdn1')).find('.mjx-mlabeledtr').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('cos(x)=z')
     })
-    cy.get('#\\/_mdn1').find('.mjx-label').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mdn1')).find('.mjx-label').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1)')
     })
-    cy.get('#\\/_mdn1').find('.mjx-label').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mdn1')).find('.mjx-label').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('(2)')
     })
-    cy.get('#\\/_md2').find('.mjx-mlabeledtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md2')).find('.mjx-mlabeledtr').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('q=sin(x)')
     })
-    cy.get('#\\/_md2').find('.mjx-mlabeledtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md2')).find('.mjx-mlabeledtr').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('cos(x)=z')
     })
-    cy.get('#\\/_md2').find('.mjx-label').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md2')).find('.mjx-label').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3)')
     })
-    cy.get('#\\/_md2').find('.mjx-label').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md2')).find('.mjx-label').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('(4)')
     })
-    cy.get('#\\/_mdn2').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mdn2')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('q=sin(x)')
     })
-    cy.get('#\\/_mdn2').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mdn2')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('cos(x)=z')
     })
 
@@ -467,7 +463,7 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
 
@@ -475,14 +471,14 @@ describe('Math Display Tag Tests', function () {
 
       let counter = 1;
 
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`x(${counter})`)
       })
-      cy.get('#\\/px').should('have.text', `x: ${counter}, equation (${counter})`)
-      cy.get('#\\/etx').should('have.text', `${counter}`)
-      cy.get('#\\/rx').should('have.text', `(${counter})`)
-      cy.get('#\\/rx').click();
-      cy.get('#\\/x').then(el => {
+      cy.get(cesc('#\\/px')).should('have.text', `x: ${counter}, equation (${counter})`)
+      cy.get(cesc('#\\/etx')).should('have.text', `${counter}`)
+      cy.get(cesc('#\\/rx')).should('have.text', `(${counter})`)
+      cy.get(cesc('#\\/rx')).click();
+      cy.get(cesc('#\\/x')).then(el => {
         let rect = el[0].getBoundingClientRect();
         expect(rect.top).gt(-1).lt(5)
       })
@@ -490,18 +486,18 @@ describe('Math Display Tag Tests', function () {
       for (let i = 1; i <= m; i++) {
         cy.window().then(async (win) => {
           counter++;
-          cy.get('#\\/ms').find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
+          cy.get(cesc('#\\/ms')).find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}m=${i + 10}`)
           })
-          cy.get('#\\/ms').find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
+          cy.get(cesc('#\\/ms')).find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`(${counter})`)
           })
           if (i <= 6) {
-            cy.get(`#\\/pm${i}`).should('have.text', `m${i}: ${counter}, equation (${counter})`)
-            cy.get(`#\\/etm${i}`).should('have.text', `${counter}`)
-            cy.get(`#\\/rm${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rm${i}`).click();
-            cy.get(`#\\/m${i}\\/eq`).then(el => {
+            cy.get(cesc(`#\\/pm${i}`)).should('have.text', `m${i}: ${counter}, equation (${counter})`)
+            cy.get(cesc(`#\\/etm${i}`)).should('have.text', `${counter}`)
+            cy.get(cesc(`#\\/rm${i}`)).should('have.text', `(${counter})`)
+            cy.get(cesc(`#\\/rm${i}`)).click();
+            cy.get(cesc(`#\\/m${i}\\/eq`)).then(el => {
               let rect = el[0].getBoundingClientRect();
               expect(rect.top).gt(-1).lt(5)
             })
@@ -510,10 +506,10 @@ describe('Math Display Tag Tests', function () {
       }
       for (let i = m + 1; i <= 6; i++) {
         cy.window().then(async (win) => {
-          cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
-          cy.get(`#\\/etm${i}`).should('not.exist')
-          cy.get(`#\\/rm${i}`).should('have.text', `???`)
-          cy.get(`#\\/rm${i}`).click();
+          cy.get(cesc(`#\\/pm${i}`)).should('have.text', `m${i}: , equation ???`)
+          cy.get(cesc(`#\\/etm${i}`)).should('not.exist')
+          cy.get(cesc(`#\\/rm${i}`)).should('have.text', `???`)
+          cy.get(cesc(`#\\/rm${i}`)).click();
           cy.window().then(async (win) => {
             expect(win.scrollY).eq(0);
           })
@@ -522,14 +518,14 @@ describe('Math Display Tag Tests', function () {
 
       cy.window().then(async (win) => {
         counter++;
-        cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
         })
-        cy.get('#\\/py').should('have.text', `y: ${counter}, equation (${counter})`)
-        cy.get('#\\/ety').should('have.text', `${counter}`)
-        cy.get('#\\/ry').should('have.text', `(${counter})`)
-        cy.get('#\\/ry').click();
-        cy.get('#\\/y').then(el => {
+        cy.get(cesc('#\\/py')).should('have.text', `y: ${counter}, equation (${counter})`)
+        cy.get(cesc('#\\/ety')).should('have.text', `${counter}`)
+        cy.get(cesc('#\\/ry')).should('have.text', `(${counter})`)
+        cy.get(cesc('#\\/ry')).click();
+        cy.get(cesc('#\\/y')).then(el => {
           let rect = el[0].getBoundingClientRect();
           expect(rect.top).gt(-1).lt(5)
         })
@@ -538,18 +534,18 @@ describe('Math Display Tag Tests', function () {
       for (let i = 1; i <= n; i++) {
         cy.window().then(async (win) => {
           counter++;
-          cy.get('#\\/ns').find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
+          cy.get(cesc('#\\/ns')).find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}n=${i + 10}`)
           })
-          cy.get('#\\/ns').find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
+          cy.get(cesc('#\\/ns')).find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`(${counter})`)
           })
           if (i <= 6) {
-            cy.get(`#\\/pn${i}`).should('have.text', `n${i}: ${counter}, equation (${counter})`)
-            cy.get(`#\\/etn${i}`).should('have.text', `${counter}`)
-            cy.get(`#\\/rn${i}`).should('have.text', `(${counter})`)
-            cy.get(`#\\/rn${i}`).click();
-            cy.get(`#\\/n${i}\\/eq`).then(el => {
+            cy.get(cesc(`#\\/pn${i}`)).should('have.text', `n${i}: ${counter}, equation (${counter})`)
+            cy.get(cesc(`#\\/etn${i}`)).should('have.text', `${counter}`)
+            cy.get(cesc(`#\\/rn${i}`)).should('have.text', `(${counter})`)
+            cy.get(cesc(`#\\/rn${i}`)).click();
+            cy.get(cesc(`#\\/n${i}\\/eq`)).then(el => {
               let rect = el[0].getBoundingClientRect();
               expect(rect.top).gt(-1).lt(5)
             })
@@ -559,10 +555,10 @@ describe('Math Display Tag Tests', function () {
 
       for (let i = n + 1; i <= 6; i++) {
         cy.window().then(async (win) => {
-          cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
-          cy.get(`#\\/etn${i}`).should('not.exist')
-          cy.get(`#\\/rn${i}`).should('have.text', `???`)
-          cy.get(`#\\/rn${i}`).click();
+          cy.get(cesc(`#\\/pn${i}`)).should('have.text', `n${i}: , equation ???`)
+          cy.get(cesc(`#\\/etn${i}`)).should('not.exist')
+          cy.get(cesc(`#\\/rn${i}`)).should('have.text', `???`)
+          cy.get(cesc(`#\\/rn${i}`)).click();
           cy.window().then(async (win) => {
             expect(win.scrollY).eq(0);
           })
@@ -572,14 +568,14 @@ describe('Math Display Tag Tests', function () {
 
       cy.window().then(async (win) => {
         counter++;
-        cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/z')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
         })
-        cy.get('#\\/pz').should('have.text', `z: ${counter}, equation (${counter})`)
-        cy.get('#\\/etz').should('have.text', `${counter}`)
-        cy.get('#\\/rz').should('have.text', `(${counter})`)
-        cy.get('#\\/rz').click();
-        cy.get('#\\/z').then(el => {
+        cy.get(cesc('#\\/pz')).should('have.text', `z: ${counter}, equation (${counter})`)
+        cy.get(cesc('#\\/etz')).should('have.text', `${counter}`)
+        cy.get(cesc('#\\/rz')).should('have.text', `(${counter})`)
+        cy.get(cesc('#\\/rz')).click();
+        cy.get(cesc('#\\/z')).then(el => {
           let rect = el[0].getBoundingClientRect();
           expect(rect.top).gt(-1).lt(5)
         })
@@ -589,28 +585,28 @@ describe('Math Display Tag Tests', function () {
     checkEquationNumbering(2, 1)
 
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '4')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '2')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}2{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '0')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '6')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '3')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '1')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
@@ -663,7 +659,7 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
 
@@ -671,15 +667,15 @@ describe('Math Display Tag Tests', function () {
 
       let counter = 1;
 
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`x(${counter})`)
       })
-      cy.get('#\\/px').should('have.text', `x: ${counter}, equation (${counter})`)
-      cy.get('#\\/etx').should('have.text', `${counter}`)
-      cy.get('#\\/rx').should('have.text', `(${counter})`)
-      cy.get('#\\/rx').click();
-      cy.url().should('match', RegExp(`#\\/x$`))
-      cy.get('#\\/x').then(el => {
+      cy.get(cesc('#\\/px')).should('have.text', `x: ${counter}, equation (${counter})`)
+      cy.get(cesc('#\\/etx')).should('have.text', `${counter}`)
+      cy.get(cesc('#\\/rx')).should('have.text', `(${counter})`)
+      cy.get(cesc('#\\/rx')).click();
+      cy.url().should('match', RegExp(cesc(`#\\/x`) + '$'))
+      cy.get(cesc('#\\/x')).then(el => {
         let rect = el[0].getBoundingClientRect();
         expect(rect.top).gt(-1).lt(5)
       })
@@ -691,44 +687,44 @@ describe('Math Display Tag Tests', function () {
           if (i % 2 === 1) {
             labeledMs++;
             counter++;
-            cy.get('#\\/ms').find('.mjx-mlabeledtr').eq(labeledMs - 1).invoke('text').then((text) => {
+            cy.get(cesc('#\\/ms')).find('.mjx-mlabeledtr').eq(labeledMs - 1).invoke('text').then((text) => {
               expect(text.trim()).equal(`${i}m=${i + 10}`)
             })
-            cy.get('#\\/ms').find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
+            cy.get(cesc('#\\/ms')).find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
               expect(text.trim()).equal(`(${counter})`)
             })
             if (i <= 6) {
-              cy.get(`#\\/pm${i}`).should('have.text', `m${i}: ${counter}, equation (${counter})`)
-              cy.get(`#\\/etm${i}`).should('have.text', `${counter}`)
-              cy.get(`#\\/rm${i}`).should('have.text', `(${counter})`)
-              cy.get(`#\\/rm${i}`).click();
-              cy.url().should('match', RegExp(`#\\/m${i}\\/eq$`))
-              cy.get(`#\\/m${i}\\/eq`).then(el => {
+              cy.get(cesc(`#\\/pm${i}`)).should('have.text', `m${i}: ${counter}, equation (${counter})`)
+              cy.get(cesc(`#\\/etm${i}`)).should('have.text', `${counter}`)
+              cy.get(cesc(`#\\/rm${i}`)).should('have.text', `(${counter})`)
+              cy.get(cesc(`#\\/rm${i}`)).click();
+              cy.url().should('match', RegExp(cesc(`#\\/m${i}\\/eq`) + '$'))
+              cy.get(cesc(`#\\/m${i}\\/eq`)).then(el => {
                 let rect = el[0].getBoundingClientRect();
                 expect(rect.top).gt(-1).lt(5)
               })
             }
           } else {
             unlabeledMs++;
-            cy.get('#\\/ms').find('.mjx-mtr').eq(unlabeledMs - 1).invoke('text').then((text) => {
+            cy.get(cesc('#\\/ms')).find('.mjx-mtr').eq(unlabeledMs - 1).invoke('text').then((text) => {
               expect(text.trim()).equal(`${i}m=${i + 10}`)
             })
             if (i <= 6) {
-              cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
-              cy.get(`#\\/etm${i}`).should('have.text', '')
-              cy.get(`#\\/rm${i}`).should('have.text', `???`)
-              cy.get(`#\\/rm${i}`).click();
-              cy.url().should('match', RegExp(`#\\/m${i}\\/eq$`))
+              cy.get(cesc(`#\\/pm${i}`)).should('have.text', `m${i}: , equation ???`)
+              cy.get(cesc(`#\\/etm${i}`)).should('have.text', '')
+              cy.get(cesc(`#\\/rm${i}`)).should('have.text', `???`)
+              cy.get(cesc(`#\\/rm${i}`)).click();
+              cy.url().should('match', RegExp(cesc(`#\\/m${i}\\/eq`) + '$'))
             }
           }
         })
       }
       for (let i = m + 1; i <= 6; i++) {
         cy.window().then(async (win) => {
-          cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
-          cy.get(`#\\/etm${i}`).should('not.exist')
-          cy.get(`#\\/rm${i}`).should('have.text', `???`)
-          cy.get(`#\\/rm${i}`).click();
+          cy.get(cesc(`#\\/pm${i}`)).should('have.text', `m${i}: , equation ???`)
+          cy.get(cesc(`#\\/etm${i}`)).should('not.exist')
+          cy.get(cesc(`#\\/rm${i}`)).should('have.text', `???`)
+          cy.get(cesc(`#\\/rm${i}`)).click();
           cy.url().should('match', RegExp(`#$`))
           cy.window().then(async (win) => {
             expect(win.scrollY).eq(0);
@@ -738,15 +734,15 @@ describe('Math Display Tag Tests', function () {
 
       cy.window().then(async (win) => {
         counter++;
-        cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
         })
-        cy.get('#\\/py').should('have.text', `y: ${counter}, equation (${counter})`)
-        cy.get('#\\/ety').should('have.text', `${counter}`)
-        cy.get('#\\/ry').should('have.text', `(${counter})`)
-        cy.get('#\\/ry').click();
-        cy.url().should('match', RegExp(`#\\/y$`))
-        cy.get('#\\/y').then(el => {
+        cy.get(cesc('#\\/py')).should('have.text', `y: ${counter}, equation (${counter})`)
+        cy.get(cesc('#\\/ety')).should('have.text', `${counter}`)
+        cy.get(cesc('#\\/ry')).should('have.text', `(${counter})`)
+        cy.get(cesc('#\\/ry')).click();
+        cy.url().should('match', RegExp(cesc(`#\\/y`) + '$'))
+        cy.get(cesc('#\\/y')).then(el => {
           let rect = el[0].getBoundingClientRect();
           expect(rect.top).gt(-1).lt(5)
         })
@@ -759,34 +755,34 @@ describe('Math Display Tag Tests', function () {
           if (i % 2 === 0) {
             labeledNs++;
             counter++;
-            cy.get('#\\/ns').find('.mjx-mlabeledtr').eq(labeledNs - 1).invoke('text').then((text) => {
+            cy.get(cesc('#\\/ns')).find('.mjx-mlabeledtr').eq(labeledNs - 1).invoke('text').then((text) => {
               expect(text.trim()).equal(`${i}n=${i + 10}`)
             })
-            cy.get('#\\/ns').find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
+            cy.get(cesc('#\\/ns')).find('.mjx-label').eq(i - 1).invoke('text').then((text) => {
               expect(text.trim()).equal(`(${counter})`)
             })
             if (i <= 6) {
-              cy.get(`#\\/pn${i}`).should('have.text', `n${i}: ${counter}, equation (${counter})`)
-              cy.get(`#\\/etn${i}`).should('have.text', `${counter}`)
-              cy.get(`#\\/rn${i}`).should('have.text', `(${counter})`)
-              cy.get(`#\\/rn${i}`).click();
-              cy.url().should('match', RegExp(`#\\/n${i}\\/eq$`))
-              cy.get(`#\\/n${i}\\/eq`).then(el => {
+              cy.get(cesc(`#\\/pn${i}`)).should('have.text', `n${i}: ${counter}, equation (${counter})`)
+              cy.get(cesc(`#\\/etn${i}`)).should('have.text', `${counter}`)
+              cy.get(cesc(`#\\/rn${i}`)).should('have.text', `(${counter})`)
+              cy.get(cesc(`#\\/rn${i}`)).click();
+              cy.url().should('match', RegExp(cesc(`#\\/n${i}\\/eq`) + '$'))
+              cy.get(cesc(`#\\/n${i}\\/eq`)).then(el => {
                 let rect = el[0].getBoundingClientRect();
                 expect(rect.top).gt(-1).lt(5)
               })
             }
           } else {
             unlabeledNs++;
-            cy.get('#\\/ns').find('.mjx-mtr').eq(unlabeledNs - 1).invoke('text').then((text) => {
+            cy.get(cesc('#\\/ns')).find('.mjx-mtr').eq(unlabeledNs - 1).invoke('text').then((text) => {
               expect(text.trim()).equal(`${i}n=${i + 10}`)
             })
             if (i <= 6) {
-              cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
-              cy.get(`#\\/etn${i}`).should('have.text', ``)
-              cy.get(`#\\/rn${i}`).should('have.text', `???`)
-              cy.get(`#\\/rn${i}`).click();
-              cy.url().should('match', RegExp(`#\\/n${i}\\/eq$`))
+              cy.get(cesc(`#\\/pn${i}`)).should('have.text', `n${i}: , equation ???`)
+              cy.get(cesc(`#\\/etn${i}`)).should('have.text', ``)
+              cy.get(cesc(`#\\/rn${i}`)).should('have.text', `???`)
+              cy.get(cesc(`#\\/rn${i}`)).click();
+              cy.url().should('match', RegExp(cesc(`#\\/n${i}\\/eq`) + '$'))
             }
           }
         })
@@ -794,10 +790,10 @@ describe('Math Display Tag Tests', function () {
 
       for (let i = n + 1; i <= 6; i++) {
         cy.window().then(async (win) => {
-          cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
-          cy.get(`#\\/etn${i}`).should('not.exist')
-          cy.get(`#\\/rn${i}`).should('have.text', `???`)
-          cy.get(`#\\/rn${i}`).click();
+          cy.get(cesc(`#\\/pn${i}`)).should('have.text', `n${i}: , equation ???`)
+          cy.get(cesc(`#\\/etn${i}`)).should('not.exist')
+          cy.get(cesc(`#\\/rn${i}`)).should('have.text', `???`)
+          cy.get(cesc(`#\\/rn${i}`)).click();
           cy.url().should('match', RegExp(`#$`))
           cy.window().then(async (win) => {
             expect(win.scrollY).eq(0);
@@ -808,15 +804,15 @@ describe('Math Display Tag Tests', function () {
 
       cy.window().then(async (win) => {
         counter++;
-        cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/z')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
         })
-        cy.get('#\\/pz').should('have.text', `z: ${counter}, equation (${counter})`)
-        cy.get('#\\/etz').should('have.text', `${counter}`)
-        cy.get('#\\/rz').should('have.text', `(${counter})`)
-        cy.get('#\\/rz').click();
-        cy.url().should('match', RegExp(`#\\/z$`))
-        cy.get('#\\/z').then(el => {
+        cy.get(cesc('#\\/pz')).should('have.text', `z: ${counter}, equation (${counter})`)
+        cy.get(cesc('#\\/etz')).should('have.text', `${counter}`)
+        cy.get(cesc('#\\/rz')).should('have.text', `(${counter})`)
+        cy.get(cesc('#\\/rz')).click();
+        cy.url().should('match', RegExp(cesc(`#\\/z`) + "$"))
+        cy.get(cesc('#\\/z')).then(el => {
           let rect = el[0].getBoundingClientRect();
           expect(rect.top).gt(-1).lt(5)
         })
@@ -826,28 +822,28 @@ describe('Math Display Tag Tests', function () {
     checkEquationNumbering(2, 1)
 
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '4')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '2')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}2{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '0')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '6')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
-    cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/ma').should('contain.text', '3')
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get(cesc('#\\/ma')).should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
-    cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/na').should('contain.text', '1')
+    cy.get(cesc('#\\/n') + ' textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get(cesc('#\\/na')).should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
@@ -865,14 +861,14 @@ describe('Math Display Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_p1').should('have.text', '25,236,501.35');
-    cy.get('#\\/_p2').should('have.text', '25,236,501.35');
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p1')).should('have.text', '25,236,501.35');
+    cy.get(cesc('#\\/_p2')).should('have.text', '25,236,501.35');
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('25,236,501.35')
     })
-    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('25,236,501.35')
     })
 
@@ -893,15 +889,15 @@ describe('Math Display Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('βs')
     })
-    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_me1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('βs')
     })
-    cy.get('#\\/_md1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('βs')
     })
 
@@ -922,18 +918,18 @@ describe('Math Display Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s=1,2,3')
     })
-    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s=1,2,3')
     })
-    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_me1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s=1,2,3')
     })
-    cy.get('#\\/_md1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s=1,2,3')
     })
 
@@ -950,9 +946,9 @@ describe('Math Display Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     })
 
@@ -960,9 +956,9 @@ describe('Math Display Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/m'].stateValues.latex).eq("");
     });
-    cy.get('#\\/uv').click();
+    cy.get(cesc('#\\/uv')).click();
 
-    cy.get('#\\/m .mjx-mrow').should('contain.text', '12')
+    cy.get(cesc('#\\/m') + ' .mjx-mrow').should('contain.text', '12')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -992,10 +988,10 @@ describe('Math Display Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-    cy.get('#\\/m1t').should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀')
-    cy.get('#\\/m2t').should('have.text', '2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
-    cy.get('#\\/mdt').should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀\\\\\n2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/m1t')).should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀')
+    cy.get(cesc('#\\/m2t')).should('have.text', '2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
+    cy.get(cesc('#\\/mdt')).should('have.text', '2 x₁ y₂₃ + z₄₅₆ - a₇₊₈₋₉₀\\\\\n2 x¹ y²³ + z⁴⁵⁶ - a⁷⁺⁸⁻⁹⁰')
 
   });
 
@@ -1052,19 +1048,19 @@ describe('Math Display Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
-    cy.get("#\\/pContent1 .mjx-mrow").eq(0).should('have.text', '∂f∂x')
-    cy.get("#\\/pContent2 .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pContent1") + " .mjx-mrow").eq(0).should('have.text', '∂f∂x')
+    cy.get(cesc("#\\/pContent2") + " .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
 
 
     cy.log("move maths by dragging")
@@ -1082,37 +1078,37 @@ describe('Math Display Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move maths by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move maths by dragging')
@@ -1130,11 +1126,11 @@ describe('Math Display Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
   })
@@ -1157,26 +1153,26 @@ describe('Math Display Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'x')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'x')
 
 
     cy.log("give good anchor coords")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
 
     cy.log("give bad anchor coords again")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', 'q')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', 'q')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'q')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'q')
 
 
   });
@@ -1234,19 +1230,19 @@ describe('Math Display Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
-    cy.get("#\\/pContent1 .mjx-mrow").eq(0).should('have.text', '∂f∂x')
-    cy.get("#\\/pContent2 .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pContent1") + " .mjx-mrow").eq(0).should('have.text', '∂f∂x')
+    cy.get(cesc("#\\/pContent2") + " .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
 
 
     cy.log("move maths by dragging")
@@ -1264,37 +1260,37 @@ describe('Math Display Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move maths by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move maths by dragging')
@@ -1312,11 +1308,11 @@ describe('Math Display Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
   })
@@ -1380,27 +1376,27 @@ describe('Math Display Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
-    cy.get('#\\/pContent1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+    cy.get(cesc('#\\/pContent1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('Q=∂f∂x')
     })
-    cy.get('#\\/pContent1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/pContent1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('R=∂g∂y')
     })
-    cy.get('#\\/pContent2').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/pContent2')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('F=∫baf(x)dx')
     })
-    cy.get('#\\/pContent2').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc('#\\/pContent2')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('G=∫dcg(y)dy')
     })
 
@@ -1419,37 +1415,37 @@ describe('Math Display Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move maths by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move maths by dragging')
@@ -1467,11 +1463,11 @@ describe('Math Display Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
   })
@@ -1502,78 +1498,78 @@ describe('Math Display Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'black');
-    cy.get('#\\/tc_variable_style').should('have.text', 'black');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
     // TODO: how to test color in graph
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'green');
-    cy.get('#\\/tc_variable_style').should('have.text', 'green');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'red with a blue background');
-    cy.get('#\\/tc_variable_style').should('have.text', 'red');
-    cy.get('#\\/bc_variable_style').should('have.text', 'blue');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'red with a blue background');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'red');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'blue');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(255, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgb(0, 0, 255)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
 
 
 
@@ -1605,78 +1601,78 @@ describe('Math Display Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'black');
-    cy.get('#\\/tc_variable_style').should('have.text', 'black');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
     // TODO: how to test color in graph
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'green');
-    cy.get('#\\/tc_variable_style').should('have.text', 'green');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'red with a blue background');
-    cy.get('#\\/tc_variable_style').should('have.text', 'red');
-    cy.get('#\\/bc_variable_style').should('have.text', 'blue');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'red with a blue background');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'red');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'blue');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(255, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgb(0, 0, 255)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
 
 
 
@@ -1708,78 +1704,78 @@ describe('Math Display Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'black');
-    cy.get('#\\/tc_variable_style').should('have.text', 'black');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
     // TODO: how to test color in graph
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'green');
-    cy.get('#\\/tc_variable_style').should('have.text', 'green');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'red with a blue background');
-    cy.get('#\\/tc_variable_style').should('have.text', 'red');
-    cy.get('#\\/bc_variable_style').should('have.text', 'blue');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'red with a blue background');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'red');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'blue');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(255, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgb(0, 0, 255)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
 
 
 
@@ -1827,7 +1823,7 @@ describe('Math Display Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1841,10 +1837,10 @@ describe('Math Display Tag Tests', function () {
       let m1dName = stateVariables["/p2"].activeChildren[0].componentName;
       let m2dName = stateVariables["/p2"].activeChildren[2].componentName;
 
-      let m1cAnchor = '#' + cesc(m1cName) + " .mjx-mrow";
-      let m2cAnchor = '#' + cesc(m2cName) + " .mjx-mrow";
-      let m1dAnchor = '#' + cesc(m1dName);
-      let m2dAnchor = '#' + cesc(m2dName);
+      let m1cAnchor = '#' + cesc2(m1cName) + " .mjx-mrow";
+      let m2cAnchor = '#' + cesc2(m2cName) + " .mjx-mrow";
+      let m1dAnchor = '#' + cesc2(m1dName);
+      let m2dAnchor = '#' + cesc2(m2dName);
 
       cy.get(m1cAnchor).eq(0).should('have.text', 'x2')
       cy.get(m1dAnchor).should('have.text', 'x^2')
@@ -1856,12 +1852,12 @@ describe('Math Display Tag Tests', function () {
       cy.get(m2cAnchor).should('have.css', 'color', 'rgb(255, 0, 0)');
       cy.get(m2dAnchor).should('have.css', 'color', 'rgb(0, 0, 0)');
 
-      cy.get('#\\/m1coords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/m2coords .mjx-mrow').eq(0).should('have.text', '(3,4)')
-      cy.get('#\\/m1acoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/m2acoords .mjx-mrow').eq(0).should('have.text', '(3,4)')
-      cy.get('#\\/m1bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/m2bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
+      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
+      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
 
 
@@ -1879,14 +1875,14 @@ describe('Math Display Tag Tests', function () {
         })
       })
 
-      cy.get('#\\/m2coords .mjx-mrow').should('contain.text', '(4,−5)')
+      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-      cy.get('#\\/m1coords .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-      cy.get('#\\/m2coords .mjx-mrow').eq(0).should('have.text', '(4,−5)')
-      cy.get('#\\/m1acoords .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-      cy.get('#\\/m2acoords .mjx-mrow').eq(0).should('have.text', '(4,−5)')
-      cy.get('#\\/m1bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/m2bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
 
       cy.log("move second ms")
@@ -1903,14 +1899,14 @@ describe('Math Display Tag Tests', function () {
         })
       })
 
-      cy.get('#\\/m2coords .mjx-mrow').should('contain.text', '(−8,2)')
+      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').should('contain.text', '(−8,2)')
 
-      cy.get('#\\/m1coords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/m2coords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/m1acoords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/m2acoords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/m1bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/m2bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
 
       cy.log("move third ms")
@@ -1927,14 +1923,14 @@ describe('Math Display Tag Tests', function () {
         })
       })
 
-      cy.get('#\\/m2bcoords .mjx-mrow').should('contain.text', '(−5,−4)')
+      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').should('contain.text', '(−5,−4)')
 
-      cy.get('#\\/m1coords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/m2coords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/m1acoords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/m2acoords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/m1bcoords .mjx-mrow').eq(0).should('have.text', '(−6,3)')
-      cy.get('#\\/m2bcoords .mjx-mrow').eq(0).should('have.text', '(−5,−4)')
+      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(−6,3)')
+      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−4)')
 
 
 

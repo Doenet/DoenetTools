@@ -7,6 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 import { textRendererStyle } from '../../Core/utils/style';
 import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
+import { cesc } from '../../_utils/url';
 
 export default React.memo(function MathComponent(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -404,9 +405,10 @@ export default React.memo(function MathComponent(props) {
     <a name={id} key={id} />
   ];
   if (SVs.mrowChildNames) {
-    anchors.push(...SVs.mrowChildNames.map(x =>
-      <a name={x} key={x} id={x} />
-    ))
+    anchors.push(...SVs.mrowChildNames.map(x => {
+      let rowId = cesc(x);
+      return <a name={rowId} key={rowId} id={rowId} />
+    }))
   }
 
 

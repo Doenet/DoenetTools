@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('DoenetML tests', function () {
 
@@ -39,9 +31,9 @@ describe('DoenetML tests', function () {
 </p>
 `
 
-    cy.get('#\\/theP').should('contains.text', '\n          Did you know that\n          1+1');
-    cy.get('#\\/theP').should('contains.text', '1\n          =\n          2');
-    cy.get('#\\/theDoenetML').should('have.text', thePDoenetML)
+    cy.get(cesc('#\\/theP')).should('contains.text', '\n          Did you know that\n          1+1');
+    cy.get(cesc('#\\/theP')).should('contains.text', '1\n          =\n          2');
+    cy.get(cesc('#\\/theDoenetML')).should('have.text', thePDoenetML)
 
 
     cy.window().then(async (win) => {
@@ -87,10 +79,10 @@ describe('DoenetML tests', function () {
 A string by itself!
 `
 
-    cy.get('#\\/theDoenetML').should('have.text', thePDoenetML)
-    cy.get('#\\/theDoenetML2').should('have.text', "String with no space.\n")
+    cy.get(cesc('#\\/theDoenetML')).should('have.text', thePDoenetML)
+    cy.get(cesc('#\\/theDoenetML2')).should('have.text', "String with no space.\n")
 
-    cy.get('#\\/pxcoord .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/pxcoord') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
 
     cy.window().then(async (win) => {
@@ -105,12 +97,12 @@ A string by itself!
 
 
     cy.log("Change point coords, don't change DoenetML")
-    cy.get("#\\/mixcoord textarea").type("{end}{backspace}9{enter}", { force: true })
+    cy.get(cesc("#\\/mixcoord") + " textarea").type("{end}{backspace}9{enter}", { force: true })
 
-    cy.get('#\\/pxcoord .mjx-mrow').should('contain.text', '9')
-    cy.get('#\\/pxcoord .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get(cesc('#\\/pxcoord') + ' .mjx-mrow').should('contain.text', '9')
+    cy.get(cesc('#\\/pxcoord') + ' .mjx-mrow').eq(0).should('have.text', '9')
 
-    cy.get('#\\/theDoenetML').should('have.text', thePDoenetML)
+    cy.get(cesc('#\\/theDoenetML')).should('have.text', thePDoenetML)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

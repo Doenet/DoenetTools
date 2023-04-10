@@ -1,4 +1,6 @@
 import { createFunctionFromDefinition } from "../../../../src/Core/utils/function";
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Function curve Tag Tests', function () {
 
@@ -21,7 +23,7 @@ describe('Function curve Tag Tests', function () {
     });
 
     //to wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -48,7 +50,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -75,7 +77,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -101,7 +103,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -132,7 +134,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -162,7 +164,7 @@ describe('Function curve Tag Tests', function () {
     </graph>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -192,7 +194,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -223,7 +225,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -252,7 +254,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -280,7 +282,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -307,9 +309,9 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
-    cy.get('#\\/a2 .mjx-mrow').should("contain.text", "1")
+    cy.get(cesc('#\\/a2') + ' .mjx-mrow').should("contain.text", "1")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -320,8 +322,8 @@ describe('Function curve Tag Tests', function () {
       expect(f(3)).eq(27 - 3);
     })
 
-    cy.get("#\\/a textarea").type("{end}{backspace}-2{enter}", { force: true, delay: 100 });
-    cy.get('#\\/a2 .mjx-mrow').should("contain.text", "−2")
+    cy.get(cesc("#\\/a") + " textarea").type("{end}{backspace}-2{enter}", { force: true, delay: 100 });
+    cy.get(cesc('#\\/a2') + ' .mjx-mrow').should("contain.text", "−2")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.curveType).eq("function");
@@ -346,7 +348,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -381,7 +383,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -454,7 +456,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -528,7 +530,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -628,7 +630,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -729,7 +731,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -827,7 +829,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     let f = t => (60 * t - 106 * t ** 2 + 59 * t ** 3 - 13 * t ** 4 + t ** 5) * 4;
@@ -873,7 +875,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     let f = t => Math.sin(t / 10) + t / 50 + 2;
@@ -964,7 +966,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -1039,7 +1041,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -1141,7 +1143,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -1239,7 +1241,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     let f = t => (60 * t - 106 * t ** 2 + 59 * t ** 3 - 13 * t ** 4 + t ** 5) * 4;
@@ -1285,7 +1287,7 @@ describe('Function curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     let f = t => Math.sin(t / 10) + t / 50 + 2;
@@ -1371,7 +1373,7 @@ describe('Function curve Tag Tests', function () {
     });
 
     //to wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

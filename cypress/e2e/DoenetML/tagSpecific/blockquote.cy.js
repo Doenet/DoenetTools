@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('blockquote Tag Tests', function () {
 
@@ -18,7 +20,7 @@ describe('blockquote Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('blockquote#\\/_blockquote1').should('have.text', "\n    For to be free is not merely to cast off one's chains, but to live in a way that respects and enhances the freedom of others.\n  ")
+    cy.get('blockquote' + cesc('#\\/_blockquote1')).should('have.text', "\n    For to be free is not merely to cast off one's chains, but to live in a way that respects and enhances the freedom of others.\n  ")
 
   });
 

@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 
@@ -40,9 +36,9 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-      cy.get('#\\/x .mjx-mrow').should('have.text', values[(ind - 1) % 6])
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').should('have.text', values[(ind - 1) % 6])
 
       cy.window().then(async (win) => {
 
@@ -76,9 +72,9 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-      cy.get('#\\/x').should('have.text', (ind - 1) % 5 + 1)
+      cy.get(cesc('#\\/x')).should('have.text', (ind - 1) % 5 + 1)
 
       cy.window().then(async (win) => {
 
@@ -115,9 +111,9 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-      cy.get('#\\/x').should('have.text', letters[(ind - 1) % 4])
+      cy.get(cesc('#\\/x')).should('have.text', letters[(ind - 1) % 4])
 
       cy.window().then(async (win) => {
 
@@ -177,7 +173,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -228,7 +224,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -292,7 +288,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -338,7 +334,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -393,7 +389,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -439,7 +435,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -499,7 +495,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -544,7 +540,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -599,7 +595,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -644,7 +640,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -701,7 +697,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -756,7 +752,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -810,7 +806,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -877,7 +873,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -926,7 +922,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -993,7 +989,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1042,7 +1038,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1109,7 +1105,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1168,7 +1164,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1211,7 +1207,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1258,7 +1254,7 @@ describe('Specifying unique variant tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`);
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
         cy.window().then(async (win) => {
 
@@ -1355,7 +1351,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1441,7 +1437,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1542,7 +1538,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       let category, newValue;
 
@@ -1605,10 +1601,10 @@ describe('Specifying unique variant tests', function () {
 
 
       cy.window().then(async (win) => {
-        let textinputAnchor = cesc('#' + textinputName) + "_input";
-        let answerCorrect = cesc('#' + textinputName + "_correct");
-        let answerIncorrect = cesc('#' + textinputName + "_incorrect");
-        let answerSubmit = cesc('#' + textinputName + "_submit");
+        let textinputAnchor = cesc2('#' + textinputName) + "_input";
+        let answerCorrect = cesc2('#' + textinputName + "_correct");
+        let answerIncorrect = cesc2('#' + textinputName + "_incorrect");
+        let answerSubmit = cesc2('#' + textinputName + "_submit");
 
         cy.get(textinputAnchor).type(`${newValue}{enter}`);
 
@@ -1634,7 +1630,7 @@ describe('Specifying unique variant tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`);
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -1711,7 +1707,7 @@ describe('Specifying unique variant tests', function () {
       })
 
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);
 
       cy.window().then(async (win) => {
 
@@ -1767,17 +1763,17 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-      cy.get('#\\/x').should('have.text', (ind - 1) % 3 + 1)
+      cy.get(cesc('#\\/x')).should('have.text', (ind - 1) % 3 + 1)
 
-      cy.get('#\\/p1').should('have.text', 'letter: a')
-      cy.get('#\\/p2').should('not.exist')
+      cy.get(cesc('#\\/p1')).should('have.text', 'letter: a')
+      cy.get(cesc('#\\/p2')).should('not.exist')
 
-      cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
-      cy.get('#\\/p1').should('have.text', 'letter: a')
-      cy.get('#\\/p2').should('have.text', 'letter: b')
-      cy.get('#\\/p3').should('have.text', 'letter: c')
+      cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
+      cy.get(cesc('#\\/p1')).should('have.text', 'letter: a')
+      cy.get(cesc('#\\/p2')).should('have.text', 'letter: b')
+      cy.get(cesc('#\\/p3')).should('have.text', 'letter: c')
 
 
       cy.window().then(async (win) => {
@@ -1804,7 +1800,7 @@ describe('Specifying unique variant tests', function () {
       })
 
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       // wait until core is loaded
       cy.waitUntil(() => cy.window().then(async (win) => {
@@ -1812,11 +1808,11 @@ describe('Specifying unique variant tests', function () {
         return stateVariables["/x"];
       }))
 
-      cy.get('#\\/x').should('have.text', (ind - 1) % 3 + 1)
+      cy.get(cesc('#\\/x')).should('have.text', (ind - 1) % 3 + 1)
 
-      cy.get('#\\/p1').should('have.text', 'letter: a')
-      cy.get('#\\/p2').should('have.text', 'letter: b')
-      cy.get('#\\/p3').should('have.text', 'letter: c')
+      cy.get(cesc('#\\/p1')).should('have.text', 'letter: a')
+      cy.get(cesc('#\\/p2')).should('have.text', 'letter: b')
+      cy.get(cesc('#\\/p3')).should('have.text', 'letter: c')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1826,11 +1822,11 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables[stateVariables["/p3"].activeChildren[1].componentName].stateValues.value).eq('c')
       })
 
-      cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true })
-      cy.get('#\\/p1').should('have.text', 'letter: a')
-      cy.get('#\\/p2').should('have.text', 'letter: b')
-      cy.get('#\\/p3').should('have.text', 'letter: c')
-      cy.get('#\\/p4').should('have.text', 'letter: d')
+      cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true })
+      cy.get(cesc('#\\/p1')).should('have.text', 'letter: a')
+      cy.get(cesc('#\\/p2')).should('have.text', 'letter: b')
+      cy.get(cesc('#\\/p3')).should('have.text', 'letter: c')
+      cy.get(cesc('#\\/p4')).should('have.text', 'letter: d')
 
     }
 
@@ -1877,7 +1873,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
       cy.window().then(async (win) => {
@@ -1889,8 +1885,8 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
         for (let i = 0; i < 3; i++) {
-          cy.get(`#\\/ci_choice${i + 1}_input`).click();
-          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i] - 1])
+          cy.get(cesc(`#\\/ci_choice${i + 1}_input`)).click();
+          cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[i] - 1])
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i] - 1]])
@@ -1908,7 +1904,7 @@ describe('Specifying unique variant tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -1916,15 +1912,15 @@ describe('Specifying unique variant tests', function () {
           return stateVariables["/ci"];
         }))
 
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[2] - 1])
+        cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[2] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[2] - 1]])
         });
 
-        cy.get(`#\\/ci_choice1_input`).click();
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0] - 1])
+        cy.get(cesc(`#\\/ci_choice1_input`)).click();
+        cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[0] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -1951,7 +1947,7 @@ describe('Specifying unique variant tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `${ind}`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2008,7 +2004,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
       cy.window().then(async (win) => {
@@ -2020,8 +2016,8 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
         for (let i = 0; i < 3; i++) {
-          cy.get(`#\\/ci_choice${i + 1}_input`).click();
-          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i] - 1])
+          cy.get(cesc(`#\\/ci_choice${i + 1}_input`)).click();
+          cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[i] - 1])
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i] - 1]])
@@ -2039,7 +2035,7 @@ describe('Specifying unique variant tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -2047,15 +2043,15 @@ describe('Specifying unique variant tests', function () {
           return stateVariables["/ci"];
         }))
 
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[2] - 1])
+        cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[2] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[2] - 1]])
         });
 
-        cy.get(`#\\/ci_choice1_input`).click();
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0] - 1])
+        cy.get(cesc(`#\\/ci_choice1_input`)).click();
+        cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[0] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -2082,7 +2078,7 @@ describe('Specifying unique variant tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `${ind}`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2133,7 +2129,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
       cy.window().then(async (win) => {
@@ -2146,9 +2142,9 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
         for (let i = 0; i < 3; i++) {
-          cy.get('#' + cesc(choiceInputName) + `_choice${i + 1}_input`).click();
-          cy.get('#' + cesc(choiceInputName) + '_submit').click();
-          cy.get('#\\/sr').should('have.text', choices[choiceOrder[i] - 1])
+          cy.get('#' + cesc2(choiceInputName) + `_choice${i + 1}_input`).click();
+          cy.get('#' + cesc2(choiceInputName) + '_submit').click();
+          cy.get(cesc('#\\/sr')).should('have.text', choices[choiceOrder[i] - 1])
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables[choiceInputName].stateValues.selectedValues).eqls([choices[choiceOrder[i] - 1]])
@@ -2166,7 +2162,7 @@ describe('Specifying unique variant tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -2174,7 +2170,7 @@ describe('Specifying unique variant tests', function () {
           return stateVariables["/ans"];
         }))
 
-        cy.get('#\\/sr').should('have.text', choices[choiceOrder[2] - 1])
+        cy.get(cesc('#\\/sr')).should('have.text', choices[choiceOrder[2] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -2182,9 +2178,9 @@ describe('Specifying unique variant tests', function () {
         });
 
 
-        cy.get('#' + cesc(choiceInputName) + `_choice1_input`).click();
-        cy.get('#' + cesc(choiceInputName) + '_submit').click();
-        cy.get('#\\/sr').should('have.text', choices[choiceOrder[0] - 1])
+        cy.get('#' + cesc2(choiceInputName) + `_choice1_input`).click();
+        cy.get('#' + cesc2(choiceInputName) + '_submit').click();
+        cy.get(cesc('#\\/sr')).should('have.text', choices[choiceOrder[0] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -2211,7 +2207,7 @@ describe('Specifying unique variant tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `${ind}`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2261,7 +2257,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
       cy.window().then(async (win) => {
@@ -2276,8 +2272,8 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h"])
 
         for (let i = 0; i < 2; i++) {
-          cy.get(`#\\/ci_choice${i + 1}_input`).click();
-          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i] - 1])
+          cy.get(cesc(`#\\/ci_choice${i + 1}_input`)).click();
+          cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[i] - 1])
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i] - 1]])
@@ -2295,7 +2291,7 @@ describe('Specifying unique variant tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -2303,15 +2299,15 @@ describe('Specifying unique variant tests', function () {
           return stateVariables["/ci"];
         }))
 
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[1] - 1])
+        cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[1] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1] - 1]])
         });
 
-        cy.get(`#\\/ci_choice1_input`).click();
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0] - 1])
+        cy.get(cesc(`#\\/ci_choice1_input`)).click();
+        cy.get(cesc('#\\/selectedValue')).should('have.text', choices[choiceOrder[0] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -2338,7 +2334,7 @@ describe('Specifying unique variant tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `${ind}`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2393,7 +2389,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
       cy.window().then(async (win) => {
@@ -2406,13 +2402,13 @@ describe('Specifying unique variant tests', function () {
         ordersFound.push(selectedOrder);
         expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
-        cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+        cy.get(cesc("#\\/pList")).should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
 
 
         // check reloading for just one variant
         if (ind === 4) {
-          cy.get('#\\/bi').click();
-          cy.get("#\\/b").should('have.text', 'true')
+          cy.get(cesc('#\\/bi')).click();
+          cy.get(cesc("#\\/b")).should('have.text', 'true')
 
           cy.wait(1500);  // wait for 1 second debounce
           cy.reload();
@@ -2425,11 +2421,11 @@ describe('Specifying unique variant tests', function () {
           })
 
           // to wait for page to load
-          cy.get('#\\/_text1').should('have.text', `${ind}`)
+          cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-          cy.get("#\\/b").should('have.text', 'true')
-          cy.get('#\\/bi').click();
-          cy.get("#\\/b").should('have.text', 'false')
+          cy.get(cesc("#\\/b")).should('have.text', 'true')
+          cy.get(cesc('#\\/bi')).click();
+          cy.get(cesc("#\\/b")).should('have.text', 'false')
 
 
           cy.window().then(async (win) => {
@@ -2459,7 +2455,7 @@ describe('Specifying unique variant tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `${ind}`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2467,7 +2463,7 @@ describe('Specifying unique variant tests', function () {
       let selectedOrder = componentOrder.join(",")
       expect(selectedOrder).eq(ordersFound[0]);
 
-      cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+      cy.get(cesc("#\\/pList")).should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
 
     });
 
@@ -2517,7 +2513,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
       cy.window().then(async (win) => {
@@ -2530,13 +2526,13 @@ describe('Specifying unique variant tests', function () {
         ordersFound.push(selectedOrder);
         expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
-        cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+        cy.get(cesc("#\\/pList")).should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
 
 
         // check reloading for just one variant
         if (ind === 4) {
-          cy.get('#\\/bi').click();
-          cy.get("#\\/b").should('have.text', 'true')
+          cy.get(cesc('#\\/bi')).click();
+          cy.get(cesc("#\\/b")).should('have.text', 'true')
 
           cy.wait(1500);  // wait for 1 second debounce
           cy.reload();
@@ -2549,11 +2545,11 @@ describe('Specifying unique variant tests', function () {
           })
 
           // to wait for page to load
-          cy.get('#\\/_text1').should('have.text', `${ind}`)
+          cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-          cy.get("#\\/b").should('have.text', 'true')
-          cy.get('#\\/bi').click();
-          cy.get("#\\/b").should('have.text', 'false')
+          cy.get(cesc("#\\/b")).should('have.text', 'true')
+          cy.get(cesc('#\\/bi')).click();
+          cy.get(cesc("#\\/b")).should('have.text', 'false')
 
 
           cy.window().then(async (win) => {
@@ -2583,7 +2579,7 @@ describe('Specifying unique variant tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `${ind}`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2591,7 +2587,7 @@ describe('Specifying unique variant tests', function () {
       let selectedOrder = componentOrder.join(",")
       expect(selectedOrder).eq(ordersFound[0]);
 
-      cy.get("#\\/pList").should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
+      cy.get(cesc("#\\/pList")).should('have.text', componentOrder.map(x => colors[x - 1]).join(", "))
 
     });
 
@@ -2640,7 +2636,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
       let m = (ind - 1) % 2 + 1;
@@ -2649,7 +2645,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
         let mathinputAnchor = '#' + mathinputName + ' textarea';
         let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
         let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
@@ -2657,7 +2653,7 @@ describe('Specifying unique variant tests', function () {
         let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
 
-        let mathinput2Name = cesc(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
+        let mathinput2Name = cesc2(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
         let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
         let mathinput2EditiableFieldAnchor = '#' + mathinput2Name + " .mq-editable-field";
         let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
@@ -2696,7 +2692,7 @@ describe('Specifying unique variant tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -2796,14 +2792,14 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
         let mathinputAnchor = '#' + mathinputName + ' textarea';
         let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
         let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
@@ -2811,7 +2807,7 @@ describe('Specifying unique variant tests', function () {
         let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
 
-        let mathinput2Name = cesc(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
+        let mathinput2Name = cesc2(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
         let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
         let mathinput2EditiableFieldAnchor = '#' + mathinput2Name + " .mq-editable-field";
         let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
@@ -2855,7 +2851,7 @@ describe('Specifying unique variant tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -2950,7 +2946,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       let m = (ind - 1) % 3 + 5;
 
@@ -2958,7 +2954,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
         let mathinputAnchor = '#' + mathinputName + ' textarea';
         let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
         let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
@@ -2992,7 +2988,7 @@ describe('Specifying unique variant tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -3048,7 +3044,7 @@ describe('Specifying unique variant tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     cy.window().then(async (win) => {
 
@@ -3075,9 +3071,9 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-      cy.get('#\\/x .mjx-mrow').should('have.text', values[(ind - 1) % 3])
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').should('have.text', values[(ind - 1) % 3])
 
       cy.window().then(async (win) => {
 
@@ -3107,10 +3103,10 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-      cy.get('#\\/x .mjx-mrow').should('have.text', values[ind - 1])
-      cy.get('#\\/n').should('have.text', ind.toString())
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').should('have.text', values[ind - 1])
+      cy.get(cesc('#\\/n')).should('have.text', ind.toString())
 
       cy.window().then(async (win) => {
 
@@ -3138,9 +3134,9 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
-      cy.get('#\\/n').should('have.text', ind.toString())
+      cy.get(cesc('#\\/n')).should('have.text', ind.toString())
 
       cy.window().then(async (win) => {
 
@@ -3169,7 +3165,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
 
@@ -3211,7 +3207,7 @@ describe('Specifying unique variant tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3224,9 +3220,9 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants.length).eq(8)
 
 
-        cy.get('#\\/a').should('have.text', a.toString())
-        cy.get('#\\/b').should('have.text', b.toString())
-        cy.get('#\\/c').should('have.text', c.toString())
+        cy.get(cesc('#\\/a')).should('have.text', a.toString())
+        cy.get(cesc('#\\/b')).should('have.text', b.toString())
+        cy.get(cesc('#\\/c')).should('have.text', c.toString())
 
       })
 
@@ -3258,7 +3254,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3280,7 +3276,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `5`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3314,7 +3310,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -3336,7 +3332,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3369,7 +3365,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -3391,7 +3387,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `3`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `3`)
 
 
     cy.window().then(async (win) => {
@@ -3425,7 +3421,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -3447,7 +3443,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3484,7 +3480,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3511,7 +3507,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3552,7 +3548,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3579,7 +3575,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3619,7 +3615,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3646,7 +3642,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3687,7 +3683,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3714,7 +3710,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3758,7 +3754,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3785,7 +3781,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3827,7 +3823,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3854,7 +3850,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3895,7 +3891,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3922,7 +3918,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -3964,7 +3960,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `2`)
+    cy.get(cesc('#\\/n')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -3991,7 +3987,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/n').should('have.text', `5`)
+    cy.get(cesc('#\\/n')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -4031,7 +4027,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -4052,7 +4048,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -4082,7 +4078,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -4103,7 +4099,7 @@ describe('Specifying unique variant tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {

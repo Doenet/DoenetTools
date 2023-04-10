@@ -1,12 +1,8 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Ion Compounds Tests', function () {
@@ -42,15 +38,15 @@ describe('Ion Compounds Tests', function () {
   `}, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputLiOName = stateVariables['/ansLiO'].stateValues.inputChildren[0].componentName
-      let mathinputLiOAnchor = cesc('#' + mathinputLiOName) + " textarea";
-      let mathinputLiOSubmitAnchor = cesc('#' + mathinputLiOName + '_submit');
-      let mathinputLiOCorrectAnchor = cesc('#' + mathinputLiOName + '_correct');
-      let mathinputLiOIncorrectAnchor = cesc('#' + mathinputLiOName + '_incorrect');
+      let mathinputLiOAnchor = cesc2('#' + mathinputLiOName) + " textarea";
+      let mathinputLiOSubmitAnchor = cesc2('#' + mathinputLiOName + '_submit');
+      let mathinputLiOCorrectAnchor = cesc2('#' + mathinputLiOName + '_correct');
+      let mathinputLiOIncorrectAnchor = cesc2('#' + mathinputLiOName + '_incorrect');
 
       cy.get(mathinputLiOAnchor).type("LiO{enter}", { force: true });
       cy.get(mathinputLiOIncorrectAnchor).should('be.visible')
@@ -62,10 +58,10 @@ describe('Ion Compounds Tests', function () {
       cy.get(mathinputLiOCorrectAnchor).should('be.visible')
 
       let mathinputCaPName = stateVariables['/ansCaP'].stateValues.inputChildren[0].componentName
-      let mathinputCaPAnchor = cesc('#' + mathinputCaPName) + " textarea";
-      let mathinputCaPSubmitAnchor = cesc('#' + mathinputCaPName + '_submit');
-      let mathinputCaPCorrectAnchor = cesc('#' + mathinputCaPName + '_correct');
-      let mathinputCaPIncorrectAnchor = cesc('#' + mathinputCaPName + '_incorrect');
+      let mathinputCaPAnchor = cesc2('#' + mathinputCaPName) + " textarea";
+      let mathinputCaPSubmitAnchor = cesc2('#' + mathinputCaPName + '_submit');
+      let mathinputCaPCorrectAnchor = cesc2('#' + mathinputCaPName + '_correct');
+      let mathinputCaPIncorrectAnchor = cesc2('#' + mathinputCaPName + '_incorrect');
 
       cy.get(mathinputCaPAnchor).type("CaP{enter}", { force: true });
       cy.get(mathinputCaPIncorrectAnchor).should('be.visible')
@@ -77,10 +73,10 @@ describe('Ion Compounds Tests', function () {
       cy.get(mathinputCaPCorrectAnchor).should('be.visible')
 
       let mathinputMgSName = stateVariables['/ansMgS'].stateValues.inputChildren[0].componentName
-      let mathinputMgSAnchor = cesc('#' + mathinputMgSName) + " textarea";
-      let mathinputMgSSubmitAnchor = cesc('#' + mathinputMgSName + '_submit');
-      let mathinputMgSCorrectAnchor = cesc('#' + mathinputMgSName + '_correct');
-      let mathinputMgSIncorrectAnchor = cesc('#' + mathinputMgSName + '_incorrect');
+      let mathinputMgSAnchor = cesc2('#' + mathinputMgSName) + " textarea";
+      let mathinputMgSSubmitAnchor = cesc2('#' + mathinputMgSName + '_submit');
+      let mathinputMgSCorrectAnchor = cesc2('#' + mathinputMgSName + '_correct');
+      let mathinputMgSIncorrectAnchor = cesc2('#' + mathinputMgSName + '_incorrect');
 
       cy.get(mathinputMgSAnchor).type("MgS{enter}", { force: true });
       cy.get(mathinputMgSIncorrectAnchor).should('be.visible')
@@ -89,10 +85,10 @@ describe('Ion Compounds Tests', function () {
       cy.get(mathinputMgSCorrectAnchor).should('be.visible')
 
       let mathinputSrIName = stateVariables['/ansSrI'].stateValues.inputChildren[0].componentName
-      let mathinputSrIAnchor = cesc('#' + mathinputSrIName) + " textarea";
-      let mathinputSrISubmitAnchor = cesc('#' + mathinputSrIName + '_submit');
-      let mathinputSrICorrectAnchor = cesc('#' + mathinputSrIName + '_correct');
-      let mathinputSrIIncorrectAnchor = cesc('#' + mathinputSrIName + '_incorrect');
+      let mathinputSrIAnchor = cesc2('#' + mathinputSrIName) + " textarea";
+      let mathinputSrISubmitAnchor = cesc2('#' + mathinputSrIName + '_submit');
+      let mathinputSrICorrectAnchor = cesc2('#' + mathinputSrIName + '_correct');
+      let mathinputSrIIncorrectAnchor = cesc2('#' + mathinputSrIName + '_incorrect');
 
       cy.get(mathinputSrIAnchor).type("SrI{enter}", { force: true });
       cy.get(mathinputSrIIncorrectAnchor).should('be.visible')

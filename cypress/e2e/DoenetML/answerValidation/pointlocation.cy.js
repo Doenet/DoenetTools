@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 describe('Point location validation tests', function () {
 
   beforeEach(() => {
@@ -23,23 +25,23 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -57,21 +59,21 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -89,21 +91,21 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -121,20 +123,20 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -151,20 +153,20 @@ describe('Point location validation tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -182,20 +184,20 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -235,7 +237,7 @@ describe('Point location validation tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.log("Move point to correct quadrant and move again")
     // for some reason, have to move point twice to trigger bug
@@ -254,21 +256,21 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -287,7 +289,7 @@ describe('Point location validation tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -295,12 +297,12 @@ describe('Point location validation tests', function () {
       return stateVariables["/_answer1"];
     }))
 
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -321,21 +323,21 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -355,7 +357,7 @@ describe('Point location validation tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -363,12 +365,12 @@ describe('Point location validation tests', function () {
       return stateVariables["/_answer1"];
     }))
 
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -394,20 +396,20 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -427,7 +429,7 @@ describe('Point location validation tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -435,12 +437,12 @@ describe('Point location validation tests', function () {
       return stateVariables["/_answer1"];
     }))
 
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -473,23 +475,23 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -507,21 +509,21 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -539,20 +541,20 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -570,21 +572,21 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -625,23 +627,23 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -659,21 +661,21 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -682,13 +684,13 @@ describe('Point location validation tests', function () {
 
 
     cy.log("change criterion")
-    cy.get("#\\/criterion textarea").type('{ctrl+home}{shift+end}{backspace}1', { force: true }).blur();
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc("#\\/criterion") + " textarea").type('{ctrl+home}{shift+end}{backspace}1', { force: true }).blur();
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -696,13 +698,13 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Resubmit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -720,18 +722,18 @@ describe('Point location validation tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('60% correct')
     });
 
@@ -741,13 +743,13 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("change partial criterion")
-    cy.get("#\\/partialcriterion textarea").type('{ctrl+home}{shift+end}{backspace}2', { force: true }).blur();
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc("#\\/partialcriterion") + " textarea").type('{ctrl+home}{shift+end}{backspace}2', { force: true }).blur();
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -755,13 +757,13 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Resubmit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -778,18 +780,18 @@ describe('Point location validation tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('60% correct')
     });
 
@@ -808,20 +810,20 @@ describe('Point location validation tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.6);
     });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist')
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -865,28 +867,28 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(cesc('#\\/goal1') + ' .mjx-mrow').should('contain.text', '(−4.1,7.4)')
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get(`#\\/srs .mjx-mrow`).should('contain.text', '((4.9,−1.1),(−2.3,−3.4))')
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc(`#\\/srs`) + ` .mjx-mrow`).should('contain.text', '((4.9,−1.1),(−2.3,−3.4))')
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((4.9,-1.1),(-2.3,-3.4))')
     })
 
@@ -906,23 +908,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(-2.3,-3.4))')
     })
 
@@ -942,22 +944,22 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0.0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0.0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
@@ -976,23 +978,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-4.1,7.4))')
     })
 
@@ -1013,24 +1015,24 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-4.1,7.4))')
     })
 
@@ -1051,23 +1053,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-9.9,-8.8))')
     })
 
@@ -1088,23 +1090,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(6.8,9.1))')
     })
 
@@ -1125,23 +1127,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((0.1,-1.1),(6.8,9.1))')
     })
 
@@ -1162,23 +1164,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
@@ -1223,32 +1225,32 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get(`#\\/goal1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/goal1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(-4.1,7.4)')
     })
-    cy.get(`#\\/goal2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/goal2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(6.8,9.1)')
     })
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((4.9,-1.1),(-2.3,-3.4))')
     })
 
@@ -1268,23 +1270,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(-2.3,-3.4))')
     })
 
@@ -1304,22 +1306,22 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0.0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0.0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
@@ -1338,23 +1340,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-4.1,7.4))')
     })
 
@@ -1375,24 +1377,24 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
 
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-4.1,7.4))')
     })
 
@@ -1413,23 +1415,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-9.9,-8.8))')
     })
 
@@ -1450,23 +1452,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(6.8,9.1))')
     })
 
@@ -1487,23 +1489,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((0.1,-1.1),(6.8,9.1))')
     })
 
@@ -1524,23 +1526,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
@@ -1585,27 +1587,27 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(cesc('#\\/goal1') + ' .mjx-mrow').should('contain.text', '(−4.1,7.4)')
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((4.9,-1.1),(-2.3,-3.4))')
     })
 
@@ -1625,23 +1627,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(-2.3,-3.4))')
     })
 
@@ -1661,22 +1663,22 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0.0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0.0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
@@ -1695,23 +1697,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-4.1,7.4))')
     })
 
@@ -1732,24 +1734,24 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-4.1,7.4))')
     })
 
@@ -1770,23 +1772,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-9.9,-8.8))')
     })
 
@@ -1807,23 +1809,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(6.8,9.1))')
     })
 
@@ -1844,23 +1846,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((0.1,-1.1),(6.8,9.1))')
     })
 
@@ -1881,23 +1883,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
@@ -1942,27 +1944,27 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(cesc('#\\/goal1') + ' .mjx-mrow').should('contain.text', '(−4.1,7.4)')
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((4.9,-1.1),(-2.3,-3.4))')
     })
 
@@ -1982,23 +1984,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(-2.3,-3.4))')
     })
 
@@ -2018,22 +2020,22 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0.0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0.0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
@@ -2052,23 +2054,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-4.1,7.4))')
     })
 
@@ -2089,24 +2091,24 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
 
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-4.1,7.4))')
     })
 
@@ -2127,23 +2129,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-9.9,-8.8))')
     })
 
@@ -2164,23 +2166,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(6.8,9.1))')
     })
 
@@ -2201,23 +2203,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((0.1,-1.1),(6.8,9.1))')
     })
 
@@ -2238,23 +2240,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
@@ -2299,27 +2301,27 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(cesc('#\\/goal1') + ' .mjx-mrow').should('contain.text', '(−4.1,7.4)')
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((4.9,-1.1),(-2.3,-3.4))')
     })
 
@@ -2339,23 +2341,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(-2.3,-3.4))')
     })
 
@@ -2375,22 +2377,22 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0.0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0.0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
@@ -2409,23 +2411,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-4.1,7.4))')
     })
 
@@ -2446,24 +2448,24 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-4.1,7.4))')
     })
 
@@ -2484,23 +2486,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-9.9,-8.8))')
     })
 
@@ -2521,23 +2523,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(6.8,9.1))')
     })
 
@@ -2558,23 +2560,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((0.1,-1.1),(6.8,9.1))')
     })
 
@@ -2595,23 +2597,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
@@ -2656,27 +2658,27 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(cesc('#\\/goal1') + ' .mjx-mrow').should('contain.text', '(−4.1,7.4)')
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('＿')
     })
 
@@ -2687,16 +2689,16 @@ describe('Point location validation tests', function () {
 
 
     cy.log('Create point A and submit')
-    cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(1,1)')
     })
 
@@ -2712,23 +2714,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(-4.1,7.4)')
     })
 
@@ -2741,29 +2743,29 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0.0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0.0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(-3.7,7)')
     })
 
     cy.log('create point B and submit');
-    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(2,1))')
     })
 
@@ -2776,15 +2778,15 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-4.1,7.4))')
     })
 
@@ -2799,16 +2801,16 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-4.1,7.4))')
     })
 
@@ -2822,15 +2824,15 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-9.9,-8.8))')
     })
 
@@ -2844,15 +2846,15 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(6.8,9.1))')
     })
 
@@ -2867,15 +2869,15 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((0.1,-1.1),(6.8,9.1))')
     })
 
@@ -2888,29 +2890,29 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
     cy.log('create point C and submit');
-    cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.6666666667)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.6666666667)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1),(3,1))')
     })
 
@@ -2924,29 +2926,29 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.6666666667)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.6666666667)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1),(-4.1,7.4))')
     })
 
     cy.log('remove point C and submit');
-    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
@@ -2999,27 +3001,27 @@ describe('Point location validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(cesc('#\\/goal1') + ' .mjx-mrow').should('contain.text', '(−4.1,7.4)')
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('＿')
     })
 
@@ -3030,16 +3032,16 @@ describe('Point location validation tests', function () {
 
 
     cy.log('Create point A1 and submit')
-    cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(1,1)')
     })
 
@@ -3055,23 +3057,23 @@ describe('Point location validation tests', function () {
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(-4.1,7.4)')
     })
 
@@ -3084,29 +3086,29 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0.0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0.0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(-3.7,7)')
     })
 
     cy.log('create point A2 and submit');
-    cy.get('#\\/m textarea').type('{end}{backspace}1{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/m') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 0)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 0)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(1,2))')
     })
 
@@ -3119,15 +3121,15 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-4.1,7.4))')
     })
 
@@ -3142,16 +3144,16 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-4.1,7.4))')
     })
 
@@ -3165,15 +3167,15 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(-9.9,-8.8))')
     })
 
@@ -3187,15 +3189,15 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((6.8,9.1),(6.8,9.1))')
     })
 
@@ -3210,15 +3212,15 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((0.1,-1.1),(6.8,9.1))')
     })
 
@@ -3231,29 +3233,29 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 
     cy.log('create point B1 and B2 and submit');
-    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1),(2,1),(1,2))')
     })
 
@@ -3267,29 +3269,29 @@ describe('Point location validation tests', function () {
       })
     });
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     });
-    cy.get('#\\/ca').should('have.text', 0.5)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ca')).should('have.text', 0.5)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1),(6.8,9.1),(1,2))')
     })
 
     cy.log('remove points A2 and B2 and submit');
-    cy.get('#\\/m textarea').type('{end}{backspace}0{enter}', { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/m') + ' textarea').type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     });
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
-    cy.get('#\\/ca').should('have.text', 1)
-    cy.get(`#\\/srs`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
+    cy.get(cesc('#\\/ca')).should('have.text', 1)
+    cy.get(cesc(`#\\/srs`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('((-4.1,7.4),(6.8,9.1))')
     })
 

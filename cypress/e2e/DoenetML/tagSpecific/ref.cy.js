@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('ref Tag Tests', function () {
@@ -115,19 +111,19 @@ describe('ref Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/section1_title').should('include.text', 'Section 1')
+    cy.get(cesc('#\\/section1_title')).should('include.text', 'Section 1')
 
-    cy.get('#\\/section1\\/toFour').click();
-    cy.url().should('include', '#/section4')
+    cy.get(cesc('#\\/section1\\/toFour')).click();
+    cy.url().should('include', cesc('#/section4'))
 
-    cy.get('#\\/section4\\/toOne').click();
-    cy.url().should('include', '#/section1')
+    cy.get(cesc('#\\/section4\\/toOne')).click();
+    cy.url().should('include', cesc('#/section1'))
 
-    cy.get('#\\/section1\\/toThreeii').click();
-    cy.url().should('include', '#/section3/_p2')
+    cy.get(cesc('#\\/section1\\/toThreeii')).click();
+    cy.url().should('include', cesc('#/section3/_p2'))
 
-    cy.get('#\\/section4\\/toTwoe').click();
-    cy.url().should('include', '#/section2/_p5')
+    cy.get(cesc('#\\/section4\\/toTwoe')).click();
+    cy.url().should('include', cesc('#/section2/_p5'))
 
 
   });
@@ -140,9 +136,9 @@ describe('ref Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'A link to Doenet.')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'A link to Doenet.')
 
-    cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
+    cy.get(cesc('#\\/_ref1')).should('have.text', 'Doenet').invoke('attr', 'href')
       .then((href) => expect(href).eq("http://doenet.org"));
 
   })
@@ -155,9 +151,9 @@ describe('ref Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'A link to Doenet.')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'A link to Doenet.')
 
-    cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
+    cy.get(cesc('#\\/_ref1')).should('have.text', 'Doenet').invoke('attr', 'href')
       .then((href) => expect(href).eq("http://doenet.org/#a&b"));
 
   })
@@ -170,9 +166,9 @@ describe('ref Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'A link to a Doenet doc.')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'A link to a Doenet doc.')
 
-    cy.get('#\\/_ref1').should('have.text', 'a Doenet doc').invoke('attr', 'href')
+    cy.get(cesc('#\\/_ref1')).should('have.text', 'a Doenet doc').invoke('attr', 'href')
       .then((href) => expect(href).eq("/public?doenetId=abcdefg"));
 
   })
@@ -185,9 +181,9 @@ describe('ref Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'A link to http://doenet.org.')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'A link to http://doenet.org.')
 
-    cy.get('#\\/_ref1').should('have.text', 'http://doenet.org').invoke('attr', 'href')
+    cy.get(cesc('#\\/_ref1')).should('have.text', 'http://doenet.org').invoke('attr', 'href')
       .then((href) => expect(href).eq("http://doenet.org"));
 
   })
@@ -207,26 +203,26 @@ describe('ref Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'A link to Doenet.')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'A link to Doenet.')
 
 
-    cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
+    cy.get(cesc('#\\/_ref1')).should('have.text', 'Doenet').invoke('attr', 'href')
       .then((href) => expect(href).eq("http://doenet.org"));
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc('#' + stateVariables["/_copy1"].replacements[0].componentName))
+      cy.get(cesc2('#' + stateVariables["/_copy1"].replacements[0].componentName))
         .should('have.text', 'Doenet').invoke('attr', 'href')
         .then((href) => expect(href).eq("http://doenet.org"));
     })
 
-    cy.get('#\\/_p3').should('have.text', 'The link address is: http://doenet.org.')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'The link address is: http://doenet.org.')
 
-    cy.get('#\\/_p4').should('have.text', 'The text linked is: Doenet.')
+    cy.get(cesc('#\\/_p4')).should('have.text', 'The text linked is: Doenet.')
 
-    // cy.get('#\\/_p5').should('have.text', 'Recreate from pieces: Doenet.')
+    // cy.get(cesc('#\\/_p5')).should('have.text', 'Recreate from pieces: Doenet.')
 
-    // cy.get('#\\/_ref2').should('have.text', 'Doenet').invoke('attr', 'href')
+    // cy.get(cesc('#\\/_ref2')).should('have.text', 'Doenet').invoke('attr', 'href')
     //   .then((href) => expect(href).eq("http://doenet.org"));
 
   })
@@ -239,7 +235,7 @@ describe('ref Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/toDoenet button').should('contain', 'Go to Doenet');
+    cy.get(cesc('#\\/toDoenet') + ' button').should('contain', 'Go to Doenet');
   })
 
   it('ref opens aside', () => {
@@ -275,19 +271,19 @@ describe('ref Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/asideTitle').should('have.text', 'The aside')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside')
 
     cy.log('Aside closed at the beginning')
-    cy.get('#\\/inside').should('not.exist')
+    cy.get(cesc('#\\/inside')).should('not.exist')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/aside"].stateValues.open).eq(false);
     })
 
     cy.log('clicking link opens aside')
-    cy.get('#\\/toAside').click();
+    cy.get(cesc('#\\/toAside')).click();
 
-    cy.get('#\\/inside').should('have.text', "Inside the aside");
+    cy.get(cesc('#\\/inside')).should('have.text', "Inside the aside");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/aside"].stateValues.open).eq(true);
@@ -316,19 +312,19 @@ describe('ref Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/asideTitle').should('have.text', 'The aside')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside')
 
     cy.log('Aside closed at the beginning')
-    cy.get('#\\/inside').should('not.exist')
+    cy.get(cesc('#\\/inside')).should('not.exist')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/aside"].stateValues.open).eq(false);
     })
 
     cy.log('clicking action opens aside')
-    cy.get('#\\/go').click();
+    cy.get(cesc('#\\/go')).click();
 
-    cy.get('#\\/inside').should('have.text', "Inside the aside");
+    cy.get(cesc('#\\/inside')).should('have.text', "Inside the aside");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/aside"].stateValues.open).eq(true);
@@ -367,19 +363,19 @@ describe('ref Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/asideTitle').should('have.text', 'Counting')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'Counting')
 
     cy.log('Aside closed at the beginning')
-    cy.get('#\\/n').should('not.exist')
+    cy.get(cesc('#\\/n')).should('not.exist')
 
     cy.log('clicking action opens aside and starts counting')
-    cy.get('#\\/startCount').click();
+    cy.get(cesc('#\\/startCount')).click();
 
-    cy.get('#\\/n').should('have.text', '1');
-    cy.get('#\\/n').should('have.text', '2');
-    cy.get('#\\/n').should('have.text', '3');
-    cy.get('#\\/n').should('have.text', '4');
-    cy.get('#\\/n').should('have.text', '5');
+    cy.get(cesc('#\\/n')).should('have.text', '1');
+    cy.get(cesc('#\\/n')).should('have.text', '2');
+    cy.get(cesc('#\\/n')).should('have.text', '3');
+    cy.get(cesc('#\\/n')).should('have.text', '4');
+    cy.get(cesc('#\\/n')).should('have.text', '5');
 
   });
 

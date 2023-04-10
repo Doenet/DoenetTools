@@ -1,4 +1,5 @@
 import { createFunctionFromDefinition } from "../../../../src/Core/utils/function";
+import { cesc } from '../../../../src/_utils/url';
 
 describe('ODEsystem Tag Tests', function () {
 
@@ -38,9 +39,9 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
     })
 
@@ -61,10 +62,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change initial condition")
-    cy.get('#\\/ic textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get(cesc('#\\/ic') + ' textarea').type(`{end}{backspace}3{enter}`, { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(0)=3')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=xx(0)=3')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=3')
     })
 
@@ -83,10 +84,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Change parameter")
-    cy.get('#\\/a textarea').type(`{end}{backspace}-2{enter}`, { force: true });
+    cy.get(cesc('#\\/a') + ' textarea').type(`{end}{backspace}-2{enter}`, { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−2xx(0)=3')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=−2xx(0)=3')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace('−', '-').trim()).equal('dxdt=-2xx(0)=3')
     })
 
@@ -127,17 +128,17 @@ describe('ODEsystem Tag Tests', function () {
 
     });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−2xx(0)=−5')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=−2xx(0)=−5')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=-2xx(0)=-5')
     })
 
 
     cy.log("Change tolerance")
-    cy.get('#\\/tol textarea').type(`{ctrl+home}{shift+end}{backspace}1E-10{enter}`, { force: true });
+    cy.get(cesc('#\\/tol') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}1E-10{enter}`, { force: true });
 
-    cy.get('#\\/tol2 .mjx-mrow').should('contain.text', '1⋅10−10')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/tol2') + ' .mjx-mrow').should('contain.text', '1⋅10−10')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=-2xx(0)=-5')
     })
 
@@ -157,10 +158,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change parameter again")
-    cy.get('#\\/a textarea').type(`{end}{backspace}{backspace}0.5{enter}`, { force: true });
+    cy.get(cesc('#\\/a') + ' textarea').type(`{end}{backspace}{backspace}0.5{enter}`, { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.5xx(0)=−5')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=0.5xx(0)=−5')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=-5')
     })
 
@@ -179,10 +180,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Change initial condition to zero")
-    cy.get('#\\/ic textarea').type(`{end}{backspace}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/ic') + ' textarea').type(`{end}{backspace}{backspace}0{enter}`, { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.5xx(0)=0')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=0.5xx(0)=0')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=0')
     })
 
@@ -224,12 +225,12 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let tol = 1E-6;
     let expectedF = x => Math.exp(x);
 
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(10), tol * expectedF(10));
     })
 
@@ -244,10 +245,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Can't make it to t=20");
-    cy.get('#\\/T textarea').type(`{end}{backspace}{backspace}20{enter}`, { force: true });
+    cy.get(cesc('#\\/T') + ' textarea').type(`{end}{backspace}{backspace}20{enter}`, { force: true });
 
-    cy.get('#\\/T2 .mjx-mrow').should('contain.text', '20')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/T2') + ' .mjx-mrow').should('contain.text', '20')
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
 
@@ -260,10 +261,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("increase maxiterations");
-    cy.get('#\\/maxiter textarea').type(`{ctrl+home}{shift+end}{backspace}2000{enter}`, { force: true });
+    cy.get(cesc('#\\/maxiter') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}2000{enter}`, { force: true });
 
-    cy.get('#\\/maxiter2 .mjx-mrow').should('contain.text', '2000')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/maxiter2') + ' .mjx-mrow').should('contain.text', '2000')
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
 
@@ -278,10 +279,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Can't make it if decrease tolerance");
-    cy.get('#\\/tol textarea').type(`{ctrl+home}{shift+end}{backspace}1E-8{enter}`, { force: true });
+    cy.get(cesc('#\\/tol') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}1E-8{enter}`, { force: true });
 
-    cy.get('#\\/tol2 .mjx-mrow').should('contain.text', '1⋅10−8')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/tol2') + ' .mjx-mrow').should('contain.text', '1⋅10−8')
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
 
@@ -295,10 +296,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("increase maxiterations further");
-    cy.get('#\\/maxiter textarea').type(`{ctrl+home}{shift+end}{backspace}5000{enter}`, { force: true });
+    cy.get(cesc('#\\/maxiter') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}5000{enter}`, { force: true });
 
-    cy.get('#\\/maxiter2 .mjx-mrow').should('contain.text', '5000')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/maxiter2') + ' .mjx-mrow').should('contain.text', '5000')
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
 
@@ -314,11 +315,11 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("decrease maxiterations back down");
-    cy.get('#\\/maxiter textarea').type(`{ctrl+home}{shift+end}{backspace}1000{enter}`, { force: true });
+    cy.get(cesc('#\\/maxiter') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}1000{enter}`, { force: true });
 
 
-    cy.get('#\\/maxiter2 .mjx-mrow').should('contain.text', '1000')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/maxiter2') + ' .mjx-mrow').should('contain.text', '1000')
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
 
@@ -332,10 +333,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("decrease chunksize");
-    cy.get('#\\/chunksize textarea').type(`{end}{backspace}{backspace}1{enter}`, { force: true });
+    cy.get(cesc('#\\/chunksize') + ' textarea').type(`{end}{backspace}{backspace}1{enter}`, { force: true });
 
-    cy.get('#\\/chunksize2 .mjx-mrow').should('not.contain.text', '10')
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/chunksize2') + ' .mjx-mrow').should('not.contain.text', '10')
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
 
@@ -381,12 +382,12 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let tol = 1e-6;
     let expectedF = x => Math.exp(x);
 
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
     })
 
@@ -406,10 +407,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("change independent variable");
-    cy.get('#\\/ivar textarea').type(`{end}{backspace}s{enter}`, { force: true });
+    cy.get(cesc('#\\/ivar') + ' textarea').type(`{end}{backspace}s{enter}`, { force: true });
 
-    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', 's')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ivar2') + ' .mjx-mrow').should('contain.text', 's')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxds=xx(0)=1')
     })
 
@@ -428,10 +429,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("erase independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}{enter}', { force: true });
+    cy.get(cesc('#\\/ivar') + ' textarea').type('{end}{backspace}{enter}', { force: true });
 
-    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', '＿')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ivar2') + ' .mjx-mrow').should('contain.text', '＿')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxd＿=xx(0)=1')
     })
 
@@ -448,10 +449,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("restore independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}u{enter}', { force: true });
+    cy.get(cesc('#\\/ivar') + ' textarea').type('{end}{backspace}u{enter}', { force: true });
 
-    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', 'u')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ivar2') + ' .mjx-mrow').should('contain.text', 'u')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdu=xx(0)=1')
     })
 
@@ -469,10 +470,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("invalid independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#\\/ivar') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
 
-    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', '1')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ivar2') + ' .mjx-mrow').should('contain.text', '1')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxd1=xx(0)=1')
     })
 
@@ -489,10 +490,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("restore independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}v{enter}', { force: true });
+    cy.get(cesc('#\\/ivar') + ' textarea').type('{end}{backspace}v{enter}', { force: true });
 
-    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', 'v')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ivar2') + ' .mjx-mrow').should('contain.text', 'v')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdv=xx(0)=1')
     })
 
@@ -509,10 +510,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("change dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}z{enter}', { force: true });
+    cy.get(cesc('#\\/dvar') + ' textarea').type('{end}{backspace}z{enter}', { force: true });
 
-    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/dvar2') + ' .mjx-mrow').should('contain.text', 'z')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dzdv=zz(0)=1')
     })
 
@@ -530,10 +531,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("duplicate variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}v{enter}', { force: true });
+    cy.get(cesc('#\\/dvar') + ' textarea').type('{end}{backspace}v{enter}', { force: true });
 
-    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'v')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/dvar2') + ' .mjx-mrow').should('contain.text', 'v')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dvdv=vv(0)=1')
     })
 
@@ -551,10 +552,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("different dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}v_1{enter}', { force: true });
+    cy.get(cesc('#\\/dvar') + ' textarea').type('{end}{backspace}v_1{enter}', { force: true });
 
-    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'v1')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/dvar2') + ' .mjx-mrow').should('contain.text', 'v1')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dv1dv=v1v1(0)=1')
     })
 
@@ -572,10 +573,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("invalid dependent variable");
-    cy.get('#\\/dvar textarea').type('{ctrl+home}{shift+end}{backspace}ab{enter}', { force: true });
+    cy.get(cesc('#\\/dvar') + ' textarea').type('{ctrl+home}{shift+end}{backspace}ab{enter}', { force: true });
 
-    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'ab')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/dvar2') + ' .mjx-mrow').should('contain.text', 'ab')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dabdv=abab(0)=1')
     })
 
@@ -592,10 +593,10 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("restore dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}a{enter}', { force: true });
+    cy.get(cesc('#\\/dvar') + ' textarea').type('{end}{backspace}{backspace}a{enter}', { force: true });
 
-    cy.get('#\\/dvar2 .mjx-mrow').should('not.contain.text', 'ab')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/dvar2') + ' .mjx-mrow').should('not.contain.text', 'ab')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dadv=aa(0)=1')
     })
 
@@ -626,25 +627,25 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.1234567891xx(0)=9.87654322')
     })
 
     cy.log('change display digits')
-    cy.get('#\\/digits textarea').type('{end}{backspace}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/digits') + ' textarea').type('{end}{backspace}{backspace}2{enter}', { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.12xx(0)=9.9')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=0.12xx(0)=9.9')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.12xx(0)=9.9')
     })
 
     cy.log('change display digits again')
-    cy.get('#\\/digits textarea').type('{end}{backspace}14{enter}', { force: true });
+    cy.get(cesc('#\\/digits') + ' textarea').type('{end}{backspace}14{enter}', { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.12345678912346xx(0)=9.8765432198765')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=0.12345678912346xx(0)=9.8765432198765')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.12345678912346xx(0)=9.8765432198765')
     })
 
@@ -671,52 +672,52 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
     })
 
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x(0)=1')
     })
 
-    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[0].trim()).equal('x(10)')
       expect(Number(text.split('=')[1])).closeTo(Math.exp(10), 1E-6 * Math.exp(10));
     })
 
     cy.log("Change initial time");
-    cy.get('#\\/t0 textarea').type('{end}{backspace}-5{enter}', { force: true });
+    cy.get(cesc('#\\/t0') + ' textarea').type('{end}{backspace}-5{enter}', { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(−5)=1')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=xx(−5)=1')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(−5)=1')
     })
 
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x(−5)=1')
     })
 
-    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[0].trim()).equal('x(10)')
       expect(Number(text.split('=')[1])).closeTo(Math.exp(15), 1E-6 * Math.exp(15));
     })
 
     cy.log("Change initial and final time");
-    cy.get('#\\/tf textarea').type('{end}{backspace}{backspace}12{enter}', { force: true });
-    cy.get('#\\/t0 textarea').type('{end}{backspace}{backspace}11{enter}', { force: true });
+    cy.get(cesc('#\\/tf') + ' textarea').type('{end}{backspace}{backspace}12{enter}', { force: true });
+    cy.get(cesc('#\\/t0') + ' textarea').type('{end}{backspace}{backspace}11{enter}', { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(11)=1')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=xx(11)=1')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(11)=1')
     })
 
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x(11)=1')
     })
 
-    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[0].trim()).equal('x(12)')
       expect(Number(text.split('=')[1])).closeTo(Math.exp(1), 1E-6 * Math.exp(1));
     })
@@ -737,23 +738,23 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
     })
 
     cy.log("don't display initial conditions");
-    cy.get('#\\/showic').click();
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=x')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/showic')).click();
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=x')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=x')
     })
 
     cy.log("display initial conditions again");
-    cy.get('#\\/showic').click();
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(0)=1')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/showic')).click();
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=xx(0)=1')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
     })
 
@@ -788,11 +789,11 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let tol = 1e-6;
 
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=1y(0)=3')
     })
 
@@ -820,11 +821,11 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change initial condition")
-    cy.get('#\\/ic1 textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/ic2 textarea').type(`{end}{backspace}-1{enter}`, { force: true });
+    cy.get(cesc('#\\/ic1') + ' textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get(cesc('#\\/ic2') + ' textarea').type(`{end}{backspace}-1{enter}`, { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−0.2ydydt=0.1x+0.3yx(0)=3y(0)=−1')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=−0.2ydydt=0.1x+0.3yx(0)=3y(0)=−1')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=3y(0)=-1')
     })
 
@@ -882,17 +883,17 @@ describe('ODEsystem Tag Tests', function () {
 
     });
 
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=-5y(0)=2')
     })
 
 
     cy.log("Change initial condition to zero")
-    cy.get('#\\/ic1 textarea').type(`{end}{backspace}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/ic2 textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/ic1') + ' textarea').type(`{end}{backspace}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/ic2') + ' textarea').type(`{end}{backspace}0{enter}`, { force: true });
 
-    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−0.2ydydt=0.1x+0.3yx(0)=0y(0)=0')
-    cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ode') + ' .mjx-mrow').should('contain.text', 'dxdt=−0.2ydydt=0.1x+0.3yx(0)=0y(0)=0')
+    cy.get(cesc('#\\/ode')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=0y(0)=0')
     })
 
@@ -938,7 +939,7 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')  // to wait for page to load
 
     let disp = function (vs, rs, is) {
       let s = "";
@@ -955,7 +956,7 @@ describe('ODEsystem Tag Tests', function () {
     let rs = ["q", "r", "s", "u", "v", "w"];
     let is = ["a", "b", "c", "d", "e", "f"]
 
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_odesystem1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
 
       expect(text.trim()).equal(disp(vs, rs, is))
     })
@@ -976,11 +977,11 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'b')  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'b')  // to wait for page to load
 
     let vs2 = ["j", "k", "l", "m", "n", "p"];
 
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_odesystem1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
 
       expect(text.trim()).equal(disp(vs2, rs, is))
     })
@@ -1002,11 +1003,11 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'c')  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'c')  // to wait for page to load
 
     let vs3 = ["j", "k", "l", "x4", "x5", "x6"];
 
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_odesystem1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
 
       expect(text.trim()).equal(disp(vs3, rs, is))
     })
@@ -1046,55 +1047,55 @@ describe('ODEsystem Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_p1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('axy+z')
     })
-    cy.get('#\\/_p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
     })
-    cy.get('#\\/_p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('axy+z')
     })
-    cy.get('#\\/_p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('axy+z')
     })
-    cy.get('#\\/_p4 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p4') + ' > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
     })
-    cy.get('#\\/_p5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('axy+z')
     })
-    cy.get('#\\/_p6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
     })
-    cy.get('#\\/_p7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p7')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('axy+z')
     })
-    cy.get('#\\/_p8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p8')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('axy+z')
     })
-    cy.get('#\\/_p8 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p8') + ' > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
     })
-    cy.get('#\\/_p9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p9')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('c')
     })
-    cy.get('#\\/_p10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p10')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get('#\\/_p11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('c')
     })
-    cy.get('#\\/_p12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('c')
     })
-    cy.get('#\\/_p12 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p12') + ' > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
 
-    cy.get('#\\/odeswap').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/odeswap')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xydydt=axy+zx(0)=cy(0)=3')
     })
 

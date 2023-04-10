@@ -1,5 +1,6 @@
 import me from 'math-expressions';
 import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
+import { cesc } from '../../../../src/_utils/url';
 
 describe('Curve Tag Tests', function () {
 
@@ -21,7 +22,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -38,8 +39,8 @@ describe('Curve Tag Tests', function () {
       expect(f2(2)).eq(-4);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
-    cy.get("#\\/m1").should('contain.text', "4")
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+    cy.get(cesc("#\\/m1")).should('contain.text', "4")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.curveType).eq("bezier");
@@ -71,7 +72,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -89,8 +90,8 @@ describe('Curve Tag Tests', function () {
       expect(f2(2)).eq(-4);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
-    cy.get("#\\/m1").should('contain.text', "4")
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+    cy.get(cesc("#\\/m1")).should('contain.text', "4")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.curveType).eq("bezier");
@@ -125,7 +126,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -142,8 +143,8 @@ describe('Curve Tag Tests', function () {
       expect(f2(2)).eq(-4);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
-    cy.get("#\\/m1").should('contain.text', "4")
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+    cy.get(cesc("#\\/m1")).should('contain.text', "4")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.curveType).eq("bezier");
@@ -196,7 +197,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -213,8 +214,8 @@ describe('Curve Tag Tests', function () {
       expect(f2(2)).eq(-4);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
-    cy.get("#\\/m1").should('contain.text', "4")
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+    cy.get(cesc("#\\/m1")).should('contain.text', "4")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.curveType).eq("bezier");
@@ -276,7 +277,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -292,8 +293,8 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(6.1, 0.1);
     })
 
-    cy.get("#\\/_textinput1_input").clear().type("uniform{enter}")
-    cy.get("#\\/t1").should('contain.text', "uniform")
+    cy.get(cesc("#\\/_textinput1_input")).clear().type("uniform{enter}")
+    cy.get(cesc("#\\/t1")).should('contain.text', "uniform")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("uniform");
@@ -304,8 +305,8 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(8, 0.1);
     })
 
-    cy.get("#\\/_textinput1_input").clear().type("centripetal{enter}")
-    cy.get("#\\/t1").should('contain.text', "centripetal")
+    cy.get(cesc("#\\/_textinput1_input")).clear().type("centripetal{enter}")
+    cy.get(cesc("#\\/t1")).should('contain.text', "centripetal")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
@@ -329,8 +330,8 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(0.2, 0.1);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{ctrl+home}{shift+end}{backspace}0.1{enter}", { force: true });
-    cy.get("#\\/m1").should('contain.text', "0.1")
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{ctrl+home}{shift+end}{backspace}0.1{enter}", { force: true });
+    cy.get(cesc("#\\/m1")).should('contain.text', "0.1")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
@@ -376,7 +377,7 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(-6.3, 0.1);
     })
 
-    cy.get("#\\/_textinput1_input").clear().type("uniform{enter}")
+    cy.get(cesc("#\\/_textinput1_input")).clear().type("uniform{enter}")
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
@@ -392,7 +393,7 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(-6.3, 0.1);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{ctrl+home}{shift+end}{backspace}1{enter}", { force: true });
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{ctrl+home}{shift+end}{backspace}1{enter}", { force: true });
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
@@ -408,7 +409,7 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(-6.1, 0.1);
     })
 
-    cy.get("#\\/_textinput1_input").clear().blur()
+    cy.get(cesc("#\\/_textinput1_input")).clear().blur()
     cy.window().then(async (win) => {
       await win.callAction1({
         componentName: "/_point5",
@@ -486,7 +487,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -504,10 +505,10 @@ describe('Curve Tag Tests', function () {
     })
 
     cy.log("turn on extrapolation")
-    cy.get("#\\/_booleaninput1").click();
-    cy.get("#\\/_booleaninput2").click();
-    cy.get("#\\/b1").should('contain.text', "true")
-    cy.get("#\\/b2").should('contain.text', "true")
+    cy.get(cesc("#\\/_booleaninput1")).click();
+    cy.get(cesc("#\\/_booleaninput2")).click();
+    cy.get(cesc("#\\/b1")).should('contain.text', "true")
+    cy.get(cesc("#\\/b2")).should('contain.text', "true")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -524,8 +525,8 @@ describe('Curve Tag Tests', function () {
     })
 
     cy.log("activate bezier controls and move tangents")
-    cy.get(`#\\/dir1_choice2_input`).click();
-    cy.get(`#\\/dir4_choice2_input`).click();
+    cy.get(cesc(`#\\/dir1_choice2_input`)).click();
+    cy.get(cesc(`#\\/dir4_choice2_input`)).click();
     cy.window().then(async (win) => {
       // stateVariables['/_curve1'].togglePointControl(0)
       await win.callAction1({
@@ -639,7 +640,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -688,12 +689,12 @@ describe('Curve Tag Tests', function () {
     })
 
     cy.log("make graph larger")
-    cy.get('#\\/xmin textarea').type("{end}00{enter}", { force: true })
-    cy.get('#\\/xmax textarea').type("{end}00{enter}", { force: true })
-    cy.get('#\\/ymin textarea').type("{end}00{enter}", { force: true })
-    cy.get('#\\/ymax textarea').type("{end}00{enter}", { force: true })
+    cy.get(cesc('#\\/xmin') + ' textarea').type("{end}00{enter}", { force: true })
+    cy.get(cesc('#\\/xmax') + ' textarea').type("{end}00{enter}", { force: true })
+    cy.get(cesc('#\\/ymin') + ' textarea').type("{end}00{enter}", { force: true })
+    cy.get(cesc('#\\/ymax') + ' textarea').type("{end}00{enter}", { force: true })
 
-    cy.get('#\\/ymax2').should('contain.text', '1000')
+    cy.get(cesc('#\\/ymax2')).should('contain.text', '1000')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -968,15 +969,15 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
-    cy.get('#\\/ebm').should('have.text', '')
-    cy.get('#\\/efm').should('have.text', '')
+    cy.get(cesc('#\\/ebm')).should('have.text', '')
+    cy.get(cesc('#\\/efm')).should('have.text', '')
 
     cy.log('extrapolate backward')
-    cy.get("#\\/eb").click();
-    cy.get('#\\/ebm').should('have.text', 'line')
-    cy.get('#\\/efm').should('have.text', '')
+    cy.get(cesc("#\\/eb")).click();
+    cy.get(cesc('#\\/ebm')).should('have.text', 'line')
+    cy.get(cesc('#\\/efm')).should('have.text', '')
 
     cy.log('move first control vector')
     cy.window().then(async (win) => {
@@ -989,8 +990,8 @@ describe('Curve Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/ebm').should('have.text', 'parabolaHorizontal')
-      cy.get('#\\/efm').should('have.text', '')
+      cy.get(cesc('#\\/ebm')).should('have.text', 'parabolaHorizontal')
+      cy.get(cesc('#\\/efm')).should('have.text', '')
 
     })
 
@@ -1006,15 +1007,15 @@ describe('Curve Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
-      cy.get('#\\/efm').should('have.text', '')
+      cy.get(cesc('#\\/ebm')).should('have.text', 'parabolaVertical')
+      cy.get(cesc('#\\/efm')).should('have.text', '')
 
     })
 
     cy.log('extrapolate foward')
-    cy.get("#\\/ef").click();
-    cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
-    cy.get('#\\/efm').should('have.text', 'line')
+    cy.get(cesc("#\\/ef")).click();
+    cy.get(cesc('#\\/ebm')).should('have.text', 'parabolaVertical')
+    cy.get(cesc('#\\/efm')).should('have.text', 'line')
 
     cy.log('move last control vector')
     cy.window().then(async (win) => {
@@ -1027,8 +1028,8 @@ describe('Curve Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
-      cy.get('#\\/efm').should('have.text', 'parabolaVertical')
+      cy.get(cesc('#\\/ebm')).should('have.text', 'parabolaVertical')
+      cy.get(cesc('#\\/efm')).should('have.text', 'parabolaVertical')
 
     })
 
@@ -1044,8 +1045,8 @@ describe('Curve Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
-      cy.get('#\\/efm').should('have.text', 'parabolaHorizontal')
+      cy.get(cesc('#\\/ebm')).should('have.text', 'parabolaVertical')
+      cy.get(cesc('#\\/efm')).should('have.text', 'parabolaHorizontal')
 
     })
 
@@ -1074,7 +1075,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -1087,9 +1088,9 @@ describe('Curve Tag Tests', function () {
 
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
-    cy.get('#\\/m2').should('contain.text', '1')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+    cy.get(cesc("#\\/_mathinput2") + " textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/m2')).should('contain.text', '1')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -1106,8 +1107,8 @@ describe('Curve Tag Tests', function () {
       }
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '20')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '20')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1126,8 +1127,8 @@ describe('Curve Tag Tests', function () {
     })
 
 
-    cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}{backspace}0.5{enter}", { force: true });
-    cy.get('#\\/m2').should('contain.text', '0.5')
+    cy.get(cesc("#\\/_mathinput2") + " textarea").type("{end}{backspace}{backspace}0.5{enter}", { force: true });
+    cy.get(cesc('#\\/m2')).should('contain.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1145,8 +1146,8 @@ describe('Curve Tag Tests', function () {
       }
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '10')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '10')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1181,7 +1182,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -1336,7 +1337,7 @@ describe('Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     let x = 1, y = 2;
@@ -1448,9 +1449,9 @@ describe('Curve Tag Tests', function () {
     });
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Curve A is thick brown.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red curve.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black curve.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Curve A is thick brown.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a dark red curve.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin black curve.');
 
     cy.log('set dark mode')
     cy.get('#testRunner_toggleControls').click();
@@ -1459,9 +1460,9 @@ describe('Curve Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Curve A is thick yellow.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red curve.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white curve.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Curve A is thick yellow.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a light red curve.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin white curve.');
 
 
   });

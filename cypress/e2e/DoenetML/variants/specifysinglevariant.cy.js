@@ -1,13 +1,9 @@
 import { numberToLetters } from "../../../../src/Core/utils/sequence";
-import cssesc from 'cssesc';
 import me from 'math-expressions';
+import { cesc } from "../../../../src/_utils/url";
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Specifying single variant document tests', function () {
@@ -33,7 +29,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
     let nWithIndex1;
 
@@ -72,7 +68,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -106,7 +102,7 @@ describe('Specifying single variant document tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `b`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `b`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -139,7 +135,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `c`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `c`)
 
     let generatedVariantInfo;
     cy.window().then(async (win) => {
@@ -176,7 +172,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // });
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `d`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `d`)
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -210,7 +206,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `e`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `e`)
 
     let nWithIndex2;
 
@@ -248,7 +244,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `f`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `f`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -281,7 +277,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `g`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `g`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -315,7 +311,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `g2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `g2`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -348,7 +344,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `h`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `h`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -382,7 +378,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `i`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `i`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -417,7 +413,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `j`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `j`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -451,7 +447,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `k`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `k`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -484,7 +480,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `l`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `l`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -518,7 +514,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // });
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `m`);
+    // cy.get(cesc('#\\/_text1')).should('have.text', `m`);
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -551,7 +547,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // });
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `n`);
+    // cy.get(cesc('#\\/_text1')).should('have.text', `n`);
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -585,7 +581,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // });
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `o`);
+    // cy.get(cesc('#\\/_text1')).should('have.text', `o`);
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -618,7 +614,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // });
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `q`);
+    // cy.get(cesc('#\\/_text1')).should('have.text', `q`);
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
@@ -652,7 +648,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `r`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `r`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
@@ -686,7 +682,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `s`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `s`);
 
     let nWithIndex95;
 
@@ -724,7 +720,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // });
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `t`);
+    // cy.get(cesc('#\\/_text1')).should('have.text', `t`);
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex95);
@@ -760,7 +756,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `u`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `u`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -796,7 +792,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // });
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `v`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `v`)
 
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
@@ -832,7 +828,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `w`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `w`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -880,7 +876,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
     cy.window().then(async (win) => {
       let expectedx = 'a';
@@ -934,7 +930,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
     cy.window().then(async (win) => {
       let expectedx = 'c';
@@ -989,7 +985,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `3`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `3`)
 
     // cy.window().then(async (win) => {
     //   let expectedx = 'b';
@@ -1044,7 +1040,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `3a`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `3a`)
 
     // cy.window().then(async (win) => {
     //   let expectedx = 'b';
@@ -1097,7 +1093,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `4`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `4`)
 
     // cy.window().then(async (win) => {
     //   let expectedx = 'd';
@@ -1151,7 +1147,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `5`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `5`)
 
     cy.window().then(async (win) => {
       let expectedx = 'e';
@@ -1205,7 +1201,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `6`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `6`)
 
     cy.window().then(async (win) => {
       let expectedx = 'b';
@@ -1259,7 +1255,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `7`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `7`)
 
     cy.window().then(async (win) => {
       let expectedx = 'a';
@@ -1313,7 +1309,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `8`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `8`)
 
     // cy.window().then(async (win) => {
     //   let expectedx = 'a';
@@ -1367,7 +1363,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `9`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `9`)
 
     cy.window().then(async (win) => {
       let expectedx = 'e';
@@ -1417,7 +1413,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let nWithSeed50283;
 
@@ -1455,7 +1451,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `b`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `b`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1491,7 +1487,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `c`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `c`)
 
     let nWithSeed25018;
 
@@ -1529,7 +1525,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `d`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `d`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithSeed25018);
@@ -1564,7 +1560,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `e`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `e`)
 
     let nWithSeed52018;
 
@@ -1603,7 +1599,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `f`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `f`)
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithSeed52018);
@@ -1638,7 +1634,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `g`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `g`)
 
     let nWithSeed2917392;
 
@@ -1678,7 +1674,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `h`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `h`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithSeed2917392);
@@ -1714,7 +1710,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `i`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `i`)
 
     let nWithSeed603962;
 
@@ -1756,7 +1752,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `j`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `j`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithSeed603962);
@@ -1793,7 +1789,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `ja`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `ja`)
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/n'].stateValues.value).eq(nWithSeed603962);
@@ -1831,7 +1827,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `k`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `k`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1868,7 +1864,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `l`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `l`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithSeed2917392);
@@ -1903,7 +1899,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `m`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `m`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1940,7 +1936,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `n`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `n`)
 
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
@@ -1976,7 +1972,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `o`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `o`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2012,7 +2008,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `p`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `p`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2052,7 +2048,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let nWithSeed50283;
 
@@ -2091,7 +2087,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `c`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `c`)
 
     let nWithSeed25018;
 
@@ -2130,7 +2126,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `e`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `e`)
 
     let nWithSeed3;
 
@@ -2170,7 +2166,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `g`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `g`)
 
     let nWithSeed4;
 
@@ -2215,7 +2211,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let nWithSeed1;
 
@@ -2254,7 +2250,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `c`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `c`)
 
     let nWithSeed2;
 
@@ -2293,7 +2289,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `e`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `e`)
 
     let nWithSeed3;
 
@@ -2338,7 +2334,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let nWithSeed1;
 
@@ -2377,7 +2373,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `c`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `c`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2418,7 +2414,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let nWithSeed3;
 
@@ -2462,7 +2458,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let nWithSeed1;
 
@@ -2501,7 +2497,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `c`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `c`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2542,7 +2538,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     })
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let nWithSeed1;
 
@@ -2624,7 +2620,7 @@ describe('Specifying single variant document tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2657,8 +2653,8 @@ describe('Specifying single variant document tests', function () {
           expect(i).not.eq(-1);
         }
 
-        cy.get('#\\/_textinput1_input').type(`${secondValue}{enter}`)
-        cy.get('#\\/_textinput1_correct').should('be.visible');
+        cy.get(cesc('#\\/_textinput1_input')).type(`${secondValue}{enter}`)
+        cy.get(cesc('#\\/_textinput1_correct')).should('be.visible');
 
         cy.wait(2000);  // wait for 2 second debounce
         cy.reload();
@@ -2672,7 +2668,7 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -2680,7 +2676,7 @@ describe('Specifying single variant document tests', function () {
           return stateVariables["/_textinput1"];
         }))
 
-        cy.get('#\\/_textinput1_correct').should('be.visible');
+        cy.get(cesc('#\\/_textinput1_correct')).should('be.visible');
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let p = stateVariables['/p'];
@@ -2692,12 +2688,12 @@ describe('Specifying single variant document tests', function () {
           let secondValue2 = stateVariables[p.activeChildren[1].componentName].stateValues.value;
           expect(secondValue2).eq(secondValue);
 
-          cy.get('#\\/_textinput1_input').type(`{end}X`)
-          cy.get('#\\/_textinput1_submit').click();
-          cy.get('#\\/_textinput1_incorrect').should('be.visible');
-          cy.get('#\\/_textinput1_input').type(`{end}{backspace}`)
-          cy.get('#\\/_textinput1_submit').click();
-          cy.get('#\\/_textinput1_correct').should('be.visible');
+          cy.get(cesc('#\\/_textinput1_input')).type(`{end}X`)
+          cy.get(cesc('#\\/_textinput1_submit')).click();
+          cy.get(cesc('#\\/_textinput1_incorrect')).should('be.visible');
+          cy.get(cesc('#\\/_textinput1_input')).type(`{end}{backspace}`)
+          cy.get(cesc('#\\/_textinput1_submit')).click();
+          cy.get(cesc('#\\/_textinput1_correct')).should('be.visible');
 
 
         })
@@ -2767,8 +2763,8 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
-        cy.get('#\\/_text2').should('have.text', `${ind2}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text2')).should('have.text', `${ind2}`)
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -2911,7 +2907,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `repeat`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `repeat`)
 
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
@@ -3082,8 +3078,8 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
-        cy.get('#\\/_text2').should('have.text', `${ind2}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text2')).should('have.text', `${ind2}`)
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -3245,7 +3241,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `repeat`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `repeat`)
 
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
@@ -3430,8 +3426,8 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
-        cy.get('#\\/_text2').should('have.text', `${ind2}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text2')).should('have.text', `${ind2}`)
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -3574,7 +3570,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `repeat`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `repeat`)
 
     // cy.window().then(async (win) => {
     //   let stateVariables = await win.returnAllStateVariables1();
@@ -3716,8 +3712,8 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
-        cy.get('#\\/_text2').should('have.text', `${ind2}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text2')).should('have.text', `${ind2}`)
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -3777,7 +3773,7 @@ describe('Specifying single variant document tests', function () {
     //   }, "*");
     // })
     // // to wait for page to load
-    // cy.get('#\\/_text1').should('have.text', `repeat`)
+    // cy.get(cesc('#\\/_text1')).should('have.text', `repeat`)
 
 
     // cy.window().then(async (win) => {
@@ -3879,7 +3875,7 @@ describe('Specifying single variant document tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3905,9 +3901,9 @@ describe('Specifying single variant document tests', function () {
         originalChoiceTexts = allTexts;
 
         // click a choice input so that data is saved to IndexedDB
-        cy.get(cesc(`#/c1_choice1_input`)).click();
-        cy.get(cesc(`#/c1v`)).should('have.text', textC1[0])
-        cy.get(cesc(`#/c1_choice1_input`)).should('be.checked')
+        cy.get(cesc2(`#/c1_choice1_input`)).click();
+        cy.get(cesc2(`#/c1v`)).should('have.text', textC1[0])
+        cy.get(cesc2(`#/c1_choice1_input`)).should('be.checked')
 
         cy.wait(2000);  // wait for 2 second debounce
         cy.reload();
@@ -3921,7 +3917,7 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -3953,11 +3949,11 @@ describe('Specifying single variant document tests', function () {
           expect(allTexts).eqls(originalChoiceTexts);
 
           // click a choice input so that data is saved to IndexedDB
-          cy.get(cesc(`#/c1_choice1_input`)).should('be.checked')
-          cy.get(cesc(`#/c1_choice2_input`)).click();
-          cy.get(cesc(`#/c1v`)).should('have.text', textC1[1])
-          cy.get(cesc(`#/c1_choice1_input`)).should('not.be.checked')
-          cy.get(cesc(`#/c1_choice2_input`)).should('be.checked')
+          cy.get(cesc2(`#/c1_choice1_input`)).should('be.checked')
+          cy.get(cesc2(`#/c1_choice2_input`)).click();
+          cy.get(cesc2(`#/c1v`)).should('have.text', textC1[1])
+          cy.get(cesc2(`#/c1_choice1_input`)).should('not.be.checked')
+          cy.get(cesc2(`#/c1_choice2_input`)).should('be.checked')
 
 
 
@@ -4004,7 +4000,7 @@ describe('Specifying single variant document tests', function () {
       })
 
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       let indexChosen1, indexChosen2;
       let m, n;
@@ -4016,10 +4012,10 @@ describe('Specifying single variant document tests', function () {
         m = stateVariables["/m"].stateValues.value;
         n = stateVariables["/n"].stateValues.value;
 
-        cy.get('#\\/_mathinput1 textarea').type(`${m}{enter}`, { force: true });
-        cy.get('#\\/_mathinput2 textarea').type(`${n}{enter}`, { force: true });
-        cy.get('#\\/_mathinput1_correct').should('be.visible')
-        cy.get('#\\/_mathinput2_correct').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`${m}{enter}`, { force: true });
+        cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`${n}{enter}`, { force: true });
+        cy.get(cesc('#\\/_mathinput1_correct')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_correct')).should('be.visible')
 
         cy.wait(2000);  // wait for 2 second debounce
         cy.reload();
@@ -4033,7 +4029,7 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -4051,22 +4047,22 @@ describe('Specifying single variant document tests', function () {
         })
 
 
-        cy.get('#\\/_mathinput1_correct').should('be.visible')
-        cy.get('#\\/_mathinput2_correct').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1_correct')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_correct')).should('be.visible')
 
-        cy.get('#\\/_mathinput1 textarea').type(`{end}X`, { force: true });
-        cy.get('#\\/_mathinput2 textarea').type(`{end}X`, { force: true });
-        cy.get('#\\/_mathinput1_submit').click();
-        cy.get('#\\/_mathinput2_submit').click();
-        cy.get('#\\/_mathinput1_incorrect').should('be.visible')
-        cy.get('#\\/_mathinput2_incorrect').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}X`, { force: true });
+        cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{end}X`, { force: true });
+        cy.get(cesc('#\\/_mathinput1_submit')).click();
+        cy.get(cesc('#\\/_mathinput2_submit')).click();
+        cy.get(cesc('#\\/_mathinput1_incorrect')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_incorrect')).should('be.visible')
 
-        cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}`, { force: true });
-        cy.get('#\\/_mathinput2 textarea').type(`{end}{backspace}`, { force: true });
-        cy.get('#\\/_mathinput1_submit').click();
-        cy.get('#\\/_mathinput2_submit').click();
-        cy.get('#\\/_mathinput1_correct').should('be.visible')
-        cy.get('#\\/_mathinput2_correct').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}`, { force: true });
+        cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{end}{backspace}`, { force: true });
+        cy.get(cesc('#\\/_mathinput1_submit')).click();
+        cy.get(cesc('#\\/_mathinput2_submit')).click();
+        cy.get(cesc('#\\/_mathinput1_correct')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_correct')).should('be.visible')
 
 
       })
@@ -4115,7 +4111,7 @@ describe('Specifying single variant document tests', function () {
       })
 
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       let indicesChosen1, indicesChosen2, indicesChosen3;
       let m, n, x1, x2, l1, l2;
@@ -4137,12 +4133,12 @@ describe('Specifying single variant document tests', function () {
 
 
 
-        cy.get('#\\/_mathinput1 textarea').type(`${m}{enter}`, { force: true });
-        cy.get('#\\/_mathinput2 textarea').type(`${me.fromAst(x2).toString()}{enter}`, { force: true });
-        cy.get('#\\/_textinput1_input').type(`${l1}{enter}`);
-        cy.get('#\\/_mathinput1_correct').should('be.visible')
-        cy.get('#\\/_mathinput2_correct').should('be.visible')
-        cy.get('#\\/_textinput1_correct').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`${m}{enter}`, { force: true });
+        cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`${me.fromAst(x2).toString()}{enter}`, { force: true });
+        cy.get(cesc('#\\/_textinput1_input')).type(`${l1}{enter}`);
+        cy.get(cesc('#\\/_mathinput1_correct')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_correct')).should('be.visible')
+        cy.get(cesc('#\\/_textinput1_correct')).should('be.visible')
 
         cy.wait(2000);  // wait for 2 second debounce
         cy.reload();
@@ -4156,7 +4152,7 @@ describe('Specifying single variant document tests', function () {
           }, "*");
         })
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -4179,29 +4175,29 @@ describe('Specifying single variant document tests', function () {
 
         })
 
-        cy.get('#\\/_mathinput1_correct').should('be.visible')
-        cy.get('#\\/_mathinput2_correct').should('be.visible')
-        cy.get('#\\/_textinput1_correct').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1_correct')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_correct')).should('be.visible')
+        cy.get(cesc('#\\/_textinput1_correct')).should('be.visible')
 
-        cy.get('#\\/_mathinput1 textarea').type(`{end}X`, { force: true });
-        cy.get('#\\/_mathinput2 textarea').type(`{end}X`, { force: true });
-        cy.get('#\\/_textinput1_input').type(`{end}X`);
-        cy.get('#\\/_mathinput1_submit').click();
-        cy.get('#\\/_mathinput2_submit').click();
-        cy.get('#\\/_textinput1_submit').click();
-        cy.get('#\\/_mathinput1_incorrect').should('be.visible')
-        cy.get('#\\/_mathinput2_incorrect').should('be.visible')
-        cy.get('#\\/_textinput1_incorrect').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}X`, { force: true });
+        cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{end}X`, { force: true });
+        cy.get(cesc('#\\/_textinput1_input')).type(`{end}X`);
+        cy.get(cesc('#\\/_mathinput1_submit')).click();
+        cy.get(cesc('#\\/_mathinput2_submit')).click();
+        cy.get(cesc('#\\/_textinput1_submit')).click();
+        cy.get(cesc('#\\/_mathinput1_incorrect')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_incorrect')).should('be.visible')
+        cy.get(cesc('#\\/_textinput1_incorrect')).should('be.visible')
 
-        cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}`, { force: true });
-        cy.get('#\\/_mathinput2 textarea').type(`{end}{backspace}`, { force: true });
-        cy.get('#\\/_textinput1_input').type(`{end}{backspace}`);
-        cy.get('#\\/_mathinput1_submit').click();
-        cy.get('#\\/_mathinput2_submit').click();
-        cy.get('#\\/_textinput1_submit').click();
-        cy.get('#\\/_mathinput1_correct').should('be.visible')
-        cy.get('#\\/_mathinput2_correct').should('be.visible')
-        cy.get('#\\/_textinput1_correct').should('be.visible')
+        cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}`, { force: true });
+        cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{end}{backspace}`, { force: true });
+        cy.get(cesc('#\\/_textinput1_input')).type(`{end}{backspace}`);
+        cy.get(cesc('#\\/_mathinput1_submit')).click();
+        cy.get(cesc('#\\/_mathinput2_submit')).click();
+        cy.get(cesc('#\\/_textinput1_submit')).click();
+        cy.get(cesc('#\\/_mathinput1_correct')).should('be.visible')
+        cy.get(cesc('#\\/_mathinput2_correct')).should('be.visible')
+        cy.get(cesc('#\\/_textinput1_correct')).should('be.visible')
       })
 
     }
@@ -4243,7 +4239,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
     let choices = ["a", "b", "c"]
 
@@ -4259,58 +4255,58 @@ describe('Specifying single variant document tests', function () {
       let mathinput3Name = stateVariables[`/g3/ans`].stateValues.inputChildren[0].componentName;
       let mathinput4Name = stateVariables[`/ans`].stateValues.inputChildren[0].componentName;
 
-      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
-      let answer1Correct = cesc('#' + mathinput1Name + "_correct");
-      let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
-      let answer1Submit = cesc('#' + mathinput1Name + "_submit");
+      let mathinput1Anchor = cesc2('#' + mathinput1Name) + " textarea";
+      let answer1Correct = cesc2('#' + mathinput1Name + "_correct");
+      let answer1Incorrect = cesc2('#' + mathinput1Name + "_incorrect");
+      let answer1Submit = cesc2('#' + mathinput1Name + "_submit");
 
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let answer2Correct = cesc('#' + mathinput2Name + "_correct");
-      let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
-      let answer2Submit = cesc('#' + mathinput2Name + "_submit");
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let answer2Correct = cesc2('#' + mathinput2Name + "_correct");
+      let answer2Incorrect = cesc2('#' + mathinput2Name + "_incorrect");
+      let answer2Submit = cesc2('#' + mathinput2Name + "_submit");
 
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let answer3Correct = cesc('#' + mathinput3Name + "_correct");
-      let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
-      let answer3Submit = cesc('#' + mathinput3Name + "_submit");
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let answer3Correct = cesc2('#' + mathinput3Name + "_correct");
+      let answer3Incorrect = cesc2('#' + mathinput3Name + "_incorrect");
+      let answer3Submit = cesc2('#' + mathinput3Name + "_submit");
 
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let answer4Correct = cesc('#' + mathinput4Name + "_correct");
-      let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
-      let answer4Submit = cesc('#' + mathinput4Name + "_submit");
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let answer4Correct = cesc2('#' + mathinput4Name + "_correct");
+      let answer4Incorrect = cesc2('#' + mathinput4Name + "_incorrect");
+      let answer4Submit = cesc2('#' + mathinput4Name + "_submit");
 
-      cy.get(`label[for=${cesc("/g/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
-      cy.get(`label[for=${cesc("/g/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
-      cy.get(`label[for=${cesc("/g/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
-      cy.get(`label[for=${cesc("/g2/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
-      cy.get(`label[for=${cesc("/g2/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
-      cy.get(`label[for=${cesc("/g2/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
-      cy.get(`label[for=${cesc("/g3/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
-      cy.get(`label[for=${cesc("/g3/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
-      cy.get(`label[for=${cesc("/g3/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+      cy.get(`label[for=${cesc2("/g/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc2("/g/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc2("/g/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+      cy.get(`label[for=${cesc2("/g2/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc2("/g2/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc2("/g2/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+      cy.get(`label[for=${cesc2("/g3/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc2("/g3/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc2("/g3/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
 
-      cy.get(cesc(`#/g/_p2`)).should('have.text', `Enter ${n}. `)
-      cy.get(cesc(`#/g2/_p2`)).should('have.text', `Enter ${n}. `)
-      cy.get(cesc(`#/g3/_p2`)).should('have.text', `Enter ${n}. `)
-      cy.get(cesc(`#/_p1`)).should('have.text', `Enter ${m}. `)
+      cy.get(cesc2(`#/g/_p2`)).should('have.text', `Enter ${n}. `)
+      cy.get(cesc2(`#/g2/_p2`)).should('have.text', `Enter ${n}. `)
+      cy.get(cesc2(`#/g3/_p2`)).should('have.text', `Enter ${n}. `)
+      cy.get(cesc2(`#/_p1`)).should('have.text', `Enter ${m}. `)
 
-      cy.get(cesc(`#/g/ci_choice2_input`)).click();
-      cy.get(cesc(`#/g/ci_choice2_input`)).should('be.checked')
-      cy.get(cesc(`#/g2/ci_choice2_input`)).should('be.checked')
-      cy.get(cesc(`#/g3/ci_choice2_input`)).should('not.be.checked')
+      cy.get(cesc2(`#/g/ci_choice2_input`)).click();
+      cy.get(cesc2(`#/g/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc2(`#/g2/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc2(`#/g3/ci_choice2_input`)).should('not.be.checked')
 
-      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: `)
+      cy.get(cesc2(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g3/_p1`)).should('have.text', `Selected value: `)
 
-      cy.get(cesc(`#/g3/ci_choice1_input`)).click();
-      cy.get(cesc(`#/g/ci_choice2_input`)).should('be.checked')
-      cy.get(cesc(`#/g2/ci_choice2_input`)).should('be.checked')
-      cy.get(cesc(`#/g3/ci_choice1_input`)).should('be.checked')
+      cy.get(cesc2(`#/g3/ci_choice1_input`)).click();
+      cy.get(cesc2(`#/g/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc2(`#/g2/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc2(`#/g3/ci_choice1_input`)).should('be.checked')
 
-      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
+      cy.get(cesc2(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
 
       cy.get(mathinput2Anchor).type(`${n}{enter}`, { force: true })
       cy.get(answer1Correct).should('be.visible')
@@ -4356,7 +4352,7 @@ describe('Specifying single variant document tests', function () {
       })
 
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `1`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
       // wait until core is loaded
       cy.waitUntil(() => cy.window().then(async (win) => {
@@ -4389,18 +4385,18 @@ describe('Specifying single variant document tests', function () {
 
       })
 
-      cy.get(cesc(`#/g/ci_choice2_input`)).should('be.checked')
-      cy.get(cesc(`#/g2/ci_choice2_input`)).should('be.checked')
-      cy.get(cesc(`#/g3/ci_choice1_input`)).should('be.checked')
+      cy.get(cesc2(`#/g/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc2(`#/g2/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc2(`#/g3/ci_choice1_input`)).should('be.checked')
 
-      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
+      cy.get(cesc2(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
 
 
-      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
-      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
+      cy.get(cesc2(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc2(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
 
 
       cy.get(answer1Correct).should('be.visible')
@@ -4481,14 +4477,14 @@ describe('Specifying single variant document tests', function () {
         }, "*");
       })
       // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
       let fruit = ["apple", "orange"][(ind - 1) % 2];
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        let textinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let textinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
         let textinputAnchor = '#' + textinputName + '_input';
         let textinputSubmitAnchor = '#' + textinputName + '_submit';
         let textinputCorrectAnchor = '#' + textinputName + '_correct';
@@ -4521,7 +4517,7 @@ describe('Specifying single variant document tests', function () {
         })
 
         // to wait for page to load
-        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -4627,7 +4623,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`);
 
     let n, a;
     cy.window().then(async (win) => {
@@ -4647,7 +4643,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4667,7 +4663,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `3`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `3`);
 
 
     let w1, w2, w3, m;
@@ -4696,7 +4692,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `4`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `4`);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4730,7 +4726,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -4751,7 +4747,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `5`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -4784,7 +4780,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -4805,7 +4801,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -4837,7 +4833,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -4858,7 +4854,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `3`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `3`)
 
 
     cy.window().then(async (win) => {
@@ -4892,7 +4888,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -4913,7 +4909,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -4953,7 +4949,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
 
     cy.window().then(async (win) => {
@@ -4980,8 +4976,8 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('not.exist')
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('not.exist')
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
 
     cy.window().then(async (win) => {
@@ -5023,8 +5019,8 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('not.exist')
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('not.exist')
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5050,8 +5046,8 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('not.exist')
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('not.exist')
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
 
     cy.window().then(async (win) => {
@@ -5092,8 +5088,8 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('not.exist')
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('not.exist')
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
 
     cy.window().then(async (win) => {
@@ -5120,8 +5116,8 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('not.exist')
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('not.exist')
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
 
     cy.window().then(async (win) => {
@@ -5164,8 +5160,8 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('not.exist')
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('not.exist')
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
 
     cy.window().then(async (win) => {
@@ -5192,8 +5188,8 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('not.exist')
-    cy.get('#\\/_text1').should('have.text', `Hello!`)
+    cy.get(cesc('#\\/_text1')).should('not.exist')
+    cy.get(cesc('#\\/_text1')).should('have.text', `Hello!`)
 
 
     cy.window().then(async (win) => {
@@ -5239,7 +5235,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -5266,7 +5262,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `5`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `5`)
 
 
     cy.window().then(async (win) => {
@@ -5307,7 +5303,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -5334,7 +5330,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {
@@ -5374,7 +5370,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -5401,7 +5397,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `3`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `3`)
 
 
     cy.window().then(async (win) => {
@@ -5443,7 +5439,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `1`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `1`)
 
 
     cy.window().then(async (win) => {
@@ -5470,7 +5466,7 @@ describe('Specifying single variant document tests', function () {
     })
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `2`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `2`)
 
 
     cy.window().then(async (win) => {

@@ -1,14 +1,10 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
 import { isStrictMode } from 'react-is';
 import { isStyledComponent } from 'styled-components';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Math Operator Tag Tests', function () {
@@ -41,51 +37,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3+17+1')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3+17+1')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('62+17+1')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/withNumberSum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberSum')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+x+y+x+y+z')
       });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x+2y+z')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -178,69 +174,69 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3+17+1')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('62+17+5−4')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3+17+1')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3+17+1')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('62+17+1')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+x+y+x+y+z')
     });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+x+y+x+y+z')
     });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3x+2y+z')
     });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('NaN')
     });
     cy.window().then(async (win) => {
@@ -382,69 +378,69 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3⋅17⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('251')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3⋅17⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3⋅17⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,1)')
     });
-    cy.get('#\\/groupPlusGroup').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusGroup')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,1)+sum(3,17,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('42')
     });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('42')
     });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,3,17,1,1)')
     });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('42')
     });
 
@@ -529,51 +525,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3+17+1')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3+17+1')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('62+17+1')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/withNumberSum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberSum')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+x+y+x+y+z')
       });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x+2y+z')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -655,53 +651,53 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3⋅17⋅1')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3⋅17⋅1')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(62)⋅17⋅1')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/withNumberProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x(x+y)(x+y+z)')
       });
-      cy.get('#\\/varsExpand').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsExpand')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3+2yx2+zx2+xy2+xyz')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -795,69 +791,69 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3⋅17⋅1')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(62)⋅17(5−4)')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3⋅17⋅1')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3⋅17⋅1')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(62)⋅17⋅1')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x(x+y)(x+y+z)')
     });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x(x+y)(x+y+z)')
     });
-    cy.get('#\\/varsAsStringExpand').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringExpand')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x3+2yx2+zx2+xy2+xyz')
     });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('NaN')
     });
     cy.window().then(async (win) => {
@@ -996,66 +992,66 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3,17,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3⋅17⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('251')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3,17,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3⋅17⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3,17,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3⋅17⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3,17,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2601')
     });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2601')
     });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('prod(3,17,3,17,1,1)')
     });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2601')
     });
 
@@ -1138,53 +1134,53 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3⋅17⋅1')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3⋅17⋅1')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(62)⋅17⋅1')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/withNumberProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x(x+y)(x+y+z)')
       });
-      cy.get('#\\/varsExpand').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsExpand')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3+2yx2+zx2+xy2+xyz')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1279,59 +1275,59 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
       let replacement3Name = stateVariables['/_copy3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
+      let replacement3Anchor = cesc2('#' + replacement3Name);
       let replacement4Name = stateVariables['/_copy4'].replacements[0].componentName;
-      let replacement4Anchor = cesc('#' + replacement4Name);
+      let replacement4Anchor = cesc2('#' + replacement4Name);
 
-      cy.get('#\\/_clampnumber1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/_clampnumber2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
-      cy.get('#\\/_clampnumber3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0.3')
       });
-      cy.get('#\\/_clampnumber4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('40')
       });
-      cy.get('#\\/_clampnumber5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('10')
       });
-      cy.get('#\\/_clampnumber6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12')
       });
-      cy.get('#\\/_clampnumber7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber7')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('40')
       });
-      cy.get('#\\/_clampnumber8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber8')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('10')
       });
-      cy.get('#\\/_clampnumber9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber9')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12')
       });
-      cy.get('#\\/_clampnumber10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber10')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
-      cy.get('#\\/_clampnumber11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
-      cy.get('#\\/_clampnumber12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('40')
       });
-      cy.get('#\\/_clampnumber13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('10')
       });
-      cy.get('#\\/_clampnumber14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_clampnumber14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1443,60 +1439,60 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
       let replacement3Name = stateVariables['/_copy3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
+      let replacement3Anchor = cesc2('#' + replacement3Name);
       let replacement4Name = stateVariables['/_copy4'].replacements[0].componentName;
-      let replacement4Anchor = cesc('#' + replacement4Name);
+      let replacement4Anchor = cesc2('#' + replacement4Name);
 
-      cy.get('#\\/_wrapnumberperiodic1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0.3')
       });
-      cy.get('#\\/_wrapnumberperiodic2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0.7')
       });
-      cy.get('#\\/_wrapnumberperiodic3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0.3')
       });
-      cy.get('#\\/_wrapnumberperiodic4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('25.3')
       });
-      cy.get('#\\/_wrapnumberperiodic5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('34.7')
       });
-      cy.get('#\\/_wrapnumberperiodic6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12')
       });
-      cy.get('#\\/_wrapnumberperiodic7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic7')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('25.3')
       });
-      cy.get('#\\/_wrapnumberperiodic8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic8')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('34.7')
       });
-      cy.get('#\\/_wrapnumberperiodic9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic9')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12')
       });
-      cy.get('#\\/_wrapnumberperiodic10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic10')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
-      cy.get('#\\/_wrapnumberperiodic11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
-      cy.get('#\\/_wrapnumberperiodic12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('18')
       });
-      cy.get('#\\/_wrapnumberperiodic13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic13')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12')
       });
-      cy.get('#\\/_wrapnumberperiodic14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_wrapnumberperiodic14')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1594,7 +1590,7 @@ describe('Math Operator Tag Tests', function () {
       <copy name="g2" target="_graph1" />
       `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let clamp = x => Math.min(5, Math.max(-2, x));
     let wrap = x => -2 + me.math.mod((x + 2), 7);
@@ -1815,51 +1811,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
       let replacement3Name = stateVariables['/_copy3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
+      let replacement3Anchor = cesc2('#' + replacement3Name);
 
-      cy.get('#\\/_round1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('55')
       });
-      cy.get('#\\/_round2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/_round3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/_round4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('55.3')
       });
-      cy.get('#\\/_round5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3.43')
       });
-      cy.get('#\\/_round6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0.556')
       });
-      cy.get('#\\/_round7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round7')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('55.3')
       });
-      cy.get('#\\/_round8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round8')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3.434')
       });
-      cy.get('#\\/_round9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round9')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0.55556')
       });
-      cy.get('#\\/_round10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round10')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(55.3x)')
       });
-      cy.get('#\\/_round11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('62.7')
       });
-      cy.get('#\\/_round12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_round12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1524000000')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1915,34 +1911,34 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/r1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/r2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
       let replacement3Name = stateVariables['/r3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
+      let replacement3Anchor = cesc2('#' + replacement3Name);
 
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('{1,2,3,2,1}')
       });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2,3,2,1)')
       });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2,3,2,1')
       });
-      cy.get('#\\/_convertsettolist1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_convertsettolist1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2,3')
       });
-      cy.get('#\\/_convertsettolist2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_convertsettolist2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2,3,2,1)')
       });
-      cy.get('#\\/_convertsettolist3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_convertsettolist3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2,3,2,1')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1999,7 +1995,7 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
@@ -2037,31 +2033,31 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/f2a'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/c2a'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
-      cy.get('#\\/_floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_floor1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('55')
       });
-      cy.get('#\\/_ceil1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_ceil1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       });
-      cy.get('#\\/_floor2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_floor2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('13')
       });
-      cy.get('#\\/_ceil2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_ceil2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/_floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_floor3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       });
-      cy.get('#\\/_ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_ceil3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−7000')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2070,10 +2066,10 @@ describe('Math Operator Tag Tests', function () {
       cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_floor4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('⌊2.1x⌋')
       });
-      cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_ceil4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('⌈−3.2y⌉')
       });
 
@@ -2121,54 +2117,54 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('⌊55.3252326⌋')
     });
-    cy.get('#\\/floor2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('⌊55.3252326⌋')
     });
-    cy.get('#\\/floor1simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor1simp')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('55')
     });
-    cy.get('#\\/floor2simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor2simp')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('55')
     });
-    cy.get('#\\/ceil1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('⌈log(31.1)⌉')
     });
-    cy.get('#\\/ceil2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('⌈log(31.1)⌉')
     });
-    cy.get('#\\/ceil1simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil1simp')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/ceil2simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil2simp')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('13')
     });
-    cy.get('#\\/floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('13')
     });
-    cy.get('#\\/ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/floor5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/floor6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/floor6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/ceil5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−7000')
     });
-    cy.get('#\\/ceil6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/ceil6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−7000')
     });
 
@@ -2206,12 +2202,12 @@ describe('Math Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_abs1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_abs1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5.3')
     });
-    cy.get('#\\/_abs2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_abs2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('|−x|')
     });
 
@@ -2235,15 +2231,15 @@ describe('Math Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9')
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
     })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9')
     });
 
@@ -2254,16 +2250,16 @@ describe('Math Operator Tag Tests', function () {
       expect(stateVariables['/a3'].stateValues.value).eq(9);
     })
 
-    cy.get("#\\/a2 textarea").type("{end}{backspace}-3{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '0');
+    cy.get(cesc("#\\/a2") + " textarea").type("{end}{backspace}-3{enter}", { force: true })
+    cy.get(cesc('#\\/a3')).should('contain.text', '0');
 
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
     })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
 
@@ -2275,16 +2271,16 @@ describe('Math Operator Tag Tests', function () {
     })
 
 
-    cy.get("#\\/a2 textarea").type("{end}{backspace}7{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '7');
+    cy.get(cesc("#\\/a2") + " textarea").type("{end}{backspace}7{enter}", { force: true })
+    cy.get(cesc('#\\/a3')).should('contain.text', '7');
 
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7')
     })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
 
@@ -2296,16 +2292,16 @@ describe('Math Operator Tag Tests', function () {
     })
 
 
-    cy.get("#\\/a2 textarea").type("{end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '|x|');
+    cy.get(cesc("#\\/a2") + " textarea").type("{end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/a3')).should('contain.text', '|x|');
 
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('|x|')
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|x|')
     })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('|x|')
     });
 
@@ -2317,16 +2313,16 @@ describe('Math Operator Tag Tests', function () {
     })
 
 
-    cy.get("#\\/a2 textarea").type("{end}{leftArrow}{backspace}y{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '|y|');
+    cy.get(cesc("#\\/a2") + " textarea").type("{end}{leftArrow}{backspace}y{enter}", { force: true })
+    cy.get(cesc('#\\/a3')).should('contain.text', '|y|');
 
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('|y|')
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|y|')
     })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('|y|')
     });
 
@@ -2363,7 +2359,7 @@ describe('Math Operator Tag Tests', function () {
       <copy name="g2" target="_graph1" />
       `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
     let g2ChildrenNames;
@@ -2543,15 +2539,15 @@ describe('Math Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_sign1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_sign1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−1')
     });
-    cy.get('#\\/_sign2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_sign2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/_sign3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_sign3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
 
@@ -2586,51 +2582,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3+17+13')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3+17+13')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('62+17+13')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       });
-      cy.get('#\\/withNumberMean').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberMean')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('6')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+x+y+x+y+z3')
       });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x+2y+z3')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2723,69 +2719,69 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3+17+13')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('62+17+5−43')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3+17+13')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3+17+13')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('62+17+13')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+x+y+x+y+z3')
     });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+x+y+x+y+z3')
     });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3x+2y+z3')
     });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('NaN')
     });
     cy.window().then(async (win) => {
@@ -2924,66 +2920,66 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3,17,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3⋅17⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('251')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3,17,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3⋅17⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3,17,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3⋅17⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3,17,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mean(3,17,3,17,1,1)')
     });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
     });
 
@@ -3058,18 +3054,18 @@ describe('Math Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mean2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let mean3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let mean5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let mean6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let mean2Anchor = cesc2('#' + stateVariables['/_copy1'].replacements[0].componentName);
+      let mean3Anchor = cesc2('#' + stateVariables['/_copy2'].replacements[0].componentName);
+      let mean5Anchor = cesc2('#' + stateVariables['/_copy3'].replacements[0].componentName);
+      let mean6Anchor = cesc2('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/meanPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/meanPrime')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4.25')
       });
       cy.get(mean2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3078,7 +3074,7 @@ describe('Math Operator Tag Tests', function () {
       cy.get(mean3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4.25')
       });
-      cy.get('#\\/mean100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/mean100')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('50.5')
       });
       cy.get(mean5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3124,54 +3120,54 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
       let theVariance = me.math.variance([3, 17, 1]);
       let theVarianceString = theVariance.toString();
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('32+172+12−(3+17+1)232')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('32+172+12−(3+17+1)232')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(62)2+172+12−(62+17+1)232')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/withNumberVariance').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberVariance')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(me.math.variance([3, me.math.variance([17, 1])]).toString())
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
       });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3267,69 +3263,69 @@ describe('Math Operator Tag Tests', function () {
     let theVariance = me.math.variance([3, 17, 1]);
     let theVarianceString = theVariance.toString();
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('32+172+12−(3+17+1)232')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(62)2+172+(5−4)2−(62+17+5−4)232')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('32+172+12−(3+17+1)232')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('32+172+12−(3+17+1)232')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(62)2+172+12−(62+17+1)232')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
     });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
     });
-    // cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/varsAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('3x+2y+z3')
     // });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('NaN')
     });
     cy.window().then(async (win) => {
@@ -3468,71 +3464,71 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let theVariance = me.math.variance([3, 17, 1]);
     let theVarianceString = theVariance.toString();
     let theVariance2 = me.math.variance([3, 17, 1, 3, 17, 13]);
     let theVariance2String = theVariance2.toString();
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3,17,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3⋅17⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3,17,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3⋅17⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3,17,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3⋅17⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3,17,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3,17,1,3,17,13)')
     });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVariance2String)
     });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3,17,13,3,17,1)')
     });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVariance2String)
     });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('variance(3,17,3,17,1,13)')
     });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVariance2String)
     });
 
@@ -3606,21 +3602,21 @@ describe('Math Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let variance2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let variance3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let variance5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let variance6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let variance2Anchor = cesc2('#' + stateVariables['/_copy1'].replacements[0].componentName);
+      let variance3Anchor = cesc2('#' + stateVariables['/_copy2'].replacements[0].componentName);
+      let variance5Anchor = cesc2('#' + stateVariables['/_copy3'].replacements[0].componentName);
+      let variance6Anchor = cesc2('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
       let variancePrimes = me.math.variance(2, 3, 5, 7);
       let variance100 = me.math.variance(Array.from({ length: 100 }, (_, i) => i + 1))
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/variancePrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/variancePrime')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(variancePrimes, 1E-6);
       });
       cy.get(variance2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3629,7 +3625,7 @@ describe('Math Operator Tag Tests', function () {
       cy.get(variance3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(variancePrimes, 1E-6);
       });
-      cy.get('#\\/variance100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/variance100')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(variance100, 1E-6);
       });
       cy.get(variance5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3676,54 +3672,54 @@ describe('Math Operator Tag Tests', function () {
         `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
       let theVariance = me.math.variance([4, 16, 1], 'uncorrected');
       let theVarianceString = theVariance.toString();
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('42+162+12−(4+16+1)233')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('42+162+12−(4+16+1)233')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(82)2+162+12−(82+16+1)233')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(theVarianceString)
       });
-      cy.get('#\\/withNumberVariance').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberVariance')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(me.math.variance([4, me.math.variance([17, 1], 'uncorrected')], 'uncorrected').toString())
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233')
       });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3797,21 +3793,21 @@ describe('Math Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let variance2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let variance3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let variance5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let variance6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let variance2Anchor = cesc2('#' + stateVariables['/_copy1'].replacements[0].componentName);
+      let variance3Anchor = cesc2('#' + stateVariables['/_copy2'].replacements[0].componentName);
+      let variance5Anchor = cesc2('#' + stateVariables['/_copy3'].replacements[0].componentName);
+      let variance6Anchor = cesc2('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
       let variancePrimes = me.math.variance([2, 3, 5, 7], 'uncorrected');
       let variance100 = me.math.variance(Array.from({ length: 100 }, (_, i) => i + 1), 'uncorrected')
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/variancePrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/variancePrime')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(variancePrimes, 1E-6);
       });
       cy.get(variance2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3820,7 +3816,7 @@ describe('Math Operator Tag Tests', function () {
       cy.get(variance3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(variancePrimes, 1E-6);
       });
-      cy.get('#\\/variance100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/variance100')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(variance100, 1E-6);
       });
       cy.get(variance5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3867,53 +3863,53 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
       let theStandardDeviation = me.math.std([3, 17, 1]);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√32+172+12−(3+17+1)232')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√76')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√32+172+12−(3+17+1)232')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√76')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√(62)2+172+12−(62+17+1)232')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√76')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
       });
-      cy.get('#\\/withNumberStandardDeviation').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberStandardDeviation')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(me.math.std([3, me.math.std([17, 1])]), 1E-6)
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
       });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4020,51 +4016,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let theStd = me.math.std([13, 25, 1]);
     let theStdString = theStd.toString();
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('std(13,25,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theStdString)
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('std(13⋅25⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('std(13,25,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theStdString)
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('std(13⋅25⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('std(13,25,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theStdString)
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('std(13⋅25⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('std(13,25,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theStdString)
     });
 
@@ -4124,21 +4120,21 @@ describe('Math Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let std2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let std3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let std5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let std6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let std2Anchor = cesc2('#' + stateVariables['/_copy1'].replacements[0].componentName);
+      let std3Anchor = cesc2('#' + stateVariables['/_copy2'].replacements[0].componentName);
+      let std5Anchor = cesc2('#' + stateVariables['/_copy3'].replacements[0].componentName);
+      let std6Anchor = cesc2('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
       let stdPrimes = me.math.std(2, 3, 5, 7);
       let std100 = me.math.std(Array.from({ length: 100 }, (_, i) => i + 1))
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/standarddeviationPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/standarddeviationPrime')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(stdPrimes, 1E-6);
       });
       cy.get(std2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4147,7 +4143,7 @@ describe('Math Operator Tag Tests', function () {
       cy.get(std3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(stdPrimes, 1E-6);
       });
-      cy.get('#\\/standarddeviation100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/standarddeviation100')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(std100, 1E-6);
       });
       cy.get(std5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4194,53 +4190,53 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
       let theStandardDeviation = me.math.std([4, 16, 1], 'uncorrected');
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√42+162+12−(4+16+1)233')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√42')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√42+162+12−(4+16+1)233')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√42')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√(82)2+162+12−(82+16+1)233')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√42')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
       });
-      cy.get('#\\/withNumberStandardDeviation').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberStandardDeviation')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(me.math.std([3, me.math.std([17, 1], 'uncorrected')], 'uncorrected'), 1E-6)
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233')
       });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4314,21 +4310,21 @@ describe('Math Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let std2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let std3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let std5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let std6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let std2Anchor = cesc2('#' + stateVariables['/_copy1'].replacements[0].componentName);
+      let std3Anchor = cesc2('#' + stateVariables['/_copy2'].replacements[0].componentName);
+      let std5Anchor = cesc2('#' + stateVariables['/_copy3'].replacements[0].componentName);
+      let std6Anchor = cesc2('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
       let stdPrimes = me.math.std([2, 3, 5, 7], 'uncorrected');
       let std100 = me.math.std(Array.from({ length: 100 }, (_, i) => i + 1), 'uncorrected')
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/standarddeviationPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/standarddeviationPrime')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(stdPrimes, 1E-6);
       });
       cy.get(std2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4337,7 +4333,7 @@ describe('Math Operator Tag Tests', function () {
       cy.get(std3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(stdPrimes, 1E-6);
       });
-      cy.get('#\\/standarddeviation100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/standarddeviation100')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(std100, 1E-6);
       });
       cy.get(std5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4383,51 +4379,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/withNumberCount').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberCount')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4520,69 +4516,69 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
     cy.window().then(async (win) => {
@@ -4722,66 +4718,66 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3,17,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3⋅17⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3,17,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3⋅17⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3,17,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3⋅17⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3,17,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('count(3,17,3,17,1,1)')
     });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     });
 
@@ -4857,18 +4853,18 @@ describe('Math Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let count2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let count3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let count5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let count6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let count2Anchor = cesc2('#' + stateVariables['/_copy1'].replacements[0].componentName);
+      let count3Anchor = cesc2('#' + stateVariables['/_copy2'].replacements[0].componentName);
+      let count5Anchor = cesc2('#' + stateVariables['/_copy3'].replacements[0].componentName);
+      let count6Anchor = cesc2('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/countPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/countPrime')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       });
       cy.get(count2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4877,7 +4873,7 @@ describe('Math Operator Tag Tests', function () {
       cy.get(count3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       });
-      cy.get('#\\/count100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/count100')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('100')
       });
       cy.get(count5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4923,51 +4919,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('min(3,17,1)')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('min(3,17,1)')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('min(62,17,1)')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/withNumberMin').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberMin')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('min(x,x+y,x+y+z)')
       });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('min(x,x+y,x+y+z)')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5060,69 +5056,69 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1)')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(62,17,5−4)')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1)')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1)')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(62,17,1)')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(x,x+y,x+y+z)')
     });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(x,x+y,x+y+z)')
     });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(x,x+y,x+y+z)')
     });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('NaN')
     });
     cy.window().then(async (win) => {
@@ -5261,66 +5257,66 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3⋅17⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('251')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3⋅17⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3⋅17⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('min(3,17,3,17,1,1)')
     });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
 
@@ -5409,149 +5405,149 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '1')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', '1')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '1')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '3')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', '3')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
 
-    cy.get('#\\/maths01 .mjx-mrow').should('contain.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').should('contain.text', '6')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'min(3,x)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', 'min(3,x)')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'min(x,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'min(3,x)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', 'min(x,6)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', 'min(3,x)')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'min(3,y)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', 'min(3,y)')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'min(y,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'min(3,y)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', 'min(y,6)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', 'min(3,y)')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '2')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', '2')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '2')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '3')
 
   })
 
@@ -5578,51 +5574,51 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement2Anchor = cesc2('#' + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('17')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('max(3,17,1)')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('17')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('17')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('max(3,17,1)')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('17')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('max(62,17,1)')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('17')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('17')
       });
-      cy.get('#\\/withNumberMax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberMax')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('17')
       });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('max(x,x+y,x+y+z)')
       });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('max(x,x+y,x+y+z)')
       });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/varsForcedNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('NaN')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5715,69 +5711,69 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1)')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(62,17,5−4)')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1)')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1)')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(62,17,1)')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/vars')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(x,x+y,x+y+z)')
     });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(x,x+y,x+y+z)')
     });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(x,x+y,x+y+z)')
     });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/varsAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('NaN')
     });
     cy.window().then(async (win) => {
@@ -5916,66 +5912,66 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,5−4)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3⋅17⋅5−4)')
     });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('251')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3⋅17⋅1)')
     });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProduct')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3⋅17⋅1)')
     });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosProductSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('51')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlusSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,1,3,17,1)')
     });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus2Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('max(3,17,3,17,1,1)')
     });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupPlus3Simplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('17')
     });
 
@@ -6064,149 +6060,149 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}9{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '9')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', '9')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '9')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '5')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', '5')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '5')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '3')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', '3')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'max(3,x)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', 'max(3,x)')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'max(x,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'max(3,x)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', 'max(x,6)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', 'max(3,x)')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'max(3,y)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', 'max(3,y)')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'max(y,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'max(3,y)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', 'max(y,6)')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', 'max(3,y)')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers00') + ' textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers11') + ' textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers01') + ' textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/minumbers10') + ' textarea').type("{end}{backspace}7{enter}", { force: true });
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths00') + ' textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths11') + ' textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths01') + ' textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/mimaths10') + ' textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '7')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').should('contain.text', '7')
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/numbers01') + ' .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get(cesc('#\\/numbers10') + ' .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get(cesc('#\\/numbers11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths00') + ' .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc('#\\/maths01') + ' .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get(cesc('#\\/maths10') + ' .mjx-mrow').eq(0).should('have.text', '7')
+    cy.get(cesc('#\\/maths11') + ' .mjx-mrow').eq(0).should('have.text', '6')
 
   })
 
@@ -6229,40 +6225,40 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Anchor = cesc2('#' + replacement1Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('mod(17,3)')
       });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('mod(17,3)')
       });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumberMathForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMath')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('mod(17,62)')
       });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/numbersWithNumericMathForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       });
-      cy.get('#\\/withNumberMod').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/withNumberMod')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
       cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -6335,57 +6331,57 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbers')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,3)')
     });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsStringForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,62)')
     });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numericAsStringForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,3)')
     });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacrosForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numbersAsMacros2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolic')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,3)')
     });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumberMathMacroForceSymbolicSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacro')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,62)')
     });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/withNumericMathMacroForceNumeric')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
     cy.window().then(async (win) => {
@@ -6479,30 +6475,30 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberString')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,3)')
     });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,3)')
     });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numberComponentsCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommas')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,3)')
     });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/macrosCommasSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/group')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('mod(17,3)')
     });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/groupSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
 
@@ -6545,16 +6541,16 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/_gcd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_gcd1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('27')
     });
-    cy.get('#\\/_gcd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_gcd2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9')
     });
-    cy.get('#\\/_gcd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_gcd3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('gcd(x,y,z)')
     });
     cy.window().then(async (win) => {
@@ -6604,70 +6600,70 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/operator').should('have.text', '+')
-    cy.get('#\\/numOperands').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/operator')).should('have.text', '+')
+    cy.get(cesc('#\\/numOperands')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get('#\\/operand1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/operand1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)')
     });
-    cy.get('#\\/operand2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/operand2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('g(y,z)')
     });
-    cy.get('#\\/operand3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/operand3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('hq')
     });
-    cy.get('#\\/blank1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/blank1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f')
     });
-    cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/g')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('g')
     });
-    cy.get('#\\/blank2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/blank2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/farg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/farg1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/farg1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/farg1a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/blank3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/blank3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/gargAll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/gargAll')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(y,z)')
     });
-    cy.get('#\\/garg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/garg1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get('#\\/garg2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/garg2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/blank4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/blank4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/blank5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/blank5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/numOperands1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/numOperands1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/operand11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/operand11')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)')
     });
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/operandN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)')
     });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/functionN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f')
     });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/argumentN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
     cy.window().then(async (win) => {
@@ -6699,9 +6695,9 @@ describe('Math Operator Tag Tests', function () {
 
     })
 
-    cy.get('#\\/nArgument textarea').type('{end}{backspace}2', { force: true }).blur();
-    cy.get('#\\/argumentN .mjx-mrow').should('contain.text', '＿')
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/nArgument') + ' textarea').type('{end}{backspace}2', { force: true }).blur();
+    cy.get(cesc('#\\/argumentN') + ' .mjx-mrow').should('contain.text', '＿')
+    cy.get(cesc('#\\/argumentN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
     cy.window().then(async (win) => {
@@ -6709,15 +6705,15 @@ describe('Math Operator Tag Tests', function () {
       expect(stateVariables['/argumentN'].stateValues.value).eqls('＿')
     })
 
-    cy.get('#\\/nOperand textarea').type('{end}{backspace}2', { force: true }).blur();
-    cy.get('#\\/operandN .mjx-mrow').should('contain.text', 'g(y,z)')
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/nOperand') + ' textarea').type('{end}{backspace}2', { force: true }).blur();
+    cy.get(cesc('#\\/operandN') + ' .mjx-mrow').should('contain.text', 'g(y,z)')
+    cy.get(cesc('#\\/operandN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('g(y,z)')
     });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/functionN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('g')
     });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/argumentN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
     cy.window().then(async (win) => {
@@ -6727,9 +6723,9 @@ describe('Math Operator Tag Tests', function () {
       expect(stateVariables['/argumentN'].stateValues.value).eqls('z')
     })
 
-    cy.get('#\\/nArgument textarea').type('{end}{backspace}3', { force: true }).blur();
-    cy.get('#\\/argumentN .mjx-mrow').should('contain.text', '＿')
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/nArgument') + ' textarea').type('{end}{backspace}3', { force: true }).blur();
+    cy.get(cesc('#\\/argumentN') + ' .mjx-mrow').should('contain.text', '＿')
+    cy.get(cesc('#\\/argumentN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
     cy.window().then(async (win) => {
@@ -6738,9 +6734,9 @@ describe('Math Operator Tag Tests', function () {
     })
 
 
-    cy.get('#\\/nArgument textarea').type('{end}{backspace}1', { force: true }).blur();
-    cy.get('#\\/argumentN .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/nArgument') + ' textarea').type('{end}{backspace}1', { force: true }).blur();
+    cy.get(cesc('#\\/argumentN') + ' .mjx-mrow').should('contain.text', 'y')
+    cy.get(cesc('#\\/argumentN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
     cy.window().then(async (win) => {
@@ -6748,15 +6744,15 @@ describe('Math Operator Tag Tests', function () {
       expect(stateVariables['/argumentN'].stateValues.value).eqls('y')
     })
 
-    cy.get('#\\/nOperand textarea').type('{end}{backspace}3', { force: true }).blur();
-    cy.get('#\\/operandN .mjx-mrow').should('contain.text', 'hq')
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/nOperand') + ' textarea').type('{end}{backspace}3', { force: true }).blur();
+    cy.get(cesc('#\\/operandN') + ' .mjx-mrow').should('contain.text', 'hq')
+    cy.get(cesc('#\\/operandN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('hq')
     });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/functionN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/argumentN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
     cy.window().then(async (win) => {
@@ -6766,15 +6762,15 @@ describe('Math Operator Tag Tests', function () {
       expect(stateVariables['/argumentN'].stateValues.value).eqls('＿')
     })
 
-    cy.get('#\\/nOperand textarea').type('{end}{backspace}4', { force: true }).blur();
-    cy.get('#\\/operandN .mjx-mrow').should('contain.text', '＿')
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/nOperand') + ' textarea').type('{end}{backspace}4', { force: true }).blur();
+    cy.get(cesc('#\\/operandN') + ' .mjx-mrow').should('contain.text', '＿')
+    cy.get(cesc('#\\/operandN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/functionN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/argumentN')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
     cy.window().then(async (win) => {
@@ -6798,12 +6794,12 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/min02').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/min02')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/abs').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/abs')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('∣∣8＿⋅0∣∣')
     });
 

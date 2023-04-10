@@ -57,16 +57,16 @@ describe('Component Size Tag Tests', function () {
 
 
 
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`)
 
 
-      cy.get('#\\/doc').invoke('width').then(docWidth => {
+      cy.get(cesc('#\\/doc')).invoke('width').then(docWidth => {
         let expectedWidthPixels = sizes[ind];
         if (!isAbsolutes[ind]) {
           expectedWidthPixels *= docWidth / 100;
         }
 
-        cy.get('#\\/ae').invoke('width').then(width => {
+        cy.get(cesc('#\\/ae')).invoke('width').then(width => {
           expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
         })
 
@@ -80,21 +80,21 @@ describe('Component Size Tag Tests', function () {
         thisUnit = "%";
       }
 
-      cy.get('#\\/w').invoke('text').then(text => {
+      cy.get(cesc('#\\/w')).invoke('text').then(text => {
         expect(parseFloat(text)).closeTo(thisWidth, 1E-6);
         expect(text.slice(text.length - thisUnit.length)).eq(thisUnit)
       })
-      cy.get('#\\/wNum').invoke('text').then(text => {
+      cy.get(cesc('#\\/wNum')).invoke('text').then(text => {
         expect(Number(text)).closeTo(thisWidth, 1E-6);
       })
-      cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/wMath')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
         expect(Number(text)).closeTo(thisWidth, 1E-6);
       })
-      cy.get('#\\/wExtract').invoke('text').then(text => {
+      cy.get(cesc('#\\/wExtract')).invoke('text').then(text => {
         expect(Number(text)).closeTo(thisWidth, 1E-6);
       })
 
-      cy.get('#\\/absExtract').should('have.text', isAbsolutes[ind].toString());
+      cy.get(cesc('#\\/absExtract')).should('have.text', isAbsolutes[ind].toString());
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -126,17 +126,17 @@ describe('Component Size Tag Tests', function () {
     });
 
 
-    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'width').then(text => {
       expect(parseFloat(text)).closeTo(500, 1);
     })
 
-    cy.get('#\\/w').should('have.text', '500px');
-    cy.get('#\\/wNum').should('have.text', '500');
-    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/w')).should('have.text', '500px');
+    cy.get(cesc('#\\/wNum')).should('have.text', '500');
+    cy.get(cesc('#\\/wMath')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('500');
     })
-    cy.get('#\\/wExtract').should('have.text', '500');
-    cy.get('#\\/absExtract').should('have.text', "true");
+    cy.get(cesc('#\\/wExtract')).should('have.text', '500');
+    cy.get(cesc('#\\/absExtract')).should('have.text', "true");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -145,21 +145,21 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{ctrl+home}{shift+end}{backspace}312{enter}", { force: true });
+    cy.get(cesc('#\\/wPrescribed') + ' textarea').type("{ctrl+home}{shift+end}{backspace}312{enter}", { force: true });
 
 
-    cy.get('#\\/w').should('have.text', '312px');
-    cy.get('#\\/wNum').should('have.text', '312');
+    cy.get(cesc('#\\/w')).should('have.text', '312px');
+    cy.get(cesc('#\\/wNum')).should('have.text', '312');
 
-    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'width').then(text => {
       expect(parseFloat(text)).closeTo(312, 1);
     })
 
-    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/wMath')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('312');
     })
-    cy.get('#\\/wExtract').should('have.text', '312');
-    cy.get('#\\/absExtract').should('have.text', "true");
+    cy.get(cesc('#\\/wExtract')).should('have.text', '312');
+    cy.get(cesc('#\\/absExtract')).should('have.text', "true");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -169,20 +169,20 @@ describe('Component Size Tag Tests', function () {
 
 
     cy.log(`changed width from inverse direction`)
-    cy.get('#\\/w2 textarea').type("{ctrl+home}{shift+end}{backspace}476{enter}", { force: true });
+    cy.get(cesc('#\\/w2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}476{enter}", { force: true });
 
-    cy.get('#\\/w').should('have.text', '476px');
-    cy.get('#\\/wNum').should('have.text', '476');
+    cy.get(cesc('#\\/w')).should('have.text', '476px');
+    cy.get(cesc('#\\/wNum')).should('have.text', '476');
 
-    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'width').then(text => {
       expect(parseFloat(text)).closeTo(476, 1);
     })
 
-    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/wMath')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('476');
     })
-    cy.get('#\\/wExtract').should('have.text', '476');
-    cy.get('#\\/absExtract').should('have.text', "true");
+    cy.get(cesc('#\\/wExtract')).should('have.text', '476');
+    cy.get(cesc('#\\/absExtract')).should('have.text', "true");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -211,20 +211,20 @@ describe('Component Size Tag Tests', function () {
     });
 
 
-    cy.get('#\\/doc').invoke('width').then(docWidth => {
+    cy.get(cesc('#\\/doc')).invoke('width').then(docWidth => {
       let expectedWidthPixels = 50 * docWidth / 100;
-      cy.get('#\\/ae').invoke('width').then(width => {
+      cy.get(cesc('#\\/ae')).invoke('width').then(width => {
         expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
       })
     })
 
-    cy.get('#\\/w').should('have.text', '50%');
-    cy.get('#\\/wNum').should('have.text', '50');
-    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/w')).should('have.text', '50%');
+    cy.get(cesc('#\\/wNum')).should('have.text', '50');
+    cy.get(cesc('#\\/wMath')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('50');
     })
-    cy.get('#\\/wExtract').should('have.text', '50');
-    cy.get('#\\/absExtract').should('have.text', "false");
+    cy.get(cesc('#\\/wExtract')).should('have.text', '50');
+    cy.get(cesc('#\\/absExtract')).should('have.text', "false");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -233,23 +233,23 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{ctrl+home}{shift+end}{backspace}31{enter}", { force: true });
+    cy.get(cesc('#\\/wPrescribed') + ' textarea').type("{ctrl+home}{shift+end}{backspace}31{enter}", { force: true });
 
-    cy.get('#\\/w').should('have.text', '31%');
-    cy.get('#\\/wNum').should('have.text', '31');
+    cy.get(cesc('#\\/w')).should('have.text', '31%');
+    cy.get(cesc('#\\/wNum')).should('have.text', '31');
 
-    cy.get('#\\/doc').invoke('width').then(docWidth => {
+    cy.get(cesc('#\\/doc')).invoke('width').then(docWidth => {
       let expectedWidthPixels = 31 * docWidth / 100;
-      cy.get('#\\/ae').invoke('width').then(width => {
+      cy.get(cesc('#\\/ae')).invoke('width').then(width => {
         expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
       })
     })
 
-    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/wMath')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('31');
     })
-    cy.get('#\\/wExtract').should('have.text', '31');
-    cy.get('#\\/absExtract').should('have.text', "false");
+    cy.get(cesc('#\\/wExtract')).should('have.text', '31');
+    cy.get(cesc('#\\/absExtract')).should('have.text', "false");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -259,23 +259,23 @@ describe('Component Size Tag Tests', function () {
 
 
     cy.log(`changed width from inverse direction`)
-    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}76{enter}", { force: true });
+    cy.get(cesc('#\\/w2') + ' textarea').type("{end}{backspace}{backspace}76{enter}", { force: true });
 
-    cy.get('#\\/w').should('have.text', '76%');
-    cy.get('#\\/wNum').should('have.text', '76');
+    cy.get(cesc('#\\/w')).should('have.text', '76%');
+    cy.get(cesc('#\\/wNum')).should('have.text', '76');
 
-    cy.get('#\\/doc').invoke('width').then(docWidth => {
+    cy.get(cesc('#\\/doc')).invoke('width').then(docWidth => {
       let expectedWidthPixels = 76 * docWidth / 100;
-      cy.get('#\\/ae').invoke('width').then(width => {
+      cy.get(cesc('#\\/ae')).invoke('width').then(width => {
         expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
       })
     })
 
-    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/wMath')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('76');
     })
-    cy.get('#\\/wExtract').should('have.text', '76');
-    cy.get('#\\/absExtract').should('have.text', "false");
+    cy.get(cesc('#\\/wExtract')).should('have.text', '76');
+    cy.get(cesc('#\\/absExtract')).should('have.text', "false");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -300,15 +300,15 @@ describe('Component Size Tag Tests', function () {
     });
 
 
-    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'width').then(text => {
       expect(parseFloat(text)).closeTo(500, 1);
     })
-    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'height').then(text => {
       expect(parseFloat(text)).closeTo(250, 1);
     })
 
-    cy.get('#\\/w').should('have.text', '500px');
-    cy.get('#\\/h').should('have.text', '250px');
+    cy.get(cesc('#\\/w')).should('have.text', '500px');
+    cy.get(cesc('#\\/h')).should('have.text', '250px');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -319,15 +319,15 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{ctrl+home}{shift+end}{backspace}312{enter}", { force: true });
+    cy.get(cesc('#\\/wPrescribed') + ' textarea').type("{ctrl+home}{shift+end}{backspace}312{enter}", { force: true });
 
-    cy.get('#\\/w').should('have.text', '312px');
-    cy.get('#\\/h').should('have.text', '156px');
+    cy.get(cesc('#\\/w')).should('have.text', '312px');
+    cy.get(cesc('#\\/h')).should('have.text', '156px');
 
-    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'width').then(text => {
       expect(parseFloat(text)).closeTo(312, 1);
     })
-    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'height').then(text => {
       expect(parseFloat(text)).closeTo(156, 1);
     })
 
@@ -340,15 +340,15 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed width from inverse direction`)
-    cy.get('#\\/w2 textarea').type("{ctrl+home}{shift+end}{backspace}476{enter}", { force: true });
+    cy.get(cesc('#\\/w2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}476{enter}", { force: true });
 
-    cy.get('#\\/w').should('have.text', '476px');
-    cy.get('#\\/h').should('have.text', '238px');
+    cy.get(cesc('#\\/w')).should('have.text', '476px');
+    cy.get(cesc('#\\/h')).should('have.text', '238px');
 
-    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'width').then(text => {
       expect(parseFloat(text)).closeTo(476, 1);
     })
-    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'height').then(text => {
       expect(parseFloat(text)).closeTo(238, 1);
     })
 
@@ -361,15 +361,15 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed height from inverse direction`)
-    cy.get('#\\/h2 textarea').type("{ctrl+home}{shift+end}{backspace}321{enter}", { force: true });
+    cy.get(cesc('#\\/h2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}321{enter}", { force: true });
 
-    cy.get('#\\/w').should('have.text', '642px');
-    cy.get('#\\/h').should('have.text', '321px');
+    cy.get(cesc('#\\/w')).should('have.text', '642px');
+    cy.get(cesc('#\\/h')).should('have.text', '321px');
 
-    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'width').then(text => {
       expect(parseFloat(text)).closeTo(642, 1);
     })
-    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+    cy.get(cesc('#\\/ae')).invoke('css', 'height').then(text => {
       expect(parseFloat(text)).closeTo(321, 1);
     })
 

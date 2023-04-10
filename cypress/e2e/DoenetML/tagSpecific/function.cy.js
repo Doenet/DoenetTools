@@ -1,14 +1,7 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
 import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
 
 function nInDOM(n) {
   if (n < 0) {
@@ -38,7 +31,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -66,7 +59,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -93,7 +86,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -120,7 +113,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -147,7 +140,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -174,7 +167,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -201,7 +194,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -228,7 +221,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -255,7 +248,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -282,7 +275,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -307,7 +300,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -332,7 +325,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -357,7 +350,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -382,7 +375,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -413,7 +406,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -444,7 +437,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -475,7 +468,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -506,7 +499,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -537,7 +530,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -568,7 +561,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -599,7 +592,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -630,7 +623,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -661,7 +654,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -690,7 +683,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -716,7 +709,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -745,7 +738,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -771,7 +764,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -802,7 +795,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -839,7 +832,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -882,7 +875,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -917,7 +910,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -941,7 +934,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -967,9 +960,9 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/m1').should('contain.text', '\uff3f')
+    cy.get(cesc('#\\/m1')).should('contain.text', '\uff3f')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -980,8 +973,8 @@ describe('Function Tag Tests', function () {
       expect(f(12)).closeTo(-1 + 0 * (12 + 6), 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '2')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '2')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
@@ -991,8 +984,8 @@ describe('Function Tag Tests', function () {
       expect(f(12)).closeTo(-1 + 2 * (12 + 6), 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '−3')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '−3')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
@@ -1002,8 +995,8 @@ describe('Function Tag Tests', function () {
       expect(f(12)).closeTo(-1 - 3 * (12 + 6), 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
-    cy.get('#\\/m1').should('contain.text', '＿')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
+    cy.get(cesc('#\\/m1')).should('contain.text', '＿')
     cy.wait(100);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1031,7 +1024,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log('with undefined slope, get line through points')
     cy.window().then(async (win) => {
@@ -1043,8 +1036,8 @@ describe('Function Tag Tests', function () {
       expect(f(12)).closeTo(-1 + 1 * (12 + 6), 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '2')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '2')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
@@ -1063,8 +1056,8 @@ describe('Function Tag Tests', function () {
 
     })
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '−3')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '−3')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
@@ -1082,8 +1075,8 @@ describe('Function Tag Tests', function () {
 
     })
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
-    cy.get('#\\/m1').should('contain.text', '＿')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
+    cy.get(cesc('#\\/m1')).should('contain.text', '＿')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinitions[0]);
@@ -1108,7 +1101,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1143,7 +1136,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1179,7 +1172,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1221,7 +1214,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1246,7 +1239,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1309,7 +1302,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1348,7 +1341,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1413,7 +1406,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1457,7 +1450,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1539,7 +1532,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1624,7 +1617,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
     let f = x => Math.sqrt(x) * Math.sqrt(5 - x);
 
     cy.window().then(async (win) => {
@@ -1711,7 +1704,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1747,7 +1740,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1779,7 +1772,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1814,7 +1807,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1851,7 +1844,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1884,7 +1877,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1920,7 +1913,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1952,7 +1945,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1988,7 +1981,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2025,7 +2018,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2059,7 +2052,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2094,7 +2087,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2131,7 +2124,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2162,7 +2155,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2196,7 +2189,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2230,7 +2223,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2266,7 +2259,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2301,7 +2294,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2367,7 +2360,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2456,7 +2449,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2548,19 +2541,19 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/numbermaxima").should('have.text', '2');
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('((−2.15,7),(5,6))');
     });
-    cy.get("#\\/numberminima").should('have.text', '2');
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numberminima")).should('have.text', '2');
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('((−5,6),(3,4))');
     });
-    cy.get("#\\/numberextrema").should('have.text', '4');
+    cy.get(cesc("#\\/numberextrema")).should('have.text', '4');
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('((−5,6),(−2.15,7),(3,4),(5,6))');
     });
 
@@ -2573,16 +2566,16 @@ describe('Function Tag Tests', function () {
         args: { x: 2, y: 2 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '2');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1.5,7),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '2');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(2,2))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '4');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '4');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(−1.5,7),(2,2),(5,6))');
       });
 
@@ -2596,16 +2589,16 @@ describe('Function Tag Tests', function () {
         args: { x: 3.6, y: 5.1 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '3');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1,7),(3.6,5.1),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '3');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(3,4),(4.3,5))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '6');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '6');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))');
       });
 
@@ -2619,16 +2612,16 @@ describe('Function Tag Tests', function () {
         args: { x: 8, y: 9 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '2');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1,7),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '3');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(3,4),(6.5,5))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '5');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '5');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(−1,7),(3,4),(5,6),(6.5,5))');
       });
 
@@ -2642,16 +2635,16 @@ describe('Function Tag Tests', function () {
         args: { x: 5, y: 2 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '0');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '0');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿');
       });
-      cy.get("#\\/numberminima").should('have.text', '0');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '0');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿');
       });
-      cy.get("#\\/numberextrema").should('have.text', '0');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '0');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿');
       });
 
@@ -2665,16 +2658,16 @@ describe('Function Tag Tests', function () {
         args: { x: -9, y: 0 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '3');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−7,7),(−1,7),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '2');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(3,4))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '5');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '5');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−7,7),(−5,6),(−1,7),(3,4),(5,6))');
       });
 
@@ -2689,16 +2682,16 @@ describe('Function Tag Tests', function () {
         args: { x: 8, y: 3 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)');
       });
-      cy.get("#\\/numberminima").should('have.text', '1');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(8,3)');
       });
-      cy.get("#\\/numberextrema").should('have.text', '2');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '2');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((5,6),(8,3))');
       });
 
@@ -2712,16 +2705,16 @@ describe('Function Tag Tests', function () {
         args: { x: 8, y: 6 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '2');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((5,6),(7,7))');
       });
-      cy.get("#\\/numberminima").should('have.text', '2');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((6,5),(8,6))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '4');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '4');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((5,6),(6,5),(7,7),(8,6))');
       });
 
@@ -2757,36 +2750,36 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/numbermaxima").should('have.text', '2');
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('((−2.15,7),(5,6))');
     });
-    cy.get("#\\/numberminima").should('have.text', '1');
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)');
     });
-    cy.get("#\\/numberextrema").should('have.text', '3');
+    cy.get(cesc("#\\/numberextrema")).should('have.text', '3');
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('((−2.15,7),(3,4),(5,6))');
     });
 
-    cy.get('#\\/xmin textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get('#\\/xmax textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc('#\\/xmin') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/xmax') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
 
-    cy.get("#\\/numbermaxima").should('have.text', '0');
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '0');
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿');
     });
-    cy.get("#\\/numberminima").should('have.text', '1');
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)');
     });
-    cy.get("#\\/numberextrema").should('have.text', '1');
+    cy.get(cesc("#\\/numberextrema")).should('have.text', '1');
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)');
     });
 
@@ -2799,32 +2792,32 @@ describe('Function Tag Tests', function () {
         args: { x: 2, y: 2 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1.5,7)');
       });
-      cy.get("#\\/numberminima").should('have.text', '1');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,2)');
       });
-      cy.get("#\\/numberextrema").should('have.text', '2');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '2');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1.5,7),(2,2))');
       });
 
-      cy.get('#\\/xmin textarea').type('{end}{backspace}6{enter}', { force: true });
-      cy.get('#\\/xmax textarea').type('{end}{backspace}8{enter}', { force: true });
+      cy.get(cesc('#\\/xmin') + ' textarea').type('{end}{backspace}6{enter}', { force: true });
+      cy.get(cesc('#\\/xmax') + ' textarea').type('{end}{backspace}8{enter}', { force: true });
 
-      cy.get("#\\/numbermaxima").should('have.text', '2');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1.5,7),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '2');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(2,2))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '4');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '4');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(−1.5,7),(2,2),(5,6))');
       });
 
@@ -2838,32 +2831,32 @@ describe('Function Tag Tests', function () {
         args: { x: 3.6, y: 5.1 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '3');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1,7),(3.6,5.1),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '3');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(3,4),(4.3,5))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '6');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '6');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))');
       });
 
-      cy.get('#\\/xmin textarea').type('{end}{backspace}1{enter}', { force: true });
-      cy.get('#\\/xmax textarea').type('{end}{backspace}4{enter}', { force: true });
+      cy.get(cesc('#\\/xmin') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
+      cy.get(cesc('#\\/xmax') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
 
-      cy.get("#\\/numbermaxima").should('have.text', '2');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1,7),(3.6,5.1))');
       });
-      cy.get("#\\/numberminima").should('have.text', '1');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)');
       });
-      cy.get("#\\/numberextrema").should('have.text', '3');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '3');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1,7),(3,4),(3.6,5.1))');
       });
 
@@ -2899,36 +2892,36 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/numbermaxima").should('have.text', '2');
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('((−2.15,7),(5,6))');
     });
-    cy.get("#\\/numberminima").should('have.text', '1');
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)');
     });
-    cy.get("#\\/numberextrema").should('have.text', '3');
+    cy.get(cesc("#\\/numberextrema")).should('have.text', '3');
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('((−2.15,7),(3,4),(5,6))');
     });
 
-    cy.get('#\\/xmin textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get('#\\/xmax textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc('#\\/xmin') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/xmax') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
 
-    cy.get("#\\/numbermaxima").should('have.text', '0');
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '0');
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿');
     });
-    cy.get("#\\/numberminima").should('have.text', '1');
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)');
     });
-    cy.get("#\\/numberextrema").should('have.text', '1');
+    cy.get(cesc("#\\/numberextrema")).should('have.text', '1');
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)');
     });
 
@@ -2941,32 +2934,32 @@ describe('Function Tag Tests', function () {
         args: { x: 2, y: 2 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1.5,7)');
       });
-      cy.get("#\\/numberminima").should('have.text', '1');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,2)');
       });
-      cy.get("#\\/numberextrema").should('have.text', '2');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '2');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1.5,7),(2,2))');
       });
 
-      cy.get('#\\/xmin textarea').type('{end}{backspace}6{enter}', { force: true });
-      cy.get('#\\/xmax textarea').type('{end}{backspace}8{enter}', { force: true });
+      cy.get(cesc('#\\/xmin') + ' textarea').type('{end}{backspace}6{enter}', { force: true });
+      cy.get(cesc('#\\/xmax') + ' textarea').type('{end}{backspace}8{enter}', { force: true });
 
-      cy.get("#\\/numbermaxima").should('have.text', '2');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1.5,7),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '2');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '2');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(2,2))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '4');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '4');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(−1.5,7),(2,2),(5,6))');
       });
 
@@ -2980,32 +2973,32 @@ describe('Function Tag Tests', function () {
         args: { x: 3.6, y: 5.1 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '3');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−1,7),(3.6,5.1),(5,6))');
       });
-      cy.get("#\\/numberminima").should('have.text', '3');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '3');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(3,4),(4.3,5))');
       });
-      cy.get("#\\/numberextrema").should('have.text', '6');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '6');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))');
       });
 
-      cy.get('#\\/xmin textarea').type('{end}{backspace}1{enter}', { force: true });
-      cy.get('#\\/xmax textarea').type('{end}{backspace}4{enter}', { force: true });
+      cy.get(cesc('#\\/xmin') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
+      cy.get(cesc('#\\/xmax') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3.6,5.1)');
       });
-      cy.get("#\\/numberminima").should('have.text', '1');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)');
       });
-      cy.get("#\\/numberextrema").should('have.text', '2');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '2');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('((3,4),(3.6,5.1))');
       });
 
@@ -3040,19 +3033,19 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     // it is set up so that minimum of quadratic interpolating between first two points
     // is past maximum of domain
     // check for bug where this stopped looking for minima
-    cy.get("#\\/numbermaxima").should('have.text', '0');
-    cy.get("#\\/numberminima").should('have.text', '1');
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '0');
+    cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,−4)');
     });
-    cy.get("#\\/numberextrema").should('have.text', '1');
+    cy.get(cesc("#\\/numberextrema")).should('have.text', '1');
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,−4)');
     });
 
@@ -3079,13 +3072,13 @@ describe('Function Tag Tests', function () {
         args: { x: 1, y: -0.866 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '0');
-      cy.get("#\\/numberminima").should('have.text', '1');
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '0');
+      cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−4)');
       });
-      cy.get("#\\/numberextrema").should('have.text', '1');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '1');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−4)');
       });
 
@@ -3119,13 +3112,13 @@ describe('Function Tag Tests', function () {
         args: { x: 8, y: -1 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)');
       });
-      cy.get("#\\/numberminima").should('have.text', '0');
-      cy.get("#\\/numberextrema").should('have.text', '1');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '0');
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '1');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)');
       });
 
@@ -3153,13 +3146,13 @@ describe('Function Tag Tests', function () {
         args: { x: 1, y: 0.866 }
       });
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)');
       });
-      cy.get("#\\/numberminima").should('have.text', '0');
-      cy.get("#\\/numberextrema").should('have.text', '1');
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '0');
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '1');
+      cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)');
       });
 
@@ -3202,47 +3195,47 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/numbermaxima").should('have.text', '2');
-    cy.get("#\\/maximumlocation1").invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '2');
+    cy.get(cesc("#\\/maximumlocation1")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
     });
-    cy.get("#\\/maximumlocation2").invoke('text').then((text) => {
+    cy.get(cesc("#\\/maximumlocation2")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
     });
-    cy.get("#\\/maximumvalue1").invoke('text').then((text) => {
+    cy.get(cesc("#\\/maximumvalue1")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
     });
-    cy.get("#\\/maximumvalue2").invoke('text').then((text) => {
+    cy.get(cesc("#\\/maximumvalue2")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
     });
 
-    cy.get("#\\/numberminima").should('have.text', '1');
-    cy.get("#\\/minimumlocation1").invoke('text').then((text) => {
+    cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+    cy.get(cesc("#\\/minimumlocation1")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
     });
-    cy.get("#\\/minimumvalue1").invoke('text').then((text) => {
+    cy.get(cesc("#\\/minimumvalue1")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
     });
 
-    cy.get("#\\/numberextrema").should('have.text', '3');
-    cy.get("#\\/extremumlocation1").invoke('text').then((text) => {
+    cy.get(cesc("#\\/numberextrema")).should('have.text', '3');
+    cy.get(cesc("#\\/extremumlocation1")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
     });
-    cy.get("#\\/extremumlocation2").invoke('text').then((text) => {
+    cy.get(cesc("#\\/extremumlocation2")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
     });
-    cy.get("#\\/extremumlocation3").invoke('text').then((text) => {
+    cy.get(cesc("#\\/extremumlocation3")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
     });
-    cy.get("#\\/extremumvalue1").invoke('text').then((text) => {
+    cy.get(cesc("#\\/extremumvalue1")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
     });
-    cy.get("#\\/extremumvalue2").invoke('text').then((text) => {
+    cy.get(cesc("#\\/extremumvalue2")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
     });
-    cy.get("#\\/extremumvalue3").invoke('text').then((text) => {
+    cy.get(cesc("#\\/extremumvalue3")).invoke('text').then((text) => {
       expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
     });
 
@@ -3257,41 +3250,41 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get("#\\/maximumlocation1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc("#\\/maximumlocation1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
       });
-      cy.get("#\\/maximumlocation2").should('not.exist');
-      cy.get("#\\/maximumvalue1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/maximumlocation2")).should('not.exist');
+      cy.get(cesc("#\\/maximumvalue1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
-      cy.get("#\\/maximumvalue2").should('not.exist');
+      cy.get(cesc("#\\/maximumvalue2")).should('not.exist');
 
 
-      cy.get("#\\/numberminima").should('have.text', '1');
-      cy.get("#\\/minimumlocation1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '1');
+      cy.get(cesc("#\\/minimumlocation1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
       });
-      cy.get("#\\/minimumvalue1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/minimumvalue1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
       });
 
 
-      cy.get("#\\/numberextrema").should('have.text', '2');
-      cy.get("#\\/extremumlocation1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '2');
+      cy.get(cesc("#\\/extremumlocation1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
       });
-      cy.get("#\\/extremumlocation2").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumlocation2")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
       });
-      cy.get("#\\/extremumlocation3").should('not.exist');
-      cy.get("#\\/extremumvalue1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumlocation3")).should('not.exist');
+      cy.get(cesc("#\\/extremumvalue1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
-      cy.get("#\\/extremumvalue2").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumvalue2")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
       });
-      cy.get("#\\/extremumvalue3").should('not.exist');
+      cy.get(cesc("#\\/extremumvalue3")).should('not.exist');
 
     });
 
@@ -3305,49 +3298,49 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.get("#\\/numbermaxima").should('have.text', '1');
-      cy.get("#\\/maximumlocation1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbermaxima")).should('have.text', '1');
+      cy.get(cesc("#\\/maximumlocation1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
       });
-      cy.get("#\\/maximumlocation2").should('not.exist');
-      cy.get("#\\/maximumvalue1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/maximumlocation2")).should('not.exist');
+      cy.get(cesc("#\\/maximumvalue1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-0.21, 0.01);
       });
-      cy.get("#\\/maximumvalue2").should('not.exist');
+      cy.get(cesc("#\\/maximumvalue2")).should('not.exist');
 
 
-      cy.get("#\\/numberminima").should('have.text', '2');
-      cy.get("#\\/minimumlocation1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberminima")).should('have.text', '2');
+      cy.get(cesc("#\\/minimumlocation1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
       });
-      cy.get("#\\/minimumlocation2").invoke('text').then((text) => {
+      cy.get(cesc("#\\/minimumlocation2")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
       });
-      cy.get("#\\/minimumvalue1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/minimumvalue1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
       });
-      cy.get("#\\/minimumvalue2").invoke('text').then((text) => {
+      cy.get(cesc("#\\/minimumvalue2")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
       });
 
 
-      cy.get("#\\/numberextrema").should('have.text', '3');
-      cy.get("#\\/extremumlocation1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/numberextrema")).should('have.text', '3');
+      cy.get(cesc("#\\/extremumlocation1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
       });
-      cy.get("#\\/extremumlocation2").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumlocation2")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
       });
-      cy.get("#\\/extremumlocation3").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumlocation3")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
       });
-      cy.get("#\\/extremumvalue1").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumvalue1")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
       });
-      cy.get("#\\/extremumvalue2").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumvalue2")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-.21, 0.01);
       });
-      cy.get("#\\/extremumvalue3").invoke('text').then((text) => {
+      cy.get(cesc("#\\/extremumvalue3")).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
       });
 
@@ -3377,7 +3370,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3390,8 +3383,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '10');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("10{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '10');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3438,8 +3431,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '5');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '5');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3514,7 +3507,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3527,8 +3520,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '10');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("10{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '10');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3575,9 +3568,9 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get('#\\/xmin textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}25{enter}", { force: true });
-    cy.get('#\\/xmax2').should('contain.text', '25');
+    cy.get(cesc('#\\/xmin') + ' textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/xmax') + ' textarea').type("{end}{backspace}{backspace}25{enter}", { force: true });
+    cy.get(cesc('#\\/xmax2')).should('contain.text', '25');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3625,8 +3618,8 @@ describe('Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.get('#\\/m1').should('contain.text', '5');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '5');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3674,9 +3667,9 @@ describe('Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/xmin textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}9{enter}", { force: true });
-    cy.get('#\\/xmax2').should('contain.text', '9');
+    cy.get(cesc('#\\/xmin') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/xmax') + ' textarea').type("{end}{backspace}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/xmax2')).should('contain.text', '9');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3743,7 +3736,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -3779,7 +3772,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3822,7 +3815,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3859,7 +3852,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     cy.window().then(async (win) => {
@@ -3897,7 +3890,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4000,182 +3993,182 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/f1e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(0,1)`)
     })
-    cy.get('#\\/f1e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`)
     })
-    cy.get('#\\/f1e3').should('not.exist');
+    cy.get(cesc('#\\/f1e3')).should('not.exist');
 
-    cy.get('#\\/f2e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},0)`)
     })
-    cy.get('#\\/f2e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(0,2)`)
     })
-    cy.get('#\\/f2e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},0)`)
     })
-    cy.get('#\\/f2e4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},2)`)
     })
-    cy.get('#\\/f2e5').should('not.exist');
+    cy.get(cesc('#\\/f2e5')).should('not.exist');
 
 
-    cy.get('#\\/f3e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`)
     })
-    cy.get('#\\/f3e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},3)`)
     })
-    cy.get('#\\/f3e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(1.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`)
     })
-    cy.get('#\\/f3e4').should('not.exist');
+    cy.get(cesc('#\\/f3e4')).should('not.exist');
 
 
-    cy.get('#\\/f4e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-1.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`)
     })
-    cy.get('#\\/f4e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},2)`)
     })
-    cy.get('#\\/f4e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`)
     })
-    cy.get('#\\/f4e4').should('not.exist');
+    cy.get(cesc('#\\/f4e4')).should('not.exist');
 
 
 
-    cy.get('#\\/f1ae1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1ae1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(0,1)`)
     })
-    cy.get('#\\/f1ae2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1ae2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`)
     })
-    cy.get('#\\/f1ae3').should('not.exist');
+    cy.get(cesc('#\\/f1ae3')).should('not.exist');
 
 
-    cy.get('#\\/f3ae1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3ae1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`)
     })
-    cy.get('#\\/f3ae2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3ae2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},3)`)
     })
-    cy.get('#\\/f3ae3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3ae3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(1.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`)
     })
-    cy.get('#\\/f3ae4').should('not.exist');
+    cy.get(cesc('#\\/f3ae4')).should('not.exist');
 
 
-    cy.get('#\\/f4ae1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4ae1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-1.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`)
     })
-    cy.get('#\\/f4ae2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4ae2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},2)`)
     })
-    cy.get('#\\/f4ae3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4ae3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`)
     })
-    cy.get('#\\/f4ae4').should('not.exist');
+    cy.get(cesc('#\\/f4ae4')).should('not.exist');
 
 
 
-    cy.get('#\\/f5e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`)
     })
-    cy.get('#\\/f5e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(1)})`)
     })
-    cy.get('#\\/f5e3').should('not.exist');
+    cy.get(cesc('#\\/f5e3')).should('not.exist');
 
-    cy.get('#\\/f6e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f6e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(0,2)`)
     })
-    cy.get('#\\/f6e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f6e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},0)`)
     })
-    cy.get('#\\/f6e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f6e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},2)`)
     })
-    cy.get('#\\/f6e4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f6e4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(3 * Math.PI * 10 ** 5) / 10 ** 5)},0)`)
     })
-    cy.get('#\\/f6e5').should('not.exist');
+    cy.get(cesc('#\\/f6e5')).should('not.exist');
 
 
-    cy.get('#\\/f7e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f7e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},5)`)
     })
-    cy.get('#\\/f7e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f7e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},3)`)
     })
-    cy.get('#\\/f7e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f7e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(3 * Math.PI * 10 ** 5) / 10 ** 5)},5)`)
     })
-    cy.get('#\\/f7e4').should('not.exist');
+    cy.get(cesc('#\\/f7e4')).should('not.exist');
 
 
-    cy.get('#\\/f8e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f8e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(0,4)`)
     })
-    cy.get('#\\/f8e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f8e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},6)`)
     })
-    cy.get('#\\/f8e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f8e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},4)`)
     })
-    cy.get('#\\/f8e4').should('not.exist');
+    cy.get(cesc('#\\/f8e4')).should('not.exist');
 
 
-    cy.get('#\\/f9e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f9e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(1)})`)
     })
-    cy.get('#\\/f9e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f9e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`)
     })
-    cy.get('#\\/f9e3').should('not.exist');
+    cy.get(cesc('#\\/f9e3')).should('not.exist');
 
-    cy.get('#\\/f10e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f10e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-3 * Math.PI * 10 ** 5) / 10 ** 5)},0)`)
     })
-    cy.get('#\\/f10e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f10e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},2)`)
     })
-    cy.get('#\\/f10e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f10e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(- Math.PI * 10 ** 5) / 10 ** 5)},0)`)
     })
-    cy.get('#\\/f10e4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f10e4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(0,2)`)
     })
-    cy.get('#\\/f10e5').should('not.exist');
+    cy.get(cesc('#\\/f10e5')).should('not.exist');
 
 
-    cy.get('#\\/f11e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f11e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},3)`)
     })
-    cy.get('#\\/f11e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f11e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},5)`)
     })
-    cy.get('#\\/f11e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f11e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(0,3)`)
     })
-    cy.get('#\\/f11e4').should('not.exist');
+    cy.get(cesc('#\\/f11e4')).should('not.exist');
 
 
-    cy.get('#\\/f12e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f12e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-3 * Math.PI * 10 ** 5) / 10 ** 5)},6)`)
     })
-    cy.get('#\\/f12e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f12e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},4)`)
     })
-    cy.get('#\\/f12e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f12e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},6)`)
     })
-    cy.get('#\\/f12e4').should('not.exist');
+    cy.get(cesc('#\\/f12e4')).should('not.exist');
 
 
     cy.window().then(async (win) => {
@@ -4482,99 +4475,99 @@ describe('Function Tag Tests', function () {
     let extremax3 = [0, 1 / 3, 2 / 3, 1].map(a => -Math.sqrt(2) * (1 - a));
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/f1e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) - 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f1e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f1e3').should('not.exist');
+    cy.get(cesc('#\\/f1e3')).should('not.exist');
 
-    cy.get('#\\/f2e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[0] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f2e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3)) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f2e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 2) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f2e4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[3] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f2e5').should('not.exist');
+    cy.get(cesc('#\\/f2e5')).should('not.exist');
 
-    cy.get('#\\/f3e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f3e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax1[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 3) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f3e3').should('not.exist');
+    cy.get(cesc('#\\/f3e3')).should('not.exist');
 
 
-    cy.get('#\\/f4e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) - 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f4e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f4e3').should('not.exist');
+    cy.get(cesc('#\\/f4e3')).should('not.exist');
 
-    cy.get('#\\/f5e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[0] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f5e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3)) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f5e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 2) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f5e4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5e4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[3] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f5e5').should('not.exist');
+    cy.get(cesc('#\\/f5e5')).should('not.exist');
 
-    cy.get('#\\/f6e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f6e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f6e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f6e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax2[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 3) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f6e3').should('not.exist');
+    cy.get(cesc('#\\/f6e3')).should('not.exist');
 
 
-    cy.get('#\\/f7e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f7e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) - 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f7e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f7e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f7e3').should('not.exist');
+    cy.get(cesc('#\\/f7e3')).should('not.exist');
 
-    cy.get('#\\/f8e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f8e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[0] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f8e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f8e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3)) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f8e3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f8e3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 2) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f8e4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f8e4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[3] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f8e5').should('not.exist');
+    cy.get(cesc('#\\/f8e5')).should('not.exist');
 
-    cy.get('#\\/f9e1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f9e1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[1] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(3) + 1) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f9e2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f9e2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq(`(${nInDOM(Math.round(extremax3[2] * 10 ** 5) / 10 ** 5)},${nInDOM(Math.round((Math.sqrt(11) + 3) * 10 ** 5) / 10 ** 5)})`)
     })
-    cy.get('#\\/f9e3').should('not.exist');
+    cy.get(cesc('#\\/f9e3')).should('not.exist');
 
 
     cy.window().then(async (win) => {
@@ -4758,7 +4751,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4782,8 +4775,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get("#\\/numbermaxima").should('have.text', '2')
-    cy.get("#\\/numberminima").should('have.text', '1')
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '2')
+    cy.get(cesc("#\\/numberminima")).should('have.text', '1')
 
     cy.window().then(async (win) => {
 
@@ -4809,8 +4802,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get("#\\/numbermaxima").should('have.text', '1')
-    cy.get("#\\/numberminima").should('have.text', '0')
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '1')
+    cy.get(cesc("#\\/numberminima")).should('have.text', '0')
 
 
     cy.window().then(async (win) => {
@@ -4842,8 +4835,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get("#\\/numbermaxima").should('have.text', '2')
-    cy.get("#\\/numberminima").should('have.text', '2')
+    cy.get(cesc("#\\/numbermaxima")).should('have.text', '2')
+    cy.get(cesc("#\\/numberminima")).should('have.text', '2')
 
 
 
@@ -4870,20 +4863,20 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_p1').should('have.text', 'NaN')
-    cy.get('#\\/_p2').should('have.text', 'NaN')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'NaN')
 
-    cy.get('#\\/_function1').should('contain.text', '＿x3+1')
+    cy.get(cesc('#\\/_function1')).should('contain.text', '＿x3+1')
 
-    cy.get('#\\/_mathinput1 textarea').type('1{enter}', { force: true })
-    cy.get('#\\/_mathinput2 textarea').type('2{enter}', { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('1{enter}', { force: true })
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('2{enter}', { force: true })
 
-    cy.get('#\\/_function1').should('contain.text', '2x3+1')
+    cy.get(cesc('#\\/_function1')).should('contain.text', '2x3+1')
 
-    cy.get('#\\/_p1').should('have.text', '1')
-    cy.get('#\\/_p2').should('have.text', '1')
+    cy.get(cesc('#\\/_p1')).should('have.text', '1')
+    cy.get(cesc('#\\/_p2')).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4892,13 +4885,13 @@ describe('Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}3{enter}', { force: true })
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}4{enter}', { force: true })
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}4{enter}', { force: true })
 
-    cy.get('#\\/_function1').should('contain.text', '4x3+1')
+    cy.get(cesc('#\\/_function1')).should('contain.text', '4x3+1')
 
-    cy.get('#\\/_p1').should('have.text', '3')
-    cy.get('#\\/_p2').should('have.text', '3')
+    cy.get(cesc('#\\/_p1')).should('have.text', '3')
+    cy.get(cesc('#\\/_p2')).should('have.text', '3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4938,7 +4931,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4962,8 +4955,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get("#\\/_mathinput2 textarea").type('{end}{backspace}2{enter}', { force: true });
-    cy.get("#\\/m2").should('contain.text', '2')
+    cy.get(cesc("#\\/_mathinput2") + " textarea").type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc("#\\/m2")).should('contain.text', '2')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4987,8 +4980,8 @@ describe('Function Tag Tests', function () {
 
     });
 
-    cy.get("#\\/_mathinput1 textarea").type('{end}{backspace}-1{enter}', { force: true });
-    cy.get("#\\/m1").should('contain.text', '−1')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type('{end}{backspace}-1{enter}', { force: true });
+    cy.get(cesc("#\\/m1")).should('contain.text', '−1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5040,43 +5033,43 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get("#\\/fv").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/fv")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('t')
     })
-    cy.get("#\\/f2v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f2v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('t')
     })
-    cy.get("#\\/f3v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f3v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s')
     })
-    cy.get("#\\/f4v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f4v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('t')
     })
-    cy.get("#\\/f5v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f5v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('t')
     })
-    cy.get("#\\/f6v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f6v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s')
     })
-    cy.get("#\\/fOfu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/fOfu")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('su3')
     })
-    cy.get("#\\/f2Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f2Ofu")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('su3')
     })
-    cy.get("#\\/f3Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f3Ofu")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ut3')
     })
-    cy.get("#\\/f4Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f4Ofu")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('su3')
     })
-    cy.get("#\\/f5Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f5Ofu")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('su3')
     })
-    cy.get("#\\/f6Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f6Ofu")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ut3')
     })
 
@@ -5155,79 +5148,79 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get("#\\/fv").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/fv")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
-    cy.get("#\\/f2v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f2v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
-    cy.get("#\\/f3v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f3v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s')
     })
-    cy.get("#\\/f4v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f4v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
-    cy.get("#\\/f5v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f5v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
-    cy.get("#\\/f6v").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f6v")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('s')
     })
-    cy.get("#\\/fOf0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/fOf0")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get("#\\/f2Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f2Of0")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get("#\\/f3Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f3Of0")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get("#\\/f4Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f4Of0")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get("#\\/f5Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f5Of0")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get("#\\/f6Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f6Of0")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get("#\\/fOf1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/fOf1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get("#\\/f2Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f2Of1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get("#\\/f3Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f3Of1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get("#\\/f4Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f4Of1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get("#\\/f5Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f5Of1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get("#\\/f6Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f6Of1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
-    cy.get("#\\/fOf2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/fOf2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
-    cy.get("#\\/f2Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f2Of2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
-    cy.get("#\\/f3Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f3Of2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
-    cy.get("#\\/f4Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f4Of2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
-    cy.get("#\\/f5Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f5Of2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
-    cy.get("#\\/f6Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/f6Of2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
 
@@ -5253,7 +5246,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     cy.window().then(async (win) => {
@@ -5352,7 +5345,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5383,7 +5376,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5414,7 +5407,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5445,7 +5438,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5476,7 +5469,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5507,7 +5500,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5538,7 +5531,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5569,7 +5562,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5600,7 +5593,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5644,7 +5637,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5688,7 +5681,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5731,7 +5724,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5784,7 +5777,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5837,7 +5830,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5880,7 +5873,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5933,7 +5926,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5992,7 +5985,7 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6023,15 +6016,15 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/p1 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("ayz")
     })
-    cy.get("#\\/p2 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p2") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("abz")
     })
-    cy.get("#\\/p3 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p3") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("abc")
     })
 
@@ -6068,21 +6061,21 @@ describe('Function Tag Tests', function () {
     });
 
     //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/p1 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("ayz")
     })
-    cy.get("#\\/p2 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p2") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("abz")
     })
-    cy.get("#\\/p3 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p3") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("abc")
     })
-    cy.get("#\\/p4 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p4") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("xba")
     })
-    cy.get("#\\/p5 .mjx-mrow").eq(0).invoke("text").then(text => {
+    cy.get(cesc("#\\/p5") + " .mjx-mrow").eq(0).invoke("text").then(text => {
       expect(text).eq("xaz")
     })
 
@@ -6134,53 +6127,53 @@ describe('Function Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mn1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(2,1)")
     })
-    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mx1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(8,9)")
     })
-    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/ex1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,4)")
     })
-    cy.get('#\\/mnl1').should('have.text', "2")
-    cy.get('#\\/mxl1').should('have.text', "8")
-    cy.get('#\\/exl1').should('have.text', "-4")
+    cy.get(cesc('#\\/mnl1')).should('have.text', "2")
+    cy.get(cesc('#\\/mxl1')).should('have.text', "8")
+    cy.get(cesc('#\\/exl1')).should('have.text', "-4")
 
-    cy.get('#\\/mnv1').should('have.text', "1")
-    cy.get('#\\/mxv1').should('have.text', "9")
-    cy.get('#\\/exv1').should('have.text', "4")
+    cy.get(cesc('#\\/mnv1')).should('have.text', "1")
+    cy.get(cesc('#\\/mxv1')).should('have.text', "9")
+    cy.get(cesc('#\\/exv1')).should('have.text', "4")
 
-    cy.get('#\\/mn11').should('have.text', "-5")
-    cy.get('#\\/mx11').should('have.text', "4")
-    cy.get('#\\/ex11').should('have.text', "-5")
+    cy.get(cesc('#\\/mn11')).should('have.text', "-5")
+    cy.get(cesc('#\\/mx11')).should('have.text', "4")
+    cy.get(cesc('#\\/ex11')).should('have.text', "-5")
 
 
     cy.log('set propIndex to 1')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/mnl1').should('have.text', "-7")
-    cy.get('#\\/mxl1').should('have.text', "-4")
-    cy.get('#\\/exl1').should('have.text', "-7")
+    cy.get(cesc('#\\/mnl1')).should('have.text', "-7")
+    cy.get(cesc('#\\/mxl1')).should('have.text', "-4")
+    cy.get(cesc('#\\/exl1')).should('have.text', "-7")
 
-    cy.get('#\\/mnv1').should('have.text', "-5")
-    cy.get('#\\/mxv1').should('have.text', "4")
-    cy.get('#\\/exv1').should('have.text', "-5")
+    cy.get(cesc('#\\/mnv1')).should('have.text', "-5")
+    cy.get(cesc('#\\/mxv1')).should('have.text', "4")
+    cy.get(cesc('#\\/exv1')).should('have.text', "-5")
 
-    cy.get('#\\/mn11').should('have.text', "-7")
-    cy.get('#\\/mx11').should('have.text', "-4")
-    cy.get('#\\/ex11').should('have.text', "-7")
+    cy.get(cesc('#\\/mn11')).should('have.text', "-7")
+    cy.get(cesc('#\\/mx11')).should('have.text', "-4")
+    cy.get(cesc('#\\/ex11')).should('have.text', "-7")
 
-    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mn1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−7,−5)")
     })
-    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mx1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,4)")
     })
-    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/ex1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−7,−5)")
     })
 
@@ -6218,53 +6211,53 @@ describe('Function Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mn1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(2,1)")
     })
-    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mx1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(8,9)")
     })
-    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/ex1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,4)")
     })
-    cy.get('#\\/mnl1').should('have.text', "2")
-    cy.get('#\\/mxl1').should('have.text', "8")
-    cy.get('#\\/exl1').should('have.text', "-4")
+    cy.get(cesc('#\\/mnl1')).should('have.text', "2")
+    cy.get(cesc('#\\/mxl1')).should('have.text', "8")
+    cy.get(cesc('#\\/exl1')).should('have.text', "-4")
 
-    cy.get('#\\/mnv1').should('have.text', "1")
-    cy.get('#\\/mxv1').should('have.text', "9")
-    cy.get('#\\/exv1').should('have.text', "4")
+    cy.get(cesc('#\\/mnv1')).should('have.text', "1")
+    cy.get(cesc('#\\/mxv1')).should('have.text', "9")
+    cy.get(cesc('#\\/exv1')).should('have.text', "4")
 
-    cy.get('#\\/mn11').should('have.text', "-5")
-    cy.get('#\\/mx11').should('have.text', "4")
-    cy.get('#\\/ex11').should('have.text', "-5")
+    cy.get(cesc('#\\/mn11')).should('have.text', "-5")
+    cy.get(cesc('#\\/mx11')).should('have.text', "4")
+    cy.get(cesc('#\\/ex11')).should('have.text', "-5")
 
 
     cy.log('set propIndex to 1')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/mnl1').should('have.text', "-7")
-    cy.get('#\\/mxl1').should('have.text', "-4")
-    cy.get('#\\/exl1').should('have.text', "-7")
+    cy.get(cesc('#\\/mnl1')).should('have.text', "-7")
+    cy.get(cesc('#\\/mxl1')).should('have.text', "-4")
+    cy.get(cesc('#\\/exl1')).should('have.text', "-7")
 
-    cy.get('#\\/mnv1').should('have.text', "-5")
-    cy.get('#\\/mxv1').should('have.text', "4")
-    cy.get('#\\/exv1').should('have.text', "-5")
+    cy.get(cesc('#\\/mnv1')).should('have.text', "-5")
+    cy.get(cesc('#\\/mxv1')).should('have.text', "4")
+    cy.get(cesc('#\\/exv1')).should('have.text', "-5")
 
-    cy.get('#\\/mn11').should('have.text', "-7")
-    cy.get('#\\/mx11').should('have.text', "-4")
-    cy.get('#\\/ex11').should('have.text', "-7")
+    cy.get(cesc('#\\/mn11')).should('have.text', "-7")
+    cy.get(cesc('#\\/mx11')).should('have.text', "-4")
+    cy.get(cesc('#\\/ex11')).should('have.text', "-7")
 
-    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mn1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−7,−5)")
     })
-    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mx1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,4)")
     })
-    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/ex1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−7,−5)")
     })
 
@@ -6302,53 +6295,53 @@ describe('Function Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mn1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(2,1)")
     })
-    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mx1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(8,9)")
     })
-    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/ex1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,4)")
     })
-    cy.get('#\\/mnl1').should('have.text', "2")
-    cy.get('#\\/mxl1').should('have.text', "8")
-    cy.get('#\\/exl1').should('have.text', "-4")
+    cy.get(cesc('#\\/mnl1')).should('have.text', "2")
+    cy.get(cesc('#\\/mxl1')).should('have.text', "8")
+    cy.get(cesc('#\\/exl1')).should('have.text', "-4")
 
-    cy.get('#\\/mnv1').should('have.text', "1")
-    cy.get('#\\/mxv1').should('have.text', "9")
-    cy.get('#\\/exv1').should('have.text', "4")
+    cy.get(cesc('#\\/mnv1')).should('have.text', "1")
+    cy.get(cesc('#\\/mxv1')).should('have.text', "9")
+    cy.get(cesc('#\\/exv1')).should('have.text', "4")
 
-    cy.get('#\\/mn11').should('have.text', "-5")
-    cy.get('#\\/mx11').should('have.text', "4")
-    cy.get('#\\/ex11').should('have.text', "-5")
+    cy.get(cesc('#\\/mn11')).should('have.text', "-5")
+    cy.get(cesc('#\\/mx11')).should('have.text', "4")
+    cy.get(cesc('#\\/ex11')).should('have.text', "-5")
 
 
     cy.log('set propIndex to 1')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/mnl1').should('have.text', "-7")
-    cy.get('#\\/mxl1').should('have.text', "-4")
-    cy.get('#\\/exl1').should('have.text', "-7")
+    cy.get(cesc('#\\/mnl1')).should('have.text', "-7")
+    cy.get(cesc('#\\/mxl1')).should('have.text', "-4")
+    cy.get(cesc('#\\/exl1')).should('have.text', "-7")
 
-    cy.get('#\\/mnv1').should('have.text', "-5")
-    cy.get('#\\/mxv1').should('have.text', "4")
-    cy.get('#\\/exv1').should('have.text', "-5")
+    cy.get(cesc('#\\/mnv1')).should('have.text', "-5")
+    cy.get(cesc('#\\/mxv1')).should('have.text', "4")
+    cy.get(cesc('#\\/exv1')).should('have.text', "-5")
 
-    cy.get('#\\/mn11').should('have.text', "-7")
-    cy.get('#\\/mx11').should('have.text', "-4")
-    cy.get('#\\/ex11').should('have.text', "-7")
+    cy.get(cesc('#\\/mn11')).should('have.text', "-7")
+    cy.get(cesc('#\\/mx11')).should('have.text', "-4")
+    cy.get(cesc('#\\/ex11')).should('have.text', "-7")
 
-    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mn1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−7,−5)")
     })
-    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mx1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,4)")
     })
-    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/ex1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−7,−5)")
     })
 
@@ -6406,117 +6399,117 @@ describe('Function Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/f1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1c .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1c') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2c .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2c') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3c .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3c') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4c .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4c') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5c .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5c') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1d .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1d') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2d .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2d') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3d .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3d') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4d .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4d') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5d .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5d') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1e .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1e') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2e .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2e') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3e .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3e') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4e .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4e') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5e .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5e') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1f .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1f') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2f .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2f') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3f .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3f') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4f .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4f') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5f .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5f') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
@@ -6603,149 +6596,149 @@ describe('Function Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/f1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1dg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.529523x)+3")
     })
-    cy.get('#\\/f2dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2dg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.529523x)+3")
     })
-    cy.get('#\\/f3dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3dg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.529523x)+3.00000")
     })
-    cy.get('#\\/f4dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4dg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.529523x)+3")
     })
-    cy.get('#\\/f5dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.030sin(0.529523x)+3.00000")
-    })
-
-    cy.get('#\\/f1fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.03sin(0.529523x)+3")
-    })
-    cy.get('#\\/f2fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.03sin(0.529523x)+3")
-    })
-    cy.get('#\\/f3fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.030sin(0.529523x)+3.00000")
-    })
-    cy.get('#\\/f4fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.03sin(0.529523x)+3")
-    })
-    cy.get('#\\/f5fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5dg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.529523x)+3.00000")
     })
 
-    cy.get('#\\/f1dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1fdg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.529523x)+3")
     })
-    cy.get('#\\/f2dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2fdg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.529523x)+3")
     })
-    cy.get('#\\/f3dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3fdg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.529523x)+3.00000")
     })
-    cy.get('#\\/f4dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4fdg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.529523x)+3")
     })
-    cy.get('#\\/f5dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5fdg6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.529523x)+3.00000")
     })
 
-    cy.get('#\\/f1dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1dg6a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get(cesc('#\\/f2dg6a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get(cesc('#\\/f3dg6a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+    cy.get(cesc('#\\/f4dg6a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get(cesc('#\\/f5dg6a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+
+    cy.get(cesc('#\\/f1dc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.5295234x)+3")
     })
-    cy.get('#\\/f2dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2dc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.5295234x)+3")
     })
-    cy.get('#\\/f3dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3dc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
     })
-    cy.get('#\\/f4dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4dc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.5295234x)+3")
     })
-    cy.get('#\\/f5dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5dc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
     })
 
-    cy.get('#\\/f1fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1fdc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.5295234x)+3")
     })
-    cy.get('#\\/f2fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2fdc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.5295234x)+3")
     })
-    cy.get('#\\/f3fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3fdc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
     })
-    cy.get('#\\/f4fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4fdc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.5295234x)+3")
     })
-    cy.get('#\\/f5fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
-    })
-
-    cy.get('#\\/f1dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.029847sin(0.5295234x)+3")
-    })
-    cy.get('#\\/f2dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.029847sin(0.5295234x)+3")
-    })
-    cy.get('#\\/f3dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
-    })
-    cy.get('#\\/f4dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("255.029847sin(0.5295234x)+3")
-    })
-    cy.get('#\\/f5dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5fdc7') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
     })
 
-    cy.get('#\\/f1pt .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1dc7a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get(cesc('#\\/f2dc7a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get(cesc('#\\/f3dc7a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+    cy.get(cesc('#\\/f4dc7a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get(cesc('#\\/f5dc7a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+
+    cy.get(cesc('#\\/f1pt') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.0298470sin(0.5295234200x)+3.000000000")
     })
-    cy.get('#\\/f2pt .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2pt') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f3pt .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3pt') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.530x)+3.00")
     })
-    cy.get('#\\/f4pt .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4pt') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
-    cy.get('#\\/f5pt .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5pt') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
     })
 
-    cy.get('#\\/f1pf .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f1pf') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.029847sin(0.52952342x)+3")
     })
-    cy.get('#\\/f2pf .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f2pf') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f3pf .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f3pf') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255sin(0.53x)+3")
     })
-    cy.get('#\\/f4pf .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f4pf') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
-    cy.get('#\\/f5pf .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/f5pf') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.03sin(0.53x)+3")
     })
 
@@ -6773,9 +6766,9 @@ describe('Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Function A is thick brown.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red function.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black function.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Function A is thick brown.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a dark red function.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin black function.');
 
     cy.log('set dark mode')
     cy.get('#testRunner_toggleControls').click();
@@ -6784,9 +6777,9 @@ describe('Function Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Function A is thick yellow.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red function.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white function.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Function A is thick yellow.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a light red function.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin white function.');
 
 
   });

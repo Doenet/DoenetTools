@@ -1,13 +1,5 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('Point Tag Tests', function () {
 
@@ -31,10 +23,10 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,6)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -53,8 +45,8 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -80,10 +72,10 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,6)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -104,8 +96,8 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -131,11 +123,11 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,6)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -154,8 +146,8 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -181,11 +173,11 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,6)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -206,8 +198,8 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -235,7 +227,7 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
@@ -265,7 +257,7 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
@@ -326,22 +318,22 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/Plabel').should('have.text', 'P')
-    cy.get('#\\/point2label').should('have.text', '_point2')
-    cy.get('#\\/g2Plabel').should('have.text', 'P')
-    cy.get('#\\/g2point2label').should('have.text', '_point2')
-    cy.get('#\\/P3label').should('have.text', 'P')
-    cy.get('#\\/Q3label').should('have.text', '_point2')
-    cy.get('#\\/P4label').should('have.text', 'P')
-    cy.get('#\\/Q4label').should('have.text', '_point2')
-    cy.get('#\\/g5Plabel').should('have.text', 'P')
-    cy.get('#\\/g5point2label').should('have.text', '_point2')
-    cy.get('#\\/g6Plabel').should('have.text', 'P')
-    cy.get('#\\/g6point2label').should('have.text', '_point2')
-    cy.get('#\\/g7Plabel').should('have.text', 'P')
-    cy.get('#\\/g7point2label').should('have.text', '_point2')
+    cy.get(cesc('#\\/Plabel')).should('have.text', 'P')
+    cy.get(cesc('#\\/point2label')).should('have.text', '_point2')
+    cy.get(cesc('#\\/g2Plabel')).should('have.text', 'P')
+    cy.get(cesc('#\\/g2point2label')).should('have.text', '_point2')
+    cy.get(cesc('#\\/P3label')).should('have.text', 'P')
+    cy.get(cesc('#\\/Q3label')).should('have.text', '_point2')
+    cy.get(cesc('#\\/P4label')).should('have.text', 'P')
+    cy.get(cesc('#\\/Q4label')).should('have.text', '_point2')
+    cy.get(cesc('#\\/g5Plabel')).should('have.text', 'P')
+    cy.get(cesc('#\\/g5point2label')).should('have.text', '_point2')
+    cy.get(cesc('#\\/g6Plabel')).should('have.text', 'P')
+    cy.get(cesc('#\\/g6point2label')).should('have.text', '_point2')
+    cy.get(cesc('#\\/g7Plabel')).should('have.text', 'P')
+    cy.get(cesc('#\\/g7point2label')).should('have.text', '_point2')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -445,7 +437,7 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
@@ -541,7 +533,7 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
@@ -593,7 +585,7 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
@@ -629,14 +621,14 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get("#\\/l1").should('have.text', 'the first point');
-    cy.get("#\\/l2").should('have.text', 'the second point');
-    cy.get("#\\/l3").should('have.text', 'the third point');
-    cy.get("#\\/l4").should('have.text', 'The Fourth Point');
-    cy.get("#\\/l5").should('have.text', 'the FIFTH Point');
-    cy.get("#\\/l6").should('have.text', 'the SiXiTH Point');
+    cy.get(cesc("#\\/l1")).should('have.text', 'the first point');
+    cy.get(cesc("#\\/l2")).should('have.text', 'the second point');
+    cy.get(cesc("#\\/l3")).should('have.text', 'the third point');
+    cy.get(cesc("#\\/l4")).should('have.text', 'The Fourth Point');
+    cy.get(cesc("#\\/l5")).should('have.text', 'the FIFTH Point');
+    cy.get(cesc("#\\/l6")).should('have.text', 'the SiXiTH Point');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -696,15 +688,15 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get("#\\/lA").should('have.text', 'A');
-    cy.get("#\\/lB").should('have.text', 'A');
-    cy.get("#\\/lC").should('have.text', 'A');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'E');
-    cy.get("#\\/lp4").should('have.text', '_point4');
-    cy.get("#\\/lc3").should('have.text', 'A');
+    cy.get(cesc("#\\/lA")).should('have.text', 'A');
+    cy.get(cesc("#\\/lB")).should('have.text', 'A');
+    cy.get(cesc("#\\/lC")).should('have.text', 'A');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'E');
+    cy.get(cesc("#\\/lp4")).should('have.text', '_point4');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'A');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -726,15 +718,15 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/tiA_input').type("{end}{backspace}F{enter}");
+    cy.get(cesc('#\\/tiA_input')).type("{end}{backspace}F{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'F');
-    cy.get("#\\/lB").should('have.text', 'F');
-    cy.get("#\\/lC").should('have.text', 'F');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'E');
-    cy.get("#\\/lp4").should('have.text', '_point4');
-    cy.get("#\\/lc3").should('have.text', 'A');
+    cy.get(cesc("#\\/lA")).should('have.text', 'F');
+    cy.get(cesc("#\\/lB")).should('have.text', 'F');
+    cy.get(cesc("#\\/lC")).should('have.text', 'F');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'E');
+    cy.get(cesc("#\\/lp4")).should('have.text', '_point4');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'A');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -756,15 +748,15 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/tiB_input').type("{end}{backspace}G{enter}");
+    cy.get(cesc('#\\/tiB_input')).type("{end}{backspace}G{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'G');
-    cy.get("#\\/lB").should('have.text', 'G');
-    cy.get("#\\/lC").should('have.text', 'G');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'E');
-    cy.get("#\\/lp4").should('have.text', '_point4');
-    cy.get("#\\/lc3").should('have.text', 'A');
+    cy.get(cesc("#\\/lA")).should('have.text', 'G');
+    cy.get(cesc("#\\/lB")).should('have.text', 'G');
+    cy.get(cesc("#\\/lC")).should('have.text', 'G');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'E');
+    cy.get(cesc("#\\/lp4")).should('have.text', '_point4');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'A');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -786,15 +778,15 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/tiC_input').type("{end}{backspace}H{enter}");
+    cy.get(cesc('#\\/tiC_input')).type("{end}{backspace}H{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'H');
-    cy.get("#\\/lB").should('have.text', 'H');
-    cy.get("#\\/lC").should('have.text', 'H');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'E');
-    cy.get("#\\/lp4").should('have.text', '_point4');
-    cy.get("#\\/lc3").should('have.text', 'A');
+    cy.get(cesc("#\\/lA")).should('have.text', 'H');
+    cy.get(cesc("#\\/lB")).should('have.text', 'H');
+    cy.get(cesc("#\\/lC")).should('have.text', 'H');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'E');
+    cy.get(cesc("#\\/lp4")).should('have.text', '_point4');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'A');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -816,15 +808,15 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/tiD_input').type("{end}{backspace}I{enter}");
+    cy.get(cesc('#\\/tiD_input')).type("{end}{backspace}I{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'H');
-    cy.get("#\\/lB").should('have.text', 'H');
-    cy.get("#\\/lC").should('have.text', 'H');
-    cy.get("#\\/lD").should('have.text', 'I');
-    cy.get("#\\/lE").should('have.text', 'E');
-    cy.get("#\\/lp4").should('have.text', '_point4');
-    cy.get("#\\/lc3").should('have.text', 'A');
+    cy.get(cesc("#\\/lA")).should('have.text', 'H');
+    cy.get(cesc("#\\/lB")).should('have.text', 'H');
+    cy.get(cesc("#\\/lC")).should('have.text', 'H');
+    cy.get(cesc("#\\/lD")).should('have.text', 'I');
+    cy.get(cesc("#\\/lE")).should('have.text', 'E');
+    cy.get(cesc("#\\/lp4")).should('have.text', '_point4');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'A');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -846,15 +838,15 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/tiE_input').type("{end}{backspace}J{enter}");
+    cy.get(cesc('#\\/tiE_input')).type("{end}{backspace}J{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'H');
-    cy.get("#\\/lB").should('have.text', 'H');
-    cy.get("#\\/lC").should('have.text', 'H');
-    cy.get("#\\/lD").should('have.text', 'I');
-    cy.get("#\\/lE").should('have.text', 'J');
-    cy.get("#\\/lp4").should('have.text', '_point4');
-    cy.get("#\\/lc3").should('have.text', 'A');
+    cy.get(cesc("#\\/lA")).should('have.text', 'H');
+    cy.get(cesc("#\\/lB")).should('have.text', 'H');
+    cy.get(cesc("#\\/lC")).should('have.text', 'H');
+    cy.get(cesc("#\\/lD")).should('have.text', 'I');
+    cy.get(cesc("#\\/lE")).should('have.text', 'J');
+    cy.get(cesc("#\\/lp4")).should('have.text', '_point4');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'A');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -876,15 +868,15 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/tip4_input').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}K{enter}");
+    cy.get(cesc('#\\/tip4_input')).type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}K{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'H');
-    cy.get("#\\/lB").should('have.text', 'H');
-    cy.get("#\\/lC").should('have.text', 'H');
-    cy.get("#\\/lD").should('have.text', 'I');
-    cy.get("#\\/lE").should('have.text', 'J');
-    cy.get("#\\/lp4").should('have.text', 'K');
-    cy.get("#\\/lc3").should('have.text', 'A');
+    cy.get(cesc("#\\/lA")).should('have.text', 'H');
+    cy.get(cesc("#\\/lB")).should('have.text', 'H');
+    cy.get(cesc("#\\/lC")).should('have.text', 'H');
+    cy.get(cesc("#\\/lD")).should('have.text', 'I');
+    cy.get(cesc("#\\/lE")).should('have.text', 'J');
+    cy.get(cesc("#\\/lp4")).should('have.text', 'K');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'A');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -906,15 +898,15 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/tic3_input').type("{end}{backspace}L{enter}");
+    cy.get(cesc('#\\/tic3_input')).type("{end}{backspace}L{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'H');
-    cy.get("#\\/lB").should('have.text', 'H');
-    cy.get("#\\/lC").should('have.text', 'H');
-    cy.get("#\\/lD").should('have.text', 'I');
-    cy.get("#\\/lE").should('have.text', 'J');
-    cy.get("#\\/lp4").should('have.text', 'K');
-    cy.get("#\\/lc3").should('have.text', 'L');
+    cy.get(cesc("#\\/lA")).should('have.text', 'H');
+    cy.get(cesc("#\\/lB")).should('have.text', 'H');
+    cy.get(cesc("#\\/lC")).should('have.text', 'H');
+    cy.get(cesc("#\\/lD")).should('have.text', 'I');
+    cy.get(cesc("#\\/lE")).should('have.text', 'J');
+    cy.get(cesc("#\\/lp4")).should('have.text', 'K');
+    cy.get(cesc("#\\/lc3")).should('have.text', 'L');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -998,242 +990,242 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get("#\\/lA").should('have.text', 'A');
-    cy.get("#\\/lB").should('have.text', 'A');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'A');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiA_input').type("{end}{backspace}N{enter}");
-
-    cy.get("#\\/lA").should('have.text', 'N');
-    cy.get("#\\/lB").should('have.text', 'N');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'N');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'A');
+    cy.get(cesc("#\\/lB")).should('have.text', 'A');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'A');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiB_input').type("{end}{backspace}O{enter}");
+    cy.get(cesc('#\\/tiA_input')).type("{end}{backspace}N{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiC_input').type("{end}{backspace}P{enter}");
-
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'N');
+    cy.get(cesc("#\\/lB")).should('have.text', 'N');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'N');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiD_input').type("{end}{backspace}Q{enter}");
+    cy.get(cesc('#\\/tiB_input')).type("{end}{backspace}O{enter}");
 
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiE_input').type("{end}{backspace}R{enter}");
-
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiF_input').type("{end}{backspace}S{enter}");
+    cy.get(cesc('#\\/tiC_input')).type("{end}{backspace}P{enter}");
 
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiG_input').type("{end}{backspace}T{enter}");
-
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiH_input').type("{end}{backspace}U{enter}");
+    cy.get(cesc('#\\/tiD_input')).type("{end}{backspace}Q{enter}");
 
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiI_input').type("{end}{backspace}V{enter}");
-
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiJ_input').type("{end}{backspace}W{enter}");
+    cy.get(cesc('#\\/tiE_input')).type("{end}{backspace}R{enter}");
 
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiK_input').type("{end}{backspace}X{enter}");
-
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiL_input').type("{end}{backspace}Y{enter}");
+    cy.get(cesc('#\\/tiF_input')).type("{end}{backspace}S{enter}");
 
-    cy.get("#\\/lL").should('have.text', 'Y');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiM_input').type("{end}{backspace}Z{enter}");
+    cy.get(cesc('#\\/tiG_input')).type("{end}{backspace}T{enter}");
 
-    cy.get("#\\/lM").should('have.text', 'Z');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lL").should('have.text', 'Y');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiH_input')).type("{end}{backspace}U{enter}");
+
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiI_input')).type("{end}{backspace}V{enter}");
+
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiJ_input')).type("{end}{backspace}W{enter}");
+
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiK_input')).type("{end}{backspace}X{enter}");
+
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiL_input')).type("{end}{backspace}Y{enter}");
+
+    cy.get(cesc("#\\/lL")).should('have.text', 'Y');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiM_input')).type("{end}{backspace}Z{enter}");
+
+    cy.get(cesc("#\\/lM")).should('have.text', 'Z');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lL")).should('have.text', 'Y');
 
   })
 
@@ -1296,242 +1288,242 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get("#\\/lA").should('have.text', 'A');
-    cy.get("#\\/lB").should('have.text', 'A');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'A');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiA_input').type("{end}{backspace}N{enter}");
-
-    cy.get("#\\/lA").should('have.text', 'N');
-    cy.get("#\\/lB").should('have.text', 'N');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'N');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'A');
+    cy.get(cesc("#\\/lB")).should('have.text', 'A');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'A');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiB_input').type("{end}{backspace}O{enter}");
+    cy.get(cesc('#\\/tiA_input')).type("{end}{backspace}N{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiC_input').type("{end}{backspace}P{enter}");
-
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'N');
+    cy.get(cesc("#\\/lB")).should('have.text', 'N');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'N');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiD_input').type("{end}{backspace}Q{enter}");
+    cy.get(cesc('#\\/tiB_input')).type("{end}{backspace}O{enter}");
 
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiE_input').type("{end}{backspace}R{enter}");
-
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiF_input').type("{end}{backspace}S{enter}");
+    cy.get(cesc('#\\/tiC_input')).type("{end}{backspace}P{enter}");
 
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiG_input').type("{end}{backspace}T{enter}");
-
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiH_input').type("{end}{backspace}U{enter}");
+    cy.get(cesc('#\\/tiD_input')).type("{end}{backspace}Q{enter}");
 
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiI_input').type("{end}{backspace}V{enter}");
-
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiJ_input').type("{end}{backspace}W{enter}");
+    cy.get(cesc('#\\/tiE_input')).type("{end}{backspace}R{enter}");
 
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiK_input').type("{end}{backspace}X{enter}");
-
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiL_input').type("{end}{backspace}Y{enter}");
+    cy.get(cesc('#\\/tiF_input')).type("{end}{backspace}S{enter}");
 
-    cy.get("#\\/lL").should('have.text', 'Y');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiM_input').type("{end}{backspace}Z{enter}");
+    cy.get(cesc('#\\/tiG_input')).type("{end}{backspace}T{enter}");
 
-    cy.get("#\\/lM").should('have.text', 'Z');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lL").should('have.text', 'Y');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiH_input')).type("{end}{backspace}U{enter}");
+
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiI_input')).type("{end}{backspace}V{enter}");
+
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiJ_input')).type("{end}{backspace}W{enter}");
+
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiK_input')).type("{end}{backspace}X{enter}");
+
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiL_input')).type("{end}{backspace}Y{enter}");
+
+    cy.get(cesc("#\\/lL")).should('have.text', 'Y');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiM_input')).type("{end}{backspace}Z{enter}");
+
+    cy.get(cesc("#\\/lM")).should('have.text', 'Z');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lL")).should('have.text', 'Y');
 
   })
 
@@ -1606,242 +1598,242 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get("#\\/lA").should('have.text', 'A');
-    cy.get("#\\/lB").should('have.text', 'A');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'A');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiA_input').type("{end}{backspace}N{enter}");
-
-    cy.get("#\\/lA").should('have.text', 'N');
-    cy.get("#\\/lB").should('have.text', 'N');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'N');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'A');
+    cy.get(cesc("#\\/lB")).should('have.text', 'A');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'A');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiB_input').type("{end}{backspace}O{enter}");
+    cy.get(cesc('#\\/tiA_input')).type("{end}{backspace}N{enter}");
 
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lC").should('have.text', 'C');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'C');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiC_input').type("{end}{backspace}P{enter}");
-
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lD").should('have.text', 'D');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'D');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'N');
+    cy.get(cesc("#\\/lB")).should('have.text', 'N');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'N');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiD_input').type("{end}{backspace}Q{enter}");
+    cy.get(cesc('#\\/tiB_input')).type("{end}{backspace}O{enter}");
 
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lA").should('have.text', 'O');
-    cy.get("#\\/lB").should('have.text', 'O');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lE").should('have.text', 'O');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiE_input').type("{end}{backspace}R{enter}");
-
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'F');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lC")).should('have.text', 'C');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'C');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiF_input').type("{end}{backspace}S{enter}");
+    cy.get(cesc('#\\/tiC_input')).type("{end}{backspace}P{enter}");
 
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lG").should('have.text', 'G');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiG_input').type("{end}{backspace}T{enter}");
-
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'P');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lH").should('have.text', 'P');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lD")).should('have.text', 'D');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'D');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiH_input').type("{end}{backspace}U{enter}");
+    cy.get(cesc('#\\/tiD_input')).type("{end}{backspace}Q{enter}");
 
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'I');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiI_input').type("{end}{backspace}V{enter}");
-
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lJ").should('have.text', 'J');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lA")).should('have.text', 'O');
+    cy.get(cesc("#\\/lB")).should('have.text', 'O');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lE")).should('have.text', 'O');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiJ_input').type("{end}{backspace}W{enter}");
+    cy.get(cesc('#\\/tiE_input')).type("{end}{backspace}R{enter}");
 
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'Q');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lK").should('have.text', 'Q');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
-
-
-    cy.get('#\\/tiK_input').type("{end}{backspace}X{enter}");
-
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lL").should('have.text', 'L');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'F');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiL_input').type("{end}{backspace}Y{enter}");
+    cy.get(cesc('#\\/tiF_input')).type("{end}{backspace}S{enter}");
 
-    cy.get("#\\/lL").should('have.text', 'Y');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lM").should('have.text', 'M');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lG")).should('have.text', 'G');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
 
 
-    cy.get('#\\/tiM_input').type("{end}{backspace}Z{enter}");
+    cy.get(cesc('#\\/tiG_input')).type("{end}{backspace}T{enter}");
 
-    cy.get("#\\/lM").should('have.text', 'Z');
-    cy.get("#\\/lA").should('have.text', 'R');
-    cy.get("#\\/lB").should('have.text', 'R');
-    cy.get("#\\/lC").should('have.text', 'U');
-    cy.get("#\\/lD").should('have.text', 'X');
-    cy.get("#\\/lE").should('have.text', 'R');
-    cy.get("#\\/lF").should('have.text', 'S');
-    cy.get("#\\/lG").should('have.text', 'T');
-    cy.get("#\\/lH").should('have.text', 'U');
-    cy.get("#\\/lI").should('have.text', 'V');
-    cy.get("#\\/lJ").should('have.text', 'W');
-    cy.get("#\\/lK").should('have.text', 'X');
-    cy.get("#\\/lL").should('have.text', 'Y');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'P');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lH")).should('have.text', 'P');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiH_input')).type("{end}{backspace}U{enter}");
+
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'I');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiI_input')).type("{end}{backspace}V{enter}");
+
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'J');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiJ_input')).type("{end}{backspace}W{enter}");
+
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lK")).should('have.text', 'Q');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiK_input')).type("{end}{backspace}X{enter}");
+
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lL")).should('have.text', 'L');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiL_input')).type("{end}{backspace}Y{enter}");
+
+    cy.get(cesc("#\\/lL")).should('have.text', 'Y');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lM")).should('have.text', 'M');
+
+
+    cy.get(cesc('#\\/tiM_input')).type("{end}{backspace}Z{enter}");
+
+    cy.get(cesc("#\\/lM")).should('have.text', 'Z');
+    cy.get(cesc("#\\/lA")).should('have.text', 'R');
+    cy.get(cesc("#\\/lB")).should('have.text', 'R');
+    cy.get(cesc("#\\/lC")).should('have.text', 'U');
+    cy.get(cesc("#\\/lD")).should('have.text', 'X');
+    cy.get(cesc("#\\/lE")).should('have.text', 'R');
+    cy.get(cesc("#\\/lF")).should('have.text', 'S');
+    cy.get(cesc("#\\/lG")).should('have.text', 'T');
+    cy.get(cesc("#\\/lH")).should('have.text', 'U');
+    cy.get(cesc("#\\/lI")).should('have.text', 'V');
+    cy.get(cesc("#\\/lJ")).should('have.text', 'W');
+    cy.get(cesc("#\\/lK")).should('have.text', 'X');
+    cy.get(cesc("#\\/lL")).should('have.text', 'Y');
 
   })
 
@@ -1893,25 +1885,25 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get("#\\/lA").should('have.text', 'x_1');
-    cy.get("#\\/lB .mjx-mrow").eq(0).should('have.text', 'x1');
-    cy.get("#\\/lC").should('have.text', 'x^1');
-    cy.get("#\\/lD .mjx-mrow").eq(0).should('have.text', 'x1');
-    cy.get("#\\/lE").should('contain.text', 'x^1 or ');
-    cy.get("#\\/lE").should('contain.text', 'or x_3 or ');
-    cy.get("#\\/lE .mjx-mrow").eq(0).should('have.text', 'x2');
-    cy.get("#\\/lE .mjx-mrow").eq(1).should('have.text', 'x4');
-    cy.get("#\\/lF").should('contain.text', 'x_a^b or ');
-    cy.get("#\\/lF .mjx-mrow").eq(0).should('have.text', 'xdc');
+    cy.get(cesc("#\\/lA")).should('have.text', 'x_1');
+    cy.get(cesc("#\\/lB") + " .mjx-mrow").eq(0).should('have.text', 'x1');
+    cy.get(cesc("#\\/lC")).should('have.text', 'x^1');
+    cy.get(cesc("#\\/lD") + " .mjx-mrow").eq(0).should('have.text', 'x1');
+    cy.get(cesc("#\\/lE")).should('contain.text', 'x^1 or ');
+    cy.get(cesc("#\\/lE")).should('contain.text', 'or x_3 or ');
+    cy.get(cesc("#\\/lE") + " .mjx-mrow").eq(0).should('have.text', 'x2');
+    cy.get(cesc("#\\/lE") + " .mjx-mrow").eq(1).should('have.text', 'x4');
+    cy.get(cesc("#\\/lF")).should('contain.text', 'x_a^b or ');
+    cy.get(cesc("#\\/lF") + " .mjx-mrow").eq(0).should('have.text', 'xdc');
 
-    cy.get("#\\/tA").should('have.text', 'x_1');
-    cy.get("#\\/tB").should('have.text', 'x_1');
-    cy.get("#\\/tC").should('have.text', 'x^1');
-    cy.get("#\\/tD").should('have.text', 'x^1');
-    cy.get("#\\/tE").should('have.text', 'x^1 or x^2 or x_3 or x_4');
-    cy.get("#\\/tF").should('have.text', 'x_a^b or x_c^d');
+    cy.get(cesc("#\\/tA")).should('have.text', 'x_1');
+    cy.get(cesc("#\\/tB")).should('have.text', 'x_1');
+    cy.get(cesc("#\\/tC")).should('have.text', 'x^1');
+    cy.get(cesc("#\\/tD")).should('have.text', 'x^1');
+    cy.get(cesc("#\\/tE")).should('have.text', 'x^1 or x^2 or x_3 or x_4');
+    cy.get(cesc("#\\/tF")).should('have.text', 'x_a^b or x_c^d');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1948,12 +1940,12 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('initially undefined')
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1964,10 +1956,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 2D point')
-    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("(-1,-7){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1989,8 +1981,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(3,5)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2010,8 +2002,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(9,1)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2022,10 +2014,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('make point undefined again')
-    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2036,10 +2028,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 1D point')
-    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("-3{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '−3');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '−3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2051,10 +2043,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('create 3D point')
-    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(6,5,4)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2065,10 +2057,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 2D point from altvector')
-    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2089,8 +2081,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2119,12 +2111,12 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('initially undefined')
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2135,10 +2127,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 2D point')
-    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("(-1,-7){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2160,8 +2152,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(3,5)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2181,8 +2173,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(9,1)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2193,10 +2185,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('make point undefined again')
-    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2207,10 +2199,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 1D point')
-    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("-3{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '−3');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '−3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2222,10 +2214,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('create 3D point')
-    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(6,5,4)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2237,10 +2229,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('create 2D point from altvector')
-    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2261,8 +2253,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2291,12 +2283,12 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('initially undefined')
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2307,10 +2299,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 2D point')
-    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("(-1,-7){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2332,8 +2324,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(3,5)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2353,8 +2345,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(9,1)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2365,10 +2357,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('make point undefined again')
-    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2379,10 +2371,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 1D point')
-    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("-3{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '−3');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '−3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2394,10 +2386,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('create 3D point')
-    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(6,5,4)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2409,10 +2401,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('create 2D point from altvector')
-    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2433,8 +2425,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2464,12 +2456,12 @@ describe('Point Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('initially undefined')
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2480,10 +2472,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 2D point')
-    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("(-1,-7){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(−1,−7)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(−1,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2505,8 +2497,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(3,5)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2526,8 +2518,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(9,1)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(9,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2538,10 +2530,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('make point undefined again')
-    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2552,10 +2544,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log('create 1D point')
-    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("-3{enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '−3');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '−3');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '−3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2567,10 +2559,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('create 3D point')
-    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(6,5,4)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(6,5,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2582,10 +2574,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('create 2D point from altvector')
-    cy.get('#\\/coords textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
+    cy.get(cesc('#\\/coords') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 5,-2\\rangle {enter}", { force: true })
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(5,−2)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(5,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2606,8 +2598,8 @@ describe('Point Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(7,8)');
-    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Pcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
+    cy.get(cesc('#\\/Qcoords') + ' .mjx-mrow').should('contain.text', '(7,8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2634,9 +2626,9 @@ describe('Point Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,1)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(3,1)');
 
     cy.log(`we can move point`)
     cy.window().then(async (win) => {
@@ -2647,7 +2639,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(7,−5)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(7,−5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2678,11 +2670,11 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2702,7 +2694,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2732,11 +2724,11 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2757,7 +2749,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2784,11 +2776,11 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2809,7 +2801,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2839,11 +2831,11 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2864,7 +2856,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2893,9 +2885,9 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait to load
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2913,7 +2905,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(4,6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(4,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2931,7 +2923,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−3,−7)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−3,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2949,7 +2941,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(9,−2)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(9,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2974,9 +2966,9 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(110,1)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(110,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2994,7 +2986,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(185,6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(185,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3011,7 +3003,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(910,−3)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(910,−3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3036,9 +3028,9 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(1,sin(1))');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(1,sin(1))');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3056,7 +3048,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−9,sin(−9))');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−9,sin(−9))');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3073,7 +3065,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(9,sin(9))');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(9,sin(9))');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3100,9 +3092,9 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(2,1)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(2,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3122,7 +3114,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(6,−9)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(6,−9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3141,7 +3133,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(0,−3)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(0,−3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3166,7 +3158,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3207,9 +3199,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(5,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3226,7 +3218,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(8,−5)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(8,−5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3255,9 +3247,9 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should("have.text", 'q');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should("have.text", 'q');  // to wait until loaded
 
-    cy.get('#\\/a .mjx-mrow').should('contain.text', '5+1');
+    cy.get(cesc('#\\/a') + ' .mjx-mrow').should('contain.text', '5+1');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3276,7 +3268,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/a .mjx-mrow').should('contain.text', '−4+1');
+    cy.get(cesc('#\\/a') + ' .mjx-mrow').should('contain.text', '−4+1');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3295,7 +3287,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/a .mjx-mrow').should('contain.text', '9+1');
+    cy.get(cesc('#\\/a') + ' .mjx-mrow').should('contain.text', '9+1');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3330,8 +3322,8 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
-    cy.get('#\\/d .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
+    cy.get(cesc('#\\/d') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     })
 
@@ -3491,9 +3483,9 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait to load
 
-    cy.get("#\\/a").should('have.text', '2')
+    cy.get(cesc("#\\/a")).should('have.text', '2')
 
     cy.log(`point 2 is moveable, based on x component`)
     cy.window().then(async (win) => {
@@ -3504,7 +3496,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '-3')
+    cy.get(cesc("#\\/a")).should('have.text', '-3')
 
 
     cy.window().then(async (win) => {
@@ -3526,7 +3518,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '0')
+    cy.get(cesc("#\\/a")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3548,7 +3540,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '9')
+    cy.get(cesc("#\\/a")).should('have.text', '9')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3570,7 +3562,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '0')
+    cy.get(cesc("#\\/a")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3602,9 +3594,9 @@ describe('Point Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'b');  // to wait to load
 
-    cy.get("#\\/a").should('have.text', '3')
+    cy.get(cesc("#\\/a")).should('have.text', '3')
 
     cy.log(`point 2 is moveable, based on x component`)
     cy.window().then(async (win) => {
@@ -3615,7 +3607,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '-3')
+    cy.get(cesc("#\\/a")).should('have.text', '-3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3635,7 +3627,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '0')
+    cy.get(cesc("#\\/a")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3656,7 +3648,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '9')
+    cy.get(cesc("#\\/a")).should('have.text', '9')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3677,7 +3669,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/a").should('have.text', '0')
+    cy.get(cesc("#\\/a")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3711,9 +3703,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
@@ -3724,7 +3716,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3733,10 +3725,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4)`)
     cy.window().then(async (win) => {
@@ -3746,7 +3738,7 @@ describe('Point Tag Tests', function () {
         args: { x: -9.8, y: -7.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−10,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3755,10 +3747,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−10,−7)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
 
     // test bug with number in scientific notation 
@@ -3770,7 +3762,7 @@ describe('Point Tag Tests', function () {
         args: { x: -1.3E-14, y: 2.5E-12 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3779,10 +3771,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
   });
 
@@ -3807,9 +3799,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
@@ -3820,7 +3812,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3829,10 +3821,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4)`)
     cy.window().then(async (win) => {
@@ -3842,7 +3834,7 @@ describe('Point Tag Tests', function () {
         args: { x: -9.8, y: -7.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−10,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3851,10 +3843,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−10,−7)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
   });
 
   it('point constrained to grid, copied from outside', () => {
@@ -3878,9 +3870,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
@@ -3891,7 +3883,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3900,10 +3892,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4)`)
     cy.window().then(async (win) => {
@@ -3913,7 +3905,7 @@ describe('Point Tag Tests', function () {
         args: { x: -9.8, y: -7.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−10,−7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3922,10 +3914,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−10,−7)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
   });
 
   it('point constrained to grid, exclude points outside graph', () => {
@@ -3947,9 +3939,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.04,2.08)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.04,2.08)');
 
     cy.log(`move point to (10,3.6)`)
     cy.window().then(async (win) => {
@@ -3960,7 +3952,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.36,3.12)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9.36,3.12)');
 
 
     cy.log(`move point to (-11,-7.4)`)
@@ -3971,7 +3963,7 @@ describe('Point Tag Tests', function () {
         args: { x: -11, y: -7.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9.36,−7.28)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−9.36,−7.28)');
 
 
     cy.log(`move point to (10,-10)`)
@@ -3983,7 +3975,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.36,−9.36)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9.36,−9.36)');
 
 
     cy.log(`move point to (-2,12)`)
@@ -3995,7 +3987,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−2.08,9.36)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−2.08,9.36)');
 
 
   });
@@ -4019,9 +4011,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.04,2.08)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.04,2.08)');
 
     cy.log(`move point to (10,3.6)`)
     cy.window().then(async (win) => {
@@ -4032,7 +4024,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(10.4,3.12)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(10.4,3.12)');
 
 
     cy.log(`move point to (-11,-7.4)`)
@@ -4043,7 +4035,7 @@ describe('Point Tag Tests', function () {
         args: { x: -11, y: -7.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−11.44,−7.28)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−11.44,−7.28)');
 
 
     cy.log(`move point to (10,-10)`)
@@ -4055,7 +4047,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(10.4,−10.4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(10.4,−10.4)');
 
 
     cy.log(`move point to (-2,12)`)
@@ -4067,7 +4059,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−2.08,12.48)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−2.08,12.48)');
 
   });
 
@@ -4088,9 +4080,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2,3)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,2,3)');
 
     cy.log(`move point to (1.2,3.6,5.4)`)
     cy.window().then(async (win) => {
@@ -4101,7 +4093,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4,5)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4111,10 +4103,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4,5)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4,-4.6)`)
     cy.window().then(async (win) => {
@@ -4124,7 +4116,7 @@ describe('Point Tag Tests', function () {
         args: { x: -9.8, y: -7.4, z: -4.6 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7,−5)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−10,−7,−5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4134,10 +4126,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7, -5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−10,−7,−5)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
 
     // test bug with number in scientific notation 
@@ -4149,7 +4141,7 @@ describe('Point Tag Tests', function () {
         args: { x: -1.3E-14, y: 2.5E-12, z: 7.1E-121 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0,0)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(0,0,0)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4159,10 +4151,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0,0)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
   });
 
@@ -4189,7 +4181,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.log("second constraint wins, but first constraint affects result")
     cy.window().then(async (win) => {
@@ -4199,10 +4191,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,5)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`Unexpected results when moving since constraints applied twice`)
     // Note: the behavior isn't necessarily desired, but it is a consequence
@@ -4218,7 +4210,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(7,5)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(7,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4227,10 +4219,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 7, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,5)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
   });
 
   it('point constrained to grid and line', () => {
@@ -4254,7 +4246,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4262,10 +4254,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−1,0)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
 
     cy.log(`move point`)
@@ -4277,7 +4269,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9,0)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9,0)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4285,10 +4277,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9,0)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
   });
 
   it('point constrained to graph', () => {
@@ -4326,9 +4318,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`move point A to (105,3)`)
     cy.window().then(async (win) => {
@@ -4339,7 +4331,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,3)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9.8,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4350,14 +4342,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(3);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,3)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,3)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point A to (-30,11)`)
     cy.window().then(async (win) => {
@@ -4367,7 +4359,7 @@ describe('Point Tag Tests', function () {
         args: { x: -30, y: 11 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9.8,9.8)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−9.8,9.8)');
 
 
     cy.window().then(async (win) => {
@@ -4379,14 +4371,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9.8,9.8)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9.8,9.8)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point A to (-3,1)`)
     cy.window().then(async (win) => {
@@ -4396,7 +4388,7 @@ describe('Point Tag Tests', function () {
         args: { x: -3, y: 1 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,1)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4407,14 +4399,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(1);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,1)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,1)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point B to (-7,18)`)
     cy.window().then(async (win) => {
@@ -4424,7 +4416,7 @@ describe('Point Tag Tests', function () {
         args: { x: -7, y: 18 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7,9.8)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−7,9.8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4435,14 +4427,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,9.8)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,9.8)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
 
     cy.log(`move point B to (56,-91)`)
@@ -4453,7 +4445,7 @@ describe('Point Tag Tests', function () {
         args: { x: 56, y: -91 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,−9.8)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9.8,−9.8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4464,14 +4456,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(-9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,−9.8)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,−9.8)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point C to (56,-91)`)
     cy.window().then(async (win) => {
@@ -4481,7 +4473,7 @@ describe('Point Tag Tests', function () {
         args: { x: 56, y: -91 }
       })
     })
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(9.5,−9.5)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(9.5,−9.5)');
 
 
     cy.window().then(async (win) => {
@@ -4494,14 +4486,14 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.5,−9.5)')
     });
-    cy.get('#\\/_boolean3').should('have.text', "true")
-    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "true")
+    cy.get(cesc('#\\/_math4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.5,−9.5)')
     });
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
 
     cy.log(`move point D to (5,15)`)
@@ -4512,7 +4504,7 @@ describe('Point Tag Tests', function () {
         args: { x: 5, y: 15 }
       })
     })
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(5,9.5)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(5,9.5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4523,14 +4515,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/D'].stateValues.xs)[1]).eq(9.5);
       expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,9.5)')
     });
-    cy.get('#\\/_boolean3').should('have.text', "true")
-    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "true")
+    cy.get(cesc('#\\/_math4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,9.5)')
     });
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
 
 
@@ -4571,9 +4563,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`move point A to (105,3)`)
     cy.window().then(async (win) => {
@@ -4584,7 +4576,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,3)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9.8,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4595,14 +4587,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(3);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,3)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,3)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point A to (-30,11)`)
     cy.window().then(async (win) => {
@@ -4612,7 +4604,7 @@ describe('Point Tag Tests', function () {
         args: { x: -30, y: 11 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9.8,9.8)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−9.8,9.8)');
 
 
     cy.window().then(async (win) => {
@@ -4624,14 +4616,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9.8,9.8)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9.8,9.8)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point A to (-3,1)`)
     cy.window().then(async (win) => {
@@ -4641,7 +4633,7 @@ describe('Point Tag Tests', function () {
         args: { x: -3, y: 1 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,1)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4652,14 +4644,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(1);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,1)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,1)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point B to (-17,18)`)
     cy.window().then(async (win) => {
@@ -4669,7 +4661,7 @@ describe('Point Tag Tests', function () {
         args: { x: -17, y: 18 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9.8,9.8)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−9.8,9.8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4680,14 +4672,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(18);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9.8,9.8)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−17,18)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
 
     cy.log(`move point B to (56,-91)`)
@@ -4698,7 +4690,7 @@ describe('Point Tag Tests', function () {
         args: { x: 56, y: -91 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,−9.8)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9.8,−9.8)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4709,14 +4701,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/B'].stateValues.xs)[1]).eq(-19.6);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,−9.8)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(19.6,−19.6)')
     });
-    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
 
     cy.log(`move point C to (56,-91)`)
     cy.window().then(async (win) => {
@@ -4726,7 +4718,7 @@ describe('Point Tag Tests', function () {
         args: { x: 56, y: -91 }
       })
     })
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(9.5,−9.5)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(9.5,−9.5)');
 
 
     cy.window().then(async (win) => {
@@ -4739,14 +4731,14 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
 
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.5,−9.5)')
     });
-    cy.get('#\\/_boolean3').should('have.text', "true")
-    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "true")
+    cy.get(cesc('#\\/_math4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.5,−9.5)')
     });
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
 
     cy.log(`move point D to (5,15)`)
@@ -4757,7 +4749,7 @@ describe('Point Tag Tests', function () {
         args: { x: 5, y: 15 }
       })
     })
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(5,9.5)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(5,9.5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4768,14 +4760,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/D'].stateValues.xs)[1]).eq(15);
       expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,9.5)')
     });
-    cy.get('#\\/_boolean3').should('have.text', "true")
-    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "true")
+    cy.get(cesc('#\\/_math4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,15)')
     });
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
 
     cy.log(`move point D to (-65,-79)`)
@@ -4786,7 +4778,7 @@ describe('Point Tag Tests', function () {
         args: { x: -65, y: -79 }
       })
     })
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(−9.5,−9.5)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(−9.5,−9.5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4797,14 +4789,14 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/D'].stateValues.xs)[1]).eq(-19);
       expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9.5,−9.5)')
     });
-    cy.get('#\\/_boolean3').should('have.text', "true")
-    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "true")
+    cy.get(cesc('#\\/_math4')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−19,−19)')
     });
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
 
 
@@ -4837,9 +4829,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`move point1 to (1.2,3.6)`)
     cy.window().then(async (win) => {
@@ -4849,7 +4841,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.2, y: 3.6 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.2,3.6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.2,3.6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4866,19 +4858,19 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.2,3.6)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,5)')
     });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6)')
     });
 
-    cy.get('#\\/_boolean1').should('have.text', 'false')
-    cy.get('#\\/_boolean2').should('have.text', 'true')
-    cy.get('#\\/_boolean3').should('have.text', 'false')
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'false')
+    cy.get(cesc('#\\/_boolean2')).should('have.text', 'true')
+    cy.get(cesc('#\\/_boolean3')).should('have.text', 'false')
 
     cy.log(`move point2 to (-3.4,6.7)`)
     cy.window().then(async (win) => {
@@ -4888,7 +4880,7 @@ describe('Point Tag Tests', function () {
         args: { x: -3.4, y: 6.7 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−4,6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−4,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4905,18 +4897,18 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", -2, 8]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−4,6)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,7)')
     });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−2,8)')
     });
-    cy.get('#\\/_boolean1').should('have.text', 'false')
-    cy.get('#\\/_boolean2').should('have.text', 'true')
-    cy.get('#\\/_boolean3').should('have.text', 'false')
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'false')
+    cy.get(cesc('#\\/_boolean2')).should('have.text', 'true')
+    cy.get(cesc('#\\/_boolean3')).should('have.text', 'false')
 
     cy.log(`move point3 to (5.3, -2.2)`)
     cy.window().then(async (win) => {
@@ -4926,7 +4918,7 @@ describe('Point Tag Tests', function () {
         args: { x: 5.3, y: -2.2 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(3,−4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(3,−4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4943,18 +4935,18 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 5, -2]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,−4)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
     });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,−2)')
     });
-    cy.get('#\\/_boolean1').should('have.text', 'false')
-    cy.get('#\\/_boolean2').should('have.text', 'true')
-    cy.get('#\\/_boolean3').should('have.text', 'false')
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'false')
+    cy.get(cesc('#\\/_boolean2')).should('have.text', 'true')
+    cy.get(cesc('#\\/_boolean3')).should('have.text', 'false')
 
   });
 
@@ -4987,16 +4979,16 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.log(`no constraints with blanks`)
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.2,3.6)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2.2,4.6)')
     });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3.2,5.6)')
     }); cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5013,14 +5005,14 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`constrain x and y to integers`);
-    cy.get('#\\/dx textarea').type('1', { force: true });
-    cy.get('#\\/dy textarea').type('1', { force: true });
-    cy.get('#\\/xoffset textarea').type('0', { force: true });
-    cy.get('#\\/yoffset textarea').type('0{enter}', { force: true });
+    cy.get(cesc('#\\/dx') + ' textarea').type('1', { force: true });
+    cy.get(cesc('#\\/dy') + ' textarea').type('1', { force: true });
+    cy.get(cesc('#\\/xoffset') + ' textarea').type('0', { force: true });
+    cy.get(cesc('#\\/yoffset') + ' textarea').type('0{enter}', { force: true });
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.2,3.6)');
-    cy.get('#\\/_math2 .mjx-mrow').should('contain.text', '(2,5)');
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(3,6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.2,3.6)');
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').should('contain.text', '(2,5)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(3,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5034,13 +5026,13 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/follower'].stateValues.xs)[1]).eq(6);
       expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.2,3.6)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,5)')
     });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6)')
     });
 
@@ -5053,9 +5045,9 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(4,−3)');
-    cy.get('#\\/_math2 .mjx-mrow').should('contain.text', '(5,−2)');
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(6,−1)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(4,−3)');
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').should('contain.text', '(5,−2)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(6,−1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5069,25 +5061,25 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-1);
       expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 6, -1]);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,−2)')
     });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,−1)')
     });
 
 
     cy.log(`change constraints`);
-    cy.get('#\\/dx textarea').type('{end}{backspace}3', { force: true });
-    cy.get('#\\/dy textarea').type('{end}{backspace}0.5', { force: true });
-    cy.get('#\\/xoffset textarea').type('{end}{backspace}1', { force: true });
-    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1{enter}', { force: true });
+    cy.get(cesc('#\\/dx') + ' textarea').type('{end}{backspace}3', { force: true });
+    cy.get(cesc('#\\/dy') + ' textarea').type('{end}{backspace}0.5', { force: true });
+    cy.get(cesc('#\\/xoffset') + ' textarea').type('{end}{backspace}1', { force: true });
+    cy.get(cesc('#\\/yoffset') + ' textarea').type('{end}{backspace}0.1{enter}', { force: true });
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(4,−3)');
-    cy.get('#\\/_math2 .mjx-mrow').should('contain.text', '(4,−1.9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(4,−3)');
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').should('contain.text', '(4,−1.9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5102,13 +5094,13 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/follower'].stateValues.coords).slice(0, 2)).eqls(["vector", 5]);
       expect((stateVariables['/follower'].stateValues.coords)[2]).to.be.approximately(-0.9, 1E-10);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−1.9)')
     });
-    // cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('(5,−0.9)')
     // });
 
@@ -5122,9 +5114,9 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,−9.4)');
-    cy.get('#\\/_math2 .mjx-mrow').should('contain.text', '(−2,−8.4)');
-    cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(−1,−7.4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,−9.4)');
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').should('contain.text', '(−2,−8.4)');
+    cy.get(cesc('#\\/_math3') + ' .mjx-mrow').should('contain.text', '(−1,−7.4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5138,13 +5130,13 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-7.4);
       expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", -1, -7.4]);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,−9.4)')
     });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−2,−8.4)')
     });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−1,−7.4)')
     });
 
@@ -5170,9 +5162,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7,9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−7,9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5181,10 +5173,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,9)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`move point to (1.1,3.6)`)
 
@@ -5195,7 +5187,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.1, y: 3.6 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.1,3.6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.1,3.6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5204,10 +5196,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.1,3.6)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
 
     cy.log(`move point to (1.1,3.9)`)
     cy.window().then(async (win) => {
@@ -5217,7 +5209,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.1, y: 3.9 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5226,10 +5218,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
 
     // test bug with number in scientific notation 
@@ -5241,7 +5233,7 @@ describe('Point Tag Tests', function () {
         args: { x: -1.3E-14, y: 2.5E-12 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5250,10 +5242,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
   });
 
@@ -5280,7 +5272,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5289,10 +5281,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,9)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`move point to (1.1,3.6)`)
     cy.window().then(async (win) => {
@@ -5302,7 +5294,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.1, y: 3.6 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.1,3.6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.1,3.6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5311,10 +5303,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.1,3.6)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
 
     cy.log(`move point to (1.1,3.9)`)
     cy.window().then(async (win) => {
@@ -5324,7 +5316,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.1, y: 3.9 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5333,10 +5325,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
   });
 
@@ -5357,7 +5349,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5367,10 +5359,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9, 2]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,9,2)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`move point to (1.1,3.9,5.4)`)
     cy.window().then(async (win) => {
@@ -5380,7 +5372,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.1, y: 3.9, z: 5.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.1,3.9,5.4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.1,3.9,5.4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5390,10 +5382,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.9, 5.4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.1,3.9,5.4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
 
     cy.log(`move point to (1.1,3.9,5.9)`)
     cy.window().then(async (win) => {
@@ -5403,7 +5395,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.1, y: 3.9, z: 5.9 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4,6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4,6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5413,10 +5405,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4,6)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
 
     // test bug with number in scientific notation 
@@ -5428,7 +5420,7 @@ describe('Point Tag Tests', function () {
         args: { x: -1.3E-14, y: 2.5E-12, z: -2.3E-19 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0,0)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(0,0,0)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5438,10 +5430,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0,0)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
   });
 
@@ -5468,12 +5460,12 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,−3.4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true");
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5492,7 +5484,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.3, y: 3.9 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.3,4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.3,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5501,10 +5493,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.3,4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true");
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true");
 
     cy.log(`move point to (1.1,3.9)`)
     cy.window().then(async (win) => {
@@ -5514,7 +5506,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.1, y: 3.9 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5523,10 +5515,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true");
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true");
 
     cy.log(`move point to (1.3,3.7)`)
     cy.window().then(async (win) => {
@@ -5536,7 +5528,7 @@ describe('Point Tag Tests', function () {
         args: { x: 1.3, y: 3.7 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.3,3.7)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(1.3,3.7)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5545,10 +5537,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 3.7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.3,3.7)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "false");
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false");
 
   });
 
@@ -5580,7 +5572,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.log(`no constraints with blanks`)
 
@@ -5591,20 +5583,20 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7.1,8.9)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
 
     cy.log(`constrain x and y to integers`);
-    cy.get('#\\/dx textarea').type('1', { force: true });
-    cy.get('#\\/dy textarea').type('1', { force: true });
-    cy.get('#\\/xoffset textarea').type('0', { force: true });
-    cy.get('#\\/yoffset textarea').type('0', { force: true });
-    cy.get('#\\/xthreshold textarea').type('0.2', { force: true });
-    cy.get('#\\/ythreshold textarea').type('0.2{enter}', { force: true });
+    cy.get(cesc('#\\/dx') + ' textarea').type('1', { force: true });
+    cy.get(cesc('#\\/dy') + ' textarea').type('1', { force: true });
+    cy.get(cesc('#\\/xoffset') + ' textarea').type('0', { force: true });
+    cy.get(cesc('#\\/yoffset') + ' textarea').type('0', { force: true });
+    cy.get(cesc('#\\/xthreshold') + ' textarea').type('0.2', { force: true });
+    cy.get(cesc('#\\/ythreshold') + ' textarea').type('0.2{enter}', { force: true });
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7,9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−7,9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5613,18 +5605,18 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7,9)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
     cy.log(`change constraints`);
-    cy.get('#\\/dx textarea').type('{end}{backspace}3', { force: true });
-    cy.get('#\\/dy textarea').type('{end}{backspace}0.5', { force: true });
-    cy.get('#\\/xoffset textarea').type('{end}{backspace}1', { force: true });
-    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1{enter}', { force: true });
+    cy.get(cesc('#\\/dx') + ' textarea').type('{end}{backspace}3', { force: true });
+    cy.get(cesc('#\\/dy') + ' textarea').type('{end}{backspace}0.5', { force: true });
+    cy.get(cesc('#\\/xoffset') + ' textarea').type('{end}{backspace}1', { force: true });
+    cy.get(cesc('#\\/yoffset') + ' textarea').type('{end}{backspace}0.1{enter}', { force: true });
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7.1,8.9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−7.1,8.9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5633,15 +5625,15 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−7.1,8.9)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
 
-    cy.get('#\\/xthreshold textarea').type('{ctrl+home}{shift+end}{backspace}1.0', { force: true });
-    cy.get('#\\/ythreshold textarea').type('{ctrl+home}{shift+end}{backspace}0.3{enter}', { force: true });
+    cy.get(cesc('#\\/xthreshold') + ' textarea').type('{ctrl+home}{shift+end}{backspace}1.0', { force: true });
+    cy.get(cesc('#\\/ythreshold') + ' textarea').type('{ctrl+home}{shift+end}{backspace}0.3{enter}', { force: true });
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−8,9.1)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−8,9.1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5650,10 +5642,10 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -8, 9.1]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−8,9.1)')
     });
-    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
 
 
 
@@ -5682,9 +5674,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,6)');
 
     cy.log(`move point to (8.5,3.1)`)
     cy.window().then(async (win) => {
@@ -5695,7 +5687,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(8.5,3.1)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(8.5,3.1)');
 
 
     cy.log(`move point to (-8.5,-6.4)`)
@@ -5706,7 +5698,7 @@ describe('Point Tag Tests', function () {
         args: { x: -8.5, y: -6.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−8.5,−6.4)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−8.5,−6.4)');
 
 
     cy.log(`move point to (8.5,-8.5)`)
@@ -5718,7 +5710,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(8.5,−8.5)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(8.5,−8.5)');
 
 
     cy.log(`move point to (-3.2,8.5)`)
@@ -5730,12 +5722,12 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3.2,8.5)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3.2,8.5)');
 
 
-    cy.get('#\\/ignoreGraphBounds').click();
+    cy.get(cesc('#\\/ignoreGraphBounds')).click();
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,9)');
 
 
     cy.log(`move point to (8.5,3.1)`)
@@ -5747,7 +5739,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9,3)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9,3)');
 
 
     cy.log(`move point to (-8.5,-6.4)`)
@@ -5758,7 +5750,7 @@ describe('Point Tag Tests', function () {
         args: { x: -8.5, y: -6.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9,−6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−9,−6)');
 
 
     cy.log(`move point to (8.5,-8.5)`)
@@ -5770,7 +5762,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9,−9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9,−9)');
 
 
     cy.log(`move point to (-3.2,8.5)`)
@@ -5782,12 +5774,12 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,9)');
 
-    cy.get('#\\/ignoreGraphBounds').click();
+    cy.get(cesc('#\\/ignoreGraphBounds')).click();
 
 
-    cy.get('#\\/threshold textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/threshold') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
 
     cy.log(`move point to (8.5,3.1)`)
@@ -5799,7 +5791,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(6,3)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(6,3)');
 
 
     cy.log(`move point to (-8.5,-6.4)`)
@@ -5810,7 +5802,7 @@ describe('Point Tag Tests', function () {
         args: { x: -8.5, y: -6.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−6,−6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−6,−6)');
 
 
     cy.log(`move point to (8.5,-8.5)`)
@@ -5822,7 +5814,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(6,−6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(6,−6)');
 
 
     cy.log(`move point to (-3.2,8.5)`)
@@ -5834,66 +5826,13 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,6)');
 
 
-    cy.get('#\\/threshold textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/threshold') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
 
-    cy.get('#\\/includeGridlines').click();
-
-
-
-    cy.log(`move point to (8.5,3.1)`)
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: 3.1 }
-      })
-    })
-
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(8.5,3)');
-
-
-    cy.log(`move point to (-8.5,-6.4)`)
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -8.5, y: -6.4 }
-      })
-    })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−8.5,−6)');
-
-
-    cy.log(`move point to (8.5,-8.5)`)
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: -8.5 }
-      })
-    })
-
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(8.5,−8.5)');
-
-
-    cy.log(`move point to (-3.2,8.5)`)
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -3.2, y: 8.5 }
-      })
-    })
-
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,8.5)');
-
-
-    cy.get('#\\/ignoreGraphBounds').click();
-
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,9)');
+    cy.get(cesc('#\\/includeGridlines')).click();
 
 
 
@@ -5906,7 +5845,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9,3)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(8.5,3)');
 
 
     cy.log(`move point to (-8.5,-6.4)`)
@@ -5917,7 +5856,7 @@ describe('Point Tag Tests', function () {
         args: { x: -8.5, y: -6.4 }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−9,−6)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−8.5,−6)');
 
 
     cy.log(`move point to (8.5,-8.5)`)
@@ -5929,7 +5868,7 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9,−9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(8.5,−8.5)');
 
 
     cy.log(`move point to (-3.2,8.5)`)
@@ -5941,7 +5880,60 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,9)');
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,8.5)');
+
+
+    cy.get(cesc('#\\/ignoreGraphBounds')).click();
+
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,9)');
+
+
+
+    cy.log(`move point to (8.5,3.1)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 8.5, y: 3.1 }
+      })
+    })
+
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9,3)');
+
+
+    cy.log(`move point to (-8.5,-6.4)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -8.5, y: -6.4 }
+      })
+    })
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−9,−6)');
+
+
+    cy.log(`move point to (8.5,-8.5)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 8.5, y: -8.5 }
+      })
+    })
+
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(9,−9)');
+
+
+    cy.log(`move point to (-3.2,8.5)`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -3.2, y: 8.5 }
+      })
+    })
+
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(−3,9)');
 
 
   });
@@ -5967,19 +5959,19 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
 
       cy.log(`point is on line`);
-      cy.get('#\\/coords .mjx-mrow').should('contain.text', '(3,−1)');
+      cy.get(cesc('#\\/coords') + ' .mjx-mrow').should('contain.text', '(3,−1)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
-      cy.get("#\\/constraintUsed").should('have.text', "true")
+      cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
 
       cy.log(`move point`);
@@ -5990,14 +5982,14 @@ describe('Point Tag Tests', function () {
           args: { x: 9, y: -3 }
         })
       })
-      cy.get('#\\/coords .mjx-mrow').should('contain.text', '(7,−5)');
+      cy.get(cesc('#\\/coords') + ' .mjx-mrow').should('contain.text', '(7,−5)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
-      cy.get("#\\/constraintUsed").should('have.text', "true")
+      cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
       cy.log(`change line`);
       cy.window().then(async (win) => {
@@ -6007,14 +5999,14 @@ describe('Point Tag Tests', function () {
           args: { x: 3, y: 1 }
         })
       })
-      cy.get('#\\/coords .mjx-mrow').should('contain.text', '(2,0)');
+      cy.get(cesc('#\\/coords') + ' .mjx-mrow').should('contain.text', '(2,0)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
-      cy.get("#\\/constraintUsed").should('have.text', "true")
+      cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
       cy.log(`move point`);
       cy.window().then(async (win) => {
@@ -6024,14 +6016,14 @@ describe('Point Tag Tests', function () {
           args: { x: 9, y: -3 }
         })
       })
-      cy.get('#\\/coords .mjx-mrow').should('contain.text', '(4,2)');
+      cy.get(cesc('#\\/coords') + ' .mjx-mrow').should('contain.text', '(4,2)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
-      cy.get("#\\/constraintUsed").should('have.text', "true")
+      cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     })
   });
@@ -6057,10 +6049,10 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.log(`point is not on line`);
-    cy.get('#\\/coords .mjx-mrow').should('contain.text', '(−1,−5)');
+    cy.get(cesc('#\\/coords') + ' .mjx-mrow').should('contain.text', '(−1,−5)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).eq(-1);
@@ -6068,7 +6060,7 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/A'].stateValues.coords)).eqls(["vector", -1, -5]);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
 
     cy.log(`move point near line`);
     cy.window().then(async (win) => {
@@ -6078,7 +6070,7 @@ describe('Point Tag Tests', function () {
         args: { x: 9.1, y: -6.8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6094,7 +6086,7 @@ describe('Point Tag Tests', function () {
         args: { x: 3, y: 1 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6110,7 +6102,7 @@ describe('Point Tag Tests', function () {
         args: { x: -5.1, y: -6.8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6153,11 +6145,11 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.log(`point is not on line`);
 
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−1,−5)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−1,−5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6167,8 +6159,8 @@ describe('Point Tag Tests', function () {
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
-    cy.get("#\\/constraintUsedA").should('have.text', "false")
-    cy.get("#\\/constraintUsedB").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "false")
 
     cy.log(`move point near line`);
     cy.window().then(async (win) => {
@@ -6178,8 +6170,8 @@ describe('Point Tag Tests', function () {
         args: { x: 0.3, y: 0 }
       })
     })
-    cy.get("#\\/constraintUsedA").should('have.text', "true")
-    cy.get("#\\/constraintUsedB").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "true")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6191,11 +6183,11 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('narrow range in x')
-    cy.get('#\\/xmin textarea').type("{end}{backspace}{enter}", { force: true })
-    cy.get('#\\/xmax textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/xmin') + ' textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/xmax') + ' textarea').type("{end}{backspace}{enter}", { force: true })
 
-    cy.get("#\\/constraintUsedA").should('have.text', "true")
-    cy.get("#\\/constraintUsedB").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
@@ -6213,8 +6205,8 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/constraintUsedA").should('have.text', "false")
-    cy.get("#\\/constraintUsedB").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "false")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6226,11 +6218,11 @@ describe('Point Tag Tests', function () {
 
     cy.log('point is close again for larger x limits')
 
-    cy.get('#\\/xmin textarea').type("{end}0{enter}", { force: true })
-    cy.get('#\\/xmax textarea').type("{end}0{enter}", { force: true })
+    cy.get(cesc('#\\/xmin') + ' textarea').type("{end}0{enter}", { force: true })
+    cy.get(cesc('#\\/xmax') + ' textarea').type("{end}0{enter}", { force: true })
 
-    cy.get("#\\/constraintUsedA").should('have.text', "true")
-    cy.get("#\\/constraintUsedB").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "true")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6255,11 +6247,11 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(10,−0.1)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(−10,0.1)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(10,−0.1)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(−10,0.1)');
 
-    cy.get("#\\/constraintUsedA").should('have.text', "true")
-    cy.get("#\\/constraintUsedB").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "true")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6278,8 +6270,8 @@ describe('Point Tag Tests', function () {
         args: { x: -6, y: 8 }
       })
     })
-    cy.get("#\\/constraintUsedA").should('have.text', "false")
-    cy.get("#\\/constraintUsedB").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "false")
 
 
     cy.window().then(async (win) => {
@@ -6294,11 +6286,11 @@ describe('Point Tag Tests', function () {
 
     cy.log('point is close again for larger y limits')
 
-    cy.get('#\\/ymin textarea').type("{end}00{enter}", { force: true })
-    cy.get('#\\/ymax textarea').type("{end}00{enter}", { force: true })
+    cy.get(cesc('#\\/ymin') + ' textarea').type("{end}00{enter}", { force: true })
+    cy.get(cesc('#\\/ymax') + ' textarea').type("{end}00{enter}", { force: true })
 
-    cy.get("#\\/constraintUsedA").should('have.text', "true")
-    cy.get("#\\/constraintUsedB").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "true")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6311,11 +6303,11 @@ describe('Point Tag Tests', function () {
 
     cy.log('point is not close for smaller y limits')
 
-    cy.get('#\\/ymin textarea').type("{end}{backspace}{enter}", { force: true })
-    cy.get('#\\/ymax textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/ymin') + ' textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/ymax') + ' textarea').type("{end}{backspace}{enter}", { force: true })
 
-    cy.get("#\\/constraintUsedA").should('have.text', "false")
-    cy.get("#\\/constraintUsedB").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedA")).should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsedB")).should('have.text', "false")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6360,19 +6352,19 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     cy.log(`point is on line`);
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(4,1)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(4,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move point to lower right`);
     cy.window().then(async (win) => {
@@ -6382,14 +6374,14 @@ describe('Point Tag Tests', function () {
         args: { x: 9, y: -5 }
       })
     })
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3.5,0.5)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(3.5,0.5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move point near points`);
     cy.window().then(async (win) => {
@@ -6399,7 +6391,7 @@ describe('Point Tag Tests', function () {
         args: { x: 3.5, y: 5.5 }
       })
     })
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6408,7 +6400,7 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move point to upper left`);
     cy.window().then(async (win) => {
@@ -6418,14 +6410,14 @@ describe('Point Tag Tests', function () {
         args: { x: -9, y: 8 }
       })
     })
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,3)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−4,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
   });
 
   it('point attracted to lines and points', () => {
@@ -6459,12 +6451,12 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     cy.log(`point is in original location`);
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,2)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(3,2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6473,7 +6465,7 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 2]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
 
     cy.log(`point is on line`);
     cy.window().then(async (win) => {
@@ -6483,7 +6475,7 @@ describe('Point Tag Tests', function () {
         args: { x: 3.1, y: 0.5 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
@@ -6498,7 +6490,7 @@ describe('Point Tag Tests', function () {
         args: { x: 9, y: -5 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
@@ -6515,7 +6507,7 @@ describe('Point Tag Tests', function () {
         args: { x: 3.1, y: 5.1 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
@@ -6532,7 +6524,7 @@ describe('Point Tag Tests', function () {
         args: { x: -9, y: 8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
@@ -6549,7 +6541,7 @@ describe('Point Tag Tests', function () {
         args: { x: -8.8, y: -2.3 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
@@ -6584,17 +6576,17 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`point on grid`);
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,4)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(8,4)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near line x+y=0`);
     cy.window().then(async (win) => {
@@ -6604,13 +6596,13 @@ describe('Point Tag Tests', function () {
         args: { x: -7.1, y: 8.2 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−7.65,7.65)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−7.65,7.65)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near line x=y`);
     cy.window().then(async (win) => {
@@ -6620,13 +6612,13 @@ describe('Point Tag Tests', function () {
         args: { x: 7.1, y: 8.2 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7.65,7.65)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(7.65,7.65)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near line x=2y+8`);
     cy.window().then(async (win) => {
@@ -6636,13 +6628,13 @@ describe('Point Tag Tests', function () {
         args: { x: 3.5, y: -2.5 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near line x=-2y-8`);
     cy.window().then(async (win) => {
@@ -6652,13 +6644,13 @@ describe('Point Tag Tests', function () {
         args: { x: -3.5, y: -2.5 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
   });
 
@@ -6691,11 +6683,11 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`point in original location`);
 
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7,3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(7,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6703,7 +6695,7 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
 
     cy.log(`move point near grid`);
     cy.window().then(async (win) => {
@@ -6713,7 +6705,7 @@ describe('Point Tag Tests', function () {
         args: { x: 0.2, y: -1.8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
@@ -6729,7 +6721,7 @@ describe('Point Tag Tests', function () {
         args: { x: -7.1, y: 8.2 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
@@ -6745,7 +6737,7 @@ describe('Point Tag Tests', function () {
         args: { x: -7.5, y: 7.8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
@@ -6760,7 +6752,7 @@ describe('Point Tag Tests', function () {
         args: { x: 7.1, y: 8.2 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
@@ -6776,7 +6768,7 @@ describe('Point Tag Tests', function () {
         args: { x: 7.5, y: 7.8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
@@ -6791,13 +6783,13 @@ describe('Point Tag Tests', function () {
         args: { x: 3.5, y: -2.5 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
 
     cy.log(`move near line x=-2y-8`);
@@ -6808,13 +6800,13 @@ describe('Point Tag Tests', function () {
         args: { x: -3.5, y: -2.5 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
   });
 
@@ -6853,11 +6845,11 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`point in original location`);
 
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7,3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(7,3)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6865,7 +6857,7 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
 
     cy.log(`move not close enough to line x+y=0`);
     cy.window().then(async (win) => {
@@ -6875,14 +6867,14 @@ describe('Point Tag Tests', function () {
         args: { x: -7.1, y: 8.2 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−7.1,8.2)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−7.1,8.2)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
 
     cy.log(`move close enough to line x+y=0`);
     cy.window().then(async (win) => {
@@ -6892,7 +6884,7 @@ describe('Point Tag Tests', function () {
         args: { x: -7.5, y: 7.8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
@@ -6907,7 +6899,7 @@ describe('Point Tag Tests', function () {
         args: { x: 7.1, y: 8.2 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "false")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
@@ -6923,7 +6915,7 @@ describe('Point Tag Tests', function () {
         args: { x: 7.5, y: 7.8 }
       })
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
@@ -6938,13 +6930,13 @@ describe('Point Tag Tests', function () {
         args: { x: 3.5, y: -2.5 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near line x=-2y-8`);
     cy.window().then(async (win) => {
@@ -6954,13 +6946,13 @@ describe('Point Tag Tests', function () {
         args: { x: -3.5, y: -2.5 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=y`);
     cy.window().then(async (win) => {
@@ -6970,14 +6962,14 @@ describe('Point Tag Tests', function () {
         args: { x: -0.2, y: 0.1 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(0,0)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=2y+8`);
     cy.window().then(async (win) => {
@@ -6987,14 +6979,14 @@ describe('Point Tag Tests', function () {
         args: { x: 2.6, y: -2.7 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(2.67,−2.67)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=-2y-8`);
     cy.window().then(async (win) => {
@@ -7004,14 +6996,14 @@ describe('Point Tag Tests', function () {
         args: { x: 7.9, y: -8.2 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,−8)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x=y and x=2y+8`);
     cy.window().then(async (win) => {
@@ -7021,14 +7013,14 @@ describe('Point Tag Tests', function () {
         args: { x: -8.1, y: -7.8 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8,−8)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=-2y-8`);
     cy.window().then(async (win) => {
@@ -7038,14 +7030,14 @@ describe('Point Tag Tests', function () {
         args: { x: -2.5, y: -2.7 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x=2y+8 and x=-2y-8`);
     cy.window().then(async (win) => {
@@ -7055,14 +7047,14 @@ describe('Point Tag Tests', function () {
         args: { x: 0.2, y: -3.9 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,−4)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(0,−4)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
   });
 
   it('point constrained to union of lines and attracted to intersections', () => {
@@ -7100,18 +7092,18 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`on x=y`);
 
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(5,5)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(5,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`attract to line x+y=0`);
     cy.window().then(async (win) => {
@@ -7121,13 +7113,13 @@ describe('Point Tag Tests', function () {
         args: { x: -7.1, y: 10 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8.55,8.55)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−8.55,8.55)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near line x=2y+8`);
     cy.window().then(async (win) => {
@@ -7137,13 +7129,13 @@ describe('Point Tag Tests', function () {
         args: { x: 10, y: -3 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8.4,0.2)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(8.4,0.2)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near line x=-2y-8`);
     cy.window().then(async (win) => {
@@ -7153,13 +7145,13 @@ describe('Point Tag Tests', function () {
         args: { x: -10, y: -3 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8.4,0.2)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−8.4,0.2)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=y`);
     cy.window().then(async (win) => {
@@ -7169,14 +7161,14 @@ describe('Point Tag Tests', function () {
         args: { x: -0.2, y: 0.1 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,0)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(0,0)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=2y+8`);
     cy.window().then(async (win) => {
@@ -7186,14 +7178,14 @@ describe('Point Tag Tests', function () {
         args: { x: 2.6, y: -2.7 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(2.67,−2.67)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=-2y-8`);
     cy.window().then(async (win) => {
@@ -7203,14 +7195,14 @@ describe('Point Tag Tests', function () {
         args: { x: 7.9, y: -8.2 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,−8)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x=y and x=2y+8`);
     cy.window().then(async (win) => {
@@ -7220,14 +7212,14 @@ describe('Point Tag Tests', function () {
         args: { x: -8.1, y: -7.8 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8,−8)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x=y and x=-2y-8`);
     cy.window().then(async (win) => {
@@ -7237,14 +7229,14 @@ describe('Point Tag Tests', function () {
         args: { x: -2.5, y: -2.7 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
     cy.log(`move near intersection of x=2y+8 and x=-2y-8`);
     cy.window().then(async (win) => {
@@ -7254,14 +7246,14 @@ describe('Point Tag Tests', function () {
         args: { x: 0.2, y: -3.9 }
       })
     })
-    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,−4)');
+    cy.get(cesc('#\\/coordsA') + ' .mjx-mrow').should('contain.text', '(0,−4)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
       expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
-    cy.get("#\\/constraintUsed").should('have.text', "true")
+    cy.get(cesc("#\\/constraintUsed")).should('have.text', "true")
 
   });
 
@@ -7290,9 +7282,9 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`intersection is a line`);
     cy.window().then(async (win) => {
@@ -7315,8 +7307,8 @@ describe('Point Tag Tests', function () {
         args: { x: 3, y: -5 }
       })
     })
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,5)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(3,−5)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(3,−5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7338,8 +7330,8 @@ describe('Point Tag Tests', function () {
         args: { x: -4, y: -5 }
       })
     })
-    cy.get('#\\/coords3 .mjx-mrow').should('contain.text', '(−4,5)');
-    cy.get('#\\/coords4 .mjx-mrow').should('contain.text', '(−4,−5)');
+    cy.get(cesc('#\\/coords3') + ' .mjx-mrow').should('contain.text', '(−4,5)');
+    cy.get(cesc('#\\/coords4') + ' .mjx-mrow').should('contain.text', '(−4,−5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7369,10 +7361,10 @@ describe('Point Tag Tests', function () {
         args: { x: -4, y: -6 }
       })
     })
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−8,−7)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(8,9)');
-    cy.get('#\\/coords3 .mjx-mrow').should('contain.text', '(4,6)');
-    cy.get('#\\/coords4 .mjx-mrow').should('contain.text', '(−4,−6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−8,−7)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(8,9)');
+    cy.get(cesc('#\\/coords3') + ' .mjx-mrow').should('contain.text', '(4,6)');
+    cy.get(cesc('#\\/coords4') + ' .mjx-mrow').should('contain.text', '(−4,−6)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7394,8 +7386,8 @@ describe('Point Tag Tests', function () {
         args: { x: -6, y: -9 }
       })
     })
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(6,9)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(−6,−9)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(6,9)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(−6,−9)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/int1"].componentType).eq("line");
@@ -7440,22 +7432,22 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get('#\\/h1Val').should('have.text', 'false')
-    cy.get('#\\/h2Val').should('have.text', 'true')
-    cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/h1Val')).should('have.text', 'false')
+    cy.get(cesc('#\\/h2Val')).should('have.text', 'true')
+    cy.get(cesc('#\\/i1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0=y−2')
     })
-    cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2')).find('.mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
-    cy.get('#\\/h1Val').should('have.text', 'true')
-    cy.get('#\\/h2Val').should('have.text', 'false')
-    cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
-    cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
+    cy.get(cesc('#\\/h1Val')).should('have.text', 'true')
+    cy.get(cesc('#\\/h2Val')).should('have.text', 'false')
+    cy.get(cesc('#\\/i1')).find('.mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0=y−2')
     })
 
@@ -7474,20 +7466,20 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,5)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(3,−5)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(3,−5)');
 
-    cy.get('#\\/i1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/i2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
-    cy.get('#\\/h1Val').should('have.text', 'false')
-    cy.get('#\\/h2Val').should('have.text', 'true')
-    cy.get('#\\/i2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/i1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
+    cy.get(cesc('#\\/h1Val')).should('have.text', 'false')
+    cy.get(cesc('#\\/h2Val')).should('have.text', 'true')
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,2)')
     })
 
@@ -7505,19 +7497,19 @@ describe('Point Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/coords3 .mjx-mrow').should('contain.text', '(−4,5)');
-    cy.get('#\\/coords4 .mjx-mrow').should('contain.text', '(−4,−5)');
+    cy.get(cesc('#\\/coords3') + ' .mjx-mrow').should('contain.text', '(−4,5)');
+    cy.get(cesc('#\\/coords4') + ' .mjx-mrow').should('contain.text', '(−4,−5)');
 
-    cy.get('#\\/i1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/i2 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
 
-    cy.get('#\\/h1Val').should('have.text', 'true')
-    cy.get('#\\/h2Val').should('have.text', 'false')
-    cy.get('#\\/i1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/i2 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/h1Val')).should('have.text', 'true')
+    cy.get(cesc('#\\/h2Val')).should('have.text', 'false')
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').should('not.exist');
 
     cy.log(`make lines intersect again`);
     cy.window().then(async (win) => {
@@ -7544,26 +7536,26 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−8,−7)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(8,9)');
-    cy.get('#\\/coords3 .mjx-mrow').should('contain.text', '(4,6)');
-    cy.get('#\\/coords4 .mjx-mrow').should('contain.text', '(−4,−6)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(−8,−7)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(8,9)');
+    cy.get(cesc('#\\/coords3') + ' .mjx-mrow').should('contain.text', '(4,6)');
+    cy.get(cesc('#\\/coords4') + ' .mjx-mrow').should('contain.text', '(−4,−6)');
 
 
-    cy.get('#\\/i1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/i2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     })
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
 
-    cy.get('#\\/h1Val').should('have.text', 'false')
-    cy.get('#\\/h2Val').should('have.text', 'true')
-    cy.get('#\\/i1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/h1Val')).should('have.text', 'false')
+    cy.get(cesc('#\\/h2Val')).should('have.text', 'true')
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     })
-    cy.get('#\\/i2 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').should('not.exist');
 
 
     cy.log(`make lines equal again`);
@@ -7581,22 +7573,22 @@ describe('Point Tag Tests', function () {
     })
 
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(6,9)');
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(−6,−9)');
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', '(6,9)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(−6,−9)');
 
 
-    cy.get('#\\/i1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0=18x−12y')
     })
-    cy.get('#\\/i2 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
 
-    cy.get('#\\/h1Val').should('have.text', 'true')
-    cy.get('#\\/h2Val').should('have.text', 'false')
-    cy.get('#\\/i1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/i2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/h1Val')).should('have.text', 'true')
+    cy.get(cesc('#\\/h2Val')).should('have.text', 'false')
+    cy.get(cesc('#\\/i1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0=18x−12y')
     })
 
@@ -7619,7 +7611,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7638,7 +7630,7 @@ describe('Point Tag Tests', function () {
         expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
       })
 
-      cy.get('#\\/n textarea').type("2{enter}", { force: true }).
+      cy.get(cesc('#\\/n') + ' textarea').type("2{enter}", { force: true }).
         blur();
 
       cy.window().then(async (win) => {
@@ -7670,9 +7662,9 @@ describe('Point Tag Tests', function () {
 
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(2,1)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(2,1)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7690,7 +7682,7 @@ describe('Point Tag Tests', function () {
         args: { x: -4, y: 9 }
       })
     })
-    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(−4,9)');
+    cy.get(cesc('#\\/coords2') + ' .mjx-mrow').should('contain.text', '(−4,9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7727,7 +7719,7 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let points = [
       '/p1', '/p2', '/p3', '/p4', '/p5', '/p6', '/p7', '/p8'
@@ -7737,7 +7729,7 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial positions")
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `(1,2)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7761,8 +7753,8 @@ describe('Point Tag Tests', function () {
           args: { x, y }
         })
       })
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let point of points) {
@@ -7790,11 +7782,11 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log("initial positions")
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `(1,2)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7820,8 +7812,8 @@ describe('Point Tag Tests', function () {
         args: { x, y }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7846,8 +7838,8 @@ describe('Point Tag Tests', function () {
         args: { x: y, y: x }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
 
@@ -7878,11 +7870,11 @@ describe('Point Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log("initial positions")
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `(1,2)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7909,8 +7901,8 @@ describe('Point Tag Tests', function () {
         args: { x, y }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7935,8 +7927,8 @@ describe('Point Tag Tests', function () {
         args: { x: y, y: x }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
 
@@ -7972,11 +7964,11 @@ describe('Point Tag Tests', function () {
 
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log("initial values")
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(3,7)`)
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `(3,7)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8005,8 +7997,8 @@ describe('Point Tag Tests', function () {
       })
 
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8019,7 +8011,7 @@ describe('Point Tag Tests', function () {
         expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
       })
 
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(y.toString())
       })
     });
@@ -8036,8 +8028,8 @@ describe('Point Tag Tests', function () {
         args: { x, y }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
 
@@ -8050,7 +8042,7 @@ describe('Point Tag Tests', function () {
         expect((stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
         expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
       })
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(y.toString())
       })
     });
@@ -8079,11 +8071,11 @@ describe('Point Tag Tests', function () {
 
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log("initial values")
 
-    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(3,7)`)
+    cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `(3,7)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8112,8 +8104,8 @@ describe('Point Tag Tests', function () {
         args: { x, y }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8142,8 +8134,8 @@ describe('Point Tag Tests', function () {
         args: { x, y }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8171,8 +8163,8 @@ describe('Point Tag Tests', function () {
         args: { x, y }
       })
 
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
-      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
+      cy.get(cesc('#\\/coords1') + ' .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();

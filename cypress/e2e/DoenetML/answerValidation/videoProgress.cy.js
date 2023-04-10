@@ -1,12 +1,5 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
 
 describe('Video progress tests', function () {
 
@@ -50,137 +43,137 @@ describe('Video progress tests', function () {
 
     let credit;
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/pDuration').should("have.text", "Duration: 300")
-    cy.get('#\\/seconds').should("have.text", "0")
-    cy.get('#\\/progress').should("have.text", "0")
-    cy.get('#\\/credit').should("have.text", "0")
+    cy.get(cesc('#\\/pDuration')).should("have.text", "Duration: 300")
+    cy.get(cesc('#\\/seconds')).should("have.text", "0")
+    cy.get(cesc('#\\/progress')).should("have.text", "0")
+    cy.get(cesc('#\\/credit')).should("have.text", "0")
 
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/play')).click();
 
-    cy.get('#\\/time').contains("5");
-    cy.get('#\\/pause').click();
-
-
-    cy.get('#\\/seconds').should('have.text', '5')
-    cy.get('#\\/credit').should('not.have.text', '0');
+    cy.get(cesc('#\\/time')).contains("5");
+    cy.get(cesc('#\\/pause')).click();
 
 
-    cy.get('#\\/credit').invoke('text').then(text => {
+    cy.get(cesc('#\\/seconds')).should('have.text', '5')
+    cy.get(cesc('#\\/credit')).should('not.have.text', '0');
+
+
+    cy.get(cesc('#\\/credit')).invoke('text').then(text => {
       credit = Number(text);
       expect(credit).gte(0.016).lte(0.018);
     });
 
-    cy.get('#\\/progress').invoke('text').then(text => {
+    cy.get(cesc('#\\/progress')).invoke('text').then(text => {
       expect(Number(text)).eq(Math.round(credit * 1000) / 10)
     });
 
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/play')).click();
 
-    cy.get('#\\/time').contains("7");
-    cy.get('#\\/pause').click();
+    cy.get(cesc('#\\/time')).contains("7");
+    cy.get(cesc('#\\/pause')).click();
 
 
-    cy.get('#\\/seconds').should('have.text', '7').then(() => {
+    cy.get(cesc('#\\/seconds')).should('have.text', '7').then(() => {
       // put inside then so that get updated value of local variable credit
-      cy.get('#\\/credit').should('not.have.text', `${credit}`);
+      cy.get(cesc('#\\/credit')).should('not.have.text', `${credit}`);
     })
 
-    cy.get('#\\/credit').invoke('text').then(text => {
+    cy.get(cesc('#\\/credit')).invoke('text').then(text => {
       credit = Number(text);
       expect(credit).gte(0.023).lte(0.025);
     });
 
-    cy.get('#\\/progress').invoke('text').then(text => {
+    cy.get(cesc('#\\/progress')).invoke('text').then(text => {
       expect(Number(text)).eq(Math.round(credit * 1000) / 10)
     });
 
 
-    cy.get('#\\/skip1').click();
-    cy.get('#\\/time').contains("157");
+    cy.get(cesc('#\\/skip1')).click();
+    cy.get(cesc('#\\/time')).contains("157");
 
-    cy.get('#\\/seconds').should('have.text', '7');
+    cy.get(cesc('#\\/seconds')).should('have.text', '7');
 
-    cy.get('#\\/credit').invoke('text').then(text => {
+    cy.get(cesc('#\\/credit')).invoke('text').then(text => {
       expect(Number(text)).eq(credit);
     });
 
-    cy.get('#\\/progress').invoke('text').then(text => {
+    cy.get(cesc('#\\/progress')).invoke('text').then(text => {
       expect(Number(text)).eq(Math.round(credit * 1000) / 10)
     });
 
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/play')).click();
 
-    cy.get('#\\/time').contains("160");
-    cy.get('#\\/skip2').click();
+    cy.get(cesc('#\\/time')).contains("160");
+    cy.get(cesc('#\\/skip2')).click();
 
-    cy.get('#\\/time').contains("59");
+    cy.get(cesc('#\\/time')).contains("59");
 
-    cy.get('#\\/pause').click();
+    cy.get(cesc('#\\/pause')).click();
 
 
-    cy.get('#\\/seconds').contains(/1(2|3)/).then(() => {
+    cy.get(cesc('#\\/seconds')).contains(/1(2|3)/).then(() => {
       // put inside then so that get updated value of local variable credit
-      cy.get('#\\/credit').should('not.have.text', `${credit}`);
-      cy.get('#\\/credit').should('not.contain', `3`);  // should contain a 3 after the intermediate skip
+      cy.get(cesc('#\\/credit')).should('not.have.text', `${credit}`);
+      cy.get(cesc('#\\/credit')).should('not.contain', `3`);  // should contain a 3 after the intermediate skip
     })
 
-    cy.get('#\\/credit').invoke('text').then(text => {
+    cy.get(cesc('#\\/credit')).invoke('text').then(text => {
       credit = Number(text);
       expect(credit).gte(0.04).lte(0.045);
     });
 
-    cy.get('#\\/progress').invoke('text').then(text => {
+    cy.get(cesc('#\\/progress')).invoke('text').then(text => {
       expect(Number(text)).eq(Math.round(credit * 1000) / 10)
     });
 
-    cy.get('#\\/skip1').click();
-    cy.get('#\\/time').contains("157");
+    cy.get(cesc('#\\/skip1')).click();
+    cy.get(cesc('#\\/time')).contains("157");
 
-    cy.get('#\\/seconds').contains(/1(2|3)/)
+    cy.get(cesc('#\\/seconds')).contains(/1(2|3)/)
 
-    cy.get('#\\/credit').invoke('text').then(text => {
+    cy.get(cesc('#\\/credit')).invoke('text').then(text => {
       expect(Number(text)).eq(credit);
     });
 
-    cy.get('#\\/progress').invoke('text').then(text => {
+    cy.get(cesc('#\\/progress')).invoke('text').then(text => {
       expect(Number(text)).eq(Math.round(credit * 1000) / 10)
     });
 
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/play')).click();
 
-    cy.get('#\\/time').contains("159");
-    cy.get('#\\/pause').click();
-    cy.get('#\\/state').contains("stopped")
+    cy.get(cesc('#\\/time')).contains("159");
+    cy.get(cesc('#\\/pause')).click();
+    cy.get(cesc('#\\/state')).contains("stopped")
 
-    cy.get('#\\/seconds').contains(/1(2|3)/)
-    cy.get('#\\/credit').invoke('text').then(text => {
+    cy.get(cesc('#\\/seconds')).contains(/1(2|3)/)
+    cy.get(cesc('#\\/credit')).invoke('text').then(text => {
       expect(Number(text)).eq(credit);
     });
 
-    cy.get('#\\/progress').invoke('text').then(text => {
+    cy.get(cesc('#\\/progress')).invoke('text').then(text => {
       expect(Number(text)).eq(Math.round(credit * 1000) / 10)
     });
 
 
     cy.wait(200); // for some reason seems to occasionally miss clicking play
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/play')).click();
 
-    cy.get('#\\/time').contains("162");
-    cy.get('#\\/pause').click();
+    cy.get(cesc('#\\/time')).contains("162");
+    cy.get(cesc('#\\/pause')).click();
 
-    cy.get('#\\/seconds').contains(/1(4|5)/).then(() => {
+    cy.get(cesc('#\\/seconds')).contains(/1(4|5)/).then(() => {
       // put inside then so that get updated value of local variable credit
-      cy.get('#\\/credit').should('not.have.text', `${credit}`);
+      cy.get(cesc('#\\/credit')).should('not.have.text', `${credit}`);
     })
 
-    cy.get('#\\/credit').invoke('text').then(text => {
+    cy.get(cesc('#\\/credit')).invoke('text').then(text => {
       credit = Number(text);
       expect(credit).gte(0.046).lte(0.052);
     });
 
-    cy.get('#\\/progress').invoke('text').then(text => {
+    cy.get(cesc('#\\/progress')).invoke('text').then(text => {
       expect(Number(text)).eq(Math.round(credit * 1000) / 10)
     });
 

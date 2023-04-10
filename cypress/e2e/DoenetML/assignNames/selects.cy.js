@@ -1,12 +1,8 @@
 import { numberToLetters } from "../../../../src/Core/utils/sequence";
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('selects assignName Tests', function () {
@@ -51,7 +47,7 @@ describe('selects assignName Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -63,7 +59,7 @@ describe('selects assignName Tests', function () {
       for (let [j, index] of selectedIndices.entries()) {
 
         let comp = stateVariables[cNames[j]];
-        let anchor = cesc('#' + cNames[j]);
+        let anchor = cesc2('#' + cNames[j]);
         let cType = index === 6 ? "number" : "text";
 
         let optionReplacement = stateVariables[stateVariables[stateVariables["/_select1"].replacements[j].componentName].replacements[1].componentName]

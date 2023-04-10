@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Boolean Tag Tests', function () {
 
@@ -91,16 +93,16 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'a')
 
 
     let nTrues = 37, nFalses = 31;
     for (let i = 1; i <= nTrues; i++) {
-      cy.get(`#\\/t${i}`).should('have.text', "true")
+      cy.get(cesc(`#\\/t${i}`)).should('have.text', "true")
     }
 
     for (let i = 1; i <= nFalses; i++) {
-      cy.get(`#\\/f${i}`).should('have.text', "false")
+      cy.get(cesc(`#\\/f${i}`)).should('have.text', "false")
     }
 
     cy.window().then(async (win) => {
@@ -127,16 +129,16 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'Hello there!')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'Hello there!')
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}3{enter}', { force: true });
-    cy.get('#\\/_text1').should('not.exist');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#\\/_text1')).should('not.exist');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}2x{enter}', { force: true });
-    cy.get('#\\/_text1').should('contain.text', 'Hello there!')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}2x{enter}', { force: true });
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'Hello there!')
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}-x-x{enter}', { force: true });
-    cy.get('#\\/_text1').should('contain.text', 'Hello there!')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}-x-x{enter}', { force: true });
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'Hello there!')
 
   })
 
@@ -171,11 +173,11 @@ describe('Boolean Tag Tests', function () {
 
     let nTrues = 9, nFalses = 9;
     for (let i = 1; i <= nTrues; i++) {
-      cy.get(`#\\/t${i}`).should('have.text', "true")
+      cy.get(cesc(`#\\/t${i}`)).should('have.text', "true")
     }
 
     for (let i = 1; i <= nFalses; i++) {
-      cy.get(`#\\/f${i}`).should('have.text', "false")
+      cy.get(cesc(`#\\/f${i}`)).should('have.text', "false")
     }
 
     cy.window().then(async (win) => {
@@ -203,28 +205,28 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_boolean2').should('have.text', "true")
-    cy.get('#\\/_boolean3').should('have.text', "false")
-    cy.get('#\\/_boolean4').should('have.text', "false")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "false")
 
-    cy.get('#\\/i textarea').type('{end}{backspace}4{enter}', { force: true });
-    cy.get('#\\/_boolean1').should('have.text', "false")
-    cy.get('#\\/_boolean2').should('have.text', "false")
-    cy.get('#\\/_boolean3').should('have.text', "true")
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/i') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
-    cy.get('#\\/i textarea').type('{end}{backspace}-7{enter}', { force: true });
-    cy.get('#\\/_boolean1').should('have.text', "true")
-    cy.get('#\\/_boolean2').should('have.text', "true")
-    cy.get('#\\/_boolean3').should('have.text', "false")
-    cy.get('#\\/_boolean4').should('have.text', "false")
+    cy.get(cesc('#\\/i') + ' textarea').type('{end}{backspace}-7{enter}', { force: true });
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "false")
 
-    cy.get('#\\/i textarea').type('{end}{backspace}{backspace}0{enter}', { force: true });
-    cy.get('#\\/_boolean1').should('have.text', "false")
-    cy.get('#\\/_boolean2').should('have.text', "false")
-    cy.get('#\\/_boolean3').should('have.text', "true")
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/i') + ' textarea').type('{end}{backspace}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
 
   })
@@ -278,47 +280,47 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/t1').should('have.text', "true")
-    cy.get('#\\/t2').should('have.text', "true")
-    cy.get('#\\/t3').should('have.text', "true")
-    cy.get('#\\/t4').should('have.text', "true")
-    cy.get('#\\/t5').should('have.text', "true")
-    cy.get('#\\/t6').should('have.text', "true")
-    cy.get('#\\/t7').should('have.text', "true")
-    cy.get('#\\/t8').should('have.text', "true")
-    cy.get('#\\/t9').should('have.text', "true")
-    cy.get('#\\/t10').should('have.text', "true")
-    cy.get('#\\/t11').should('have.text', "true")
-    cy.get('#\\/t12').should('have.text', "true")
-    cy.get('#\\/t13').should('have.text', "true")
-    cy.get('#\\/t14').should('have.text', "true")
-    cy.get('#\\/t15').should('have.text', "true")
-    cy.get('#\\/t16').should('have.text', "true")
-    cy.get('#\\/t17').should('have.text', "true")
-    cy.get('#\\/t18').should('have.text', "true")
-    cy.get('#\\/t19').should('have.text', "true")
-    cy.get('#\\/t20').should('have.text', "true")
-    cy.get('#\\/t21').should('have.text', "true")
+    cy.get(cesc('#\\/t1')).should('have.text', "true")
+    cy.get(cesc('#\\/t2')).should('have.text', "true")
+    cy.get(cesc('#\\/t3')).should('have.text', "true")
+    cy.get(cesc('#\\/t4')).should('have.text', "true")
+    cy.get(cesc('#\\/t5')).should('have.text', "true")
+    cy.get(cesc('#\\/t6')).should('have.text', "true")
+    cy.get(cesc('#\\/t7')).should('have.text', "true")
+    cy.get(cesc('#\\/t8')).should('have.text', "true")
+    cy.get(cesc('#\\/t9')).should('have.text', "true")
+    cy.get(cesc('#\\/t10')).should('have.text', "true")
+    cy.get(cesc('#\\/t11')).should('have.text', "true")
+    cy.get(cesc('#\\/t12')).should('have.text', "true")
+    cy.get(cesc('#\\/t13')).should('have.text', "true")
+    cy.get(cesc('#\\/t14')).should('have.text', "true")
+    cy.get(cesc('#\\/t15')).should('have.text', "true")
+    cy.get(cesc('#\\/t16')).should('have.text', "true")
+    cy.get(cesc('#\\/t17')).should('have.text', "true")
+    cy.get(cesc('#\\/t18')).should('have.text', "true")
+    cy.get(cesc('#\\/t19')).should('have.text', "true")
+    cy.get(cesc('#\\/t20')).should('have.text', "true")
+    cy.get(cesc('#\\/t21')).should('have.text', "true")
 
-    cy.get('#\\/f1').should('have.text', "false")
-    cy.get('#\\/f2').should('have.text', "false")
-    cy.get('#\\/f3').should('have.text', "false")
-    cy.get('#\\/f4').should('have.text', "false")
-    cy.get('#\\/f5').should('have.text', "false")
-    cy.get('#\\/f6').should('have.text', "false")
-    cy.get('#\\/f7').should('have.text', "false")
-    cy.get('#\\/f8').should('have.text', "false")
-    cy.get('#\\/f9').should('have.text', "false")
-    cy.get('#\\/f10').should('have.text', "false")
-    cy.get('#\\/f11').should('have.text', "false")
-    cy.get('#\\/f12').should('have.text', "false")
-    cy.get('#\\/f13').should('have.text', "false")
-    cy.get('#\\/f14').should('have.text', "false")
-    cy.get('#\\/f15').should('have.text', "false")
-    cy.get('#\\/f16').should('have.text', "false")
-    cy.get('#\\/f17').should('have.text', "false")
-    cy.get('#\\/f18').should('have.text', "false")
-    cy.get('#\\/f19').should('have.text', "false")
+    cy.get(cesc('#\\/f1')).should('have.text', "false")
+    cy.get(cesc('#\\/f2')).should('have.text', "false")
+    cy.get(cesc('#\\/f3')).should('have.text', "false")
+    cy.get(cesc('#\\/f4')).should('have.text', "false")
+    cy.get(cesc('#\\/f5')).should('have.text', "false")
+    cy.get(cesc('#\\/f6')).should('have.text', "false")
+    cy.get(cesc('#\\/f7')).should('have.text', "false")
+    cy.get(cesc('#\\/f8')).should('have.text', "false")
+    cy.get(cesc('#\\/f9')).should('have.text', "false")
+    cy.get(cesc('#\\/f10')).should('have.text', "false")
+    cy.get(cesc('#\\/f11')).should('have.text', "false")
+    cy.get(cesc('#\\/f12')).should('have.text', "false")
+    cy.get(cesc('#\\/f13')).should('have.text', "false")
+    cy.get(cesc('#\\/f14')).should('have.text', "false")
+    cy.get(cesc('#\\/f15')).should('have.text', "false")
+    cy.get(cesc('#\\/f16')).should('have.text', "false")
+    cy.get(cesc('#\\/f17')).should('have.text', "false")
+    cy.get(cesc('#\\/f18')).should('have.text', "false")
+    cy.get(cesc('#\\/f19')).should('have.text', "false")
 
   })
 
@@ -349,24 +351,24 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/t1').should('have.text', "true")
-    cy.get('#\\/t2').should('have.text', "true")
-    cy.get('#\\/t3').should('have.text', "true")
-    cy.get('#\\/t4').should('have.text', "true")
-    cy.get('#\\/t5').should('have.text', "true")
-    cy.get('#\\/t5').should('have.text', "true")
-    cy.get('#\\/t6').should('have.text', "true")
-    cy.get('#\\/t7').should('have.text', "true")
-    cy.get('#\\/t8').should('have.text', "true")
-    cy.get('#\\/t9').should('have.text', "true")
-    cy.get('#\\/t10').should('have.text', "true")
-    cy.get('#\\/t11').should('have.text', "true")
+    cy.get(cesc('#\\/t1')).should('have.text', "true")
+    cy.get(cesc('#\\/t2')).should('have.text', "true")
+    cy.get(cesc('#\\/t3')).should('have.text', "true")
+    cy.get(cesc('#\\/t4')).should('have.text', "true")
+    cy.get(cesc('#\\/t5')).should('have.text', "true")
+    cy.get(cesc('#\\/t5')).should('have.text', "true")
+    cy.get(cesc('#\\/t6')).should('have.text', "true")
+    cy.get(cesc('#\\/t7')).should('have.text', "true")
+    cy.get(cesc('#\\/t8')).should('have.text', "true")
+    cy.get(cesc('#\\/t9')).should('have.text', "true")
+    cy.get(cesc('#\\/t10')).should('have.text', "true")
+    cy.get(cesc('#\\/t11')).should('have.text', "true")
 
-    cy.get('#\\/f1').should('have.text', "false")
-    cy.get('#\\/f2').should('have.text', "false")
-    cy.get('#\\/f3').should('have.text', "false")
-    cy.get('#\\/f4').should('have.text', "false")
-    cy.get('#\\/f5').should('have.text', "false")
+    cy.get(cesc('#\\/f1')).should('have.text', "false")
+    cy.get(cesc('#\\/f2')).should('have.text', "false")
+    cy.get(cesc('#\\/f3')).should('have.text', "false")
+    cy.get(cesc('#\\/f4')).should('have.text', "false")
+    cy.get(cesc('#\\/f5')).should('have.text', "false")
 
   })
 
@@ -388,15 +390,15 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_boolean1').should('have.text', "false")
-    cy.get('#\\/_boolean2').should('have.text', "true")
-    cy.get('#\\/_boolean3').should('have.text', "false")
-    cy.get('#\\/_boolean4').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean2')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean3')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean4')).should('have.text', "true")
 
-    cy.get('#\\/_boolean5').should('have.text', "false")
-    cy.get('#\\/_boolean6').should('have.text', "true")
-    cy.get('#\\/_boolean7').should('have.text', "false")
-    cy.get('#\\/_boolean8').should('have.text', "true")
+    cy.get(cesc('#\\/_boolean5')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean6')).should('have.text', "true")
+    cy.get(cesc('#\\/_boolean7')).should('have.text', "false")
+    cy.get(cesc('#\\/_boolean8')).should('have.text', "true")
 
   })
 
@@ -419,36 +421,36 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/one').should('have.text', "false")
-    cy.get('#\\/two').should('have.text', "false")
-    cy.get('#\\/three').should('have.text', "false")
-    cy.get('#\\/four').should('have.text', "false")
+    cy.get(cesc('#\\/one')).should('have.text', "false")
+    cy.get(cesc('#\\/two')).should('have.text', "false")
+    cy.get(cesc('#\\/three')).should('have.text', "false")
+    cy.get(cesc('#\\/four')).should('have.text', "false")
 
-    cy.get(`#\\/c_choice1_input`).click();
-    cy.get('#\\/one').should('have.text', "true")
-    cy.get('#\\/two').should('have.text', "false")
-    cy.get('#\\/three').should('have.text', "false")
-    cy.get('#\\/four').should('have.text', "false")
+    cy.get(cesc(`#\\/c_choice1_input`)).click();
+    cy.get(cesc('#\\/one')).should('have.text', "true")
+    cy.get(cesc('#\\/two')).should('have.text', "false")
+    cy.get(cesc('#\\/three')).should('have.text', "false")
+    cy.get(cesc('#\\/four')).should('have.text', "false")
 
-    cy.get(`#\\/c_choice2_input`).click();
-    cy.get('#\\/one').should('have.text', "false")
-    cy.get('#\\/two').should('have.text', "true")
-    cy.get('#\\/three').should('have.text', "false")
-    cy.get('#\\/four').should('have.text', "false")
+    cy.get(cesc(`#\\/c_choice2_input`)).click();
+    cy.get(cesc('#\\/one')).should('have.text', "false")
+    cy.get(cesc('#\\/two')).should('have.text', "true")
+    cy.get(cesc('#\\/three')).should('have.text', "false")
+    cy.get(cesc('#\\/four')).should('have.text', "false")
 
-    cy.get(`#\\/c_choice3_input`).click();
-    cy.get('#\\/one').should('have.text', "false")
-    cy.get('#\\/two').should('have.text', "false")
-    cy.get('#\\/three').should('have.text', "true")
-    cy.get('#\\/four').should('have.text', "false")
+    cy.get(cesc(`#\\/c_choice3_input`)).click();
+    cy.get(cesc('#\\/one')).should('have.text', "false")
+    cy.get(cesc('#\\/two')).should('have.text', "false")
+    cy.get(cesc('#\\/three')).should('have.text', "true")
+    cy.get(cesc('#\\/four')).should('have.text', "false")
 
-    cy.get(`#\\/c_choice4_input`).click();
-    cy.get('#\\/one').should('have.text', "false")
-    cy.get('#\\/two').should('have.text', "false")
-    cy.get('#\\/three').should('have.text', "false")
-    cy.get('#\\/four').should('have.text', "true")
+    cy.get(cesc(`#\\/c_choice4_input`)).click();
+    cy.get(cesc('#\\/one')).should('have.text', "false")
+    cy.get(cesc('#\\/two')).should('have.text', "false")
+    cy.get(cesc('#\\/three')).should('have.text', "false")
+    cy.get(cesc('#\\/four')).should('have.text', "true")
 
 
   })
@@ -464,54 +466,54 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/t').should('have.text', "You are hungry. false")
-    cy.get('#\\/ti_input').should('have.value', 'false')
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. false")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'false')
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/t').should('have.text', "You are hungry. true")
-    cy.get('#\\/ti_input').should('have.value', 'true')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. true")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'true')
 
-    cy.get('#\\/ti_input').clear().type("false{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. false")
-    cy.get('#\\/ti_input').should('have.value', 'false')
+    cy.get(cesc('#\\/ti_input')).clear().type("false{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. false")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'false')
 
-    cy.get('#\\/ti_input').clear().type("tRuE{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. true")
-    cy.get('#\\/ti_input').should('have.value', 'true')
+    cy.get(cesc('#\\/ti_input')).clear().type("tRuE{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. true")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'true')
 
-    cy.get('#\\/ti_input').clear().type("0{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. true")
-    cy.get('#\\/ti_input').should('have.value', 'true')
+    cy.get(cesc('#\\/ti_input')).clear().type("0{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. true")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'true')
 
-    cy.get('#\\/ti_input').clear().type("1=0{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. true")
-    cy.get('#\\/ti_input').should('have.value', 'true')
+    cy.get(cesc('#\\/ti_input')).clear().type("1=0{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. true")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'true')
 
-    cy.get('#\\/ti_input').clear().type("f{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. true")
-    cy.get('#\\/ti_input').should('have.value', 'true')
+    cy.get(cesc('#\\/ti_input')).clear().type("f{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. true")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'true')
 
-    cy.get('#\\/ti_input').clear().type("FALSE{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. false")
-    cy.get('#\\/ti_input').should('have.value', 'false')
+    cy.get(cesc('#\\/ti_input')).clear().type("FALSE{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. false")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'false')
 
-    cy.get('#\\/ti_input').clear().type("1{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. false")
-    cy.get('#\\/ti_input').should('have.value', 'false')
+    cy.get(cesc('#\\/ti_input')).clear().type("1{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. false")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'false')
 
-    cy.get('#\\/ti_input').clear().type("t{enter}")
-    cy.get('#\\/t').should('have.text', "You are hungry. false")
-    cy.get('#\\/ti_input').should('have.value', 'false')
+    cy.get(cesc('#\\/ti_input')).clear().type("t{enter}")
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. false")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'false')
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/t').should('have.text', "You are hungry. true")
-    cy.get('#\\/ti_input').should('have.value', 'true')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. true")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'true')
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/t').should('have.text', "You are hungry. false")
-    cy.get('#\\/ti_input').should('have.value', 'false')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/t')).should('have.text', "You are hungry. false")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'false')
 
   })
 
@@ -525,10 +527,10 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/b1').should('have.text', "true")
-    cy.get('#\\/b2').should('have.text', "true")
+    cy.get(cesc('#\\/b1')).should('have.text', "true")
+    cy.get(cesc('#\\/b2')).should('have.text', "true")
 
   })
 
@@ -549,15 +551,15 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/b').should('have.text', "true")
-    cy.get('#\\/b1').should('have.text', "false")
-    cy.get('#\\/b2').should('have.text', "true")
-    cy.get('#\\/b3').should('have.text', "true")
-    cy.get('#\\/b4').should('have.text', "true")
-    cy.get('#\\/b5').should('have.text', "false")
-    cy.get('#\\/b6').should('have.text', "false")
+    cy.get(cesc('#\\/b')).should('have.text', "true")
+    cy.get(cesc('#\\/b1')).should('have.text', "false")
+    cy.get(cesc('#\\/b2')).should('have.text', "true")
+    cy.get(cesc('#\\/b3')).should('have.text', "true")
+    cy.get(cesc('#\\/b4')).should('have.text', "true")
+    cy.get(cesc('#\\/b5')).should('have.text', "false")
+    cy.get(cesc('#\\/b6')).should('have.text', "false")
 
   })
 
@@ -575,10 +577,10 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/b1').should('have.text', "true")
-    cy.get('#\\/b2').should('have.text', "true")
+    cy.get(cesc('#\\/b1')).should('have.text', "true")
+    cy.get(cesc('#\\/b2')).should('have.text', "true")
 
   })
 
@@ -596,14 +598,14 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/b1').should('have.text', "false")
-    cy.get('#\\/b2').should('have.text', "true")
-    cy.get('#\\/b3').should('have.text', "false")
-    cy.get('#\\/b4').should('have.text', "true")
-    cy.get('#\\/b5').should('have.text', "false")
-    cy.get('#\\/b6').should('have.text', "true")
+    cy.get(cesc('#\\/b1')).should('have.text', "false")
+    cy.get(cesc('#\\/b2')).should('have.text', "true")
+    cy.get(cesc('#\\/b3')).should('have.text', "false")
+    cy.get(cesc('#\\/b4')).should('have.text', "true")
+    cy.get(cesc('#\\/b5')).should('have.text', "false")
+    cy.get(cesc('#\\/b6')).should('have.text', "true")
 
   })
 
@@ -623,16 +625,16 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/b1').should('have.text', "false")
-    cy.get('#\\/b2').should('have.text', "true")
-    cy.get('#\\/b3').should('have.text', "false")
-    cy.get('#\\/b4').should('have.text', "true")
-    cy.get('#\\/b5').should('have.text', "false")
-    cy.get('#\\/b6').should('have.text', "true")
-    cy.get('#\\/b7').should('have.text', "false")
-    cy.get('#\\/b8').should('have.text', "true")
+    cy.get(cesc('#\\/b1')).should('have.text', "false")
+    cy.get(cesc('#\\/b2')).should('have.text', "true")
+    cy.get(cesc('#\\/b3')).should('have.text', "false")
+    cy.get(cesc('#\\/b4')).should('have.text', "true")
+    cy.get(cesc('#\\/b5')).should('have.text', "false")
+    cy.get(cesc('#\\/b6')).should('have.text', "true")
+    cy.get(cesc('#\\/b7')).should('have.text', "false")
+    cy.get(cesc('#\\/b8')).should('have.text', "true")
 
   })
 
@@ -668,17 +670,17 @@ describe('Boolean Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/t1').should('have.text', "true")
-    cy.get('#\\/t2').should('have.text', "true")
-    cy.get('#\\/t3').should('have.text', "true")
-    cy.get('#\\/t4').should('have.text', "true")
+    cy.get(cesc('#\\/t1')).should('have.text', "true")
+    cy.get(cesc('#\\/t2')).should('have.text', "true")
+    cy.get(cesc('#\\/t3')).should('have.text', "true")
+    cy.get(cesc('#\\/t4')).should('have.text', "true")
 
-    cy.get('#\\/f1').should('have.text', "false")
-    cy.get('#\\/f2').should('have.text', "false")
-    cy.get('#\\/f3').should('have.text', "false")
-    cy.get('#\\/f4').should('have.text', "false")
+    cy.get(cesc('#\\/f1')).should('have.text', "false")
+    cy.get(cesc('#\\/f2')).should('have.text', "false")
+    cy.get(cesc('#\\/f3')).should('have.text', "false")
+    cy.get(cesc('#\\/f4')).should('have.text', "false")
 
   })
 

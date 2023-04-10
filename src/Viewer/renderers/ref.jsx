@@ -92,7 +92,7 @@ export default React.memo(function Ref(props) {
         return <a style={{
           color: 'var(--mainBlue)',
           borderRadius: '5px'
-        }} target={targetForATag} id={name} name={name} href={url} >{linkContent}</a>
+        }} target={targetForATag} id={id} name={id} href={url} >{linkContent}</a>
 
       } else {
 

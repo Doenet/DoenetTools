@@ -4,7 +4,7 @@ import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import JXG from './jsxgraph-distrib/jsxgraphcore.mjs';
-import cssesc from 'cssesc';
+import { cesc } from '../../_utils/url';
 
 
 export const BoardContext = createContext();
@@ -759,7 +759,7 @@ export default React.memo(function Graph(props) {
 
   function addNavigationButtons() {
     // not sure why getElementById doesn't work
-    let navigationBar = document.querySelector('#' + cssesc(id, { isIdentifier: true }) + `_navigationbar`);
+    let navigationBar = document.querySelector('#' + cesc(id) + `_navigationbar`);
 
     // code modified from abstract.js and env.js of JSXGraph
 
@@ -826,7 +826,7 @@ export default React.memo(function Graph(props) {
 
   function removeNavigationButtons() {
     for (let i = 7; i >= 1; i--) {
-      let button = document.querySelector('#' + cssesc(id, { isIdentifier: true }) + `_navigationbar > :first-child`);
+      let button = document.querySelector('#' + cesc(id) + `_navigationbar > :first-child`);
       button.remove();
     }
 

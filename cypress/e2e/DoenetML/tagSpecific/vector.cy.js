@@ -1,12 +1,8 @@
-import cssesc from 'cssesc';
 import me from 'math-expressions';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 function nInDOM(n) {
@@ -34,9 +30,9 @@ describe('Vector Tag Tests', function () {
     let displacementx = headx - tailx;
     let displacementy = heady - taily;
 
-    cy.get(`#${cesc(tailInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(tailx)},${nInDOM(taily)})`)
-    cy.get(`#${cesc(headInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(headx)},${nInDOM(heady)})`)
-    cy.get(`#${cesc(displacementInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+    cy.get(`#${cesc2(tailInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(tailx)},${nInDOM(taily)})`)
+    cy.get(`#${cesc2(headInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(headx)},${nInDOM(heady)})`)
+    cy.get(`#${cesc2(displacementInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -74,7 +70,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -212,7 +208,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -353,7 +349,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -497,7 +493,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -640,7 +636,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -780,7 +776,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -921,7 +917,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -1060,7 +1056,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -1201,7 +1197,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -1341,7 +1337,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -1481,7 +1477,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -1620,7 +1616,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -1762,7 +1758,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -1906,7 +1902,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -2052,7 +2048,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -2197,7 +2193,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -2339,7 +2335,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -2478,7 +2474,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -2619,7 +2615,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -2758,7 +2754,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -2897,7 +2893,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 4;
     let taily = 1;
@@ -3035,7 +3031,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -3174,7 +3170,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -3313,7 +3309,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -3453,7 +3449,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -3592,7 +3588,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 4;
     let taily = 1;
@@ -3730,7 +3726,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 4;
     let taily = 1;
@@ -3869,7 +3865,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -4009,7 +4005,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -4148,7 +4144,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -4286,7 +4282,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -4424,7 +4420,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -4562,7 +4558,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = -4;
@@ -4700,7 +4696,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 0;
@@ -4833,7 +4829,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 4;
@@ -4966,7 +4962,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let tailx = 3;
@@ -5111,7 +5107,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let vector1s = ['/g1/vector1', '/g2/vector1', '/g3/vector1', '/vector1'];
     let vector2s = ['/g1/vector2', '/g2/vector2', '/g3/vector2', '/vector2'];
@@ -5148,7 +5144,7 @@ describe('Vector Tag Tests', function () {
         expect(stateVariables[name].stateValues.head).eqls([v3hx, v3hy]);
       }
 
-      cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/vector1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
     })
 
@@ -5178,7 +5174,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/vector1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5224,7 +5220,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/vector1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5268,7 +5264,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/vector1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5314,7 +5310,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/vector2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
+      cy.get(cesc('#\\/vector2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5360,7 +5356,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/vector2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
+      cy.get(cesc('#\\/vector2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5407,7 +5403,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/vector2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
+      cy.get(cesc('#\\/vector2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5453,7 +5449,7 @@ describe('Vector Tag Tests', function () {
       let v2hx = 5;
       let v2hy = -9;
 
-      cy.get('#\\/vector3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
+      cy.get(cesc('#\\/vector3') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5499,7 +5495,7 @@ describe('Vector Tag Tests', function () {
       let v2hx = 5;
       let v2hy = -9;
 
-      cy.get('#\\/vector3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
+      cy.get(cesc('#\\/vector3') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5546,7 +5542,7 @@ describe('Vector Tag Tests', function () {
       let v2hy = -9;
 
 
-      cy.get('#\\/vector3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
+      cy.get(cesc('#\\/vector3') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5595,7 +5591,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let vectors = ['/vector1', '/vector2'];
@@ -5627,7 +5623,7 @@ describe('Vector Tag Tests', function () {
         expect(stateVariables[name].stateValues.displacement).eqls([displacement_x, displacement_y]);
       }
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
 
     })
 
@@ -5662,7 +5658,7 @@ describe('Vector Tag Tests', function () {
           let dhead_xs = dtail_xs.map(x => x + displacement_x);
           let dhead_ys = dtail_ys.map(y => y + displacement_y);
 
-          cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
+          cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
 
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
@@ -5719,7 +5715,7 @@ describe('Vector Tag Tests', function () {
           })
 
 
-          cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
+          cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
 
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
@@ -5763,11 +5759,11 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log('check initial values')
 
-    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5789,7 +5785,7 @@ describe('Vector Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
 
 
     cy.window().then(async (win) => {
@@ -5835,7 +5831,7 @@ describe('Vector Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5864,7 +5860,7 @@ describe('Vector Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5895,7 +5891,7 @@ describe('Vector Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5930,11 +5926,11 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log('check initial values')
 
-    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5956,7 +5952,7 @@ describe('Vector Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5987,7 +5983,7 @@ describe('Vector Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6008,7 +6004,7 @@ describe('Vector Tag Tests', function () {
         args: { x: xorig, y: yorig }
       })
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(4.3)},${nInDOM(-4.6)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(4.3)},${nInDOM(-4.6)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6038,7 +6034,7 @@ describe('Vector Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 10) / 10)},${nInDOM(Math.round(p5y * 10) / 10)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 10) / 10)},${nInDOM(Math.round(p5y * 10) / 10)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6069,7 +6065,7 @@ describe('Vector Tag Tests', function () {
       let p5y = -temp;
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6090,7 +6086,7 @@ describe('Vector Tag Tests', function () {
         args: { x: xorig, y: yorig }
       })
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(-4.4)},${nInDOM(4.5)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-4.4)},${nInDOM(4.5)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6120,11 +6116,11 @@ describe('Vector Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`point on vector, close to origin`);
 
-    cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.00`)
+    cy.get(cesc('#\\/Pa') + ' .mjx-mrow').should('contain.text', `0.00`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6146,7 +6142,7 @@ describe('Vector Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.04`)
+    cy.get(cesc('#\\/Pa') + ' .mjx-mrow').should('contain.text', `0.04`)
 
     cy.window().then(async (win) => {
 
@@ -6167,7 +6163,7 @@ describe('Vector Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.05`)
+    cy.get(cesc('#\\/Pa') + ' .mjx-mrow').should('contain.text', `0.05`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6198,11 +6194,11 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log('check initial values')
 
-    cy.get('#\\/o2 .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(3)})`)
+    cy.get(cesc('#\\/o2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6223,7 +6219,7 @@ describe('Vector Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/o2 .mjx-mrow').should('contain.text', `(${nInDOM(-5)},${nInDOM(1)})`)
+    cy.get(cesc('#\\/o2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-5)},${nInDOM(1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6244,7 +6240,7 @@ describe('Vector Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(6)},${nInDOM(-8)})`)
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(6)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6255,9 +6251,9 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("Change factor");
-    cy.get('#\\/a textarea').type(`{end}{backspace}-3{enter}`, { force: true });
+    cy.get(cesc('#\\/a') + ' textarea').type(`{end}{backspace}-3{enter}`, { force: true });
 
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-9)},${nInDOM(12)})`)
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-9)},${nInDOM(12)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6278,7 +6274,7 @@ describe('Vector Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-6)},${nInDOM(-3)})`)
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6308,7 +6304,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let uTail = [0, 0];
     let u = [1, 1];
@@ -6322,7 +6318,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('check initial values')
 
-    cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
+    cy.get(cesc('#\\/u2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6356,7 +6352,7 @@ describe('Vector Tag Tests', function () {
 
       v = vHead.map((x, i) => x - vTail[i]);
 
-      cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
+      cy.get(cesc('#\\/u2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
 
       cy.window().then(async (win) => {
@@ -6395,7 +6391,7 @@ describe('Vector Tag Tests', function () {
       wTail = uTail;
       wHead = w.map((x, i) => x + wTail[i]);
 
-      cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
+      cy.get(cesc('#\\/u2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6429,7 +6425,7 @@ describe('Vector Tag Tests', function () {
       w = u.map((x, i) => x + v[i]);
       wTail = uTail;
 
-      cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
+      cy.get(cesc('#\\/u2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6464,7 +6460,7 @@ describe('Vector Tag Tests', function () {
       u = uHead.map((x, i) => x - uTail[i]);
       w = u.map((x, i) => x + v[i]);
 
-      cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
+      cy.get(cesc('#\\/u2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6499,7 +6495,7 @@ describe('Vector Tag Tests', function () {
 
       w = u.map((x, i) => x + v[i]);
 
-      cy.get('#\\/w2 .mjx-mrow').should('contain.text', `(${nInDOM(w[0])},${nInDOM(w[1])})`)
+      cy.get(cesc('#\\/w2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(w[0])},${nInDOM(w[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6534,7 +6530,7 @@ describe('Vector Tag Tests', function () {
 
       w = u.map((x, i) => x + v[i]);
 
-      cy.get('#\\/w2 .mjx-mrow').should('contain.text', `(${nInDOM(w[0])},${nInDOM(w[1])})`)
+      cy.get(cesc('#\\/w2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(w[0])},${nInDOM(w[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6577,7 +6573,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let uTail = [1, 5]
     let uHead = [7, 3];
@@ -6627,7 +6623,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let x = 2;
     let y = 3;
@@ -6637,7 +6633,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("initial positions")
 
-    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6676,7 +6672,7 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6718,7 +6714,7 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6758,7 +6754,7 @@ describe('Vector Tag Tests', function () {
       y = hy - t1y;
 
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6798,7 +6794,7 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6838,7 +6834,7 @@ describe('Vector Tag Tests', function () {
       x = hx - t3x;
       y = hy - t3y;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6880,7 +6876,7 @@ describe('Vector Tag Tests', function () {
       t3x = tx;
       t3y = ty;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6920,7 +6916,7 @@ describe('Vector Tag Tests', function () {
       x = hy - t4y;
       y = hx - t4x;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6962,7 +6958,7 @@ describe('Vector Tag Tests', function () {
       t4x = tx;
       t4y = ty;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7018,7 +7014,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let x = 2;
     let y = 3;
@@ -7028,7 +7024,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("initial positions")
 
-    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7066,7 +7062,7 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7108,7 +7104,7 @@ describe('Vector Tag Tests', function () {
       t1y = ty;
 
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7147,7 +7143,7 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7189,7 +7185,7 @@ describe('Vector Tag Tests', function () {
       t1y = ty;
 
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7229,7 +7225,7 @@ describe('Vector Tag Tests', function () {
       y = hy - t3y;
 
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7271,7 +7267,7 @@ describe('Vector Tag Tests', function () {
       t3y = ty;
 
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7311,7 +7307,7 @@ describe('Vector Tag Tests', function () {
       y = hx - t4x;
 
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7352,7 +7348,7 @@ describe('Vector Tag Tests', function () {
       t4x = tx;
       t4y = ty;
 
-      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/v1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7395,13 +7391,13 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tx = 1, ty = 2, hx = -2, hy = 3;
 
     cy.log("initial positions")
 
-    cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+    cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7429,7 +7425,7 @@ describe('Vector Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7456,7 +7452,7 @@ describe('Vector Tag Tests', function () {
         args: { x: hx, y: hy }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7484,7 +7480,7 @@ describe('Vector Tag Tests', function () {
         args: { x: tx, y: ty }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7513,7 +7509,7 @@ describe('Vector Tag Tests', function () {
         args: { x: hx, y: ty }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7638,7 +7634,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
 
     let tvt = [1, 2];
@@ -7820,7 +7816,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tvhd }
       })
 
-      cy.get('#\\/vhd_tdom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
+      cy.get(cesc('#\\/vhd_tdom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
       // since moved tails directly, heads stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7985,7 +7981,7 @@ describe('Vector Tag Tests', function () {
       })
 
 
-      cy.get('#\\/vhd_hdom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/vhd_hdom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // since moved heads directly, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -8131,7 +8127,7 @@ describe('Vector Tag Tests', function () {
         args: { x: tvtd[0], y: tvtd[1] }
       })
 
-      cy.get('#\\/tvtd_dom').should('contain.text', `(${nInDOM(tvtd[0])},${nInDOM(tvtd[1])})`)
+      cy.get(cesc('#\\/tvtd_dom')).should('contain.text', `(${nInDOM(tvtd[0])},${nInDOM(tvtd[1])})`)
 
       // defined by tail/head, head stays fixed and displacement changes
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
@@ -8220,7 +8216,7 @@ describe('Vector Tag Tests', function () {
         args: { x: hvhd[0], y: hvhd[1] }
       })
 
-      cy.get('#\\/hvhd_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/hvhd_dom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // defined by head only or tail/head, tail stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
@@ -8309,7 +8305,7 @@ describe('Vector Tag Tests', function () {
         args: { x: dvhd[0], y: dvhd[1] }
       })
 
-      cy.get('#\\/dvhd_dom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
+      cy.get(cesc('#\\/dvhd_dom')).should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
 
       // defined by displacement only or tail/displacement, tail stays fixed and head changes
@@ -8420,7 +8416,7 @@ describe('Vector Tag Tests', function () {
       })
 
 
-      cy.get('#\\/tfvhd_dom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
+      cy.get(cesc('#\\/tfvhd_dom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
 
       // if defined by head, head stays fixed and displacement changes
@@ -8588,7 +8584,7 @@ describe('Vector Tag Tests', function () {
         args: { x: hvhd[0], y: hvhd[1] }
       })
 
-      cy.get('#\\/hfvhd_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/hfvhd_dom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
 
       // for most vectors, tails stay fixed and displacement changes
@@ -8753,7 +8749,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: dvhd }
       })
 
-      cy.get('#\\/dfvhd_hdom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
+      cy.get(cesc('#\\/dfvhd_hdom')).should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
       // for most vectors, tails stay fixed and head changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -8919,7 +8915,7 @@ describe('Vector Tag Tests', function () {
       })
 
 
-      cy.get('#\\/vhd2_tdom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
+      cy.get(cesc('#\\/vhd2_tdom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
       // since moved tails directly, heads stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -9083,7 +9079,7 @@ describe('Vector Tag Tests', function () {
       })
 
 
-      cy.get('#\\/vhd2_hdom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/vhd2_hdom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // since moved heads directly, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -9247,7 +9243,7 @@ describe('Vector Tag Tests', function () {
       })
 
 
-      cy.get('#\\/tfvhd2_dom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])}`)
+      cy.get(cesc('#\\/tfvhd2_dom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])}`)
 
 
       // if defined by head, head stays fixed and displacement changes
@@ -9414,7 +9410,7 @@ describe('Vector Tag Tests', function () {
         args: { x: hvhd[0], y: hvhd[1] }
       })
 
-      cy.get('#\\/hfvhd2_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/hfvhd2_dom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
 
       // for most vectors, tails stay fixed and displacement changes
@@ -9580,7 +9576,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: dvhd }
       })
 
-      cy.get('#\\/dfvhd2_hdom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
+      cy.get(cesc('#\\/dfvhd2_hdom')).should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
       // for most vectors, tails stay fixed and head changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -9719,9 +9715,9 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     })
 
@@ -9739,7 +9735,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: [9, 7] }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(8,5)')
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(8,5)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9747,7 +9743,7 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_math1'].stateValues.value).eqls(["vector", 8, 5]);
     })
 
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(8,5)')
     })
 
@@ -9760,7 +9756,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: [-2, 6] }
       })
     })
-    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(11,1)')
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').should('contain.text', '(11,1)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9768,7 +9764,7 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_math1'].stateValues.value).eqls(["vector", 11, 1]);
     })
 
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(11,1)')
     })
 
@@ -9795,13 +9791,13 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let x1 = 1, y1 = 0;
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
-    cy.get('#\\/v1h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+    cy.get(cesc('#\\/v1h')).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9826,7 +9822,7 @@ describe('Vector Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/v1h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc('#\\/v1h')).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
 
       cy.window().then(async (win) => {
@@ -9852,7 +9848,7 @@ describe('Vector Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/v1t').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc('#\\/v1t')).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
 
       cy.window().then(async (win) => {
@@ -9878,7 +9874,7 @@ describe('Vector Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get('#\\/v2t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc('#\\/v2t')).should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9902,7 +9898,7 @@ describe('Vector Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/v2h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc('#\\/v2h')).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9926,7 +9922,7 @@ describe('Vector Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/v3h').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc('#\\/v3h')).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9951,7 +9947,7 @@ describe('Vector Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get('#\\/v3t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc('#\\/v3t')).should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9984,7 +9980,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let a = 1;
     let b = 2;
@@ -9992,15 +9988,15 @@ describe('Vector Tag Tests', function () {
     let dy = 4 - b;
 
     cy.log('Test values displayed in browser')
-    cy.get("#\\/v1x").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/v1x")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`${dx}`)
     });
 
-    cy.get("#\\/v1y").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/v1y")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`${dy}`)
     });
 
-    cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_vector1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`(${dx},${dy})`)
     });
 
@@ -10021,21 +10017,21 @@ describe('Vector Tag Tests', function () {
     let dx2 = a2 - 3;
     let dy2 = 4 - b2;
 
-    cy.get('#\\/a textarea').type(`{end}{backspace}${a2}`, { force: true });
-    cy.get('#\\/b textarea').type(`{end}{backspace}${b2}`, { force: true }).blur();
+    cy.get(cesc('#\\/a') + ' textarea').type(`{end}{backspace}${a2}`, { force: true });
+    cy.get(cesc('#\\/b') + ' textarea').type(`{end}{backspace}${b2}`, { force: true }).blur();
 
-    cy.get("#\\/v1x .mjx-mrow").should('contain.text', `${nInDOM(dx2)}`)
-    cy.get("#\\/v1y .mjx-mrow").should('contain.text', `${nInDOM(dy2)}`)
+    cy.get(cesc("#\\/v1x") + " .mjx-mrow").should('contain.text', `${nInDOM(dx2)}`)
+    cy.get(cesc("#\\/v1y") + " .mjx-mrow").should('contain.text', `${nInDOM(dy2)}`)
 
-    cy.get("#\\/v1x").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/v1x")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`${dx2}`)
     });
 
-    cy.get("#\\/v1y").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/v1y")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`${dy2}`)
     });
 
-    cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_vector1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`(${dx2},${dy2})`)
     });
 
@@ -10063,7 +10059,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -10078,7 +10074,7 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
     })
 
@@ -10098,7 +10094,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: [tailx, taily] }
       })
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10124,7 +10120,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -10139,7 +10135,7 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
     })
 
@@ -10159,7 +10155,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: [headx, heady] }
       })
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10185,7 +10181,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -10200,7 +10196,7 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
     })
 
@@ -10220,7 +10216,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: [tailx, taily] }
       })
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10256,7 +10252,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -10394,7 +10390,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -10532,7 +10528,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -10670,7 +10666,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -10808,7 +10804,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -10946,7 +10942,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -11084,7 +11080,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -11222,7 +11218,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -11360,7 +11356,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tailx = 0;
     let taily = 0;
@@ -11491,18 +11487,18 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_vector1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/t').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/t')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.get('#\\/h').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/h')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
-    cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/d')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -11558,9 +11554,9 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(4)})`)
+    cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(4)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11597,7 +11593,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: [1, 2] }
       })
 
-      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -11614,7 +11610,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: [-4, 5] }
       })
 
-      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
+      cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v1"].stateValues.head).eqls([-4, 5])
@@ -11630,7 +11626,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: [1, 2] }
       })
 
-      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v3h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.head).eqls([1, 2])
@@ -11646,7 +11642,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: [-4, 5] }
       })
 
-      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
+      cy.get(cesc("#\\/v3h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.head).eqls([-4, 5])
@@ -11663,7 +11659,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: [1, 2] }
       })
 
-      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v2h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.head).eqls([1, 2])
@@ -11679,7 +11675,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: [5, 7] }
       })
 
-      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
+      cy.get(cesc("#\\/v2h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.head).eqls([-4, -5])
@@ -11694,7 +11690,7 @@ describe('Vector Tag Tests', function () {
         componentName: "/v5",
         args: { headcoords: [1, 2] }
       })
-      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v5h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.head).eqls([1, 2])
@@ -11709,7 +11705,7 @@ describe('Vector Tag Tests', function () {
         componentName: "/v5",
         args: { tailcoords: [5, 7] }
       })
-      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
+      cy.get(cesc("#\\/v5h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.head).eqls([-4, -5])
@@ -11725,7 +11721,7 @@ describe('Vector Tag Tests', function () {
         componentName: "/v4",
         args: { headcoords: [-1, 1] }
       })
-      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
+      cy.get(cesc("#\\/v4h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.head).eqls([-8, -6])
@@ -11745,7 +11741,7 @@ describe('Vector Tag Tests', function () {
       // since based on tail and displacement
       // Vector sets displacement to try to keep head in the same place
 
-      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
+      cy.get(cesc("#\\/v4h") + " .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.head).eqls([4, -8])
@@ -11761,7 +11757,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: [-1, 1] }
       })
 
-      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
+      cy.get(cesc("#\\/v6h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.head).eqls([-8, -6])
@@ -11780,7 +11776,7 @@ describe('Vector Tag Tests', function () {
       // since based on tail and displacement
       // Vector sets displacement to try to keep head in the same place
 
-      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
+      cy.get(cesc("#\\/v6h") + " .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.head).eqls([4, -8])
@@ -11827,7 +11823,7 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tails = [
       [0, 0],
@@ -11851,7 +11847,7 @@ describe('Vector Tag Tests', function () {
 
     let displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-    cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(tails[0][0])},${nInDOM(tails[0][1])})`)
+    cy.get(cesc("#\\/v0t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[0][0])},${nInDOM(tails[0][1])})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11883,7 +11879,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tails[0] }
       })
 
-      cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(tails[0][0])},${nInDOM(tails[0][1])})`)
+      cy.get(cesc("#\\/v0t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[0][0])},${nInDOM(tails[0][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -11914,7 +11910,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: heads[0] }
       })
 
-      cy.get("#\\/v0h .mjx-mrow").should('contain.text', `(${nInDOM(heads[0][0])},${nInDOM(heads[0][1])})`)
+      cy.get(cesc("#\\/v0h") + " .mjx-mrow").should('contain.text', `(${nInDOM(heads[0][0])},${nInDOM(heads[0][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -11943,7 +11939,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: heads[1] }
       })
 
-      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(heads[1][0])},${nInDOM(heads[1][1])})`)
+      cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(heads[1][0])},${nInDOM(heads[1][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -11975,7 +11971,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tails[1] }
       })
 
-      cy.get("#\\/v1t .mjx-mrow").should('contain.text', `(${nInDOM(tails[1][0])},${nInDOM(tails[1][1])})`)
+      cy.get(cesc("#\\/v1t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[1][0])},${nInDOM(tails[1][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12004,7 +12000,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tails[2] }
       })
 
-      cy.get("#\\/v2t .mjx-mrow").should('contain.text', `(${nInDOM(tails[2][0])},${nInDOM(tails[2][1])})`)
+      cy.get(cesc("#\\/v2t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[2][0])},${nInDOM(tails[2][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12033,7 +12029,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: heads[2] }
       })
 
-      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(heads[2][0])},${nInDOM(heads[2][1])})`)
+      cy.get(cesc("#\\/v2h") + " .mjx-mrow").should('contain.text', `(${nInDOM(heads[2][0])},${nInDOM(heads[2][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12064,7 +12060,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: heads[3] }
       })
 
-      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(heads[3][0])},${nInDOM(heads[3][1])})`)
+      cy.get(cesc("#\\/v3h") + " .mjx-mrow").should('contain.text', `(${nInDOM(heads[3][0])},${nInDOM(heads[3][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12096,7 +12092,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tails[3] }
       })
 
-      cy.get("#\\/v3t .mjx-mrow").should('contain.text', `(${nInDOM(tails[3][0])},${nInDOM(tails[3][1])})`)
+      cy.get(cesc("#\\/v3t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[3][0])},${nInDOM(tails[3][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12127,7 +12123,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tails[4] }
       })
 
-      cy.get("#\\/v4t .mjx-mrow").should('contain.text', `(${nInDOM(tails[4][0])},${nInDOM(tails[4][1])})`)
+      cy.get(cesc("#\\/v4t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[4][0])},${nInDOM(tails[4][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12157,7 +12153,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: heads[4] }
       })
 
-      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(heads[4][0])},${nInDOM(heads[4][1])})`)
+      cy.get(cesc("#\\/v4h") + " .mjx-mrow").should('contain.text', `(${nInDOM(heads[4][0])},${nInDOM(heads[4][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12188,7 +12184,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: heads[5] }
       })
 
-      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(heads[5][0])},${nInDOM(heads[5][1])})`)
+      cy.get(cesc("#\\/v5h") + " .mjx-mrow").should('contain.text', `(${nInDOM(heads[5][0])},${nInDOM(heads[5][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12222,7 +12218,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tails[5] }
       })
 
-      cy.get("#\\/v5t .mjx-mrow").should('contain.text', `(${nInDOM(tails[5][0])},${nInDOM(tails[5][1])})`)
+      cy.get(cesc("#\\/v5t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[5][0])},${nInDOM(tails[5][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12254,7 +12250,7 @@ describe('Vector Tag Tests', function () {
         args: { tailcoords: tails[6] }
       })
 
-      cy.get("#\\/v6t .mjx-mrow").should('contain.text', `(${nInDOM(tails[6][0])},${nInDOM(tails[6][1])})`)
+      cy.get(cesc("#\\/v6t") + " .mjx-mrow").should('contain.text', `(${nInDOM(tails[6][0])},${nInDOM(tails[6][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12286,7 +12282,7 @@ describe('Vector Tag Tests', function () {
         args: { headcoords: heads[6] }
       })
 
-      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(heads[6][0])},${nInDOM(heads[6][1])})`)
+      cy.get(cesc("#\\/v6h") + " .mjx-mrow").should('contain.text', `(${nInDOM(heads[6][0])},${nInDOM(heads[6][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -12344,27 +12340,27 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/vdragt .mjx-mrow').should('contain.text', "(0,0)");
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').should('contain.text', "(0,0)");
 
-    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(1,1)")
-    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(1,2)")
-    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(1,3)")
-    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,4)")
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vdragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,1)")
+    cy.get(cesc('#\\/vnoheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnoheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,2)")
+    cy.get(cesc('#\\/vnotaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnotaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,3)")
+    cy.get(cesc('#\\/vnoheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,4)")
 
-    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
-    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(1,6)")
-    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,8)")
+    cy.get(cesc('#\\/vnodragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get(cesc('#\\/vnodragheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,6)")
+    cy.get(cesc('#\\/vnodragtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,8)")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12522,25 +12518,25 @@ describe('Vector Tag Tests', function () {
 
     })
 
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').should('contain.text', "(2,8)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').should('contain.text', "(2,8)")
 
-    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(2,1)")
-    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(1,2)")
-    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(2,3)")
-    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,4)")
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vdragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,1)")
+    cy.get(cesc('#\\/vnoheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnoheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,2)")
+    cy.get(cesc('#\\/vnotaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnotaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,3)")
+    cy.get(cesc('#\\/vnoheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,4)")
 
-    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
-    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(2,6)")
-    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(2,8)")
+    cy.get(cesc('#\\/vnodragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get(cesc('#\\/vnodragheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,6)")
+    cy.get(cesc('#\\/vnodragtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,8)")
 
 
     cy.window().then(async (win) => {
@@ -12644,25 +12640,25 @@ describe('Vector Tag Tests', function () {
 
     })
 
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').should('contain.text', "(−1,−8)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').should('contain.text', "(−1,−8)")
 
-    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−1,−1)")
-    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(2,1)")
-    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−1,−2)")
-    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(1,2)")
-    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(2,3)")
-    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(1,4)")
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−1)")
+    cy.get(cesc('#\\/vdragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,1)")
+    cy.get(cesc('#\\/vnoheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−2)")
+    cy.get(cesc('#\\/vnoheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,2)")
+    cy.get(cesc('#\\/vnotaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnotaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,3)")
+    cy.get(cesc('#\\/vnoheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,4)")
 
-    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
-    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(2,6)")
-    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
-    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(2,8)")
+    cy.get(cesc('#\\/vnodragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get(cesc('#\\/vnodragheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,6)")
+    cy.get(cesc('#\\/vnodragtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
+    cy.get(cesc('#\\/vnodragtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,8)")
 
 
     cy.window().then(async (win) => {
@@ -12777,25 +12773,25 @@ describe('Vector Tag Tests', function () {
 
     })
 
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').should('contain.text', "(3,4)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').should('contain.text', "(3,4)")
 
-    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−2,−1)")
-    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(3,1)")
-    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−2,−2)")
-    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(3,2)")
-    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
-    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(3,3)")
-    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(3,4)")
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−1)")
+    cy.get(cesc('#\\/vdragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,1)")
+    cy.get(cesc('#\\/vnoheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−2)")
+    cy.get(cesc('#\\/vnoheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,2)")
+    cy.get(cesc('#\\/vnotaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
+    cy.get(cesc('#\\/vnotaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,3)")
+    cy.get(cesc('#\\/vnoheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,4)")
 
-    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
-    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(2,6)")
-    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
-    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(2,8)")
+    cy.get(cesc('#\\/vnodragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get(cesc('#\\/vnodragheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,6)")
+    cy.get(cesc('#\\/vnodragtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
+    cy.get(cesc('#\\/vnodragtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(2,8)")
 
 
 
@@ -12904,25 +12900,25 @@ describe('Vector Tag Tests', function () {
 
 
 
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').should('contain.text', "(4,8)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').should('contain.text', "(4,8)")
 
-    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−2,−1)")
-    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(4,1)")
-    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−2,−2)")
-    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(3,2)")
-    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
-    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(4,3)")
-    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(3,4)")
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−1)")
+    cy.get(cesc('#\\/vdragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,1)")
+    cy.get(cesc('#\\/vnoheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−2)")
+    cy.get(cesc('#\\/vnoheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,2)")
+    cy.get(cesc('#\\/vnotaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
+    cy.get(cesc('#\\/vnotaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,3)")
+    cy.get(cesc('#\\/vnoheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,4)")
 
-    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
-    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
-    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(4,8)")
+    cy.get(cesc('#\\/vnodragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get(cesc('#\\/vnodragheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get(cesc('#\\/vnodragtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−7)")
+    cy.get(cesc('#\\/vnodragtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−1,−8)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
 
 
 
@@ -13030,25 +13026,25 @@ describe('Vector Tag Tests', function () {
     })
 
 
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').should('contain.text', "(−3,−8)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').should('contain.text', "(−3,−8)")
 
-    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−3,−1)")
-    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(4,1)")
-    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−3,−2)")
-    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(3,2)")
-    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
-    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(4,3)")
-    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(3,4)")
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').eq(0).should('have.text', "(−3,−1)")
+    cy.get(cesc('#\\/vdragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,1)")
+    cy.get(cesc('#\\/vnoheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(−3,−2)")
+    cy.get(cesc('#\\/vnoheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,2)")
+    cy.get(cesc('#\\/vnotaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−3)")
+    cy.get(cesc('#\\/vnotaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,3)")
+    cy.get(cesc('#\\/vnoheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−2,−4)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(3,4)")
 
-    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
-    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−7)")
-    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−8)")
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(4,8)")
+    cy.get(cesc('#\\/vnodragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get(cesc('#\\/vnodragheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get(cesc('#\\/vnodragtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−3,−7)")
+    cy.get(cesc('#\\/vnodragtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−3,−8)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
 
 
 
@@ -13166,25 +13162,25 @@ describe('Vector Tag Tests', function () {
     })
 
 
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').should('contain.text', "(5,4)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').should('contain.text', "(5,4)")
 
-    cy.get('#\\/vdragt .mjx-mrow').eq(0).should('have.text', "(−4,−1)")
-    cy.get('#\\/vdragh .mjx-mrow').eq(0).should('have.text', "(5,1)")
-    cy.get('#\\/vnoheaddragt .mjx-mrow').eq(0).should('have.text', "(−4,−2)")
-    cy.get('#\\/vnoheaddragh .mjx-mrow').eq(0).should('have.text', "(5,2)")
-    cy.get('#\\/vnotaildragt .mjx-mrow').eq(0).should('have.text', "(−4,−3)")
-    cy.get('#\\/vnotaildragh .mjx-mrow').eq(0).should('have.text', "(5,3)")
-    cy.get('#\\/vnoheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−4,−4)")
-    cy.get('#\\/vnoheadtaildragh .mjx-mrow').eq(0).should('have.text', "(5,4)")
+    cy.get(cesc('#\\/vdragt') + ' .mjx-mrow').eq(0).should('have.text', "(−4,−1)")
+    cy.get(cesc('#\\/vdragh') + ' .mjx-mrow').eq(0).should('have.text', "(5,1)")
+    cy.get(cesc('#\\/vnoheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(−4,−2)")
+    cy.get(cesc('#\\/vnoheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(5,2)")
+    cy.get(cesc('#\\/vnotaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−4,−3)")
+    cy.get(cesc('#\\/vnotaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(5,3)")
+    cy.get(cesc('#\\/vnoheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−4,−4)")
+    cy.get(cesc('#\\/vnoheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(5,4)")
 
-    cy.get('#\\/vnodragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragh .mjx-mrow').eq(0).should('have.text', "(1,5)")
-    cy.get('#\\/vnodragheaddragt .mjx-mrow').eq(0).should('have.text', "(0,0)")
-    cy.get('#\\/vnodragheaddragh .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get('#\\/vnodragtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−7)")
-    cy.get('#\\/vnodragtaildragh .mjx-mrow').eq(0).should('have.text', "(1,7)")
-    cy.get('#\\/vnodragheadtaildragt .mjx-mrow').eq(0).should('have.text', "(−3,−8)")
-    cy.get('#\\/vnodragheadtaildragh .mjx-mrow').eq(0).should('have.text', "(4,8)")
+    cy.get(cesc('#\\/vnodragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,5)")
+    cy.get(cesc('#\\/vnodragheaddragt') + ' .mjx-mrow').eq(0).should('have.text', "(0,0)")
+    cy.get(cesc('#\\/vnodragheaddragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get(cesc('#\\/vnodragtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−3,−7)")
+    cy.get(cesc('#\\/vnodragtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(1,7)")
+    cy.get(cesc('#\\/vnodragheadtaildragt') + ' .mjx-mrow').eq(0).should('have.text', "(−3,−8)")
+    cy.get(cesc('#\\/vnodragheadtaildragh') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
 
 
 
@@ -13249,16 +13245,16 @@ describe('Vector Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let tlx = -2, tly = 1;
     let hdx = 5, hdy = 4;
     let len = Math.sqrt((tly - hdy) ** 2 + (tlx - hdx) ** 2);
 
-    cy.get('#\\/magnitude').should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
-    cy.get('#\\/A .mjx-mrow').eq(0).should('have.text', '(−2,1)');
-    cy.get('#\\/B .mjx-mrow').eq(0).should('have.text', '(5,4)');
+    cy.get(cesc('#\\/magnitude')).should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
+    cy.get(cesc('#\\/A') + ' .mjx-mrow').eq(0).should('have.text', '(−2,1)');
+    cy.get(cesc('#\\/B') + ' .mjx-mrow').eq(0).should('have.text', '(5,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13276,9 +13272,9 @@ describe('Vector Tag Tests', function () {
         args: { x: tlx, y: tly }
       })
 
-      cy.get('#\\/magnitude').should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
-      cy.get('#\\/A .mjx-mrow').eq(0).should('have.text', '(7,2)');
-      cy.get('#\\/B .mjx-mrow').eq(0).should('have.text', '(5,4)');
+      cy.get(cesc('#\\/magnitude')).should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
+      cy.get(cesc('#\\/A') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)');
+      cy.get(cesc('#\\/B') + ' .mjx-mrow').eq(0).should('have.text', '(5,4)');
 
     })
 
@@ -13288,12 +13284,12 @@ describe('Vector Tag Tests', function () {
     })
 
 
-    cy.get('#\\/mimagnitude textarea').type("{ctrl+home}{shift+end}{backspace}5sqrt2{enter}", { force: true }).then(() => {
+    cy.get(cesc('#\\/mimagnitude') + ' textarea').type("{ctrl+home}{shift+end}{backspace}5sqrt2{enter}", { force: true }).then(() => {
       len = 5 * Math.sqrt(2);
 
-      cy.get('#\\/magnitude').should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
-      cy.get('#\\/A .mjx-mrow').eq(0).should('have.text', '(7,2)');
-      cy.get('#\\/B .mjx-mrow').eq(0).should('have.text', '(2,7)');
+      cy.get(cesc('#\\/magnitude')).should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
+      cy.get(cesc('#\\/A') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)');
+      cy.get(cesc('#\\/B') + ' .mjx-mrow').eq(0).should('have.text', '(2,7)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13302,15 +13298,15 @@ describe('Vector Tag Tests', function () {
 
 
       cy.log("ignore requested negative magnitude");
-      cy.get('#\\/mimagnitude textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
+      cy.get(cesc('#\\/mimagnitude') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
 
-      cy.get("#\\/bi").click();
-      cy.get('#\\/bi2').should('have.text', 'true');  // so know that core has responded to both requests
+      cy.get(cesc("#\\/bi")).click();
+      cy.get(cesc('#\\/bi2')).should('have.text', 'true');  // so know that core has responded to both requests
 
-      cy.get('#\\/magnitude').should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
-      cy.get('#\\/A .mjx-mrow').eq(0).should('have.text', '(7,2)');
-      cy.get('#\\/B .mjx-mrow').eq(0).should('have.text', '(2,7)');
+      cy.get(cesc('#\\/magnitude')).should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
+      cy.get(cesc('#\\/A') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)');
+      cy.get(cesc('#\\/B') + ' .mjx-mrow').eq(0).should('have.text', '(2,7)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13331,9 +13327,9 @@ describe('Vector Tag Tests', function () {
         args: { x: hdx, y: hdy }
       })
 
-      cy.get('#\\/magnitude').should('contain.text', String(Math.round(len * 10 ** 8) / 10 ** 8))
-      cy.get('#\\/A .mjx-mrow').eq(0).should('have.text', '(7,2)');
-      cy.get('#\\/B .mjx-mrow').eq(0).should('have.text', '(−9,5)');
+      cy.get(cesc('#\\/magnitude')).should('contain.text', String(Math.round(len * 10 ** 8) / 10 ** 8))
+      cy.get(cesc('#\\/A') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)');
+      cy.get(cesc('#\\/B') + ' .mjx-mrow').eq(0).should('have.text', '(−9,5)');
     })
 
     cy.window().then(async (win) => {
@@ -13377,142 +13373,142 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/v .mjx-mrow').should('contain.text', '(1,0)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').should('contain.text', '(1,0)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
 
     cy.log('change head using alt vector')
-    cy.get('#\\/mivh textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 6,9{enter}", { force: true });
+    cy.get(cesc('#\\/mivh') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 6,9{enter}", { force: true });
 
-    cy.get('#\\/vHead .mjx-mrow').should('contain.text', '(6,9)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').should('contain.text', '(6,9)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
 
 
     cy.log('change tail using alt vector')
-    cy.get('#\\/mivt textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -3,7{enter}", { force: true });
-    cy.get('#\\/vTail .mjx-mrow').should('contain.text', '(−3,7)');
+    cy.get(cesc('#\\/mivt') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -3,7{enter}", { force: true });
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').should('contain.text', '(−3,7)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(3,16)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(3,16)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(3,16)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(3,16)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
 
     cy.log('change displacement using alt vector')
-    cy.get('#\\/mivd textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -4,1{enter}", { force: true });
-    cy.get('#\\/vDisplacement .mjx-mrow').should('contain.text', '(−4,1)');
+    cy.get(cesc('#\\/mivd') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -4,1{enter}", { force: true });
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').should('contain.text', '(−4,1)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(−4,1)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(−4,1)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(−7,8)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(−4,1)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(−7,8)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(−7,8)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(−7,8)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(−4,1)');
 
 
     cy.log('cannot change dimnension through displacement')
-    cy.get('#\\/mivd textarea').type("{ctrl+home}{shift+end}{backspace}(9,8,7{enter}", { force: true });
-    cy.get('#\\/vDisplacement .mjx-mrow').should('contain.text', '(9,8)');
+    cy.get(cesc('#\\/mivd') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(9,8,7{enter}", { force: true });
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').should('contain.text', '(9,8)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(6,15)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(6,15)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(6,15)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(6,15)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
 
 
     cy.log('cannot change dimnension through tail')
-    cy.get('#\\/mivt textarea').type("{ctrl+home}{shift+end}{backspace}(-5,-6,-7{enter}", { force: true });
-    cy.get('#\\/vTail .mjx-mrow').should('contain.text', '(−5,−6)');
+    cy.get(cesc('#\\/mivt') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(-5,-6,-7{enter}", { force: true });
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').should('contain.text', '(−5,−6)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(4,2)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(4,2)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(4,2)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(4,2)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
 
 
     cy.log('cannot change dimnension through head')
-    cy.get('#\\/mivh textarea').type("{ctrl+home}{shift+end}{backspace}(9,-9,7{enter}", { force: true });
-    cy.get('#\\/vHead .mjx-mrow').should('contain.text', '(9,−9)');
+    cy.get(cesc('#\\/mivh') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(9,-9,7{enter}", { force: true });
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').should('contain.text', '(9,−9)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(14,−3)'); ``
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(14,−3)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(9,−9)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(14,−3)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(9,−9)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(14,−3)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(14,−3)'); ``
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(14,−3)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(9,−9)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(14,−3)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(9,−9)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(14,−3)');
 
 
 
     cy.log('cannot change dimnension through copied head')
-    cy.get('#\\/miv2h textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 0,1,2,3{enter}", { force: true });
-    cy.get('#\\/vHead .mjx-mrow').should('contain.text', '(0,1)');
+    cy.get(cesc('#\\/miv2h') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 0,1,2,3{enter}", { force: true });
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').should('contain.text', '(0,1)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(5,7)'); ``
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(5,7)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(0,1)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(5,7)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(0,1)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)'); ``
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(0,1)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(0,1)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
 
 
     cy.log('cannot change dimnension through copied tail')
-    cy.get('#\\/miv2t textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 2, 4, 6, 8{enter}", { force: true });
-    cy.get('#\\/vTail .mjx-mrow').should('contain.text', '(2,4)');
+    cy.get(cesc('#\\/miv2t') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 2, 4, 6, 8{enter}", { force: true });
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').should('contain.text', '(2,4)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(5,7)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(5,7)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(7,11)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(5,7)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(7,11)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(7,11)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(7,11)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
 
 
     cy.log('cannot change dimnension through copied displacement')
-    cy.get('#\\/miv2d textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -8, -6, =4, -2{enter}", { force: true });
-    cy.get('#\\/vDisplacement .mjx-mrow').should('contain.text', '(−8,−6)');
+    cy.get(cesc('#\\/miv2d') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -8, -6, =4, -2{enter}", { force: true });
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').should('contain.text', '(−8,−6)');
 
-    cy.get('#\\/v .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
-    cy.get('#\\/vHead .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
-    cy.get('#\\/vTail .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/vDisplacement .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
-    cy.get('#\\/v2Head .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
-    cy.get('#\\/v2Tail .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/v2Displacement .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+    cy.get(cesc('#\\/v') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+    cy.get(cesc('#\\/vHead') + ' .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
+    cy.get(cesc('#\\/vTail') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/vDisplacement') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+    cy.get(cesc('#\\/v2Head') + ' .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
+    cy.get(cesc('#\\/v2Tail') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/v2Displacement') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
 
 
   })
@@ -13552,44 +13548,44 @@ describe('Vector Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/v1 .mjx-mrow').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/v1') + ' .mjx-mrow').should('contain.text', '(1,2)');
 
-    cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v3 .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v3') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
 
-    cy.get('#\\/v1a .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v2a .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v3a .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v2a') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v3a') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
 
-    cy.get('#\\/v1d .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v2d .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v3d .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v1d') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v2d') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v3d') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
 
-    cy.get('#\\/v1ad .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v2ad .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v3ad .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v1ad') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v2ad') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v3ad') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
 
-    cy.get('#\\/bi').click();
+    cy.get(cesc('#\\/bi')).click();
 
-    cy.get('#\\/v3 .mjx-mrow').should('contain.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v3') + ' .mjx-mrow').should('contain.text', '⟨1,2⟩');
 
 
-    cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v3 .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v3') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
 
-    cy.get('#\\/v1a .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v2a .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v3a .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v2a') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v3a') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
 
-    cy.get('#\\/v1d .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v2d .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v3d .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v1d') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v2d') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v3d') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
 
-    cy.get('#\\/v1ad .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
-    cy.get('#\\/v2ad .mjx-mrow').eq(0).should('have.text', '(1,2)');
-    cy.get('#\\/v3ad .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v1ad') + ' .mjx-mrow').eq(0).should('have.text', '⟨1,2⟩');
+    cy.get(cesc('#\\/v2ad') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
+    cy.get(cesc('#\\/v3ad') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)');
 
 
     cy.window().then(async (win) => {
@@ -13622,24 +13618,24 @@ describe('Vector Tag Tests', function () {
 
 
 
-    cy.get('#\\/v3 .mjx-mrow').should('contain.text', '⟨4,6⟩');
+    cy.get(cesc('#\\/v3') + ' .mjx-mrow').should('contain.text', '⟨4,6⟩');
 
 
-    cy.get('#\\/v1 .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/v2 .mjx-mrow').eq(0).should('have.text', '⟨3,5⟩');
-    cy.get('#\\/v3 .mjx-mrow').eq(0).should('have.text', '⟨4,6⟩');
+    cy.get(cesc('#\\/v1') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/v2') + ' .mjx-mrow').eq(0).should('have.text', '⟨3,5⟩');
+    cy.get(cesc('#\\/v3') + ' .mjx-mrow').eq(0).should('have.text', '⟨4,6⟩');
 
-    cy.get('#\\/v1a .mjx-mrow').eq(0).should('have.text', '⟨2,4⟩');
-    cy.get('#\\/v2a .mjx-mrow').eq(0).should('have.text', '(3,5)');
-    cy.get('#\\/v3a .mjx-mrow').eq(0).should('have.text', '(4,6)');
+    cy.get(cesc('#\\/v1a') + ' .mjx-mrow').eq(0).should('have.text', '⟨2,4⟩');
+    cy.get(cesc('#\\/v2a') + ' .mjx-mrow').eq(0).should('have.text', '(3,5)');
+    cy.get(cesc('#\\/v3a') + ' .mjx-mrow').eq(0).should('have.text', '(4,6)');
 
-    cy.get('#\\/v1d .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/v2d .mjx-mrow').eq(0).should('have.text', '⟨3,5⟩');
-    cy.get('#\\/v3d .mjx-mrow').eq(0).should('have.text', '⟨4,6⟩');
+    cy.get(cesc('#\\/v1d') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/v2d') + ' .mjx-mrow').eq(0).should('have.text', '⟨3,5⟩');
+    cy.get(cesc('#\\/v3d') + ' .mjx-mrow').eq(0).should('have.text', '⟨4,6⟩');
 
-    cy.get('#\\/v1ad .mjx-mrow').eq(0).should('have.text', '⟨2,4⟩');
-    cy.get('#\\/v2ad .mjx-mrow').eq(0).should('have.text', '(3,5)');
-    cy.get('#\\/v3ad .mjx-mrow').eq(0).should('have.text', '(4,6)');
+    cy.get(cesc('#\\/v1ad') + ' .mjx-mrow').eq(0).should('have.text', '⟨2,4⟩');
+    cy.get(cesc('#\\/v2ad') + ' .mjx-mrow').eq(0).should('have.text', '(3,5)');
+    cy.get(cesc('#\\/v3ad') + ' .mjx-mrow').eq(0).should('have.text', '(4,6)');
 
   })
 
@@ -13665,9 +13661,9 @@ describe('Vector Tag Tests', function () {
     });
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Vector A is thick brown.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red vector.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black vector.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Vector A is thick brown.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a dark red vector.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin black vector.');
 
     cy.log('set dark mode')
     cy.get('#testRunner_toggleControls').click();
@@ -13676,9 +13672,9 @@ describe('Vector Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Vector A is thick yellow.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red vector.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white vector.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Vector A is thick yellow.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a light red vector.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin white vector.');
 
 
   });
@@ -13709,78 +13705,78 @@ describe('Vector Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'black');
-    cy.get('#\\/tc_variable_style').should('have.text', 'black');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
     // TODO: how to test color in graph
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'green');
-    cy.get('#\\/tc_variable_style').should('have.text', 'green');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'red with a blue background');
-    cy.get('#\\/tc_variable_style').should('have.text', 'red');
-    cy.get('#\\/bc_variable_style').should('have.text', 'blue');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'red with a blue background');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'red');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'blue');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(255, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgb(0, 0, 255)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
 
 
   })

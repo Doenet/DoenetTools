@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('BooleanInput Tag Tests', function () {
 
@@ -29,13 +21,13 @@ describe('BooleanInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test values displayed in browser')
 
-    cy.get('#\\/v1').should('have.text', "false");
-    cy.get("#\\/v2").should('have.text', "false");
+    cy.get(cesc('#\\/v1')).should('have.text', "false");
+    cy.get(cesc("#\\/v2")).should('have.text', "false");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -47,11 +39,11 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('check the box')
-    cy.get('#\\/bi1').click();
+    cy.get(cesc('#\\/bi1')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/v1').should('have.text', "true");
-    cy.get("#\\/v2").should('have.text', "true");
+    cy.get(cesc('#\\/v1')).should('have.text', "true");
+    cy.get(cesc("#\\/v2")).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -62,11 +54,11 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('uncheck the box')
-    cy.get('#\\/bi1').click();
+    cy.get(cesc('#\\/bi1')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/v1').should('have.text', "false");
-    cy.get("#\\/v2").should('have.text', "false");
+    cy.get(cesc('#\\/v1')).should('have.text', "false");
+    cy.get(cesc("#\\/v2")).should('have.text', "false");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -90,11 +82,11 @@ describe('BooleanInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test values displayed in browser')
-    cy.get("#\\/v1").should('have.text', "true");
+    cy.get(cesc("#\\/v1")).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -104,10 +96,10 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('uncheck the box')
-    cy.get('#\\/_booleaninput1').click();
+    cy.get(cesc('#\\/_booleaninput1')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get("#\\/v1").should('have.text', "false");
+    cy.get(cesc("#\\/v1")).should('have.text', "false");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -117,10 +109,10 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('recheck the box')
-    cy.get('#\\/_booleaninput1').click();
+    cy.get(cesc('#\\/_booleaninput1')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get("#\\/v1").should('have.text', "true");
+    cy.get(cesc("#\\/v1")).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -150,11 +142,11 @@ describe('BooleanInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get("#\\/v1").should('have.text', "true");
-    cy.get("#\\/v2").should('have.text', "false");
+    cy.get(cesc("#\\/v1")).should('have.text', "true");
+    cy.get(cesc("#\\/v2")).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
@@ -167,9 +159,9 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log("click the first input");
-    cy.get("#\\/bi1").click();
-    cy.get("#\\/v1").should('have.text', "false");
-    cy.get("#\\/v2").should('have.text', "false");
+    cy.get(cesc("#\\/bi1")).click();
+    cy.get(cesc("#\\/v1")).should('have.text', "false");
+    cy.get(cesc("#\\/v2")).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(false);
@@ -180,9 +172,9 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log("click the second input");
-    cy.get("#\\/bi1a").click();
-    cy.get("#\\/v1").should('have.text', "true");
-    cy.get("#\\/v2").should('have.text', "false");
+    cy.get(cesc("#\\/bi1a")).click();
+    cy.get(cesc("#\\/v1")).should('have.text', "true");
+    cy.get(cesc("#\\/v2")).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
@@ -194,9 +186,9 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log("click the third input");
-    cy.get("#\\/bi2").click();
-    cy.get("#\\/v1").should('have.text', "true");
-    cy.get("#\\/v2").should('have.text', "true");
+    cy.get(cesc("#\\/bi2")).click();
+    cy.get(cesc("#\\/v1")).should('have.text', "true");
+    cy.get(cesc("#\\/v2")).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
@@ -221,12 +213,12 @@ describe('BooleanInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/_boolean1').should('have.text', 'true');
-    cy.get("#\\/b2").should('have.text', 'true');
-    cy.get("#\\/b3").should('have.text', 'true');
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'true');
+    cy.get(cesc("#\\/b2")).should('have.text', 'true');
+    cy.get(cesc("#\\/b3")).should('have.text', 'true');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -237,13 +229,13 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('change value')
-    cy.get('#\\/_booleaninput1').click();
+    cy.get(cesc('#\\/_booleaninput1')).click();
 
-    // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
+    // cy.get(cesc('#\\/_booleaninput1_input')).should('not.have.attr', 'checked');
 
-    cy.get('#\\/_boolean1').should('have.text', 'false');
-    cy.get("#\\/b2").should('have.text', 'false');
-    cy.get("#\\/b3").should('have.text', 'false');
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'false');
+    cy.get(cesc("#\\/b2")).should('have.text', 'false');
+    cy.get(cesc("#\\/b3")).should('have.text', 'false');
 
 
     cy.window().then(async (win) => {
@@ -266,12 +258,12 @@ describe('BooleanInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'b');  // to wait until loaded
 
 
-    // cy.get('#\\/_booleaninput1_input').should('have.attr', 'checked');
+    // cy.get(cesc('#\\/_booleaninput1_input')).should('have.attr', 'checked');
 
-    cy.get('#\\/_boolean1').should('have.text', 'true');
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'true');
 
 
     cy.log("values revert if not updatable")
@@ -284,11 +276,11 @@ describe('BooleanInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'c');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'c');  // to wait until loaded
 
-    // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
+    // cy.get(cesc('#\\/_booleaninput1_input')).should('not.have.attr', 'checked');
 
-    cy.get('#\\/_boolean1').should('have.text', `false`);
+    cy.get(cesc('#\\/_boolean1')).should('have.text', `false`);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -297,11 +289,11 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('change value, but it reverts')
-    cy.get('#\\/_booleaninput1').click();
+    cy.get(cesc('#\\/_booleaninput1')).click();
 
-    // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
+    // cy.get(cesc('#\\/_booleaninput1_input')).should('not.have.attr', 'checked');
 
-    cy.get('#\\/_boolean1').should('have.text', `false`);
+    cy.get(cesc('#\\/_boolean1')).should('have.text', `false`);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -322,13 +314,13 @@ describe('BooleanInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n').should('have.text', '1')
-    cy.get('#\\/bi').click();
-    cy.get('#\\/n').should('have.text', '2')
-    cy.get('#\\/bi').click();
-    cy.get('#\\/n').should('have.text', '3')
+    cy.get(cesc('#\\/n')).should('have.text', '1')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/n')).should('have.text', '2')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/n')).should('have.text', '3')
 
   })
 
@@ -350,15 +342,15 @@ describe('BooleanInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test values displayed in browser')
 
-    cy.get('#\\/atb_input').should('not.be.checked');
-    cy.get('#\\/bi_input').should('not.be.checked');
-    cy.get('#\\/v1').should('have.text', "false");
-    cy.get("#\\/v2").should('have.text', "false");
+    cy.get(cesc('#\\/atb_input')).should('not.be.checked');
+    cy.get(cesc('#\\/bi_input')).should('not.be.checked');
+    cy.get(cesc('#\\/v1')).should('have.text', "false");
+    cy.get(cesc("#\\/v2")).should('have.text', "false");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -372,13 +364,13 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('check the box')
-    cy.get('#\\/bi').click();
+    cy.get(cesc('#\\/bi')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/atb_input').should('not.be.checked');
-    cy.get('#\\/bi_input').should('be.checked');
-    cy.get('#\\/v1').should('have.text', "true");
-    cy.get("#\\/v2").should('have.text', "true");
+    cy.get(cesc('#\\/atb_input')).should('not.be.checked');
+    cy.get(cesc('#\\/bi_input')).should('be.checked');
+    cy.get(cesc('#\\/v1')).should('have.text', "true");
+    cy.get(cesc("#\\/v2")).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -390,14 +382,14 @@ describe('BooleanInput Tag Tests', function () {
     });
 
     cy.log('set as toggle button')
-    cy.get('#\\/atb').click();
+    cy.get(cesc('#\\/atb')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/atb_input').should('be.checked');
+    cy.get(cesc('#\\/atb_input')).should('be.checked');
     // TODO: how to check the renderer if ToggleButton is selected
-    //cy.get('#\\/bi_input').should('be.checked');
-    cy.get('#\\/v1').should('have.text', "true");
-    cy.get("#\\/v2").should('have.text', "true");
+    //cy.get(cesc('#\\/bi_input')).should('be.checked');
+    cy.get(cesc('#\\/v1')).should('have.text', "true");
+    cy.get(cesc("#\\/v2")).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -410,14 +402,14 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log('turn off via toggle button')
-    cy.get('#\\/bi_input').click();
+    cy.get(cesc('#\\/bi_input')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/atb_input').should('be.checked');
+    cy.get(cesc('#\\/atb_input')).should('be.checked');
     // TODO: how to check the renderer if ToggleButton is selected
-    //cy.get('#\\/bi_input').should('not.be.checked');
-    cy.get('#\\/v1').should('have.text', "false");
-    cy.get("#\\/v2").should('have.text', "false");
+    //cy.get(cesc('#\\/bi_input')).should('not.be.checked');
+    cy.get(cesc('#\\/v1')).should('have.text', "false");
+    cy.get(cesc("#\\/v2")).should('have.text', "false");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -430,14 +422,14 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log('turn on via toggle button')
-    cy.get('#\\/bi_input').click();
+    cy.get(cesc('#\\/bi_input')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/atb_input').should('be.checked');
+    cy.get(cesc('#\\/atb_input')).should('be.checked');
     // TODO: how to check the renderer if ToggleButton is selected
-    //cy.get('#\\/bi_input').should('be.checked');
-    cy.get('#\\/v1').should('have.text', "true");
-    cy.get("#\\/v2").should('have.text', "true");
+    //cy.get(cesc('#\\/bi_input')).should('be.checked');
+    cy.get(cesc('#\\/v1')).should('have.text', "true");
+    cy.get(cesc("#\\/v2")).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -463,16 +455,16 @@ describe('BooleanInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test values displayed in browser')
 
-    cy.get('#\\/atb_input').should('not.be.checked');
-    cy.get('#\\/bi_input').should('not.be.checked');
-    cy.get('#\\/v').should('have.text', "false");
-    cy.get('#\\/atb').should('contain.text', 'It is ∫baf(x)dx')
-    cy.get('#\\/bi').should('contain.text', 'Hello ab')
+    cy.get(cesc('#\\/atb_input')).should('not.be.checked');
+    cy.get(cesc('#\\/bi_input')).should('not.be.checked');
+    cy.get(cesc('#\\/v')).should('have.text', "false");
+    cy.get(cesc('#\\/atb')).should('contain.text', 'It is ∫baf(x)dx')
+    cy.get(cesc('#\\/bi')).should('contain.text', 'Hello ab')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -486,15 +478,15 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log('set as toggle button')
-    cy.get('#\\/atb').click();
+    cy.get(cesc('#\\/atb')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/v').should('have.text', "true");
-    cy.get('#\\/atb_input').should('be.checked');
+    cy.get(cesc('#\\/v')).should('have.text', "true");
+    cy.get(cesc('#\\/atb_input')).should('be.checked');
     // TODO: how to check the renderer if ToggleButton is selected
-    //cy.get('#\\/bi_input').should('be.checked');
-    cy.get('#\\/atb').should('contain.text', 'It is ∫baf(x)dx')
-    cy.get('#\\/bi').should('contain.text', 'Hello ab')
+    //cy.get(cesc('#\\/bi_input')).should('be.checked');
+    cy.get(cesc('#\\/atb')).should('contain.text', 'It is ∫baf(x)dx')
+    cy.get(cesc('#\\/bi')).should('contain.text', 'Hello ab')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -521,16 +513,16 @@ describe('BooleanInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test values displayed in browser')
 
-    cy.get('#\\/asToggleButton_input').should('not.be.checked');
-    cy.get('#\\/AnotherInput_input').should('not.be.checked');
-    cy.get('#\\/v').should('have.text', "false");
-    cy.get('#\\/asToggleButton').should('contain.text', 'as toggle button')
-    cy.get('#\\/AnotherInput').should('contain.text', 'Another Input')
+    cy.get(cesc('#\\/asToggleButton_input')).should('not.be.checked');
+    cy.get(cesc('#\\/AnotherInput_input')).should('not.be.checked');
+    cy.get(cesc('#\\/v')).should('have.text', "false");
+    cy.get(cesc('#\\/asToggleButton')).should('contain.text', 'as toggle button')
+    cy.get(cesc('#\\/AnotherInput')).should('contain.text', 'Another Input')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -544,15 +536,15 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.log('set as toggle button')
-    cy.get('#\\/asToggleButton').click();
+    cy.get(cesc('#\\/asToggleButton')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/v').should('have.text', "true");
-    cy.get('#\\/asToggleButton_input').should('be.checked');
+    cy.get(cesc('#\\/v')).should('have.text', "true");
+    cy.get(cesc('#\\/asToggleButton_input')).should('be.checked');
     // TODO: how to check the renderer if ToggleButton is selected
-    //cy.get('#\\/AnotherInput_input').should('be.checked');
-    cy.get('#\\/asToggleButton').should('contain.text', 'as toggle button')
-    cy.get('#\\/AnotherInput').should('contain.text', 'Another Input')
+    //cy.get(cesc('#\\/AnotherInput_input')).should('be.checked');
+    cy.get(cesc('#\\/asToggleButton')).should('contain.text', 'as toggle button')
+    cy.get(cesc('#\\/AnotherInput')).should('contain.text', 'Another Input')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -624,17 +616,17 @@ describe('BooleanInput Tag Tests', function () {
 
     // TODO: how to click on the checkboxes and test if they are disabled?
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
 
 
     cy.log("move booleaninputs by dragging")
@@ -652,37 +644,37 @@ describe('BooleanInput Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move booleaninputs by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move booleaninputs by dragging')
@@ -700,11 +692,11 @@ describe('BooleanInput Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
 

@@ -1,13 +1,5 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('Endpoint Tag Tests', function () {
 
@@ -39,7 +31,7 @@ describe('Endpoint Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -64,8 +56,8 @@ describe('Endpoint Tag Tests', function () {
     })
 
     cy.log('switch C via boolean input')
-    cy.get('#\\/b1').click();
-    cy.get('#\\/b1a').should('have.text', 'true')
+    cy.get(cesc('#\\/b1')).click();
+    cy.get(cesc('#\\/b1a')).should('have.text', 'true')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -82,8 +74,8 @@ describe('Endpoint Tag Tests', function () {
     })
 
     cy.log('switch D via boolean input')
-    cy.get('#\\/b2').click();
-    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.get(cesc('#\\/b2')).click();
+    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

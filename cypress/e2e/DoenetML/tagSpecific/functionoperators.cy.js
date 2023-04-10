@@ -1,13 +1,9 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
 import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 function nInDOM(n) {
@@ -62,20 +58,20 @@ describe('Function Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc2('#' + x.componentName))
       let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc2('#' + x.componentName))
       let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc2('#' + x.componentName))
       let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc2('#' + x.componentName))
       let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc2('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
       let clampn35 = x => Math.min(5, Math.max(-3, x));
@@ -170,20 +166,20 @@ describe('Function Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc2('#' + x.componentName))
       let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc2('#' + x.componentName))
       let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc2('#' + x.componentName))
       let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc2('#' + x.componentName))
       let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc2('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
       let clampn35 = x => Math.min(5, Math.max(-3, x));
@@ -272,7 +268,7 @@ describe('Function Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -282,11 +278,11 @@ describe('Function Operator Tag Tests', function () {
       expect(stateVariables["/clampn35"].stateValues.label).eq("clamp 2")
 
       let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc2('#' + x.componentName))
       let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc2('#' + x.componentName))
       let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc2('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
       let clampn35 = x => Math.min(5, Math.max(-3, x));
@@ -372,20 +368,20 @@ describe('Function Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc2('#' + x.componentName))
       let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc2('#' + x.componentName))
       let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc2('#' + x.componentName))
       let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc2('#' + x.componentName))
       let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc2('#' + x.componentName))
 
       let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
       let wrapn23 = x => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
@@ -481,20 +477,20 @@ describe('Function Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc2('#' + x.componentName))
       let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc2('#' + x.componentName))
       let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc2('#' + x.componentName))
       let map4Replacements = stateVariables["/m4"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc2('#' + x.componentName))
       let map5Replacements = stateVariables["/m5"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
-      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc2('#' + x.componentName))
 
       let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
       let wrapn23 = x => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
@@ -594,12 +590,12 @@ describe('Function Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get(cesc('#/_m5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/_m5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)=sin(x+1)')
     });
-    cy.get(cesc('#/_m6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/_m6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal("f′(x)=cos(x+1)")
     });
 
@@ -659,17 +655,17 @@ describe('Function Operator Tag Tests', function () {
     })
 
 
-    cy.get(cesc('#/a') + ' textarea').type(`{end}{backspace}2`, { force: true });
-    cy.get(cesc('#/b') + ' textarea').type(`{end}{backspace}pi`, { force: true });
-    cy.get(cesc('#/c') + ' textarea').type(`{end}{backspace}e`, { force: true });
-    cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}q`, { force: true }).blur();
+    cy.get(cesc2('#/a') + ' textarea').type(`{end}{backspace}2`, { force: true });
+    cy.get(cesc2('#/b') + ' textarea').type(`{end}{backspace}pi`, { force: true });
+    cy.get(cesc2('#/c') + ' textarea').type(`{end}{backspace}e`, { force: true });
+    cy.get(cesc2('#/x') + ' textarea').type(`{end}{backspace}q`, { force: true }).blur();
 
 
-    cy.get(cesc('#/_m5') + ' .mjx-mrow').should('contain.text', 'f(q)=2sin(e+πq)')
-    cy.get(cesc('#/_m5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/_m5') + ' .mjx-mrow').should('contain.text', 'f(q)=2sin(e+πq)')
+    cy.get(cesc2('#/_m5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(q)=2sin(e+πq)')
     });
-    cy.get(cesc('#/_m6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/_m6')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal("f′(q)=2πcos(e+πq)")
     });
 
@@ -763,7 +759,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -858,7 +854,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -997,7 +993,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1163,7 +1159,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1309,7 +1305,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1389,7 +1385,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1511,7 +1507,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
@@ -1546,13 +1542,13 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)=sin(x)')
     });
 
-    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal("f′(x)=cos(x)")
     });
 
@@ -1576,7 +1572,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1618,7 +1614,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1692,7 +1688,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1861,7 +1857,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2088,7 +2084,7 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2229,7 +2225,7 @@ describe('Function Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     function fp(x, c1, c2, c3, c4, c5) {
@@ -2271,43 +2267,43 @@ describe('Function Operator Tag Tests', function () {
 
         expect(stateVariables[""])
 
-        cy.get('#\\/nMinima').should('have.text', nMinima.toString())
-        cy.get('#\\/nMinima2').should('have.text', nMinima.toString())
-        cy.get('#\\/min1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/nMinima')).should('have.text', nMinima.toString())
+        cy.get(cesc('#\\/nMinima2')).should('have.text', nMinima.toString())
+        cy.get(cesc('#\\/min1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.replace(/−/g, '-').trim()).equal(`(${minima[0][0]},${me.math.round(minima[0][1], 5)})`)
         })
-        cy.get('#\\/min12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/min12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.replace(/−/g, '-').trim()).equal(`(${minima[0][0]},${me.math.round(minima[0][1], 5)})`)
         })
         if (nMinima === 2) {
-          cy.get('#\\/min2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc('#\\/min2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.replace(/−/g, '-').trim()).equal(`(${minima[1][0]},${me.math.round(minima[1][1], 5)})`)
           })
-          cy.get('#\\/min22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc('#\\/min22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.replace(/−/g, '-').trim()).equal(`(${minima[1][0]},${me.math.round(minima[1][1], 5)})`)
           })
         } else {
-          cy.get('#\\/min2').should('not.exist')
-          cy.get('#\\/min22').should('not.exist')
+          cy.get(cesc('#\\/min2')).should('not.exist')
+          cy.get(cesc('#\\/min22')).should('not.exist')
         }
-        cy.get('#\\/nMaxima').should('have.text', nMaxima.toString())
-        cy.get('#\\/nMaxima2').should('have.text', nMaxima.toString())
-        cy.get('#\\/max1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/nMaxima')).should('have.text', nMaxima.toString())
+        cy.get(cesc('#\\/nMaxima2')).should('have.text', nMaxima.toString())
+        cy.get(cesc('#\\/max1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[0][0]},${me.math.round(maxima[0][1], 5)})`)
         })
-        cy.get('#\\/max12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/max12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[0][0]},${me.math.round(maxima[0][1], 5)})`)
         })
         if (nMaxima === 2) {
-          cy.get('#\\/max2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc('#\\/max2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[1][0]},${me.math.round(maxima[1][1], 5)})`)
           })
-          cy.get('#\\/max22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc('#\\/max22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[1][0]},${me.math.round(maxima[1][1], 5)})`)
           })
         } else {
-          cy.get('#\\/max2').should('not.exist')
-          cy.get('#\\/max22').should('not.exist')
+          cy.get(cesc('#\\/max2')).should('not.exist')
+          cy.get(cesc('#\\/max22')).should('not.exist')
         }
       }
 
@@ -2318,38 +2314,38 @@ describe('Function Operator Tag Tests', function () {
       cy.window().then(async (win) => {
 
         c1 = 3;
-        cy.get(cesc('#/c_1') + ' textarea').type(`{end}{backspace}{backspace}${c1}{enter}`, { force: true });
-        cy.get(cesc('#/c_1a')).should('contain.text', nInDOM(c1))
+        cy.get(cesc2('#/c_1') + ' textarea').type(`{end}{backspace}{backspace}${c1}{enter}`, { force: true });
+        cy.get(cesc2('#/c_1a')).should('contain.text', nInDOM(c1))
         verifyExtrema(c1, c2, c3, c4, c5)
 
         c2 = -5;
-        cy.get(cesc('#/c_2') + ' textarea').type(`{end}{backspace}{backspace}${c2}{enter}`, { force: true });
-        cy.get(cesc('#/c_2a')).should('contain.text', nInDOM(c2))
+        cy.get(cesc2('#/c_2') + ' textarea').type(`{end}{backspace}{backspace}${c2}{enter}`, { force: true });
+        cy.get(cesc2('#/c_2a')).should('contain.text', nInDOM(c2))
         verifyExtrema(c1, c2, c3, c4, c5)
 
         c3 = 1;
-        cy.get(cesc('#/c_3') + ' textarea').type(`{end}{backspace}{backspace}${c3}{enter}`, { force: true });
-        cy.get(cesc('#/c_3a')).should('contain.text', nInDOM(c3))
+        cy.get(cesc2('#/c_3') + ' textarea').type(`{end}{backspace}{backspace}${c3}{enter}`, { force: true });
+        cy.get(cesc2('#/c_3a')).should('contain.text', nInDOM(c3))
         verifyExtrema(c1, c2, c3, c4, c5)
 
         c4 = -6;
-        cy.get(cesc('#/c_4') + ' textarea').type(`{end}{backspace}{backspace}${c4}{enter}`, { force: true });
-        cy.get(cesc('#/c_4a')).should('contain.text', nInDOM(c4))
+        cy.get(cesc2('#/c_4') + ' textarea').type(`{end}{backspace}{backspace}${c4}{enter}`, { force: true });
+        cy.get(cesc2('#/c_4a')).should('contain.text', nInDOM(c4))
         verifyExtrema(c1, c2, c3, c4, c5)
 
         c5 = 3;
-        cy.get(cesc('#/c_5') + ' textarea').type(`{end}{backspace}{backspace}${c5}{enter}`, { force: true });
-        cy.get(cesc('#/c_5a')).should('contain.text', nInDOM(c5))
+        cy.get(cesc2('#/c_5') + ' textarea').type(`{end}{backspace}{backspace}${c5}{enter}`, { force: true });
+        cy.get(cesc2('#/c_5a')).should('contain.text', nInDOM(c5))
         verifyExtrema(c1, c2, c3, c4, c5)
 
         c6 = 2;
-        cy.get(cesc('#/c_6') + ' textarea').type(`{end}{backspace}{backspace}${c6}{enter}`, { force: true });
-        cy.get(cesc('#/c_6a')).should('contain.text', nInDOM(c6))
+        cy.get(cesc2('#/c_6') + ' textarea').type(`{end}{backspace}{backspace}${c6}{enter}`, { force: true });
+        cy.get(cesc2('#/c_6a')).should('contain.text', nInDOM(c6))
         verifyExtrema(c1, c2, c3, c4, c5)
 
         v = 'y';
-        cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
-        cy.get(cesc('#/xa')).should('contain.text', v)
+        cy.get(cesc2('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
+        cy.get(cesc2('#/xa')).should('contain.text', v)
         verifyExtrema(c1, c2, c3, c4, c5)
 
 
@@ -2359,38 +2355,38 @@ describe('Function Operator Tag Tests', function () {
       cy.window().then(async (win) => {
 
         c1 = 2;
-        cy.get(cesc('#/c_1') + ' textarea').type(`{end}{backspace}{backspace}${c1}{enter}`, { force: true });
-        cy.get(cesc('#/c_1a')).should('contain.text', nInDOM(c1))
+        cy.get(cesc2('#/c_1') + ' textarea').type(`{end}{backspace}{backspace}${c1}{enter}`, { force: true });
+        cy.get(cesc2('#/c_1a')).should('contain.text', nInDOM(c1))
         verifyExtrema(c1, c2, c3, c4, c5);
 
         c2 = 4;
-        cy.get(cesc('#/c_2') + ' textarea').type(`{end}{backspace}{backspace}${c2}{enter}`, { force: true });
-        cy.get(cesc('#/c_2a')).should('contain.text', nInDOM(c2))
+        cy.get(cesc2('#/c_2') + ' textarea').type(`{end}{backspace}{backspace}${c2}{enter}`, { force: true });
+        cy.get(cesc2('#/c_2a')).should('contain.text', nInDOM(c2))
         verifyExtrema(c1, c2, c3, c4, c5);
 
         c3 = -8;
-        cy.get(cesc('#/c_3') + ' textarea').type(`{end}{backspace}{backspace}${c3}{enter}`, { force: true });
-        cy.get(cesc('#/c_3a')).should('contain.text', nInDOM(c3))
+        cy.get(cesc2('#/c_3') + ' textarea').type(`{end}{backspace}{backspace}${c3}{enter}`, { force: true });
+        cy.get(cesc2('#/c_3a')).should('contain.text', nInDOM(c3))
         verifyExtrema(c1, c2, c3, c4, c5);
 
         c4 = 9;
-        cy.get(cesc('#/c_4') + ' textarea').type(`{end}{backspace}{backspace}${c4}{enter}`, { force: true });
-        cy.get(cesc('#/c_4a')).should('contain.text', nInDOM(c4))
+        cy.get(cesc2('#/c_4') + ' textarea').type(`{end}{backspace}{backspace}${c4}{enter}`, { force: true });
+        cy.get(cesc2('#/c_4a')).should('contain.text', nInDOM(c4))
         verifyExtrema(c1, c2, c3, c4, c5);
 
         c5 = -2;
-        cy.get(cesc('#/c_5') + ' textarea').type(`{end}{backspace}{backspace}${c5}{enter}`, { force: true });
-        cy.get(cesc('#/c_5a')).should('contain.text', nInDOM(c5))
+        cy.get(cesc2('#/c_5') + ' textarea').type(`{end}{backspace}{backspace}${c5}{enter}`, { force: true });
+        cy.get(cesc2('#/c_5a')).should('contain.text', nInDOM(c5))
         verifyExtrema(c1, c2, c3, c4, c5);
 
         c6 = 6;
-        cy.get(cesc('#/c_6') + ' textarea').type(`{end}{backspace}{backspace}${c6}{enter}`, { force: true });
-        cy.get(cesc('#/c_6a')).should('contain.text', nInDOM(c6))
+        cy.get(cesc2('#/c_6') + ' textarea').type(`{end}{backspace}{backspace}${c6}{enter}`, { force: true });
+        cy.get(cesc2('#/c_6a')).should('contain.text', nInDOM(c6))
         verifyExtrema(c1, c2, c3, c4, c5);
 
         v = 'q';
-        cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
-        cy.get(cesc('#/xa')).should('contain.text', v)
+        cy.get(cesc2('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
+        cy.get(cesc2('#/xa')).should('contain.text', v)
         verifyExtrema(c1, c2, c3, c4, c5)
 
       })
@@ -2430,13 +2426,13 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/nMinima').should('have.text', '1')
-    cy.get('#\\/nMinima2').should('have.text', '1')
+    cy.get(cesc('#\\/nMinima')).should('have.text', '1')
+    cy.get(cesc('#\\/nMinima2')).should('have.text', '1')
 
-    cy.get('#\\/nMaxima').should('have.text', '2')
-    cy.get('#\\/nMaxima2').should('have.text', '2')
+    cy.get(cesc('#\\/nMaxima')).should('have.text', '2')
+    cy.get(cesc('#\\/nMaxima2')).should('have.text', '2')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2444,26 +2440,26 @@ describe('Function Operator Tag Tests', function () {
       let fp = createFunctionFromDefinition(stateVariables['/fp'].stateValues.fDefinitions[0]);
 
       let max1x = (-5 - 3) / 2
-      cy.get('#\\/max1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/max1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${max1x},${me.math.round(fp(max1x), 5)})`)
       })
-      cy.get('#\\/max12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/max12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${max1x},${me.math.round(fp(max1x), 5)})`)
       })
 
       let min1x = (-3 + 0) / 2
-      cy.get('#\\/min1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/min1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${min1x},${me.math.round(fp(min1x), 5)})`)
       })
-      cy.get('#\\/min12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/min12')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${min1x},${me.math.round(fp(min1x), 5)})`)
       })
 
       let max2x = (0 + 6) / 2
-      cy.get('#\\/max2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/max2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${max2x},${me.math.round(fp(max2x), 5)})`)
       })
-      cy.get('#\\/max22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/max22')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${max2x},${me.math.round(fp(max2x), 5)})`)
       })
 
@@ -2484,10 +2480,10 @@ describe('Function Operator Tag Tests', function () {
     });
 
 
-    cy.get('#\\/d1 .mjx-mrow').eq(0).should('have.text', '\uff3f')
-    cy.get('#\\/d2 .mjx-mrow').eq(0).should('have.text', '\uff3f')
-    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/_p2 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/d1') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get(cesc('#\\/d2') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f')
+    cy.get(cesc('#\\/_p1') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/_p2') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

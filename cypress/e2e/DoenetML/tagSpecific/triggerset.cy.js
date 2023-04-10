@@ -1,3 +1,6 @@
+import { cesc } from '../../../../src/_utils/url';
+
+
 describe('TriggerSet Tag Tests', function () {
 
   beforeEach(() => {
@@ -38,13 +41,13 @@ describe('TriggerSet Tag Tests', function () {
     </triggerSet>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/flip').should('not.exist');
-    cy.get('#\\/addHello').should('not.exist');
-    cy.get('#\\/addOne').should('not.exist');
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
+    cy.get(cesc('#\\/flip')).should('not.exist');
+    cy.get(cesc('#\\/addHello')).should('not.exist');
+    cy.get(cesc('#\\/addOne')).should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -53,7 +56,7 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -63,63 +66,63 @@ describe('TriggerSet Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 2;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 3;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 4;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello hello hello");
-      cy.get('#\\/n').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "4");
 
     })
   })
@@ -156,13 +159,13 @@ describe('TriggerSet Tag Tests', function () {
     </callAction>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/flip').should('not.exist');
-    cy.get('#\\/addHello').should('not.exist');
-    cy.get('#\\/addOne').should('not.exist');
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
+    cy.get(cesc('#\\/flip')).should('not.exist');
+    cy.get(cesc('#\\/addHello')).should('not.exist');
+    cy.get(cesc('#\\/addOne')).should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -171,7 +174,7 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -181,63 +184,63 @@ describe('TriggerSet Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 2;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 3;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 4;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello hello hello");
-      cy.get('#\\/n').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "4");
     })
 
   })
@@ -278,13 +281,13 @@ describe('TriggerSet Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/flip').should('not.exist');
-    cy.get('#\\/addHello').should('not.exist');
-    cy.get('#\\/addOne').should('not.exist');
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
+    cy.get(cesc('#\\/flip')).should('not.exist');
+    cy.get(cesc('#\\/addHello')).should('not.exist');
+    cy.get(cesc('#\\/addOne')).should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -293,7 +296,7 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -303,63 +306,63 @@ describe('TriggerSet Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 2;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 3;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 4;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello hello hello");
-      cy.get('#\\/n').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "4");
     })
 
   })
@@ -405,13 +408,13 @@ describe('TriggerSet Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/flip').should('not.exist');
-    cy.get('#\\/addHello').should('not.exist');
-    cy.get('#\\/addOne').should('not.exist');
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
+    cy.get(cesc('#\\/flip')).should('not.exist');
+    cy.get(cesc('#\\/addHello')).should('not.exist');
+    cy.get(cesc('#\\/addOne')).should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -420,7 +423,7 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -430,43 +433,43 @@ describe('TriggerSet Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
-      cy.get('#\\/n2').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
+      cy.get(cesc('#\\/n2')).should('have.text', "1");
 
 
-      cy.get('#\\/tset_button').click()
+      cy.get(cesc('#\\/tset_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 2;
       }))
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).not.eqls(numbers)
         numbers = numbers2;
       })
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/n2').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/n2')).should('have.text', "1");
 
 
 
-      cy.get('#\\/in_button').click()
+      cy.get(cesc('#\\/in_button')).click()
       cy.waitUntil(() => cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let g = stateVariables["/g"];
         return g.activeChildren.length === 3;
       }))
 
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/n2').should('have.text', "2");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/n2')).should('have.text', "2");
 
 
     })
@@ -490,17 +493,17 @@ describe('TriggerSet Tag Tests', function () {
   </triggerSet>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
 
-    cy.get('#\\/trip').should('not.exist');
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -508,10 +511,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -522,10 +525,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -536,11 +539,11 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/x').should('contain.text', '3x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '3x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -551,10 +554,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -565,10 +568,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: 4 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -579,10 +582,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: 5 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -593,11 +596,11 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/x').should('contain.text', '9x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '9x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -608,10 +611,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
 
@@ -637,17 +640,17 @@ describe('TriggerSet Tag Tests', function () {
   </triggerSet>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
 
-    cy.get('#\\/trip').should('not.exist');
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -655,10 +658,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -669,11 +672,11 @@ describe('TriggerSet Tag Tests', function () {
         actionName: "pointClicked",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '3x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '3x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -684,10 +687,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -697,11 +700,11 @@ describe('TriggerSet Tag Tests', function () {
         actionName: "pointClicked",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '9x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '9x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -712,10 +715,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
 
@@ -741,17 +744,17 @@ describe('TriggerSet Tag Tests', function () {
   </triggerSet>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
 
-    cy.get('#\\/trip').should('not.exist');
-    cy.get('#\\/quad').should('not.exist');
+    cy.get(cesc('#\\/trip')).should('not.exist');
+    cy.get(cesc('#\\/quad')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -759,10 +762,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
     })
@@ -773,11 +776,11 @@ describe('TriggerSet Tag Tests', function () {
         actionName: "pointFocused",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '3x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '3x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -788,10 +791,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4y')
       });
     })
@@ -801,11 +804,11 @@ describe('TriggerSet Tag Tests', function () {
         actionName: "pointFocused",
         componentName: "/P",
       });
-      cy.get('#\\/x').should('contain.text', '9x')
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).should('contain.text', '9x')
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
     })
@@ -816,10 +819,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
-      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16y')
       });
 
@@ -856,14 +859,14 @@ describe('TriggerSet Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/b').should('have.text', "false");
-    cy.get('#\\/hello').should('have.text', "");
-    cy.get('#\\/n').should('have.text', "1");
-    cy.get('#\\/m').should('have.text', "5");
-    cy.get('#\\/_triggerset1').should('not.exist');
-    cy.get('#\\/_triggerset2').should('not.exist');
+    cy.get(cesc('#\\/b')).should('have.text', "false");
+    cy.get(cesc('#\\/hello')).should('have.text', "");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
+    cy.get(cesc('#\\/m')).should('have.text', "5");
+    cy.get(cesc('#\\/_triggerset1')).should('not.exist');
+    cy.get(cesc('#\\/_triggerset2')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -871,10 +874,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -1, y: -7 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -883,10 +886,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -895,10 +898,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
 
     })
 
@@ -908,10 +911,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 5, y: 9 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "2");
-      cy.get('#\\/m').should('have.text', "4");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc('#\\/m')).should('have.text', "4");
     })
 
     cy.window().then(async (win) => {
@@ -920,10 +923,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -3, y: -4 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -932,10 +935,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: -6, y: -5 }
       });
-      cy.get('#\\/b').should('have.text', "true");
-      cy.get('#\\/hello').should('have.text', " hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "true");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -944,10 +947,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 4, y: 2 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
     })
 
     cy.window().then(async (win) => {
@@ -956,10 +959,10 @@ describe('TriggerSet Tag Tests', function () {
         componentName: "/P",
         args: { x: 9, y: 7 }
       });
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', " hello hello");
-      cy.get('#\\/n').should('have.text', "3");
-      cy.get('#\\/m').should('have.text', "3");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc('#\\/m')).should('have.text', "3");
 
     });
   })
@@ -996,7 +999,7 @@ describe('TriggerSet Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1005,7 +1008,7 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -1015,9 +1018,9 @@ describe('TriggerSet Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
 
       cy.window().then(async (win) => {
         await win.callAction1({
@@ -1031,13 +1034,13 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(1);
         })
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).eqls(numbers);
         })
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', "");
-        cy.get('#\\/n').should('have.text', "1");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', "");
+        cy.get(cesc('#\\/n')).should('have.text', "1");
       })
 
       cy.window().then(async (win) => {
@@ -1051,13 +1054,13 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(1);
         })
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).eqls(numbers);
         })
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', "");
-        cy.get('#\\/n').should('have.text', "1");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', "");
+        cy.get(cesc('#\\/n')).should('have.text', "1");
       })
 
       cy.window().then(async (win) => {
@@ -1072,14 +1075,14 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           return g.activeChildren.length === 2;
         }))
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).not.eqls(numbers);
           numbers = numbers2;
         })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
 
       })
 
@@ -1094,13 +1097,13 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
         })
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).eqls(numbers);
         })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
       })
 
       cy.window().then(async (win) => {
@@ -1114,13 +1117,13 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
         })
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).eqls(numbers);
         })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
       })
 
       cy.window().then(async (win) => {
@@ -1134,13 +1137,13 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
         })
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).eqls(numbers);
         })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
       })
 
       cy.window().then(async (win) => {
@@ -1155,14 +1158,14 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           return g.activeChildren.length === 3;
         }))
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).not.eqls(numbers);
           numbers = numbers2;
         })
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', " hello hello");
-        cy.get('#\\/n').should('have.text', "3");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+        cy.get(cesc('#\\/n')).should('have.text', "3");
       })
 
       cy.window().then(async (win) => {
@@ -1176,13 +1179,13 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(3);
         })
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2).eqls(numbers);
         })
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', " hello hello");
-        cy.get('#\\/n').should('have.text', "3");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+        cy.get(cesc('#\\/n')).should('have.text', "3");
 
       });
     })
@@ -1218,19 +1221,19 @@ describe('TriggerSet Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
-      cy.get('#\\/b').should('have.text', "false");
-      cy.get('#\\/hello').should('have.text', "");
-      cy.get('#\\/n').should('have.text', "1");
-      cy.get('#\\/m').should('have.text', "5");
-      cy.get('#\\/_triggerset1').should('not.exist');
-      cy.get('#\\/uv').should('not.exist');
+      cy.get(cesc('#\\/b')).should('have.text', "false");
+      cy.get(cesc('#\\/hello')).should('have.text', "");
+      cy.get(cesc('#\\/n')).should('have.text', "1");
+      cy.get(cesc('#\\/m')).should('have.text', "5");
+      cy.get(cesc('#\\/_triggerset1')).should('not.exist');
+      cy.get(cesc('#\\/uv')).should('not.exist');
 
       cy.window().then(async (win) => {
         await win.callAction1({
@@ -1238,15 +1241,15 @@ describe('TriggerSet Tag Tests', function () {
           componentName: "/P",
           args: { x: -1, y: -7 }
         });
-        cy.get('#\\/m').should('have.text', "4");
+        cy.get(cesc('#\\/m')).should('have.text', "4");
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(1);
         })
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', "");
-        cy.get('#\\/n').should('have.text', "1");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', "");
+        cy.get(cesc('#\\/n')).should('have.text', "1");
       })
 
       cy.window().then(async (win) => {
@@ -1255,10 +1258,10 @@ describe('TriggerSet Tag Tests', function () {
           componentName: "/P",
           args: { x: 3, y: -4 }
         });
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', "");
-        cy.get('#\\/n').should('have.text', "1");
-        cy.get('#\\/m').should('have.text', "4");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', "");
+        cy.get(cesc('#\\/n')).should('have.text', "1");
+        cy.get(cesc('#\\/m')).should('have.text', "4");
       })
 
       cy.window().then(async (win) => {
@@ -1273,10 +1276,10 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           return g.activeChildren.length === 2;
         }))
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
-        cy.get('#\\/m').should('have.text', "4");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
+        cy.get(cesc('#\\/m')).should('have.text', "4");
       })
 
       cy.window().then(async (win) => {
@@ -1290,10 +1293,10 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
         })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
-        cy.get('#\\/m').should('have.text', "4");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
+        cy.get(cesc('#\\/m')).should('have.text', "4");
       })
 
       cy.window().then(async (win) => {
@@ -1307,10 +1310,10 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
         })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
-        cy.get('#\\/m').should('have.text', "3");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
+        cy.get(cesc('#\\/m')).should('have.text', "3");
       })
 
       cy.window().then(async (win) => {
@@ -1324,10 +1327,10 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
         })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
-        cy.get('#\\/m').should('have.text', "3");
+        cy.get(cesc('#\\/b')).should('have.text', "true");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello");
+        cy.get(cesc('#\\/n')).should('have.text', "2");
+        cy.get(cesc('#\\/m')).should('have.text', "3");
       })
 
       cy.window().then(async (win) => {
@@ -1341,10 +1344,10 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           return g.activeChildren.length === 3;
         }))
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', " hello hello");
-        cy.get('#\\/n').should('have.text', "3");
-        cy.get('#\\/m').should('have.text', "3");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+        cy.get(cesc('#\\/n')).should('have.text', "3");
+        cy.get(cesc('#\\/m')).should('have.text', "3");
       })
 
       cy.window().then(async (win) => {
@@ -1358,10 +1361,10 @@ describe('TriggerSet Tag Tests', function () {
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(3);
         })
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', " hello hello");
-        cy.get('#\\/n').should('have.text', "3");
-        cy.get('#\\/m').should('have.text', "3");
+        cy.get(cesc('#\\/b')).should('have.text', "false");
+        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
+        cy.get(cesc('#\\/n')).should('have.text', "3");
+        cy.get(cesc('#\\/m')).should('have.text', "3");
 
       });
     })
@@ -1381,9 +1384,9 @@ describe('TriggerSet Tag Tests', function () {
     </triggerSet>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/tset').should('contain.text', 'It is ∂f∂x')
+    cy.get(cesc('#\\/tset')).should('contain.text', 'It is ∂f∂x')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1406,9 +1409,9 @@ describe('TriggerSet Tag Tests', function () {
     </triggerSet>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/trigger-me').should('contain.text', 'trigger me')
+    cy.get(cesc('#\\/trigger-me')).should('contain.text', 'trigger me')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1489,17 +1492,17 @@ describe('TriggerSet Tag Tests', function () {
 
     // TODO: how to click on the buttons and test if they are disabled?
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
 
 
     cy.log("move triggersets by dragging")
@@ -1517,37 +1520,37 @@ describe('TriggerSet Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move triggersets by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move triggersets by dragging')
@@ -1565,11 +1568,11 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
 

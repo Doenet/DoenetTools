@@ -1,13 +1,8 @@
-import cssesc from 'cssesc';
-import { C } from '../../../src/Core/components/ParagraphMarkup';
 import { numberToLetters } from '../../../src/Core/utils/sequence';
+import { cesc } from '../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Activity variants tests', function () {
@@ -50,7 +45,7 @@ describe('Activity variants tests', function () {
           requestedVariantIndex: ind,
           attemptNumber
         }, "*");
-        cy.get('#\\/_text1').should('have.text', `${attemptNumber}`);
+        cy.get(cesc('#\\/_text1')).should('have.text', `${attemptNumber}`);
       })
 
 
@@ -67,7 +62,7 @@ describe('Activity variants tests', function () {
         expect(n).gte(1);
         expect(n).lte(1000);
 
-        let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
         let mathinputAnchor = '#' + mathinputName + ' textarea';
         let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
         let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
@@ -96,7 +91,7 @@ describe('Activity variants tests', function () {
             requestedVariantIndex: ind,
             attemptNumber
           }, "*");
-          cy.get('#\\/_text1').should('have.text', `${attemptNumber}`);
+          cy.get(cesc('#\\/_text1')).should('have.text', `${attemptNumber}`);
         })
 
 
@@ -171,7 +166,7 @@ describe('Activity variants tests', function () {
       })
 
 
-      cy.get('#\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
       let color = ["red", "blue", "green"][(ind - 1) % 3];
 
@@ -185,7 +180,7 @@ describe('Activity variants tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/color"].replacements[0]).eq(color)
 
-        let textinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let textinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
         let textinputAnchor = '#' + textinputName + '_input';
         let textinputSubmitAnchor = '#' + textinputName + '_submit';
         let textinputCorrectAnchor = '#' + textinputName + '_correct';
@@ -214,7 +209,7 @@ describe('Activity variants tests', function () {
           }, "*");
         })
 
-        cy.get('#\\/_text1').should('have.text', 'a');
+        cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -289,7 +284,7 @@ describe('Activity variants tests', function () {
       })
 
 
-      cy.get('#\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
       let color = ["red", "blue", "green"][(ind - 1) % 3];
 
@@ -303,7 +298,7 @@ describe('Activity variants tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/color"].replacements[0]).eq(color)
 
-        let textinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let textinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
         let textinputAnchor = '#' + textinputName + '_input';
         let textinputSubmitAnchor = '#' + textinputName + '_submit';
         let textinputCorrectAnchor = '#' + textinputName + '_correct';
@@ -332,7 +327,7 @@ describe('Activity variants tests', function () {
           }, "*");
         })
 
-        cy.get('#\\/_text1').should('have.text', 'a');
+        cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
@@ -396,7 +391,7 @@ describe('Activity variants tests', function () {
         cy.get('[data-test=previous]').click()
       }
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -416,7 +411,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -476,7 +471,7 @@ describe('Activity variants tests', function () {
       })
 
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -498,7 +493,7 @@ describe('Activity variants tests', function () {
         expect(n).gte(1);
         expect(n).lte(1000);
 
-        let mathinputName = cesc(stateVariables1['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputName = cesc2(stateVariables1['/_answer1'].stateValues.inputChildren[0].componentName)
         let mathinputAnchor = '#page1' + mathinputName + ' textarea';
         let mathinputEditiableFieldAnchor = '#page1' + mathinputName + " .mq-editable-field";
         let mathinputSubmitAnchor = '#page1' + mathinputName + '_submit';
@@ -517,14 +512,14 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
 
           expect(stateVariables2["/l"].stateValues.value).eq(l);
 
-          let textinputName = cesc(stateVariables2['/_answer1'].stateValues.inputChildren[0].componentName)
+          let textinputName = cesc2(stateVariables2['/_answer1'].stateValues.inputChildren[0].componentName)
           let textinputAnchor = '#page2' + textinputName + '_input';
           let textinputSubmitAnchor = '#page2' + textinputName + '_submit';
           let textinputCorrectAnchor = '#page2' + textinputName + '_correct';
@@ -562,7 +557,7 @@ describe('Activity variants tests', function () {
             }, "*");
           })
 
-          cy.get('#page2\\/_text1').should('have.text', 'b');
+          cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
           // wait until core is loaded
           cy.waitUntil(() => cy.window().then(async (win) => {
@@ -587,7 +582,7 @@ describe('Activity variants tests', function () {
 
           cy.get('[data-test=previous]').click();
 
-          cy.get('#page1\\/_text1').should('have.text', 'a');
+          cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
           // wait until core is loaded
           cy.waitUntil(() => cy.window().then(async (win) => {
@@ -682,7 +677,7 @@ describe('Activity variants tests', function () {
         cy.get('[data-test=previous]').click()
       }
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
       cy.window().then(async (win) => {
         let activityData = win.returnActivityData();
@@ -712,7 +707,7 @@ describe('Activity variants tests', function () {
           expect(n).eq(numbers[activityData.variantIndex]);
         }
 
-        let mathinputName = cesc(stateVariables1['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputName = cesc2(stateVariables1['/_answer1'].stateValues.inputChildren[0].componentName)
         let mathinputAnchor = '#page1' + mathinputName + ' textarea';
         let mathinputEditiableFieldAnchor = '#page1' + mathinputName + " .mq-editable-field";
         let mathinputSubmitAnchor = '#page1' + mathinputName + '_submit';
@@ -731,14 +726,14 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
 
           expect(stateVariables2["/l"].stateValues.value).eq(l);
 
-          let textinputName = cesc(stateVariables2['/_answer1'].stateValues.inputChildren[0].componentName)
+          let textinputName = cesc2(stateVariables2['/_answer1'].stateValues.inputChildren[0].componentName)
           let textinputAnchor = '#page2' + textinputName + '_input';
           let textinputSubmitAnchor = '#page2' + textinputName + '_submit';
           let textinputCorrectAnchor = '#page2' + textinputName + '_correct';
@@ -819,7 +814,7 @@ describe('Activity variants tests', function () {
         cy.get('[data-test=previous]').click()
       }
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
       cy.window().then(async (win) => {
         let activityData = win.returnActivityData();
@@ -855,8 +850,8 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_title1').should('not.have.text', title1)
-        cy.get('#page2\\/_text1').should('have.text', 'a').then(async () => {
+        cy.get(cesc('#page2\\/_title1')).should('not.have.text', title1)
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'a').then(async () => {
 
           let stateVariables2 = await win.returnAllStateVariables2();
           let title2 = stateVariables2["/_title1"].stateValues.value;
@@ -934,7 +929,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -956,7 +951,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1011,7 +1006,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1033,7 +1028,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1102,7 +1097,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1122,7 +1117,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1191,7 +1186,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1211,7 +1206,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1276,7 +1271,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1296,7 +1291,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1361,7 +1356,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1381,7 +1376,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1448,7 +1443,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1468,7 +1463,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1535,7 +1530,7 @@ describe('Activity variants tests', function () {
       let nFromVariant = [2, 5];
       let lFromVariant = ['a', 'e', 'g'];
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1555,7 +1550,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1626,7 +1621,7 @@ describe('Activity variants tests', function () {
       let docVariantOptions2 = ["a", "b", "d"]
 
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1647,7 +1642,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();
@@ -1719,7 +1714,7 @@ describe('Activity variants tests', function () {
       let docVariantOptions2 = ["a", "b", "d"]
 
 
-      cy.get('#page1\\/_text1').should('have.text', 'a');
+      cy.get(cesc('#page1\\/_text1')).should('have.text', 'a');
 
 
       cy.window().then(async (win) => {
@@ -1740,7 +1735,7 @@ describe('Activity variants tests', function () {
 
         cy.get('[data-test=next]').click();
 
-        cy.get('#page2\\/_text1').should('have.text', 'b');
+        cy.get(cesc('#page2\\/_text1')).should('have.text', 'b');
 
         cy.window().then(async (win) => {
           let stateVariables2 = await win.returnAllStateVariables2();

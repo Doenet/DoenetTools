@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 describe('Boolean Operator Tag Tests', function () {
 
   beforeEach(() => {
@@ -18,9 +20,9 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/_not1').should('have.text', "true");
-    cy.get('#\\/_not2').should('have.text', "false");
-    cy.get('#\\/_not3').should('have.text', "true");
+    cy.get(cesc('#\\/_not1')).should('have.text', "true");
+    cy.get(cesc('#\\/_not2')).should('have.text', "false");
+    cy.get(cesc('#\\/_not3')).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -33,10 +35,10 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check the box')
-    cy.get('#\\/_booleaninput1').click();
+    cy.get(cesc('#\\/_booleaninput1')).click();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/_not1').should('have.text', "false");
+    cy.get(cesc('#\\/_not1')).should('have.text', "false");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -59,7 +61,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/_not1').should('have.text', "true");
+    cy.get(cesc('#\\/_not1')).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -70,10 +72,10 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('enter 2')
-    cy.get('#\\/_mathinput1 textarea').type('2{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('2{enter}', { force: true });
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/_not1').should('have.text', "false");
+    cy.get(cesc('#\\/_not1')).should('have.text', "false");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -84,10 +86,10 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('enter 1')
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/_not1').should('have.text', "true");
+    cy.get(cesc('#\\/_not1')).should('have.text', "true");
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -133,9 +135,9 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('Test initial values')
-    cy.get('#\\/_and1').should('have.text', "false");
-    cy.get('#\\/_and2').should('have.text', "false");
-    cy.get('#\\/_and3').should('have.text', "false");
+    cy.get(cesc('#\\/_and1')).should('have.text', "false");
+    cy.get(cesc('#\\/_and2')).should('have.text', "false");
+    cy.get(cesc('#\\/_and3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -150,11 +152,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 1')
-    cy.get('#\\/_booleaninput1').click();
-    cy.get('#\\/bv1').should('have.text', "true");
-    cy.get('#\\/_and1').should('have.text', "false");
-    cy.get('#\\/_and2').should('have.text', "false");
-    cy.get('#\\/_and3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput1')).click();
+    cy.get(cesc('#\\/bv1')).should('have.text', "true");
+    cy.get(cesc('#\\/_and1')).should('have.text', "false");
+    cy.get(cesc('#\\/_and2')).should('have.text', "false");
+    cy.get(cesc('#\\/_and3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -169,11 +171,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 2')
-    cy.get('#\\/_booleaninput2').click();
-    cy.get('#\\/bv2').should('have.text', "true");
-    cy.get('#\\/_and1').should('have.text', "false");
-    cy.get('#\\/_and2').should('have.text', "false");
-    cy.get('#\\/_and3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput2')).click();
+    cy.get(cesc('#\\/bv2')).should('have.text', "true");
+    cy.get(cesc('#\\/_and1')).should('have.text', "false");
+    cy.get(cesc('#\\/_and2')).should('have.text', "false");
+    cy.get(cesc('#\\/_and3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -188,11 +190,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 3')
-    cy.get('#\\/_booleaninput3').click();
-    cy.get('#\\/bv3').should('have.text', "true");
-    cy.get('#\\/_and1').should('have.text', "true");
-    cy.get('#\\/_and2').should('have.text', "true");
-    cy.get('#\\/_and3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput3')).click();
+    cy.get(cesc('#\\/bv3')).should('have.text', "true");
+    cy.get(cesc('#\\/_and1')).should('have.text', "true");
+    cy.get(cesc('#\\/_and2')).should('have.text', "true");
+    cy.get(cesc('#\\/_and3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -241,9 +243,9 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('Test initial values')
-    cy.get('#\\/_or1').should('have.text', "false");
-    cy.get('#\\/_or2').should('have.text', "true");
-    cy.get('#\\/_or3').should('have.text', "false");
+    cy.get(cesc('#\\/_or1')).should('have.text', "false");
+    cy.get(cesc('#\\/_or2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -258,11 +260,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 1')
-    cy.get('#\\/_booleaninput1').click();
-    cy.get('#\\/bv1').should('have.text', "true");
-    cy.get('#\\/_or1').should('have.text', "true");
-    cy.get('#\\/_or2').should('have.text', "true");
-    cy.get('#\\/_or3').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput1')).click();
+    cy.get(cesc('#\\/bv1')).should('have.text', "true");
+    cy.get(cesc('#\\/_or1')).should('have.text', "true");
+    cy.get(cesc('#\\/_or2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or3')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -277,11 +279,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 2')
-    cy.get('#\\/_booleaninput2').click();
-    cy.get('#\\/bv2').should('have.text', "true");
-    cy.get('#\\/_or1').should('have.text', "true");
-    cy.get('#\\/_or2').should('have.text', "true");
-    cy.get('#\\/_or3').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput2')).click();
+    cy.get(cesc('#\\/bv2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or1')).should('have.text', "true");
+    cy.get(cesc('#\\/_or2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or3')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -296,11 +298,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 3')
-    cy.get('#\\/_booleaninput3').click();
-    cy.get('#\\/bv3').should('have.text', "true");
-    cy.get('#\\/_or1').should('have.text', "true");
-    cy.get('#\\/_or2').should('have.text', "true");
-    cy.get('#\\/_or3').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput3')).click();
+    cy.get(cesc('#\\/bv3')).should('have.text', "true");
+    cy.get(cesc('#\\/_or1')).should('have.text', "true");
+    cy.get(cesc('#\\/_or2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or3')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -315,11 +317,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 1')
-    cy.get('#\\/_booleaninput1').click();
-    cy.get('#\\/bv1').should('have.text', "false");
-    cy.get('#\\/_or1').should('have.text', "true");
-    cy.get('#\\/_or2').should('have.text', "true");
-    cy.get('#\\/_or3').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput1')).click();
+    cy.get(cesc('#\\/bv1')).should('have.text', "false");
+    cy.get(cesc('#\\/_or1')).should('have.text', "true");
+    cy.get(cesc('#\\/_or2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or3')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -334,11 +336,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 2')
-    cy.get('#\\/_booleaninput2').click();
-    cy.get('#\\/bv2').should('have.text', "false");
-    cy.get('#\\/_or1').should('have.text', "true");
-    cy.get('#\\/_or2').should('have.text', "true");
-    cy.get('#\\/_or3').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput2')).click();
+    cy.get(cesc('#\\/bv2')).should('have.text', "false");
+    cy.get(cesc('#\\/_or1')).should('have.text', "true");
+    cy.get(cesc('#\\/_or2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or3')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -353,11 +355,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 3')
-    cy.get('#\\/_booleaninput3').click();
-    cy.get('#\\/bv3').should('have.text', "false");
-    cy.get('#\\/_or1').should('have.text', "false");
-    cy.get('#\\/_or2').should('have.text', "true");
-    cy.get('#\\/_or3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput3')).click();
+    cy.get(cesc('#\\/bv3')).should('have.text', "false");
+    cy.get(cesc('#\\/_or1')).should('have.text', "false");
+    cy.get(cesc('#\\/_or2')).should('have.text', "true");
+    cy.get(cesc('#\\/_or3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -407,9 +409,9 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('Test initial values')
-    cy.get('#\\/_xor1').should('have.text', "false");
-    cy.get('#\\/_xor2').should('have.text', "true");
-    cy.get('#\\/_xor3').should('have.text', "false");
+    cy.get(cesc('#\\/_xor1')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor2')).should('have.text', "true");
+    cy.get(cesc('#\\/_xor3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -424,11 +426,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 1')
-    cy.get('#\\/_booleaninput1').click();
-    cy.get('#\\/bv1').should('have.text', "true");
-    cy.get('#\\/_xor1').should('have.text', "true");
-    cy.get('#\\/_xor2').should('have.text', "false");
-    cy.get('#\\/_xor3').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput1')).click();
+    cy.get(cesc('#\\/bv1')).should('have.text', "true");
+    cy.get(cesc('#\\/_xor1')).should('have.text', "true");
+    cy.get(cesc('#\\/_xor2')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor3')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -443,11 +445,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 2')
-    cy.get('#\\/_booleaninput2').click();
-    cy.get('#\\/bv2').should('have.text', "true");
-    cy.get('#\\/_xor1').should('have.text', "false");
-    cy.get('#\\/_xor2').should('have.text', "false");
-    cy.get('#\\/_xor3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput2')).click();
+    cy.get(cesc('#\\/bv2')).should('have.text', "true");
+    cy.get(cesc('#\\/_xor1')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor2')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -462,11 +464,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box 3')
-    cy.get('#\\/_booleaninput3').click();
-    cy.get('#\\/bv3').should('have.text', "true");
-    cy.get('#\\/_xor1').should('have.text', "false");
-    cy.get('#\\/_xor2').should('have.text', "false");
-    cy.get('#\\/_xor3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput3')).click();
+    cy.get(cesc('#\\/bv3')).should('have.text', "true");
+    cy.get(cesc('#\\/_xor1')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor2')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
@@ -481,11 +483,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 1')
-    cy.get('#\\/_booleaninput1').click();
-    cy.get('#\\/bv1').should('have.text', "false");
-    cy.get('#\\/_xor1').should('have.text', "false");
-    cy.get('#\\/_xor2').should('have.text', "false");
-    cy.get('#\\/_xor3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput1')).click();
+    cy.get(cesc('#\\/bv1')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor1')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor2')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -500,11 +502,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 2')
-    cy.get('#\\/_booleaninput2').click();
-    cy.get('#\\/bv2').should('have.text', "false");
-    cy.get('#\\/_xor1').should('have.text', "true");
-    cy.get('#\\/_xor2').should('have.text', "false");
-    cy.get('#\\/_xor3').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput2')).click();
+    cy.get(cesc('#\\/bv2')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor1')).should('have.text', "true");
+    cy.get(cesc('#\\/_xor2')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor3')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -519,11 +521,11 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('uncheck box 3')
-    cy.get('#\\/_booleaninput3').click();
-    cy.get('#\\/bv3').should('have.text', "false");
-    cy.get('#\\/_xor1').should('have.text', "false");
-    cy.get('#\\/_xor2').should('have.text', "true");
-    cy.get('#\\/_xor3').should('have.text', "false");
+    cy.get(cesc('#\\/_booleaninput3')).click();
+    cy.get(cesc('#\\/bv3')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor1')).should('have.text', "false");
+    cy.get(cesc('#\\/_xor2')).should('have.text', "true");
+    cy.get(cesc('#\\/_xor3')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
@@ -556,7 +558,7 @@ describe('Boolean Operator Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get("#\\/_booleaninput1_input")  //wait for page to load
+    cy.get(cesc("#\\/_booleaninput1_input"))  //wait for page to load
     cy.log('Test initial values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -565,8 +567,8 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('check box to show point')
-    cy.get('#\\/_booleaninput1').click();
-    cy.get('#\\/bv1').should('have.text', "true");
+    cy.get(cesc('#\\/_booleaninput1')).click();
+    cy.get(cesc('#\\/bv1')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);

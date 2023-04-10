@@ -1,12 +1,8 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Select Tag Tests', function () {
@@ -25,7 +21,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -124,7 +120,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -185,7 +181,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -262,8 +258,8 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-    cy.get('#\\/num1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
+    cy.get(cesc('#\\/num1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
 
@@ -335,7 +331,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -389,7 +385,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -460,7 +456,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -515,7 +511,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     let samplemaths;
     let sampleIndices;
@@ -550,7 +546,7 @@ describe('Select Tag Tests', function () {
 
 
     cy.log("Nothing changes when change number to select");
-    cy.get('#\\/numbertoselect textarea').type(`{end}{backspace}7{enter}`, { force: true });
+    cy.get(cesc('#\\/numbertoselect') + ' textarea').type(`{end}{backspace}7{enter}`, { force: true });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -582,10 +578,10 @@ describe('Select Tag Tests', function () {
       b: "r",
       c: "s"
     }
-    cy.get('#\\/x textarea').type("{end}{backspace}" + newvalues.a + `{enter}`, { force: true });
-    cy.get('#\\/y textarea').type("{end}{backspace}" + newvalues.b + `{enter}`, { force: true });
-    cy.get('#\\/z textarea').type("{end}{backspace}" + newvalues.c + `{enter}`, { force: true });
-    cy.get('#\\/z2').should('contain.text', newvalues.c);
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}" + newvalues.a + `{enter}`, { force: true });
+    cy.get(cesc('#\\/y') + ' textarea').type("{end}{backspace}" + newvalues.b + `{enter}`, { force: true });
+    cy.get(cesc('#\\/z') + ' textarea').type("{end}{backspace}" + newvalues.c + `{enter}`, { force: true });
+    cy.get(cesc('#\\/z2')).should('contain.text', newvalues.c);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -655,7 +651,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     let sampledvariables = [];
 
@@ -674,8 +670,8 @@ describe('Select Tag Tests', function () {
     });
 
     cy.log("sample one variable");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '1')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '1')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let n1 = stateVariables['/a/n'].stateValues.value;
@@ -703,8 +699,8 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '0')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '0')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(0);
@@ -719,8 +715,8 @@ describe('Select Tag Tests', function () {
     });
 
     cy.log("get same number back");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '1')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '1')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let n1 = stateVariables['/a/n'].stateValues.value;
@@ -749,8 +745,8 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("get two more samples");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '3')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '3')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let n1 = stateVariables['/a/n'].stateValues.value;
@@ -782,8 +778,8 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '0')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '0')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(0);
@@ -799,8 +795,8 @@ describe('Select Tag Tests', function () {
 
 
     cy.log("get first two numbers back");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '2')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}2{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '2')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let n1 = stateVariables['/a/n'].stateValues.value;
@@ -831,8 +827,8 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("get six total samples");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '6')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '6')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let n1 = stateVariables['/a/n'].stateValues.value;
@@ -870,8 +866,8 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '0')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '0')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(0);
@@ -886,8 +882,8 @@ describe('Select Tag Tests', function () {
     });
 
     cy.log("get all six back");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '6')
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get(cesc('#\\/m1')).should('contain.text', '6')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let n1 = stateVariables['/a/n'].stateValues.value;
@@ -957,7 +953,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -1045,7 +1041,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -1124,7 +1120,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -1206,7 +1202,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -1277,7 +1273,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -1351,7 +1347,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     let option = {
       "Option 1: ": me.fromText("3x+a+x^2a^3"),
@@ -1443,7 +1439,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     let option = {
       "Option 1: ": me.fromText("3x+a+x^2a^3"),
@@ -1524,7 +1520,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1579,7 +1575,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1646,7 +1642,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"]
       .map(x => me.fromText(x))
@@ -1677,7 +1673,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"]
       .map(x => me.fromText(x))
@@ -1714,7 +1710,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let options = ["7x^2", "(-3)x/y", "u-(-3)", "7", "x-c", "y"]
       .map(x => me.fromText(x))
@@ -1751,7 +1747,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1784,7 +1780,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1819,7 +1815,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1849,7 +1845,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1880,7 +1876,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1917,7 +1913,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1969,7 +1965,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`)
 
     let numX = 0, numY = 0, numZ = 0;
 
@@ -2019,7 +2015,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
 
     cy.window().then(async (win) => {
@@ -2072,7 +2068,7 @@ describe('Select Tag Tests', function () {
 
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `a`);
 
     let numX = 0, numY = 0, numZ = 0, numUVW = 0;
 
@@ -2155,7 +2151,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2280,7 +2276,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2407,10 +2403,10 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/u\\/r').invoke('text').then((text) => {
+    cy.get(cesc('#\\/u\\/r')).invoke('text').then((text) => {
       expect(text.length).equal(1);
     })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -2521,10 +2517,10 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/u\\/r').invoke('text').then((text) => {
+    cy.get(cesc('#\\/u\\/r')).invoke('text').then((text) => {
       expect(text.length).equal(1);
     })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -2633,7 +2629,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2723,7 +2719,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2731,17 +2727,17 @@ describe('Select Tag Tests', function () {
       let rs = ['/r/q/q', '/r/q/r', '/r/r/q', '/r/r/r', '/r/s/q', '/r/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
       let ss = ['/s/q/q', '/s/q/r', '/s/r/q', '/s/r/r', '/s/s/q', '/s/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
 
-      cy.get('#\\/pq2').should('have.text', qs.join(""))
-      cy.get('#\\/pr2').should('have.text', rs.join(""))
-      cy.get('#\\/ps2').should('have.text', ss.join(""))
+      cy.get(cesc('#\\/pq2')).should('have.text', qs.join(""))
+      cy.get(cesc('#\\/pr2')).should('have.text', rs.join(""))
+      cy.get(cesc('#\\/ps2')).should('have.text', ss.join(""))
 
-      cy.get('#\\/pq3').should('have.text', qs.join(""))
-      cy.get('#\\/pr3').should('have.text', rs.join(""))
-      cy.get('#\\/ps3').should('have.text', ss.join(""))
+      cy.get(cesc('#\\/pq3')).should('have.text', qs.join(""))
+      cy.get(cesc('#\\/pr3')).should('have.text', rs.join(""))
+      cy.get(cesc('#\\/ps3')).should('have.text', ss.join(""))
 
-      cy.get('#\\/pq4').should('have.text', qs.join(""))
-      cy.get('#\\/pr4').should('have.text', rs.join(""))
-      cy.get('#\\/ps4').should('have.text', ss.join(""))
+      cy.get(cesc('#\\/pq4')).should('have.text', qs.join(""))
+      cy.get(cesc('#\\/pr4')).should('have.text', rs.join(""))
+      cy.get(cesc('#\\/ps4')).should('have.text', ss.join(""))
 
     })
   });
@@ -2784,7 +2780,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2792,17 +2788,17 @@ describe('Select Tag Tests', function () {
       let rs = ['/a/r/q/q', '/a/r/q/r', '/a/r/r/q', '/a/r/r/r', '/a/r/s/q', '/a/r/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
       let ss = ['/a/s/q/q', '/a/s/q/r', '/a/s/r/q', '/a/s/r/r', '/a/s/s/q', '/a/s/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
 
-      cy.get('#\\/pq2').should('have.text', qs.join(""))
-      cy.get('#\\/pr2').should('have.text', rs.join(""))
-      cy.get('#\\/ps2').should('have.text', ss.join(""))
+      cy.get(cesc('#\\/pq2')).should('have.text', qs.join(""))
+      cy.get(cesc('#\\/pr2')).should('have.text', rs.join(""))
+      cy.get(cesc('#\\/ps2')).should('have.text', ss.join(""))
 
-      cy.get('#\\/pq3').should('have.text', qs.join(""))
-      cy.get('#\\/pr3').should('have.text', rs.join(""))
-      cy.get('#\\/ps3').should('have.text', ss.join(""))
+      cy.get(cesc('#\\/pq3')).should('have.text', qs.join(""))
+      cy.get(cesc('#\\/pr3')).should('have.text', rs.join(""))
+      cy.get(cesc('#\\/ps3')).should('have.text', ss.join(""))
 
-      cy.get('#\\/pq4').should('have.text', qs.join(""))
-      cy.get('#\\/pr4').should('have.text', rs.join(""))
-      cy.get('#\\/ps4').should('have.text', ss.join(""))
+      cy.get(cesc('#\\/pq4')).should('have.text', qs.join(""))
+      cy.get(cesc('#\\/pr4')).should('have.text', rs.join(""))
+      cy.get(cesc('#\\/ps4')).should('have.text', ss.join(""))
 
 
     })
@@ -2842,7 +2838,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let options = [{
       a: "x y",
@@ -2949,7 +2945,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3024,7 +3020,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3066,7 +3062,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_p1').should('have.text', "Selects and hide");
+    cy.get(cesc('#\\/_p1')).should('have.text', "Selects and hide");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3075,8 +3071,8 @@ describe('Select Tag Tests', function () {
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
-      cy.get(`#\\/_p2`).should('have.text', `${c}, `)
-      cy.get(`#\\/_p3`).should('have.text', `${c}, ${d}`)
+      cy.get(cesc(`#\\/_p2`)).should('have.text', `${c}, `)
+      cy.get(cesc(`#\\/_p3`)).should('have.text', `${c}, ${d}`)
 
     })
   });
@@ -3116,7 +3112,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_p1').should('have.text', "Selects and hide");
+    cy.get(cesc('#\\/_p1')).should('have.text', "Selects and hide");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3131,8 +3127,8 @@ describe('Select Tag Tests', function () {
       expect(["a", "c", "e"].includes(d)).eq(true);
       expect(["b", "d", "f"].includes(e)).eq(true);
 
-      cy.get(`#\\/_p2`).should('have.text', `${a}, ${b}, ${c}`)
-      cy.get(`#\\/_p3`).should('have.text', `${a}, , ${c}, ${d}, ${e}`)
+      cy.get(cesc(`#\\/_p2`)).should('have.text', `${a}, ${b}, ${c}`)
+      cy.get(cesc(`#\\/_p3`)).should('have.text', `${a}, , ${c}, ${d}, ${e}`)
 
     })
   });
@@ -3166,7 +3162,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3175,20 +3171,20 @@ describe('Select Tag Tests', function () {
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
-      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
-      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+      cy.get(cesc(`#\\/_p1`)).should('have.text', `${c}, `)
+      cy.get(cesc(`#\\/_p2`)).should('have.text', `${c}, ${d}`)
 
-      cy.get('#\\/h1').click();
-      cy.get('#\\/h2').click();
+      cy.get(cesc('#\\/h1')).click();
+      cy.get(cesc('#\\/h2')).click();
 
-      cy.get(`#\\/_p1`).should('have.text', `, ${d}`)
-      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+      cy.get(cesc(`#\\/_p1`)).should('have.text', `, ${d}`)
+      cy.get(cesc(`#\\/_p2`)).should('have.text', `${c}, ${d}`)
 
-      cy.get('#\\/h1').click();
-      cy.get('#\\/h2').click();
+      cy.get(cesc('#\\/h1')).click();
+      cy.get(cesc('#\\/h2')).click();
 
-      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
-      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+      cy.get(cesc(`#\\/_p1`)).should('have.text', `${c}, `)
+      cy.get(cesc(`#\\/_p2`)).should('have.text', `${c}, ${d}`)
 
     })
   });
@@ -3219,7 +3215,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let options = [{
       animal: "fox",
@@ -3236,16 +3232,16 @@ describe('Select Tag Tests', function () {
       let option = options[stateVariables['/_select1'].stateValues.selectedIndices[0] - 1];
 
 
-      cy.get('#\\/pa').should('have.text', `a: The ${option.animal} ${option.verb}.`);
-      cy.get('#\\/pa1').should('have.text', `a1: The ${option.animal} ${option.verb}.`);
-      cy.get('#\\/ppieces').should('have.text', `pieces: The ${option.animal} ${option.verb}.`);
-      cy.get('#\\/pb1').should('have.text', `b1: ${option.animal}`);
-      cy.get('#\\/pc1').should('have.text', `c1: ${option.verb}`);
+      cy.get(cesc('#\\/pa')).should('have.text', `a: The ${option.animal} ${option.verb}.`);
+      cy.get(cesc('#\\/pa1')).should('have.text', `a1: The ${option.animal} ${option.verb}.`);
+      cy.get(cesc('#\\/ppieces')).should('have.text', `pieces: The ${option.animal} ${option.verb}.`);
+      cy.get(cesc('#\\/pb1')).should('have.text', `b1: ${option.animal}`);
+      cy.get(cesc('#\\/pc1')).should('have.text', `c1: ${option.verb}`);
 
-      cy.get('#\\/a11').should('have.text', `${option.animal}`);
-      cy.get('#\\/a12').should('have.text', `${option.verb}`);
-      cy.get('#\\/b1').should('have.text', `${option.animal}`);
-      cy.get('#\\/c1').should('have.text', `${option.verb}`);
+      cy.get(cesc('#\\/a11')).should('have.text', `${option.animal}`);
+      cy.get(cesc('#\\/a12')).should('have.text', `${option.verb}`);
+      cy.get(cesc('#\\/b1')).should('have.text', `${option.animal}`);
+      cy.get(cesc('#\\/c1')).should('have.text', `${option.verb}`);
 
 
 
@@ -3275,7 +3271,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3286,9 +3282,9 @@ describe('Select Tag Tests', function () {
       let p2 = replacements[3].componentName;
       let p3 = replacements[5].componentName;
 
-      cy.get(cesc('#' + p1)).should('have.text', `q,r = ab`)
-      cy.get(cesc('#' + p2)).should('have.text', `q2 = a`)
-      cy.get(cesc('#' + p3)).should('have.text', `r2 = b`)
+      cy.get(cesc2('#' + p1)).should('have.text', `q,r = ab`)
+      cy.get(cesc2('#' + p2)).should('have.text', `q2 = a`)
+      cy.get(cesc2('#' + p3)).should('have.text', `r2 = b`)
 
 
     })
@@ -3322,7 +3318,7 @@ describe('Select Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3359,11 +3355,11 @@ describe('Select Tag Tests', function () {
 
       let l = ["a", "b", "c", "d", "e"]
 
-      cy.get('#\\/p1').should('have.text', vars1.map((v, i) => `${l[i]}1=${v}`).join(', '))
-      cy.get('#\\/p2').should('have.text', vars2.map((v, i) => `${l[i]}2=${v}`).join(', '))
-      cy.get('#\\/p3').should('have.text', vars3.map((v, i) => `${l[i]}3=${v}`).join(', '))
-      cy.get('#\\/p4').should('have.text', vars4.map((v, i) => `${l[i]}4=${v}`).join(', '))
-      cy.get('#\\/p5').should('have.text', vars5.map((v, i) => `${l[i]}5=${v}`).join(', '))
+      cy.get(cesc('#\\/p1')).should('have.text', vars1.map((v, i) => `${l[i]}1=${v}`).join(', '))
+      cy.get(cesc('#\\/p2')).should('have.text', vars2.map((v, i) => `${l[i]}2=${v}`).join(', '))
+      cy.get(cesc('#\\/p3')).should('have.text', vars3.map((v, i) => `${l[i]}3=${v}`).join(', '))
+      cy.get(cesc('#\\/p4')).should('have.text', vars4.map((v, i) => `${l[i]}4=${v}`).join(', '))
+      cy.get(cesc('#\\/p5')).should('have.text', vars5.map((v, i) => `${l[i]}5=${v}`).join(', '))
 
     })
   });
@@ -3379,7 +3375,7 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3412,23 +3408,23 @@ describe('Select Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let pNames1 = stateVariables["/_select1"].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName)
       for (let pn of pNames1) {
-        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+        cy.get(cesc2('#' + pn)).should('have.text', 'What is this?')
       }
 
       let pNames2 = ["/A", "/B", "/C"].map(x => stateVariables[x].replacements[0].componentName);
       for (let pn of pNames2) {
-        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+        cy.get(cesc2('#' + pn)).should('have.text', 'What is this?')
       }
 
       for (let pn of ["/D", "/E", "/F"]) {
-        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+        cy.get(cesc2('#' + pn)).should('have.text', 'What is this?')
       }
 
 

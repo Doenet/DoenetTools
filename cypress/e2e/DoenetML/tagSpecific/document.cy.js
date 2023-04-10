@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Document Tag Tests', function () {
@@ -27,8 +23,8 @@ describe('Document Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-    cy.get('#\\/docCa').should('have.text', '1');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/docCa')).should('have.text', '1');
 
   })
 
@@ -46,17 +42,17 @@ describe('Document Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-    cy.get('#\\/docCa').should('have.text', '0.5');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/docCa')).should('have.text', '0.5');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables["/ans"].stateValues.inputChildren[0].componentName;
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
 
       cy.get(mathinputAnchor).type('x{enter}', { force: true });
 
-      cy.get('#\\/docCa').should('have.text', '1');
+      cy.get(cesc('#\\/docCa')).should('have.text', '1');
 
 
     });
@@ -79,17 +75,17 @@ describe('Document Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-    cy.get('#\\/docCa').should('have.text', '0');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/docCa')).should('have.text', '0');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables["/ans"].stateValues.inputChildren[0].componentName;
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
 
       cy.get(mathinputAnchor).type('x{enter}', { force: true });
 
-      cy.get('#\\/docCa').should('have.text', '1');
+      cy.get(cesc('#\\/docCa')).should('have.text', '1');
 
 
     });
@@ -117,33 +113,33 @@ describe('Document Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-    cy.get('#\\/docCa').should('have.text', '0');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/docCa')).should('have.text', '0');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([0, 0, 0, 0, 0])
 
       let mathinputXName = stateVariables["/x"].stateValues.inputChildren[0].componentName;
-      let mathinputXAnchor = cesc('#' + mathinputXName) + " textarea";
-      let mathinputXCorrect = cesc('#' + mathinputXName) + "_correct";
+      let mathinputXAnchor = cesc2('#' + mathinputXName) + " textarea";
+      let mathinputXCorrect = cesc2('#' + mathinputXName) + "_correct";
       let mathinputYName = stateVariables["/y"].stateValues.inputChildren[0].componentName;
-      let mathinputYAnchor = cesc('#' + mathinputYName) + " textarea";
-      let mathinputYCorrect = cesc('#' + mathinputYName) + "_correct";
+      let mathinputYAnchor = cesc2('#' + mathinputYName) + " textarea";
+      let mathinputYCorrect = cesc2('#' + mathinputYName) + "_correct";
       let mathinputZName = stateVariables["/z"].stateValues.inputChildren[0].componentName;
-      let mathinputZAnchor = cesc('#' + mathinputZName) + " textarea";
-      let mathinputZCorrect = cesc('#' + mathinputZName) + "_correct";
+      let mathinputZAnchor = cesc2('#' + mathinputZName) + " textarea";
+      let mathinputZCorrect = cesc2('#' + mathinputZName) + "_correct";
       let mathinputAName = stateVariables["/a"].stateValues.inputChildren[0].componentName;
-      let mathinputAAnchor = cesc('#' + mathinputAName) + " textarea";
-      let mathinputACorrect = cesc('#' + mathinputAName) + "_correct";
+      let mathinputAAnchor = cesc2('#' + mathinputAName) + " textarea";
+      let mathinputACorrect = cesc2('#' + mathinputAName) + "_correct";
       let mathinputBName = stateVariables["/b"].stateValues.inputChildren[0].componentName;
-      let mathinputBAnchor = cesc('#' + mathinputBName) + " textarea";
-      let mathinputBCorrect = cesc('#' + mathinputBName) + "_correct";
+      let mathinputBAnchor = cesc2('#' + mathinputBName) + " textarea";
+      let mathinputBCorrect = cesc2('#' + mathinputBName) + "_correct";
 
 
       cy.get(mathinputXAnchor).type('x{enter}', { force: true });
       cy.get(mathinputXCorrect).should('be.visible');
-      cy.get('#\\/docCa').should('have.text', '0.333');
+      cy.get(cesc('#\\/docCa')).should('have.text', '0.333');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -152,7 +148,7 @@ describe('Document Tag Tests', function () {
 
       cy.get(mathinputAAnchor).type('a{enter}', { force: true });
       cy.get(mathinputACorrect).should('be.visible');
-      cy.get('#\\/docCa').should('have.text', '0.333');
+      cy.get(cesc('#\\/docCa')).should('have.text', '0.333');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -161,7 +157,7 @@ describe('Document Tag Tests', function () {
 
       cy.get(mathinputYAnchor).type('y{enter}', { force: true });
       cy.get(mathinputYCorrect).should('be.visible');
-      cy.get('#\\/docCa').should('have.text', '0.667');
+      cy.get(cesc('#\\/docCa')).should('have.text', '0.667');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -171,7 +167,7 @@ describe('Document Tag Tests', function () {
 
       cy.get(mathinputBAnchor).type('b{enter}', { force: true });
       cy.get(mathinputBCorrect).should('be.visible');
-      cy.get('#\\/docCa').should('have.text', '0.667');
+      cy.get(cesc('#\\/docCa')).should('have.text', '0.667');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -181,7 +177,7 @@ describe('Document Tag Tests', function () {
 
       cy.get(mathinputZAnchor).type('z{enter}', { force: true });
       cy.get(mathinputZCorrect).should('be.visible');
-      cy.get('#\\/docCa').should('have.text', '1');
+      cy.get(cesc('#\\/docCa')).should('have.text', '1');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -203,7 +199,7 @@ describe('Document Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_document1').should('contain.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_document1')).should('contain.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

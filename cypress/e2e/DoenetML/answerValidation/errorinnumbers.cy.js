@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from "../../../../src/_utils/url";
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Allow error in numbers validation tests', function () {
@@ -35,11 +31,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
@@ -156,11 +152,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -272,7 +268,7 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -346,18 +342,18 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = cesc(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
+      let mathinput2Name = cesc2(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
       let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -443,11 +439,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -555,11 +551,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -673,11 +669,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -778,11 +774,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -889,18 +885,18 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = cesc(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
+      let mathinput2Name = cesc2(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
       let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -980,11 +976,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1076,11 +1072,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1163,11 +1159,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1251,11 +1247,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1339,11 +1335,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1419,11 +1415,11 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1501,16 +1497,16 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
-    cy.get("#\\/ans_submit").should('be.visible');
+    cy.get(cesc("#\\/ans_submit")).should('be.visible');
 
     cy.log("Submit exact answer")
-    cy.get("#\\/mi1 textarea").type('log(32x+c)', { force: true, delay: 5 });
-    cy.get("#\\/mi2 textarea").type('42', { force: true, delay: 5 });
+    cy.get(cesc("#\\/mi1") + " textarea").type('log(32x+c)', { force: true, delay: 5 });
+    cy.get(cesc("#\\/mi2") + " textarea").type('42', { force: true, delay: 5 });
 
-    cy.get("#\\/ans_submit").click();
-    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1518,9 +1514,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("Enter too large an error in first component")
-    cy.get("#\\/mi1 textarea").type('{ctrl+home}{shift+end}{backspace}log(32.04x+c)', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+    cy.get(cesc("#\\/mi1") + " textarea").type('{ctrl+home}{shift+end}{backspace}log(32.04x+c)', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc("#\\/ans_partial")).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -1530,9 +1526,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("Enter too large an error in second component")
-    cy.get("#\\/mi2 textarea").type('{end}.3{enter}', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get(cesc("#\\/mi2") + " textarea").type('{end}.3{enter}', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc('#\\/ans_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1540,9 +1536,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("shink error in first component")
-    cy.get("#\\/mi1 textarea").type('{ctrl+home}{shift+end}{backspace}log(32.01x+c)', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+    cy.get(cesc("#\\/mi1") + " textarea").type('{ctrl+home}{shift+end}{backspace}log(32.01x+c)', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc("#\\/ans_partial")).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -1552,9 +1548,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("Shrink error in second component")
-    cy.get("#\\/mi2 textarea").type('{end}{leftArrow}0', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get(cesc("#\\/mi2") + " textarea").type('{end}{leftArrow}0', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1581,16 +1577,16 @@ describe('Allow error in numbers validation tests', function () {
     </p>
     `}, "*");
     });
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
-    cy.get("#\\/ans_submit").should('be.visible');
+    cy.get(cesc("#\\/ans_submit")).should('be.visible');
 
     cy.log("Submit exact answer")
-    cy.get("#\\/mi1 textarea").type('log(32x+c)', { force: true, delay: 5 });
-    cy.get("#\\/mi2 textarea").type('42', { force: true, delay: 5 });
+    cy.get(cesc("#\\/mi1") + " textarea").type('log(32x+c)', { force: true, delay: 5 });
+    cy.get(cesc("#\\/mi2") + " textarea").type('42', { force: true, delay: 5 });
 
-    cy.get("#\\/ans_submit").click();
-    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1598,9 +1594,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("Enter too large an error in first component")
-    cy.get("#\\/mi1 textarea").type('{ctrl+home}{shift+end}{backspace}log(32.04x+c)', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+    cy.get(cesc("#\\/mi1") + " textarea").type('{ctrl+home}{shift+end}{backspace}log(32.04x+c)', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc("#\\/ans_partial")).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -1610,9 +1606,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("Enter too large an error in second component")
-    cy.get("#\\/mi2 textarea").type('{end}.3', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get(cesc("#\\/mi2") + " textarea").type('{end}.3', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc('#\\/ans_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1620,9 +1616,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("shink error in first component")
-    cy.get("#\\/mi1 textarea").type('{ctrl+home}{shift+end}{backspace}log(32.01x+c)', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+    cy.get(cesc("#\\/mi1") + " textarea").type('{ctrl+home}{shift+end}{backspace}log(32.01x+c)', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc("#\\/ans_partial")).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -1632,9 +1628,9 @@ describe('Allow error in numbers validation tests', function () {
     });
 
     cy.log("Shrink error in second component")
-    cy.get("#\\/mi2 textarea").type('{end}{leftArrow}0', { force: true, delay: 5 });
-    cy.get("#\\/ans_submit").click();
-    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get(cesc("#\\/mi2") + " textarea").type('{end}{leftArrow}0', { force: true, delay: 5 });
+    cy.get(cesc("#\\/ans_submit")).click();
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

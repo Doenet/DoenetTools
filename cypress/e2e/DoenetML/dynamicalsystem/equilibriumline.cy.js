@@ -1,13 +1,5 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('Equilibriumline Tag Tests', function () {
 
@@ -51,17 +43,17 @@ describe('Equilibriumline Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get("#\\/gAs").should('have.text', 'true');
-    cy.get("#\\/gBs").should('have.text', 'false');
-    cy.get("#\\/gCs").should('have.text', 'false');
-    cy.get("#\\/gDs").should('have.text', 'false');
-    cy.get("#\\/g2As").should('have.text', 'true');
-    cy.get("#\\/g2Bs").should('have.text', 'false');
-    cy.get("#\\/g2Cs").should('have.text', 'false');
-    cy.get("#\\/g2Ds").should('have.text', 'false');
+    cy.get(cesc("#\\/gAs")).should('have.text', 'true');
+    cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+    cy.get(cesc("#\\/gCs")).should('have.text', 'false');
+    cy.get(cesc("#\\/gDs")).should('have.text', 'false');
+    cy.get(cesc("#\\/g2As")).should('have.text', 'true');
+    cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+    cy.get(cesc("#\\/g2Cs")).should('have.text', 'false');
+    cy.get(cesc("#\\/g2Ds")).should('have.text', 'false');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -87,16 +79,16 @@ describe('Equilibriumline Tag Tests', function () {
 
 
     cy.log('switch C via boolean input')
-    cy.get('#\\/b1').click();
+    cy.get(cesc('#\\/b1')).click();
 
-    cy.get("#\\/gAs").should('have.text', 'true');
-    cy.get("#\\/gBs").should('have.text', 'false');
-    cy.get("#\\/gCs").should('have.text', 'true');
-    cy.get("#\\/gDs").should('have.text', 'false');
-    cy.get("#\\/g2As").should('have.text', 'true');
-    cy.get("#\\/g2Bs").should('have.text', 'false');
-    cy.get("#\\/g2Cs").should('have.text', 'true');
-    cy.get("#\\/g2Ds").should('have.text', 'false');
+    cy.get(cesc("#\\/gAs")).should('have.text', 'true');
+    cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+    cy.get(cesc("#\\/gCs")).should('have.text', 'true');
+    cy.get(cesc("#\\/gDs")).should('have.text', 'false');
+    cy.get(cesc("#\\/g2As")).should('have.text', 'true');
+    cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+    cy.get(cesc("#\\/g2Cs")).should('have.text', 'true');
+    cy.get(cesc("#\\/g2Ds")).should('have.text', 'false');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -113,16 +105,16 @@ describe('Equilibriumline Tag Tests', function () {
     })
 
     cy.log('switch D via boolean input')
-    cy.get('#\\/b2').click();
+    cy.get(cesc('#\\/b2')).click();
 
-    cy.get("#\\/gAs").should('have.text', 'true');
-    cy.get("#\\/gBs").should('have.text', 'false');
-    cy.get("#\\/gCs").should('have.text', 'true');
-    cy.get("#\\/gDs").should('have.text', 'true');
-    cy.get("#\\/g2As").should('have.text', 'true');
-    cy.get("#\\/g2Bs").should('have.text', 'false');
-    cy.get("#\\/g2Cs").should('have.text', 'true');
-    cy.get("#\\/g2Ds").should('have.text', 'true');
+    cy.get(cesc("#\\/gAs")).should('have.text', 'true');
+    cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+    cy.get(cesc("#\\/gCs")).should('have.text', 'true');
+    cy.get(cesc("#\\/gDs")).should('have.text', 'true');
+    cy.get(cesc("#\\/g2As")).should('have.text', 'true');
+    cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+    cy.get(cesc("#\\/g2Cs")).should('have.text', 'true');
+    cy.get(cesc("#\\/g2Ds")).should('have.text', 'true');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -159,14 +151,14 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
 
-      cy.get("#\\/gAs").should('have.text', 'false');
-      cy.get("#\\/gBs").should('have.text', 'false');
-      cy.get("#\\/gCs").should('have.text', 'true');
-      cy.get("#\\/gDs").should('have.text', 'true');
-      cy.get("#\\/g2As").should('have.text', 'false');
-      cy.get("#\\/g2Bs").should('have.text', 'false');
-      cy.get("#\\/g2Cs").should('have.text', 'true');
-      cy.get("#\\/g2Ds").should('have.text', 'true');
+      cy.get(cesc("#\\/gAs")).should('have.text', 'false');
+      cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+      cy.get(cesc("#\\/gCs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gDs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2As")).should('have.text', 'false');
+      cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+      cy.get(cesc("#\\/g2Cs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Ds")).should('have.text', 'true');
     })
 
 
@@ -191,14 +183,14 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
 
-      cy.get("#\\/gAs").should('have.text', 'true');
-      cy.get("#\\/gBs").should('have.text', 'false');
-      cy.get("#\\/gCs").should('have.text', 'true');
-      cy.get("#\\/gDs").should('have.text', 'true');
-      cy.get("#\\/g2As").should('have.text', 'true');
-      cy.get("#\\/g2Bs").should('have.text', 'false');
-      cy.get("#\\/g2Cs").should('have.text', 'true');
-      cy.get("#\\/g2Ds").should('have.text', 'true');
+      cy.get(cesc("#\\/gAs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+      cy.get(cesc("#\\/gCs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gDs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2As")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+      cy.get(cesc("#\\/g2Cs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Ds")).should('have.text', 'true');
     })
 
 
@@ -221,14 +213,14 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
       expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
-      cy.get("#\\/gAs").should('have.text', 'true');
-      cy.get("#\\/gBs").should('have.text', 'false');
-      cy.get("#\\/gCs").should('have.text', 'true');
-      cy.get("#\\/gDs").should('have.text', 'true');
-      cy.get("#\\/g2As").should('have.text', 'true');
-      cy.get("#\\/g2Bs").should('have.text', 'false');
-      cy.get("#\\/g2Cs").should('have.text', 'true');
-      cy.get("#\\/g2Ds").should('have.text', 'true');
+      cy.get(cesc("#\\/gAs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+      cy.get(cesc("#\\/gCs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gDs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2As")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+      cy.get(cesc("#\\/g2Cs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Ds")).should('have.text', 'true');
     })
 
 
@@ -252,14 +244,14 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
       expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
-      cy.get("#\\/gAs").should('have.text', 'true');
-      cy.get("#\\/gBs").should('have.text', 'false');
-      cy.get("#\\/gCs").should('have.text', 'true');
-      cy.get("#\\/gDs").should('have.text', 'true');
-      cy.get("#\\/g2As").should('have.text', 'true');
-      cy.get("#\\/g2Bs").should('have.text', 'false');
-      cy.get("#\\/g2Cs").should('have.text', 'true');
-      cy.get("#\\/g2Ds").should('have.text', 'true');
+      cy.get(cesc("#\\/gAs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+      cy.get(cesc("#\\/gCs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gDs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2As")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+      cy.get(cesc("#\\/g2Cs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Ds")).should('have.text', 'true');
     })
 
 
@@ -282,14 +274,14 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
       expect(stateVariables["/g2/D"].stateValues.stable).eq(false);
 
-      cy.get("#\\/gAs").should('have.text', 'true');
-      cy.get("#\\/gBs").should('have.text', 'false');
-      cy.get("#\\/gCs").should('have.text', 'true');
-      cy.get("#\\/gDs").should('have.text', 'false');
-      cy.get("#\\/g2As").should('have.text', 'true');
-      cy.get("#\\/g2Bs").should('have.text', 'false');
-      cy.get("#\\/g2Cs").should('have.text', 'true');
-      cy.get("#\\/g2Ds").should('have.text', 'false');
+      cy.get(cesc("#\\/gAs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gBs")).should('have.text', 'false');
+      cy.get(cesc("#\\/gCs")).should('have.text', 'true');
+      cy.get(cesc("#\\/gDs")).should('have.text', 'false');
+      cy.get(cesc("#\\/g2As")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Bs")).should('have.text', 'false');
+      cy.get(cesc("#\\/g2Cs")).should('have.text', 'true');
+      cy.get(cesc("#\\/g2Ds")).should('have.text', 'false');
     })
 
 

@@ -1,12 +1,8 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('Integer Tag Tests', function () {
@@ -26,16 +22,16 @@ describe('Integer Tag Tests', function () {
     ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let integer0Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let integer0Anchor = cesc('#' + integer0Name);
+      let integer0Anchor = cesc2('#' + integer0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(integer0Anchor).should('have.text', '2')
-      cy.get('#\\/_integer1').should('have.text', '2')
+      cy.get(cesc('#\\/_integer1')).should('have.text', '2')
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
@@ -56,16 +52,16 @@ describe('Integer Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let integer0Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let integer0Anchor = cesc('#' + integer0Name);
+      let integer0Anchor = cesc2('#' + integer0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(integer0Anchor).should('have.text', 'NaN')
-      cy.get('#\\/_integer1').should('have.text', 'NaN')
+      cy.get(cesc('#\\/_integer1')).should('have.text', 'NaN')
 
 
       cy.log('Test internal values are set to the correct values')
@@ -87,27 +83,27 @@ describe('Integer Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n').should('have.text', 'NaN');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/n')).should('have.text', 'NaN');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-6.5{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '-6');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}-6.5{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', '-6');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('−6.5')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}x{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', 'NaN');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}x{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', 'NaN');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('−6.5x')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}9.5{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '10');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}9.5{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', '10');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9.5')
     })
   })
@@ -122,38 +118,38 @@ describe('Integer Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n').should('have.text', '5');
+    cy.get(cesc('#\\/n')).should('have.text', '5');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-6.5{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '-6');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}-6.5{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', '-6');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('−6')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}x{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', 'NaN');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}x{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', 'NaN');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
     })
 
     // Note: change to 3 and then 31 to verify bug doesn't reappear
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '3');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', '3');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}1{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '31');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}1{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', '31');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('31')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}.5{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '32');
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}.5{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', '32');
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('32')
     })
 

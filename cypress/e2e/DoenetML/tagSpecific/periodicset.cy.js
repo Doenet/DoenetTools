@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 describe('PeriodicSet Tag Tests', function () {
 
   beforeEach(() => {
@@ -28,9 +30,9 @@ describe('PeriodicSet Tag Tests', function () {
 
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/ca').should('have.text', '0')
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -50,11 +52,11 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("Type in an offset and submit")
-    cy.get('#\\/o textarea').type(`-pi/4{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
+    cy.get(cesc('#\\/o') + ' textarea').type(`-pi/4{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '0')
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -63,12 +65,12 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("Type in a period and submit")
-    cy.get('#\\/p textarea').type(`pi/2{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/p') + ' textarea').type(`pi/2{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
-    cy.get('#\\/_answer1_correct').should('be.visible');
+    cy.get(cesc('#\\/_answer1_correct')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '1')
+    cy.get(cesc('#\\/ca')).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -85,11 +87,11 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("Change period to be irrational factor of other period")
-    cy.get('#\\/p textarea').type(`{ctrl+home}{shift+end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/p') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}1{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
-    cy.get('#\\/ca').should('have.text', '0')
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -107,11 +109,11 @@ describe('PeriodicSet Tag Tests', function () {
 
 
     cy.log("Change period")
-    cy.get('#\\/p textarea').type(`{ctrl+home}{shift+end}{backspace}pi{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/p') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}pi{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
-    cy.get('#\\/ca').should('have.text', '0')
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -128,11 +130,11 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("add offset")
-    cy.get('#\\/o textarea').type(`{end}, 5pi/4{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/o') + ' textarea').type(`{end}, 5pi/4{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
-    cy.get('#\\/_answer1_correct').should('be.visible');
-    cy.get('#\\/ca').should('have.text', '1')
+    cy.get(cesc('#\\/_answer1_correct')).should('be.visible');
+    cy.get(cesc('#\\/ca')).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -151,11 +153,11 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("add redundant offset")
-    cy.get('#\\/o textarea').type(`{end}, pi/4{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/o') + ' textarea').type(`{end}, pi/4{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
-    cy.get('#\\/_answer1_correct').should('be.visible');
-    cy.get('#\\/ca').should('have.text', '1')
+    cy.get(cesc('#\\/_answer1_correct')).should('be.visible');
+    cy.get(cesc('#\\/ca')).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -176,11 +178,11 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("add incorrect offset")
-    cy.get('#\\/o textarea').type(`{end}, pi/2{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/o') + ' textarea').type(`{end}, pi/2{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
-    cy.get('#\\/ca').should('have.text', '0')
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -203,11 +205,11 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("add invalid math")
-    cy.get('#\\/o textarea').type(`{end}, ({enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/o') + ' textarea').type(`{end}, ({enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
-    cy.get('#\\/ca').should('have.text', '0')
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -246,13 +248,13 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '0')
-    cy.get('#\\/_p6').should('have.text', 'Redundancies: false, false, false, false')
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'Redundancies: false, false, false, false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -264,10 +266,10 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("Submit offset for both")
-    cy.get('#\\/offsets textarea').type(`-pi/4{enter}`, { force: true });
-    cy.get('#\\/offsets2 textarea').type(`-pi/4{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
+    cy.get(cesc('#\\/offsets') + ' textarea').type(`-pi/4{enter}`, { force: true });
+    cy.get(cesc('#\\/offsets2') + ' textarea').type(`-pi/4{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -279,13 +281,13 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("Submit periods for both")
-    cy.get('#\\/period textarea').type(`pi/2{enter}`, { force: true });
-    cy.get('#\\/period2 textarea').type(`2pi{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
+    cy.get(cesc('#\\/period') + ' textarea').type(`pi/2{enter}`, { force: true });
+    cy.get(cesc('#\\/period2') + ' textarea').type(`2pi{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '0')
-    cy.get('#\\/_p6').should('have.text', 'Redundancies: false, false, false, false')
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'Redundancies: false, false, false, false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -320,13 +322,13 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("Add offsets to match")
-    cy.get('#\\/offsets2 textarea').type(`{end}, pi/4{rightArrow}, 11pi/4{rightArrow}, -11pi/4{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_correct').should('be.visible');
+    cy.get(cesc('#\\/offsets2') + ' textarea').type(`{end}, pi/4{rightArrow}, 11pi/4{rightArrow}, -11pi/4{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_correct')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '1')
+    cy.get(cesc('#\\/ca')).should('have.text', '1')
 
-    cy.get('#\\/_p6').should('have.text', 'Redundancies: false, false, false, false')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'Redundancies: false, false, false, false')
 
 
     cy.window().then(async (win) => {
@@ -378,13 +380,13 @@ describe('PeriodicSet Tag Tests', function () {
 
 
     cy.log("Add extra offsets")
-    cy.get('#\\/offsets textarea').type(`{end}, -17pi/4{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_correct').should('be.visible');
+    cy.get(cesc('#\\/offsets') + ' textarea').type(`{end}, -17pi/4{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_correct')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '1')
+    cy.get(cesc('#\\/ca')).should('have.text', '1')
 
-    cy.get('#\\/_p6').should('have.text', 'Redundancies: true, false, true, false')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'Redundancies: true, false, true, false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -441,13 +443,13 @@ describe('PeriodicSet Tag Tests', function () {
 
 
     cy.log("reduce period")
-    cy.get('#\\/period2 textarea').type(`{end}{backspace}{backspace}pi{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_correct').should('be.visible');
+    cy.get(cesc('#\\/period2') + ' textarea').type(`{end}{backspace}{backspace}pi{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_correct')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '1')
+    cy.get(cesc('#\\/ca')).should('have.text', '1')
 
-    cy.get('#\\/_p6').should('have.text', 'Redundancies: true, true, true, true')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'Redundancies: true, true, true, true')
 
 
     cy.window().then(async (win) => {
@@ -505,13 +507,13 @@ describe('PeriodicSet Tag Tests', function () {
 
 
     cy.log("add incorrect offset")
-    cy.get('#\\/offsets2 textarea').type(`{end}, 0{enter}`, { force: true });
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_incorrect').should('be.visible');
+    cy.get(cesc('#\\/offsets2') + ' textarea').type(`{end}, 0{enter}`, { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_incorrect')).should('be.visible');
 
-    cy.get('#\\/ca').should('have.text', '0')
+    cy.get(cesc('#\\/ca')).should('have.text', '0')
 
-    cy.get('#\\/_p6').should('have.text', 'Redundancies: true, true, true, true')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'Redundancies: true, true, true, true')
 
 
     cy.window().then(async (win) => {
@@ -659,204 +661,204 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_p1').should('contain.text', 'What is the period?')
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'What is the period?')
 
 
     cy.log('partially correct answer')
-    cy.get('#\\/period_input textarea').type('360{enter}', { force: true });
-    cy.get('#\\/period_input_correct').should('be.visible');
+    cy.get(cesc('#\\/period_input') + ' textarea').type('360{enter}', { force: true });
+    cy.get(cesc('#\\/period_input_correct')).should('be.visible');
 
-    cy.get('#\\/number_offsets_input textarea').type('4{enter}', { force: true });
-    cy.get('#\\/number_offsets_input_correct').should('be.visible');
+    cy.get(cesc('#\\/number_offsets_input') + ' textarea').type('4{enter}', { force: true });
+    cy.get(cesc('#\\/number_offsets_input_correct')).should('be.visible');
 
-    cy.get('#\\/mi1 textarea').type('30', { force: true }).blur();
-    cy.get('#\\/mi2 textarea').type('150', { force: true }).blur();
-    cy.get('#\\/mi3 textarea').type('210', { force: true }).blur();
-    cy.get('#\\/mi4 textarea').type('211', { force: true }).blur();
+    cy.get(cesc('#\\/mi1') + ' textarea').type('30', { force: true }).blur();
+    cy.get(cesc('#\\/mi2') + ' textarea').type('150', { force: true }).blur();
+    cy.get(cesc('#\\/mi3') + ' textarea').type('210', { force: true }).blur();
+    cy.get(cesc('#\\/mi4') + ' textarea').type('211', { force: true }).blur();
 
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '75')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '75')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
 
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '75')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '75')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
 
     cy.log('correct answer');
 
-    cy.get('#\\/mi4 textarea').type('{ctrl+home}{shift+end}{backspace}-30', { force: true }).blur();
+    cy.get(cesc('#\\/mi4') + ' textarea').type('{ctrl+home}{shift+end}{backspace}-30', { force: true }).blur();
 
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_correct').should('be.visible');
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_correct')).should('be.visible');
 
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_correct').should('be.visible');
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_correct')).should('be.visible');
 
 
     cy.log('add extraneous answer blanks');
-    cy.get('#\\/number_offsets_input textarea').type('{end}{backspace}10', { force: true });
-    cy.get('#\\/number_offsets_input_submit').should('be.visible');
-    cy.get('#\\/number_offsets_input textarea').type('{enter}', { force: true });
-    cy.get('#\\/number_offsets_input_correct').should('be.visible');
+    cy.get(cesc('#\\/number_offsets_input') + ' textarea').type('{end}{backspace}10', { force: true });
+    cy.get(cesc('#\\/number_offsets_input_submit')).should('be.visible');
+    cy.get(cesc('#\\/number_offsets_input') + ' textarea').type('{enter}', { force: true });
+    cy.get(cesc('#\\/number_offsets_input_correct')).should('be.visible');
 
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '40')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '40')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '40')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '40')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
     cy.log('add in a duplicate')
-    cy.get('#\\/mi5 textarea').type('330', { force: true }).blur();
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '50')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi5') + ' textarea').type('330', { force: true }).blur();
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '50')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '40')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '40')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
 
     cy.log('fill in with duplicates')
-    cy.get('#\\/mi6 textarea').type('330', { force: true }).blur();
-    cy.get('#\\/mi7 textarea').type('330', { force: true }).blur();
-    cy.get('#\\/mi8 textarea').type('330', { force: true }).blur();
-    cy.get('#\\/mi9 textarea').type('330', { force: true }).blur();
-    cy.get('#\\/mi10 textarea').type('330', { force: true }).blur();
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_correct').should("be.visible");
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '80')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi6') + ' textarea').type('330', { force: true }).blur();
+    cy.get(cesc('#\\/mi7') + ' textarea').type('330', { force: true }).blur();
+    cy.get(cesc('#\\/mi8') + ' textarea').type('330', { force: true }).blur();
+    cy.get(cesc('#\\/mi9') + ' textarea').type('330', { force: true }).blur();
+    cy.get(cesc('#\\/mi10') + ' textarea').type('330', { force: true }).blur();
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_correct')).should("be.visible");
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '80')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
     cy.log('too few answer blanks');
-    cy.get('#\\/number_offsets_input textarea').type('{end}{backspace}{backspace}3', { force: true });
-    cy.get('#\\/number_offsets_input_submit').click();
-    cy.get('#\\/number_offsets_input_incorrect').should('be.visible');
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '75')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/number_offsets_input') + ' textarea').type('{end}{backspace}{backspace}3', { force: true });
+    cy.get(cesc('#\\/number_offsets_input_submit')).click();
+    cy.get(cesc('#\\/number_offsets_input_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '75')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '75')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '75')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '50')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi3') + ' textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '50')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '50')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '50')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log('even fewer answer blanks');
-    cy.get('#\\/number_offsets_input textarea').type('{end}{backspace}2', { force: true });
-    cy.get('#\\/number_offsets_input_submit').click();
-    cy.get('#\\/number_offsets_input_incorrect').should('be.visible');
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '50')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/number_offsets_input') + ' textarea').type('{end}{backspace}2', { force: true });
+    cy.get(cesc('#\\/number_offsets_input_submit')).click();
+    cy.get(cesc('#\\/number_offsets_input_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '50')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '50')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '50')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log('change period')
-    cy.get('#\\/period_input textarea').type('{ctrl+home}{shift+end}{backspace}180', { force: true });
-    cy.get('#\\/period_input_submit').click();
-    cy.get('#\\/period_input_correct').should('be.visible');
-    cy.get('#\\/number_offsets_input_submit').click();
-    cy.get('#\\/number_offsets_input_correct').should('be.visible');
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_correct').should("be.visible");
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_correct').should("be.visible");
+    cy.get(cesc('#\\/period_input') + ' textarea').type('{ctrl+home}{shift+end}{backspace}180', { force: true });
+    cy.get(cesc('#\\/period_input_submit')).click();
+    cy.get(cesc('#\\/period_input_correct')).should('be.visible');
+    cy.get(cesc('#\\/number_offsets_input_submit')).click();
+    cy.get(cesc('#\\/number_offsets_input_correct')).should('be.visible');
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_correct')).should("be.visible");
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_correct')).should("be.visible");
 
     cy.log('additional answer blanks');
-    cy.get('#\\/number_offsets_input textarea').type('{end}{backspace}3', { force: true });
-    cy.get('#\\/number_offsets_input_submit').click();
-    cy.get('#\\/number_offsets_input_correct').should('be.visible');
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '67')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/number_offsets_input') + ' textarea').type('{end}{backspace}3', { force: true });
+    cy.get(cesc('#\\/number_offsets_input_submit')).click();
+    cy.get(cesc('#\\/number_offsets_input_correct')).should('be.visible');
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '67')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '67')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '67')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}330', { force: true }).blur();
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_correct').should("be.visible");
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '80')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi3') + ' textarea').type('{ctrl+home}{shift+end}{backspace}330', { force: true }).blur();
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_correct')).should("be.visible");
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '80')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
     cy.log('change period')
-    cy.get('#\\/period_input textarea').type('{ctrl+home}{shift+end}{backspace}90', { force: true });
-    cy.get('#\\/period_input_submit').click();
-    cy.get('#\\/period_input_incorrect').should('be.visible');
-    cy.get('#\\/number_offsets_input_submit').click();
-    cy.get('#\\/number_offsets_input_correct').should('be.visible');
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '50')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/period_input') + ' textarea').type('{ctrl+home}{shift+end}{backspace}90', { force: true });
+    cy.get(cesc('#\\/period_input_submit')).click();
+    cy.get(cesc('#\\/period_input_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/number_offsets_input_submit')).click();
+    cy.get(cesc('#\\/number_offsets_input_correct')).should('be.visible');
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '50')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '40')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '40')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '33')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi3') + ' textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '33')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '33')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '33')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}150', { force: true }).blur();
-    cy.get('#\\/_answer3_submit').click();
-    cy.get('#\\/_answer3_partial').should('contain.text', '50')
-    cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi3') + ' textarea').type('{ctrl+home}{shift+end}{backspace}150', { force: true }).blur();
+    cy.get(cesc('#\\/_answer3_submit')).click();
+    cy.get(cesc('#\\/_answer3_partial')).should('contain.text', '50')
+    cy.get(cesc('#\\/_answer3_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/_answer4_submit').click();
-    cy.get('#\\/_answer4_partial').should('contain.text', '40')
-    cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer4_submit')).click();
+    cy.get(cesc('#\\/_answer4_partial')).should('contain.text', '40')
+    cy.get(cesc('#\\/_answer4_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
@@ -888,67 +890,67 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/l1").should('not.exist');
-    cy.get("#\\/l2").should('not.exist');
+    cy.get(cesc("#\\/l1")).should('not.exist');
+    cy.get(cesc("#\\/l2")).should('not.exist');
 
-    cy.get('#\\/period textarea').type('7{enter}', { force: true });
-    cy.get('#\\/offsets textarea').type('1{enter}', { force: true });
+    cy.get(cesc('#\\/period') + ' textarea').type('7{enter}', { force: true });
+    cy.get(cesc('#\\/offsets') + ' textarea').type('1{enter}', { force: true });
 
-    cy.get("#\\/l1").should('contain.text', '…,−6,1,8,…')
-    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/l1")).should('contain.text', '…,−6,1,8,…')
+    cy.get(cesc("#\\/l1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,1,8,…')
     })
-    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/l2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,1,8,…')
     })
 
-    cy.get('#\\/minIndex textarea').type('3{enter}', { force: true });
-    cy.get("#\\/l2").should('contain.text', '…,…')
-    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/minIndex') + ' textarea').type('3{enter}', { force: true });
+    cy.get(cesc("#\\/l2")).should('contain.text', '…,…')
+    cy.get(cesc("#\\/l2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,…')
     })
-    cy.get('#\\/maxIndex textarea').type('6{enter}', { force: true });
-    cy.get("#\\/l2").should('contain.text', '…,22,29,36,43,…')
-    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/maxIndex') + ' textarea').type('6{enter}', { force: true });
+    cy.get(cesc("#\\/l2")).should('contain.text', '…,22,29,36,43,…')
+    cy.get(cesc("#\\/l2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,22,29,36,43,…')
     })
 
-    cy.get('#\\/offsets textarea').type('{end},3{enter}', { force: true });
-    cy.get('#\\/offsets2').should('contain.text', '1,3')
-    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/offsets') + ' textarea').type('{end},3{enter}', { force: true });
+    cy.get(cesc('#\\/offsets2')).should('contain.text', '1,3')
+    cy.get(cesc("#\\/l1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
     })
-    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/l2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,22,24,29,31,36,38,43,45,…')
     })
 
-    cy.get('#\\/offsets textarea').type('{end}{backspace}{backspace}{leftArrow}3,{enter}', { force: true });
-    cy.get('#\\/offsets2').should('contain.text', '3,1')
-    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/offsets') + ' textarea').type('{end}{backspace}{backspace}{leftArrow}3,{enter}', { force: true });
+    cy.get(cesc('#\\/offsets2')).should('contain.text', '3,1')
+    cy.get(cesc("#\\/l1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
     })
-    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/l2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,22,24,29,31,36,38,43,45,…')
     })
 
-    cy.get('#\\/offsets textarea').type('{end},8{enter}', { force: true });
-    cy.get('#\\/offsets2').should('contain.text', '3,1,8')
+    cy.get(cesc('#\\/offsets') + ' textarea').type('{end},8{enter}', { force: true });
+    cy.get(cesc('#\\/offsets2')).should('contain.text', '3,1,8')
 
-    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/l1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
     })
-    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/l2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,22,24,29,31,36,38,43,45,…')
     })
 
-    cy.get('#\\/offsets textarea').type('{end},79{enter}', { force: true });
-    cy.get('#\\/offsets2').should('contain.text', '3,1,8,79')
-    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/offsets') + ' textarea').type('{end},79{enter}', { force: true });
+    cy.get(cesc('#\\/offsets2')).should('contain.text', '3,1,8,79')
+    cy.get(cesc("#\\/l1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−5,−4,1,2,3,8,9,10,…')
     })
-    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/l2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,22,23,24,29,30,31,36,37,38,43,44,45,…')
     })
 

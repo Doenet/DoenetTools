@@ -11,7 +11,6 @@ import { nanoid } from 'nanoid';
 import { calculateOrderAndVariants, parseActivityDefinition } from '../_utils/activityUtils';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import { useLocation, useNavigate } from 'react-router';
-import cssesc from 'cssesc';
 import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
 import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../_reactComponents/PanelHeaderComponents/ActionButton';
@@ -284,7 +283,7 @@ export default function ActivityViewer(props) {
   useEffect(() => {
     if (allPagesRendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
       ignoreNextScroll.current = true;
-      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+      document.getElementById(hash.slice(1))?.scrollIntoView();
     }
   }, [allPagesRendered.current])
 
@@ -325,7 +324,7 @@ export default function ActivityViewer(props) {
     // since the <Link> from react router doesn't seem to scroll into hashes
     // always scroll to the hash the first time we get a location from a <Link>
     if (!location.state?.doNotScroll && (location.key === "default" || !foundNewInPrevious)) {
-      let scrollTo = cssesc(hash.slice(1));
+      let scrollTo = hash.slice(1);
       if (props.paginate && hash.match(/^#page(\d+)$/)) {
         // if paginate, want to scroll to top of activity so can still see page controls
         scrollTo = 'activityTop';
@@ -1098,7 +1097,7 @@ export default function ActivityViewer(props) {
   async function submitAllAndFinishAssessment() {
 
     setProcessingSubmitAll(true);
-    
+
     let terminatePromises = [];
 
     for (let coreWorker of pageInfo.pageCoreWorker) {
@@ -1140,44 +1139,44 @@ export default function ActivityViewer(props) {
 
     await saveState({ overrideThrottle: true })
 
-  // console.log("activityInfo here",activityInfo)
+    // console.log("activityInfo here",activityInfo)
 
     //Clear out history of exam if canViewAfterCompleted setting set as false
-    if (!activityInfo.canViewAfterCompleted){
+    if (!activityInfo.canViewAfterCompleted) {
       // console.log("CLEAR state from viewer and cache")
       //Simple answer for now - lose all state info
       //TODO: When should we clear this
       //await idb_clear();
-      
+
     }
-      //Set assignment as completed for the user in the Data Base and Recoil
-      let resp = await axios.get('/api/saveCompleted.php', {
-        params: { doenetId:props.doenetId, isCompleted:true },
-      });
-      // console.log("resp",resp.data)
-      if (resp.data.success){
+    //Set assignment as completed for the user in the Data Base and Recoil
+    let resp = await axios.get('/api/saveCompleted.php', {
+      params: { doenetId: props.doenetId, isCompleted: true },
+    });
+    // console.log("resp",resp.data)
+    if (resp.data.success) {
 
-        //Mark activity as completed in Recoil
-        props?.setActivityAsCompleted();
+      //Mark activity as completed in Recoil
+      props?.setActivityAsCompleted();
 
-        //Go to end exam for the specific page
-        setPageToolView((prev)=>{
-          return {
-            page:prev.page,
-            tool: 'endExam',
-            view: '',
-            params: {
-              doenetId:props.doenetId,
-              attemptNumber,
-              itemWeights:itemWeights.join(","),
-            }
+      //Go to end exam for the specific page
+      setPageToolView((prev) => {
+        return {
+          page: prev.page,
+          tool: 'endExam',
+          view: '',
+          params: {
+            doenetId: props.doenetId,
+            attemptNumber,
+            itemWeights: itemWeights.join(","),
           }
-        });
+        }
+      });
 
-      }
-    
+    }
 
-   
+
+
   }
 
 
@@ -1408,10 +1407,10 @@ export default function ActivityViewer(props) {
 
   if (props.showFinishButton) {
     if (finishAssessmentMessageOpen) {
-      finishAssessmentPrompt = <div style={{marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px", border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", display: "flex", flexFlow: "column wrap" }}>
-       <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
-       Are you sure you want to finish this assessment?
-        </div> 
+      finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px", border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", padding: "5px", display: "flex", flexFlow: "column wrap" }}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
+          Are you sure you want to finish this assessment?
+        </div>
         <div style={{ display: "flex", justifyContent: "center", padding: "5px" }}>
           <ButtonGroup>
             <Button onClick={submitAllAndFinishAssessment} dataTest="ConfirmFinishAssessment" value="Yes" disabled={processingSubmitAll}></Button>
@@ -1422,9 +1421,9 @@ export default function ActivityViewer(props) {
       </div>
     } else {
       finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px" }}>
-        <div data-test="centerone" style={{display:"flex",justifyContent:"center"}}>
-          <div style={{width:"240px"}}>
-        <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
+        <div data-test="centerone" style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ width: "240px" }}>
+            <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
           </div>
         </div>
       </div>

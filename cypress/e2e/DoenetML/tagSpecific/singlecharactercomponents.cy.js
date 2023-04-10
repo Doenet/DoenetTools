@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Single Character Tag Tests', function () {
 
@@ -18,7 +20,7 @@ describe('Single Character Tag Tests', function () {
 
 
     // Note these dashes are different unicode even though they display the same here
-    cy.get('#\\/_document1').should('contain.text', "1 – 2 — that's it")
+    cy.get(cesc('#\\/_document1')).should('contain.text', "1 – 2 — that's it")
 
   })
 
@@ -30,7 +32,7 @@ describe('Single Character Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_document1').should('contain.text', "act\u00a0like\u00a0one\u00a0word")
+    cy.get(cesc('#\\/_document1')).should('contain.text', "act\u00a0like\u00a0one\u00a0word")
 
   })
 
@@ -42,7 +44,7 @@ describe('Single Character Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_document1').should('contain.text', "we could do that…")
+    cy.get(cesc('#\\/_document1')).should('contain.text', "we could do that…")
 
   })
 
@@ -54,7 +56,7 @@ describe('Single Character Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_document1').should('contain.text', "”“’‘")
+    cy.get(cesc('#\\/_document1')).should('contain.text', "”“’‘")
 
   })
 
