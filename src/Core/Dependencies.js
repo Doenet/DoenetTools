@@ -4658,9 +4658,9 @@ class DescendantDependency extends Dependency {
       this.skipComponentNames && this.originalDownstreamVariableNames.length === 0;
 
 
-    if (!component.childrenMatched) {
+    if (!component.matchedCompositeChildren) {
 
-      if (component.childrenMatchedWithPlaceholders) {
+      if (component.matchedCompositeChildrenWithPlaceholders) {
         if (component.unexpandedCompositesReady.length > 0) {
           let unexpandedReady = this.unexpandedCompositesAdjustedForPlacedholders(
             component.unexpandedCompositesReady, placeholdersOKForMatchedDescendants
