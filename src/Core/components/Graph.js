@@ -224,7 +224,7 @@ export default class Graph extends BlockComponent {
         "_graphical", "image",
         "text", "math", "m", "md", "label", "number",
         "updateValue", "callAction", "triggerSet",
-        "booleanInput"
+        "booleanInput", "textInput",
       ]
     },
     {
