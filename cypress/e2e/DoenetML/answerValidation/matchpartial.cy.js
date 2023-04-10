@@ -4296,7 +4296,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
     cy.get('#\\/ans1_submit').click();
     cy.get('#\\/ans2_submit').click();
 
@@ -4361,7 +4361,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
     cy.get('#\\/ans1_submit').click();
     cy.get('#\\/ans2_submit').click();
 
@@ -4426,7 +4426,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
     cy.get('#\\/ans1_submit').click();
     cy.get('#\\/ans2_submit').click();
 
@@ -4511,7 +4511,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
     cy.get('#\\/ans1_submit').click();
     cy.get('#\\/ans2_submit').click();
 
@@ -4596,7 +4596,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("Submit second interval")
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4]{enter}", { force: true, delay: 0 })
     cy.get('#\\/ans1_submit').click();
     cy.get('#\\/ans2_submit').click();
 
@@ -4661,7 +4661,7 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("Submit second array")
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}[3,4]{enter}", { force: true, delay: 0 })
     cy.get('#\\/ans1_submit').click();
     cy.get('#\\/ans2_submit').click();
 

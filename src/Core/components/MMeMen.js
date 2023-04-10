@@ -1,7 +1,8 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export class M extends InlineComponent {
   constructor(args) {
@@ -39,21 +40,7 @@ export class M extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
-
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
-
-    attributes.styleNumber.defaultValue = 0;
+    Object.assign(attributes, returnAnchorAttributes())
 
     return attributes;
 
@@ -74,8 +61,13 @@ export class M extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
-
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
 
     stateVariableDefinitions.latex = {
       public: true,
@@ -264,111 +256,20 @@ export class M extends InlineComponent {
       }
     }
 
-
-
-    stateVariableDefinitions.anchor = {
-      defaultValue: me.fromText("(0,0)"),
-      public: true,
-      forRenderer: true,
-      hasEssential: true,
-      shadowingInstructions: {
-        createComponentOfType: "point"
-      },
-      returnDependencies: () => ({
-        anchorAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "anchor",
-          variableNames: ["coords"],
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.anchorAttr) {
-          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
-        } else {
-          return { useEssentialOrDefaultValue: { anchor: true } }
-        }
-      },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
-        if (dependencyValues.anchorAttr) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "anchorAttr",
-              desiredValue: desiredStateVariableValues.anchor,
-              variableIndex: 0,
-            }]
-          }
-        } else {
-          return {
-            success: true,
-            instructions: [{
-              setEssentialValue: "anchor",
-              value: desiredStateVariableValues.anchor
-            }]
-          }
-        }
-
-      }
-    }
-
     return stateVariableDefinitions;
   }
 
   async moveMath({ x, y, z, transient, actionId,
     sourceInformation = {}, skipRendererUpdate = false
   }) {
-    let components = ["vector"];
-    if (x !== undefined) {
-      components[1] = x;
-    }
-    if (y !== undefined) {
-      components[2] = y;
-    }
-    if (z !== undefined) {
-      components[3] = z;
-    }
-    if (transient) {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        transient,
-        actionId,
-        sourceInformation,
-        skipRendererUpdate,
-      });
-    } else {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        actionId,
-        sourceInformation,
-        skipRendererUpdate,
-        event: {
-          verb: "interacted",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            x, y, z
-          }
-        }
-      });
-    }
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
 
   }
 
@@ -406,6 +307,7 @@ export class Men extends M {
         createComponentOfType: "text",
       },
       forRenderer: true,
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies: () => ({
         equationCounter: {
           dependencyType: "counter",

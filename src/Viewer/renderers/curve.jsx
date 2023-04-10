@@ -9,7 +9,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Curve(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Curve.ignoreActionsWithoutCore = true;
+  Curve.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
@@ -87,7 +87,6 @@ export default React.memo(function Curve(props) {
     }
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var curveAttributes = {
@@ -690,7 +689,6 @@ export default React.memo(function Curve(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (curveJXG.current.visProp.strokecolor !== lineColor) {
         curveJXG.current.visProp.strokecolor = lineColor;

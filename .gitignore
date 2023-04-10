@@ -36,6 +36,7 @@ dist_local/*
 cypress/videos
 cypress/screenshots
 runner-results
+parallel-weights.json
 
 src/tempcodes
 

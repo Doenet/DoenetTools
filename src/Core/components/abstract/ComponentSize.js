@@ -1,6 +1,7 @@
 import BaseComponent from './BaseComponent';
 import InlineComponent from './InlineComponent';
 import { mathStateVariableFromNumberStateVariable } from '../../utils/math';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../../utils/style';
 
 const unitConversions = {
   '': 1,
@@ -94,7 +95,6 @@ export class ComponentSize extends InlineComponent {
 
   }
 
-
   static returnChildGroups() {
 
     return [{
@@ -114,6 +114,13 @@ export class ComponentSize extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
 
     stateVariableDefinitions.componentSize = {
       public: true,

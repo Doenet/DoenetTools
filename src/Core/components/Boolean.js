@@ -6,6 +6,7 @@ export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";
 
   static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -239,7 +240,7 @@ export default class BooleanComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "boolean",
+        createComponentOfType: this.componentType,
         attributesToShadow: ["fixed"]
       },
       forRenderer: true,

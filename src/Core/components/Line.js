@@ -1,6 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { returnNVariables, convertValueToMathExpression, roundForDisplay } from '../utils/math';
+import { returnTextStyleDescriptionDefinitions } from '../utils/style';
 
 export default class Line extends GraphicalComponent {
   constructor(args) {
@@ -155,6 +156,9 @@ export default class Line extends GraphicalComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.styleDescription = {
       public: true,

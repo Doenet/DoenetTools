@@ -3,11 +3,15 @@ import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
+import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
 
 export default React.memo(function Label(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
-  Label.ignoreActionsWithoutCore = true;
+  Label.ignoreActionsWithoutCore = () => true;
 
   let labelJXG = useRef(null);
   let anchorPointJXG = useRef(null);
@@ -24,6 +28,8 @@ export default React.memo(function Label(props) {
 
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
+
+  const darkMode = useRecoilValue(darkModeAtom);
 
 
   useEffect(() => {
@@ -44,11 +50,25 @@ export default React.memo(function Label(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+
+    let cssStyle = ``;
+    if (backgroundColor) {
+      cssStyle += `background-color: ${backgroundColor}`;
+    }
+
     //things to be passed to JSXGraph as attributes
     let jsxLabelAttributes = {
       visible: !SVs.hidden,
       fixed,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
+      cssStyle,
+      highlightCssStyle: cssStyle,
+      strokeColor: textColor,
+      strokeOpacity: 1,
+      highlightStrokeColor: textColor,
+      highlightStrokeOpacity: 0.5,
       highlight: !fixed,
       useMathJax: SVs.hasLatex,
       parse: false,
@@ -83,36 +103,7 @@ export default React.memo(function Label(props) {
 
     jsxLabelAttributes.anchor = newAnchorPointJXG;
 
-    let anchorx, anchory;
-    if (SVs.positionFromAnchor === "center") {
-      anchorx = "middle";
-      anchory = "middle";
-    } else if (SVs.positionFromAnchor === "lowerleft") {
-      anchorx = "right";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "lowerright") {
-      anchorx = "left";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "upperleft") {
-      anchorx = "right";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "upperright") {
-      anchorx = "left";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "bottom") {
-      anchorx = "middle";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "top") {
-      anchorx = "middle";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "right") {
-      anchorx = "left";
-      anchory = "middle";
-    } else {
-      // positionFromAnchor === left
-      anchorx = "right";
-      anchory = "middle";
-    }
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
     jsxLabelAttributes.anchorx = anchorx;
     jsxLabelAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
@@ -279,6 +270,25 @@ export default React.memo(function Label(props) {
         labelJXG.current.setAttribute({ layer });
       }
 
+      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let cssStyle = ``;
+      if (backgroundColor) {
+        cssStyle += `background-color: ${backgroundColor}`;
+      } else {
+        cssStyle += `background-color: transparent`;
+      }
+
+      if (labelJXG.current.visProp.strokecolor !== textColor) {
+        labelJXG.current.visProp.strokecolor = textColor;
+        labelJXG.current.visProp.highlightstrokecolor = textColor;
+      }
+      if (labelJXG.current.visProp.cssstyle !== cssStyle) {
+        labelJXG.current.visProp.cssstyle = cssStyle;
+        labelJXG.current.visProp.highlightcssstyle = cssStyle;
+      }
+
+
       let fixed = !SVs.draggable || SVs.fixed;
 
 
@@ -288,36 +298,7 @@ export default React.memo(function Label(props) {
       labelJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let anchorx, anchory;
-        if (SVs.positionFromAnchor === "center") {
-          anchorx = "middle";
-          anchory = "middle";
-        } else if (SVs.positionFromAnchor === "lowerleft") {
-          anchorx = "right";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "lowerright") {
-          anchorx = "left";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "upperleft") {
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "upperright") {
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "bottom") {
-          anchorx = "middle";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "top") {
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "right") {
-          anchorx = "left";
-          anchory = "middle";
-        } else {
-          // positionFromAnchor === left
-          anchorx = "right";
-          anchory = "middle";
-        }
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
         labelJXG.current.visProp.anchorx = anchorx;
         labelJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
@@ -342,17 +323,17 @@ export default React.memo(function Label(props) {
     return null;
   }
 
-  if (children.length > 0) {
-    return <span id={id} style={{ marginRight: "12px" }}><a name={id} />{children}</span>;
-  } else {
-    let label = SVs.value;
 
-    if (SVs.hasLatex) {
-      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
-    }
-    return <span id={id}><a name={id} />{label}</span>;
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  style.marginRight = "12px";
 
+  let label = SVs.value;
+
+  if (SVs.hasLatex) {
+    label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
   }
+  return <span id={id} style={style}><a name={id} />{label}</span>;
+
 
 
 })

@@ -119,6 +119,13 @@ export default class MathInput extends Input {
       createStateVariable: "removeStrings",
       defaultValue: null,
     }
+    attributes.minWidth = {
+      createComponentOfType: "integer",
+      createStateVariable: "minWidth",
+      defaultValue: 50,
+      public: true,
+      forRenderer: true,
+    }
     return attributes;
   }
 

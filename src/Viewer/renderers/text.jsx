@@ -2,11 +2,15 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
+import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
 
 export default React.memo(function Text(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Text.ignoreActionsWithoutCore = true;
+  Text.ignoreActionsWithoutCore = () => true;
 
 
   let textJXG = useRef(null);
@@ -24,6 +28,8 @@ export default React.memo(function Text(props) {
 
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
+
+  const darkMode = useRecoilValue(darkModeAtom);
 
 
   useEffect(() => {
@@ -44,12 +50,28 @@ export default React.memo(function Text(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+
+    let cssStyle = ``;
+    if (backgroundColor) {
+      cssStyle += `background-color: ${backgroundColor}`;
+    }
+
     //things to be passed to JSXGraph as attributes
     let jsxTextAttributes = {
       visible: !SVs.hidden,
       fixed,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
-      highlight: !fixed
+      cssStyle,
+      highlightCssStyle: cssStyle,
+      strokeColor: textColor,
+      strokeOpacity: 1,
+      highlightStrokeColor: textColor,
+      highlightStrokeOpacity: 0.5,
+      highlight: !fixed,
+      parse: false,
+
     };
 
 
@@ -82,36 +104,7 @@ export default React.memo(function Text(props) {
 
     jsxTextAttributes.anchor = newAnchorPointJXG;
 
-    let anchorx, anchory;
-    if (SVs.positionFromAnchor === "center") {
-      anchorx = "middle";
-      anchory = "middle";
-    } else if (SVs.positionFromAnchor === "lowerleft") {
-      anchorx = "right";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "lowerright") {
-      anchorx = "left";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "upperleft") {
-      anchorx = "right";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "upperright") {
-      anchorx = "left";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "bottom") {
-      anchorx = "middle";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "top") {
-      anchorx = "middle";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "right") {
-      anchorx = "left";
-      anchory = "middle";
-    } else {
-      // positionFromAnchor === left
-      anchorx = "right";
-      anchory = "middle";
-    }
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
     jsxTextAttributes.anchorx = anchorx;
     jsxTextAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
@@ -263,8 +256,25 @@ export default React.memo(function Text(props) {
         textJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
+      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let cssStyle = ``;
+      if (backgroundColor) {
+        cssStyle += `background-color: ${backgroundColor}`;
+      } else {
+        cssStyle += `background-color: transparent`;
+      }
 
+      if (textJXG.current.visProp.strokecolor !== textColor) {
+        textJXG.current.visProp.strokecolor = textColor;
+        textJXG.current.visProp.highlightstrokecolor = textColor;
+      }
+      if (textJXG.current.visProp.cssstyle !== cssStyle) {
+        textJXG.current.visProp.cssstyle = cssStyle;
+        textJXG.current.visProp.highlightcssstyle = cssStyle;
+      }
+
+      let fixed = !SVs.draggable || SVs.fixed;
 
       textJXG.current.visProp.highlight = !fixed;
       textJXG.current.visProp.fixed = fixed;
@@ -272,36 +282,7 @@ export default React.memo(function Text(props) {
       textJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let anchorx, anchory;
-        if (SVs.positionFromAnchor === "center") {
-          anchorx = "middle";
-          anchory = "middle";
-        } else if (SVs.positionFromAnchor === "lowerleft") {
-          anchorx = "right";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "lowerright") {
-          anchorx = "left";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "upperleft") {
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "upperright") {
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "bottom") {
-          anchorx = "middle";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "top") {
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "right") {
-          anchorx = "left";
-          anchory = "middle";
-        } else {
-          // positionFromAnchor === left
-          anchorx = "right";
-          anchory = "middle";
-        }
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
         textJXG.current.visProp.anchorx = anchorx;
         textJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
@@ -325,5 +306,7 @@ export default React.memo(function Text(props) {
   if (SVs.hidden) {
     return null;
   }
-  return <><a name={id} /><span id={id}>{SVs.text}</span></>
+
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  return <><a name={id} /><span id={id} style={style}>{SVs.text}</span></>
 })

@@ -7,7 +7,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Circle(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
-  Circle.ignoreActionsWithoutCore = true;
+  Circle.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
@@ -69,9 +69,8 @@ export default React.memo(function Circle(props) {
 
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
     let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-    fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+    fillColor = SVs.filled ? fillColor : "none";
 
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
@@ -335,9 +334,8 @@ export default React.memo(function Circle(props) {
       }
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
       let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-      fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+      fillColor = SVs.filled ? fillColor : "none";
 
       if (circleJXG.current.visProp.strokecolor !== lineColor) {
         circleJXG.current.visProp.strokecolor = lineColor;

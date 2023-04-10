@@ -5,11 +5,12 @@ import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 import { useRecoilValue } from 'recoil';
 import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
 
 export default React.memo(function Vector(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Vector.ignoreActionsWithoutCore = true;
+  Vector.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
@@ -81,7 +82,6 @@ export default React.memo(function Vector(props) {
     let pointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var jsxVectorAttributes = {
@@ -553,7 +553,6 @@ export default React.memo(function Vector(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (vectorJXG.current.visProp.strokecolor !== lineColor) {
         vectorJXG.current.visProp.strokecolor = lineColor;
@@ -611,7 +610,9 @@ export default React.memo(function Vector(props) {
   }
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
-  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  return <><a name={id} /><span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 
 function styleToDash(style) {

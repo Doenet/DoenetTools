@@ -1,6 +1,6 @@
-import SectioningComponent from './abstract/SectioningComponent';
+import { SectioningComponent, SectioningComponentNumberWithSiblings, UnnumberedSectioningComponentNumber } from './abstract/SectioningComponent';
 
-export class Section extends SectioningComponent {
+export class Section extends SectioningComponentNumberWithSiblings {
   static componentType = "section";
   static rendererType = "section";
 
@@ -10,16 +10,47 @@ export class Section extends SectioningComponent {
     return attributes;
   }
 
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    return stateVariableDefinitions;
+  }
+
+
 }
 
 export class Subsection extends Section {
   static componentType = "subsection";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.sectionName.definition = () => ({
+      setValue: { sectionName: "Section" }
+    });
+
+    return stateVariableDefinitions;
+  }
+
 }
 export class Subsubsection extends Section {
   static componentType = "subsubsection";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.sectionName.definition = () => ({
+      setValue: { sectionName: "Section" }
+    });
+
+    return stateVariableDefinitions;
+  }
 }
 
-export class Paragraphs extends SectioningComponent {
+export class Paragraphs extends SectioningComponentNumberWithSiblings {
   static componentType = "paragraphs";
   static rendererType = "section";
 
@@ -31,10 +62,6 @@ export class Paragraphs extends SectioningComponent {
       setValue: { level: 4 }
     });
 
-    stateVariableDefinitions.sectionName.definition = () => ({
-      setValue: { sectionName: "Paragraphs" }
-    });
-    
     return stateVariableDefinitions;
   }
 
@@ -92,8 +119,33 @@ export class Aside extends SectioningComponent {
       setValue: { containerTag: "aside" }
     });
 
-    stateVariableDefinitions.sectionName.definition = () => ({
-      setValue: { sectionName: "Aside" }
+    return stateVariableDefinitions;
+  }
+
+}
+
+export class Objectives extends SectioningComponent {
+  static componentType = "objectives";
+  static rendererType = "section";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.boxed.defaultValue = true;
+
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.level.definition = () => ({
+      setValue: { level: 3 }
+    });
+
+    stateVariableDefinitions.containerTag.definition = () => ({
+      setValue: { containerTag: "article" }
     });
 
     return stateVariableDefinitions;
@@ -116,8 +168,8 @@ export class Problem extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.sectionName.definition = () => ({
-      setValue: { sectionName: "Problem" }
+    stateVariableDefinitions.containerTag.definition = () => ({
+      setValue: { containerTag: "article" }
     });
 
     return stateVariableDefinitions;
@@ -127,22 +179,11 @@ export class Problem extends SectioningComponent {
 
 export class Exercise extends Problem {
   static componentType = "exercise";
-  static rendererType = "section";
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.sectionName.definition = () => ({
-      setValue: { sectionName: "Exercise" }
-    });
-
-    return stateVariableDefinitions;
-  }
-
-
 }
 
+export class Activity extends Problem {
+  static componentType = "activity";
+}
 
 export class Example extends SectioningComponent {
   static componentType = "example";
@@ -152,14 +193,100 @@ export class Example extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.sectionName.definition = () => ({
-      setValue: { sectionName: "Example" }
+    stateVariableDefinitions.containerTag.definition = () => ({
+      setValue: { containerTag: "article" }
     });
 
     return stateVariableDefinitions;
   }
 
+}
 
+export class Definition extends Example {
+  static componentType = "definition";
+}
+
+export class Note extends Example {
+  static componentType = "note";
+}
+
+export class Theorem extends Example {
+  static componentType = "theorem";
+}
+
+export class Proof extends UnnumberedSectioningComponentNumber {
+  static componentType = "proof";
+  static rendererType = "section";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.collapsible = {
+      createComponentOfType: "boolean",
+      createStateVariable: "collapsible",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    }
+    attributes.startOpen = {
+      createComponentOfType: "boolean",
+      createStateVariable: "startOpen",
+      defaultValue: false,
+    }
+
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    delete stateVariableDefinitions.collapsible;
+
+    stateVariableDefinitions.open.returnDependencies = () => ({
+      startOpen: {
+        dependencyType: "stateVariable",
+        variableName: "startOpen"
+      }
+    })
+
+    stateVariableDefinitions.open.definition = ({ dependencyValues }) => ({
+      useEssentialOrDefaultValue: {
+        open: {
+          defaultValue: dependencyValues.startOpen,
+        }
+      }
+    })
+
+    stateVariableDefinitions.level.definition = () => ({
+      setValue: { level: 3 }
+    });
+
+    stateVariableDefinitions.containerTag.definition = () => ({
+      setValue: { containerTag: "article" }
+    });
+
+    return stateVariableDefinitions;
+  }
+
+}
+
+
+export class Problems extends SectioningComponent {
+  static componentType = "problems";
+  static rendererType = "section";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+    attributes.asList.defaultValue = true;
+    return attributes;
+  }
+
+}
+
+
+export class Exercises extends Problems {
+  static componentType = "exercises";
 }
 
 
@@ -191,7 +318,8 @@ export class externalContent extends SectioningComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.includeAutoNameNumberIfNoTitle.defaultValue = false;
+    attributes.includeAutoNameIfNoTitle.defaultValue = false;
+    attributes.includeAutoNumberIfNoTitle.defaultValue = false;
     return attributes;
   }
 

@@ -14,6 +14,8 @@ export class Div extends BlockComponent {
   static rendererType = "containerBlock";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+
   static returnChildGroups() {
 
     return [{
@@ -42,6 +44,8 @@ export class Span extends InlineComponent {
   static componentType = "span";
   static rendererType = "containerInline";
   static renderChildren = true;
+
+  static includeBlankStringChildren = true;
 
   static returnChildGroups() {
 

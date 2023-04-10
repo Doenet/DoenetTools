@@ -8,7 +8,7 @@ import {
   faTimes,
   faCloud,
 } from '@fortawesome/free-solid-svg-icons';
-import {addStyles, EditableMathField} from 'react-mathquill';
+import { addStyles, EditableMathField } from 'react-mathquill';
 addStyles(); // Styling for react-mathquill input field
 import {
   focusedMathField,
@@ -204,6 +204,7 @@ export default function MathInput(props) {
     outlineOffset: "2px",
     outlineColor: "var(--canvastext)",
     outlineWidth: "2px",
+    minWidth: `${SVs.minWidth > 0 ? SVs.minWidth : 0}px`,
   }
 
   if (focused) {

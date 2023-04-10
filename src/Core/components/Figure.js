@@ -62,13 +62,14 @@ export default class Figure extends BlockComponent {
         },
         forRenderer: true,
       }],
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies({ stateValues }) {
         let dependencies = {};
 
         if (stateValues.number) {
           dependencies.figureCounter = {
             dependencyType: "counter",
-            counterName: "figure"
+            counterName: "sectioning"
           }
         }
         return dependencies;

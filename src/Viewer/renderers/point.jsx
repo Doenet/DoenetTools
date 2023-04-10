@@ -4,11 +4,12 @@ import { BoardContext, POINT_LAYER_OFFSET } from './graph';
 import { MathJax } from 'better-react-mathjax';
 import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 import { useRecoilValue } from 'recoil';
+import { textRendererStyle } from '../../Core/utils/style';
 
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Point.ignoreActionsWithoutCore = true;
+  Point.ignoreActionsWithoutCore = () => true;
 
   // console.log(`for point ${name}, SVs: `, SVs)
 
@@ -76,7 +77,6 @@ export default React.memo(function Point(props) {
   function createPointJXG() {
 
     let markerColor = darkMode === "dark" ? SVs.selectedStyle.markerColorDarkMode : SVs.selectedStyle.markerColor;
-    markerColor = markerColor.toLowerCase();
     let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
     let strokeColor = useOpenSymbol ? markerColor : "none";
 
@@ -91,8 +91,8 @@ export default React.memo(function Point(props) {
       layer: 10 * SVs.layer + POINT_LAYER_OFFSET,
       fillColor: fillColor,
       strokeColor,
-      strokeOpacity: SVs.selectedStyle.lineOpacity,
-      fillOpacity: SVs.selectedStyle.lineOpacity,
+      strokeOpacity: SVs.selectedStyle.markerOpacity,
+      fillOpacity: SVs.selectedStyle.markerOpacity,
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
       size: normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle),
@@ -379,7 +379,6 @@ export default React.memo(function Point(props) {
     } else {
       //if values update
       let markerColor = darkMode === "dark" ? SVs.selectedStyle.markerColorDarkMode : SVs.selectedStyle.markerColor;
-      markerColor = markerColor.toLowerCase();
       let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
       let strokeColor = useOpenSymbol ? markerColor : "none";
 
@@ -445,9 +444,9 @@ export default React.memo(function Point(props) {
         pointJXG.current.visProp.fillColor = fillColor;
         shadowPointJXG.current.visProp.fillColor = fillColor;
       }
-      if (pointJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
-        pointJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
-        pointJXG.current.visProp.fillopacity = SVs.selectedStyle.lineOpacity;
+      if (pointJXG.current.visProp.strokeopacity !== SVs.selectedStyle.markerOpacity) {
+        pointJXG.current.visProp.strokeopacity = SVs.selectedStyle.markerOpacity;
+        pointJXG.current.visProp.fillopacity = SVs.selectedStyle.markerOpacity;
       }
 
       let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
@@ -552,7 +551,8 @@ export default React.memo(function Point(props) {
   //Render text coordinates when outside of graph
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
-  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  return <><a name={id} /><span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 
 })

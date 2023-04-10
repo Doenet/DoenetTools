@@ -8,7 +8,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Ray(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Ray.ignoreActionsWithoutCore = true;
+  Ray.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
@@ -68,7 +68,6 @@ export default React.memo(function Ray(props) {
     }
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
@@ -321,7 +320,6 @@ export default React.memo(function Ray(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (rayJXG.current.visProp.strokecolor !== lineColor) {
         rayJXG.current.visProp.strokecolor = lineColor;

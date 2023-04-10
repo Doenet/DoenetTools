@@ -798,11 +798,9 @@ export default React.memo(function Graph(props) {
 
       button = document.createElement('span');
       navigationBar.appendChild(button);
-      let el_span = document.createElement("span");
-      el_span.setAttribute('style', 'color: var(--canvastext); opacity: 0.7');
+      button.setAttribute('style', 'color: var(--canvastext); opacity: 0.7');
       let text_node = document.createTextNode(label);
-      button.appendChild(el_span);
-      el_span.appendChild(text_node);
+      button.appendChild(text_node);
 
       // Style settings are superseded by adding the CSS class below
       button.style.paddingLeft = '7px';

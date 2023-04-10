@@ -1467,7 +1467,7 @@ describe('Specifying unique variant tests', function () {
     <variantControl nvariants="6" uniquevariants/>
     <select assignnames="(problem)">
       <option>
-        <problem newNamespace suppressAutoName suppressAutoNumber><title>Favorite color</title>
+        <problem newNamespace><title>Favorite color</title>
           <select assignNames="(p)">
             <option>
               <p newNamespace>I like 
@@ -1484,7 +1484,7 @@ describe('Specifying unique variant tests', function () {
         </problem>
       </option>
       <option>
-        <problem newNamespace suppressAutoName suppressAutoNumber><title>Selected word</title>
+        <problem newNamespace><title>Selected word</title>
           <select assignNames="(p)">
             <option><p newNamespace>Verb: <select type="text" assignNames="word">run walk jump skip</select></p></option>
             <option><p newNamespace>Adjective: <select type="text" assignNames="word">soft scary large empty residual limitless</select></p></option>
@@ -1493,7 +1493,7 @@ describe('Specifying unique variant tests', function () {
         </problem>
       </option>
       <option>
-        <problem newNamespace suppressAutoName suppressAutoNumber><title>Chosen letter</title>
+        <problem newNamespace><title>Chosen letter</title>
           <p>Letter
             <selectfromsequence  assignNames="l" type="letters" from="a" to="z" />
           </p>

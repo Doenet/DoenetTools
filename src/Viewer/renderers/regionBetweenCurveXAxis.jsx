@@ -8,7 +8,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function RegionBetweenCurveXAxis(props) {
   let { name, id, SVs } = useDoenetRender(props);
 
-  RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
+  RegionBetweenCurveXAxis.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
@@ -39,7 +39,6 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
 
 
     let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-    fillColor = fillColor.toLowerCase();
 
 
     // Note: actual content of label is being ignored
@@ -121,7 +120,6 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
 
 
       let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-      fillColor = fillColor.toLowerCase();
 
       if (integralJXG.current.visProp.fillcolor !== fillColor) {
         integralJXG.current.visProp.fillcolor = fillColor;

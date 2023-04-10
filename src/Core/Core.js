@@ -10,11 +10,10 @@ import createStateProxyHandler from './StateProxyHandler';
 import { convertAttributesForComponentType, postProcessCopy, verifyReplacementsMatchSpecifiedType } from './utils/copy';
 import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
-import { preprocessMathInverseDefinition } from './utils/math';
+import { preprocessMathInverseDefinition, removeFunctionsMathExpressionClass } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 import { nanoid } from 'nanoid';
 import { cidFromText } from './utils/cid';
-import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { toastType } from '../Tools/_framework/ToastTypes';
@@ -629,7 +628,7 @@ export default class Core {
         let indicesToRender = [];
 
         if (unproxiedComponent && unproxiedComponent.constructor.renderChildren) {
-          if (!unproxiedComponent.childrenMatched) {
+          if (!unproxiedComponent.matchedCompositeChildren) {
             await this.deriveChildResultsFromDefiningChildren({
               parent: unproxiedComponent, expandComposites: true, forceExpandComposites: true,
             });
@@ -782,7 +781,7 @@ export default class Core {
       return;
     }
 
-    if (!component.childrenMatched) {
+    if (!component.matchedCompositeChildren) {
       await this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, //forceExpandComposites: true,
       });
@@ -1012,7 +1011,7 @@ export default class Core {
 
     let parentsWithCompositesNotReady = [];
 
-    if (!component.childrenMatched) {
+    if (!component.matchedCompositeChildren) {
       await this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, forceExpandComposites,
       });
@@ -1055,7 +1054,7 @@ export default class Core {
 
     let componentNames = [component.componentName];
     if (component.constructor.renderChildren) {
-      if (!component.childrenMatched) {
+      if (!component.matchedCompositeChildren) {
         await this.deriveChildResultsFromDefiningChildren({
           parent: component, expandComposites: true, //forceExpandComposites: true,
         });
@@ -1452,6 +1451,8 @@ export default class Core {
 
     await this.dependencies.resolveStateVariablesIfReady({ component: newComponent });
 
+    this.recordStateVariablesMustEvaluate(componentName);
+
     await this.checkForActionChaining({ component: newComponent });
 
     // this.dependencies.collateCountersAndPropagateToAncestors(newComponent);
@@ -1503,6 +1504,17 @@ export default class Core {
       delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
     }
 
+  }
+
+  recordStateVariablesMustEvaluate(componentName) {
+
+    let comp = this._components[componentName];
+
+    for (let vName in comp.state) {
+      if (comp.state[vName].mustEvaluate) {
+        this.updateInfo.stateVariablesToEvaluate.push({ componentName, stateVariable: vName })
+      }
+    }
   }
 
   async deriveChildResultsFromDefiningChildren({ parent, expandComposites = true,
@@ -1583,12 +1595,22 @@ export default class Core {
     if (childGroupResults.success) {
       delete this.unmatchedChildren[parent.componentName];
       parent.childrenMatchedWithPlaceholders = true;
+      parent.matchedCompositeChildrenWithPlaceholders = true;
     } else {
       parent.childrenMatchedWithPlaceholders = false;
-      let unmatchedChildrenTypes = childGroupResults.unmatchedChildren
-        .map(x => x.componentType).join(', ')
+      parent.matchedCompositeChildrenWithPlaceholders = true;
+      let unmatchedChildrenTypes = [];
+      for (let child of childGroupResults.unmatchedChildren) {
+        unmatchedChildrenTypes.push(child.componentType);
+        if (this.componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "_composite"
+        })) {
+          parent.matchedCompositeChildrenWithPlaceholders = false;
+        }
+      }
       this.unmatchedChildren[parent.componentName] = {
-        message: `invalid children of type(s): ${unmatchedChildrenTypes}`
+        message: `invalid children of type(s): ${unmatchedChildrenTypes.join(", ")}`
       }
     }
 
@@ -2582,6 +2604,7 @@ export default class Core {
               targetName: name,
               compositeName: dep.compositeName,
               propVariable: dep.propVariable,
+              fromPlainMacro: dep.fromPlainMacro,
               arrayStateVariable: dep.arrayStateVariable,
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
@@ -2824,6 +2847,7 @@ export default class Core {
         "defaultValue",
         "propagateToProps",
         "triggerActionOnChange",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -2935,6 +2959,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -3215,6 +3240,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "ignoreFixed",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -3311,8 +3337,23 @@ export default class Core {
         };
       }
 
+      let shadowStandardVariables = false;
+      let stateVariablesToShadow = [];
+      if (targetComponent.constructor.plainMacroReturnsSameType) {
+        if (redefineDependencies.fromPlainMacro) {
+          shadowStandardVariables = true;
+        }
+
+        // shadow any variables marked as shadowVariable
+        for (let varName in targetComponent.state) {
+          let stateObj = targetComponent.state[varName];
+          if ((stateObj.shadowVariable || stateObj.isShadow)) {
+            stateVariablesToShadow.push(varName);
+          }
+        }
+      }
+
       if (redefineDependencies.additionalStateVariableShadowing) {
-        let stateVariablesToShadow = [];
         let differentStateVariablesInTarget = [];
         for (let varName in redefineDependencies.additionalStateVariableShadowing) {
           stateVariablesToShadow.push(varName);
@@ -3327,9 +3368,16 @@ export default class Core {
           targetComponent,
           differentStateVariablesInTarget
         });
+      } else if (shadowStandardVariables) {
+        this.modifyStateDefsToBeShadows({
+          stateVariablesToShadow,
+          stateVariableDefinitions,
+          targetComponent
+        });
       }
 
       // for referencing a prop variable, don't shadow standard state variables
+      // (unless except for above cases)
       // so just return now
       return;
 
@@ -9323,7 +9371,7 @@ export default class Core {
       return;
     }
 
-    if (await component.stateValues.fixed && !instruction.overrideFixed && !stateVarObj.ignoreFixed) {
+    if (!instruction.overrideFixed && !stateVarObj.ignoreFixed && await component.stateValues.fixed) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`);
       return;
     }
@@ -9518,10 +9566,25 @@ export default class Core {
           // For setting essential value, we keep the values for all 
           // shadowed components in sync.
           // We find the original component and the recurse on all the components
-          // that shadow it
+          // that shadow it.
+          // Don't include shadows due to propVariable
+          // unless it is a plain macro marked as returning the same type
           let baseComponent = component;
-          while (baseComponent.shadows && baseComponent.shadows.propVariable === undefined) {
-            baseComponent = this._components[baseComponent.shadows.componentName]
+          while (baseComponent.shadows && (
+            baseComponent.shadows.propVariable === undefined
+            || (
+              baseComponent.doenetAttributes.fromPlainMacro
+              && this._components[baseComponent.shadows.componentName].constructor.plainMacroReturnsSameType
+            )
+          )) {
+            baseComponent = this._components[baseComponent.shadows.componentName];
+
+            // if any of the shadow sources are fixed, reject this change
+            if (!instruction.overrideFixed && !stateVarObj.ignoreFixed && await baseComponent.stateValues.fixed) {
+              console.log(`Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixed is true.`);
+              return;
+            }
+
           }
 
           this.calculateEssentialVariableChanges({
@@ -9804,7 +9867,14 @@ export default class Core {
 
     if (recurseToShadows && component.shadowedBy) {
       for (let shadow of component.shadowedBy) {
-        if (shadow.shadows.propVariable === undefined) {
+        // Don't include shadows due to propVariable
+        // unless it is a plain macro marked as returning the same type
+        if (shadow.shadows.propVariable === undefined
+          || (
+            shadow.doenetAttributes.fromPlainMacro
+            && component.constructor.plainMacroReturnsSameType
+          )
+        ) {
           this.calculateEssentialVariableChanges({
             component: shadow,
             varName,

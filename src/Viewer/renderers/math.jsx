@@ -3,11 +3,15 @@ import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
 import useDoenetRender from '../useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 import me from 'math-expressions';
+import { useRecoilValue } from 'recoil';
+import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
+import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
 
 export default React.memo(function MathComponent(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  MathComponent.ignoreActionsWithoutCore = true;
+  MathComponent.ignoreActionsWithoutCore = () => true;
 
 
   let mathJXG = useRef(null);
@@ -25,6 +29,9 @@ export default React.memo(function MathComponent(props) {
 
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
+
+  const darkMode = useRecoilValue(darkModeAtom);
+
 
   useEffect(() => {
     //On unmount
@@ -45,11 +52,25 @@ export default React.memo(function MathComponent(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+
+    let cssStyle = ``;
+    if (backgroundColor) {
+      cssStyle += `background-color: ${backgroundColor}`;
+    }
+
     //things to be passed to JSXGraph as attributes
     let jsxMathAttributes = {
       visible: !SVs.hidden,
       fixed,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
+      cssStyle,
+      highlightCssStyle: cssStyle,
+      strokeColor: textColor,
+      strokeOpacity: 1,
+      highlightStrokeColor: textColor,
+      highlightStrokeOpacity: 0.5,
       highlight: !fixed,
       useMathJax: true,
       parse: false,
@@ -84,36 +105,7 @@ export default React.memo(function MathComponent(props) {
 
     jsxMathAttributes.anchor = newAnchorPointJXG;
 
-    let anchorx, anchory;
-    if (SVs.positionFromAnchor === "center") {
-      anchorx = "middle";
-      anchory = "middle";
-    } else if (SVs.positionFromAnchor === "lowerleft") {
-      anchorx = "right";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "lowerright") {
-      anchorx = "left";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "upperleft") {
-      anchorx = "right";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "upperright") {
-      anchorx = "left";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "bottom") {
-      anchorx = "middle";
-      anchory = "top";
-    } else if (SVs.positionFromAnchor === "top") {
-      anchorx = "middle";
-      anchory = "bottom";
-    } else if (SVs.positionFromAnchor === "right") {
-      anchorx = "left";
-      anchory = "middle";
-    } else {
-      // positionFromAnchor === left
-      anchorx = "right";
-      anchory = "middle";
-    }
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
     jsxMathAttributes.anchorx = anchorx;
     jsxMathAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
@@ -317,8 +309,26 @@ export default React.memo(function MathComponent(props) {
         mathJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
+      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
+      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let cssStyle = ``;
+      if (backgroundColor) {
+        cssStyle += `background-color: ${backgroundColor}`;
+      } else {
+        cssStyle += `background-color: transparent`;
+      }
 
+      if (mathJXG.current.visProp.strokecolor !== textColor) {
+        mathJXG.current.visProp.strokecolor = textColor;
+        mathJXG.current.visProp.highlightstrokecolor = textColor;
+      }
+      if (mathJXG.current.visProp.cssstyle !== cssStyle) {
+        mathJXG.current.visProp.cssstyle = cssStyle;
+        mathJXG.current.visProp.highlightcssstyle = cssStyle;
+      }
+
+
+      let fixed = !SVs.draggable || SVs.fixed;
 
       mathJXG.current.visProp.highlight = !fixed;
       mathJXG.current.visProp.fixed = fixed;
@@ -326,36 +336,7 @@ export default React.memo(function MathComponent(props) {
       mathJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let anchorx, anchory;
-        if (SVs.positionFromAnchor === "center") {
-          anchorx = "middle";
-          anchory = "middle";
-        } else if (SVs.positionFromAnchor === "lowerleft") {
-          anchorx = "right";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "lowerright") {
-          anchorx = "left";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "upperleft") {
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "upperright") {
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "bottom") {
-          anchorx = "middle";
-          anchory = "top";
-        } else if (SVs.positionFromAnchor === "top") {
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (SVs.positionFromAnchor === "right") {
-          anchorx = "left";
-          anchory = "middle";
-        } else {
-          // positionFromAnchor === left
-          anchorx = "right";
-          anchory = "middle";
-        }
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
         mathJXG.current.visProp.anchorx = anchorx;
         mathJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
@@ -428,19 +409,22 @@ export default React.memo(function MathComponent(props) {
     ))
   }
 
+
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+
   // TODO: BADBADBAD
   // Don't understand why MathJax isn't updating when using {latexOrInputChildren}
   // so hard coded the only two cases using so far: with 1 or 2 entries
 
   if (latexOrInputChildren.length === 0) {
-    return <>{anchors}<span id={id}></span></>
+    return <>{anchors}<span id={id} style={style}></span></>
 
   } else if (latexOrInputChildren.length === 1) {
-    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
+    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
 
   } else if (latexOrInputChildren.length === 2) {
-    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
+    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
   } else {
-    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
+    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
   }
 })

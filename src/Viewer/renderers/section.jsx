@@ -68,7 +68,7 @@ export default React.memo(function Section(props) {
 
   if (title) {
     title = <>{SVs.titlePrefix}{title}</>
-  } else {
+  } else if (!SVs.inAList) {
     title = SVs.title;
   }
 
@@ -194,6 +194,13 @@ export default React.memo(function Section(props) {
     checkworkComponent = <div>{checkworkComponent}</div>
   }
 
+  if (SVs.asList) {
+    children = <ol>
+      {children.map(child => <li>{child}</li>)}
+    </ol>
+  }
+
+
   //TODO checkwork
   let content =
     <>
@@ -270,6 +277,7 @@ export default React.memo(function Section(props) {
 
   switch (SVs.containerTag) {
     case "aside": return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><aside id={id} style={{ margin: "12px 0" }}> {content} </aside></VisibilitySensor>;
+    case "article": return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><article id={id} style={{ margin: "12px 0" }}> {content} </article></VisibilitySensor>;
     case "div": return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={id} style={{ margin: "12px 0" }}> {content} </div></VisibilitySensor>;
     case "none": return <>{content}</>;
     default: return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><section id={id} style={{ margin: "12px 0" }}> {content} </section></VisibilitySensor>;

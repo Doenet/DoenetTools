@@ -2414,10 +2414,6 @@ class Dependency {
 
   downstreamVariableNameIfNoVariables = "__identity";
 
-  static get rendererType() {
-    return this.componentType;
-  }
-
   get dependencyType() {
     return this.constructor.dependencyType;
   }
@@ -3933,13 +3929,17 @@ class AttributeComponentDependency extends Dependency {
     while (comp.shadows) {
       let shadows = comp.shadows;
       let propVariable = comp.shadows.propVariable;
+      let fromPlainMacro = comp.doenetAttributes.fromPlainMacro;
 
       comp = this.dependencyHandler._components[shadows.componentName];
       if (!comp) {
         break;
       }
 
-      if (propVariable) {
+      // if a prop variable was created from a plain macro that is marked as returning the same type
+      // then treat it like a regular copy (as if there was no prop variable)
+      // and shadow all attributes
+      if (propVariable && !(fromPlainMacro && comp.constructor.plainMacroReturnsSameType)) {
         if (!(
           comp.state[propVariable]?.shadowingInstructions?.attributesToShadow?.includes(this.attributeName)
           || comp.constructor.createAttributesObject()[this.attributeName]?.propagateToProps
@@ -3954,7 +3954,7 @@ class AttributeComponentDependency extends Dependency {
             break;
           }
         }
-        if (shadows.firstLevelReplacement && "sourceAttributesToIgnore" in composite.state) {
+        if ((shadows.firstLevelReplacement || fromPlainMacro) && "sourceAttributesToIgnore" in composite.state) {
           let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
           if (sourceAttributesToIgnore.includes(this.attributeName)) {
             break;
@@ -4658,9 +4658,9 @@ class DescendantDependency extends Dependency {
       this.skipComponentNames && this.originalDownstreamVariableNames.length === 0;
 
 
-    if (!component.childrenMatched) {
+    if (!component.matchedCompositeChildren) {
 
-      if (component.childrenMatchedWithPlaceholders) {
+      if (component.matchedCompositeChildrenWithPlaceholders) {
         if (component.unexpandedCompositesReady.length > 0) {
           let unexpandedReady = this.unexpandedCompositesAdjustedForPlacedholders(
             component.unexpandedCompositesReady, placeholdersOKForMatchedDescendants
@@ -6620,7 +6620,7 @@ class AdapterSourceDependency extends Dependency {
 dependencyTypeArray.push(AdapterSourceDependency);
 
 class CountAmongSiblingsDependency extends Dependency {
-  static dependencyType = "countAmongSiblingsOfSameType";
+  static dependencyType = "countAmongSiblings";
 
   setUpParameters() {
 
@@ -6630,6 +6630,13 @@ class CountAmongSiblingsDependency extends Dependency {
     } else {
       this.componentName = this.upstreamComponentName;
     }
+    if (this.definition.componentType) {
+      this.componentType = this.definition.componentType;
+    } else if (this.definition.sameType) {
+      this.sameType = true;
+    }
+
+    this.includeInheritedComponentTypes = Boolean(this.definition.includeInheritedComponentTypes);
 
   }
 
@@ -6875,10 +6882,30 @@ class CountAmongSiblingsDependency extends Dependency {
 
   async getValue() {
 
-    let childComponentType = this.dependencyHandler.components[this.upstreamComponentName].componentType;
-    let childrenOfSameType = this.dependencyHandler.components[this.parentName].activeChildren
-      .filter(x => x.componentType === childComponentType);
-    let value = childrenOfSameType.map(x => x.componentName).indexOf(this.upstreamComponentName) + 1;
+    let childComponentType;
+    if (this.componentType) {
+      childComponentType = this.componentType;
+    } else if (this.sameType) {
+      childComponentType = this.dependencyHandler.components[this.upstreamComponentName].componentType;
+    }
+
+
+    let children = this.dependencyHandler.components[this.parentName].activeChildren;
+    if (childComponentType) {
+      if (this.includeInheritedComponentTypes) {
+        children = children.filter(x =>
+          this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: x.componentType,
+            baseComponentType: childComponentType
+          })
+        )
+      } else {
+        children = children.filter(x => x.componentType === childComponentType);
+      }
+    }
+
+    // This could be 0 if the component doesn't match the specified componentType
+    let value = children.map(x => x.componentName).indexOf(this.upstreamComponentName) + 1;
 
     if (this.parentName === this.dependencyHandler.core.documentName) {
       let previousCounts = this.dependencyHandler.core.previousComponentTypeCounts[childComponentType]

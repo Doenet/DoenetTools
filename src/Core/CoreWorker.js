@@ -1,5 +1,6 @@
 import Core from './Core';
 import me from 'math-expressions';
+import { removeFunctionsMathExpressionClass } from './utils/math';
 
 let core;
 
@@ -123,22 +124,5 @@ async function returnAllStateVariables(core) {
 
 
   return componentsObj;
-}
-
-export function removeFunctionsMathExpressionClass(value) {
-  if (value instanceof me.class) {
-    value = value.tree;
-  } else if (typeof value === "function") {
-    value = undefined;
-  } else if (Array.isArray(value)) {
-    value = value.map(x => removeFunctionsMathExpressionClass(x))
-  } else if (typeof value === "object" && value !== null) {
-    let valueCopy = {}
-    for (let key in value) {
-      valueCopy[key] = removeFunctionsMathExpressionClass(value[key]);
-    }
-    value = valueCopy;
-  }
-  return value;
 }
 

@@ -8,7 +8,7 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Polyline(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Polyline.ignoreActionsWithoutCore = true;
+  Polyline.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
@@ -79,7 +79,6 @@ export default React.memo(function Polyline(props) {
     }
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
@@ -498,7 +497,6 @@ export default React.memo(function Polyline(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (polylineJXG.current.visProp.strokecolor !== lineColor) {
         polylineJXG.current.visProp.strokecolor = lineColor;

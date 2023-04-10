@@ -326,7 +326,7 @@ export default function PageViewer(props) {
 
   async function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
-    if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
+    if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore?.(action.actionName)) {
       let actionId = nanoid();
       args = { ...args };
       args.actionId = actionId;

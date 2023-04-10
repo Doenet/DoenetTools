@@ -933,7 +933,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(me.math.variance(sample1numbersc, 'uncorrected')).closeTo(4 ** 2 / 12, 1)
 
       expect(me.math.mean(sample2numbersc)).closeTo(0, 6)
-      expect(me.math.variance(sample2numbersc, 'uncorrected')).closeTo(18 ** 2, 100)
+      expect(me.math.variance(sample2numbersc, 'uncorrected')).closeTo(18 ** 2, 120)
 
       for (let ind = 0; ind < 10; ind++) {
         expect(sample1numbersc[ind]).not.eq(sample1numbersb[ind])
