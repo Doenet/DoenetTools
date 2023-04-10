@@ -3,22 +3,16 @@ import { sizeToCSS } from './utils/css';
 import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
-import JXG from 'jsxgraph';
+import JXG from './jsxgraph-distrib/jsxgraphcore.mjs';
+import cssesc from 'cssesc';
 
 
 export const BoardContext = createContext();
 
 export default React.memo(function Graph(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
-  // console.log({ name, SVs, children, actions })
+  // console.log({ name, id, SVs, children, actions })
 
-
-  // TODO: remove this if jsxgraph can support escaped "/" again,
-  // as this replacement introduces a possibility of non-unique id's
-  // if someone, for example, creates graphs named "/g/g" and "/g_g".
-  // If jsxgraph doesn't fix this regression (https://github.com/jsxgraph/jsxgraph/issues/513),
-  // we need to find a better permanent solution.
-  id = id.replaceAll("\\/", "_");
 
   const [board, setBoard] = useState(null);
 
@@ -765,7 +759,7 @@ export default React.memo(function Graph(props) {
 
   function addNavigationButtons() {
     // not sure why getElementById doesn't work
-    let navigationBar = document.querySelector('#' + id + `_navigationbar`);
+    let navigationBar = document.querySelector('#' + cssesc(id, { isIdentifier: true }) + `_navigationbar`);
 
     // code modified from abstract.js and env.js of JSXGraph
 
@@ -832,7 +826,7 @@ export default React.memo(function Graph(props) {
 
   function removeNavigationButtons() {
     for (let i = 7; i >= 1; i--) {
-      let button = document.querySelector('#' + id + `_navigationbar > :first-child`);
+      let button = document.querySelector('#' + cssesc(id, { isIdentifier: true }) + `_navigationbar > :first-child`);
       button.remove();
     }
 
