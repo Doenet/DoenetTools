@@ -2324,7 +2324,7 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       returnDependencies: () => ({
         formula: {

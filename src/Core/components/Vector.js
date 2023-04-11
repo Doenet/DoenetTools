@@ -1905,7 +1905,7 @@ export default class Vector extends GraphicalComponent {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "latex"
       },
       returnDependencies: () => ({
         displacementCoords: {

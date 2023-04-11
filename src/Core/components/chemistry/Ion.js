@@ -495,6 +495,10 @@ export default class Ion extends InlineComponent {
     }
 
     stateVariableDefinitions.latex = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "latex"
+      },
       additionalStateVariablesDefined: [{
         variableName: "latexWithInputChildren",
         forRenderer: true,

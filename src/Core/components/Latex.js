@@ -4,12 +4,24 @@ export default class Latex extends TextComponent {
   static componentType = "latex";
   static rendererType = "text";
 
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.isLatex.defaultValue = true;
+
+    return attributes;
+
+  };
+
+
   static returnChildGroups() {
 
-    return [{
-      group: "mathTextLike",
-      componentTypes: ["math", "m", "md", "latex", "string", "text", "_singleCharacterInline", "_inlineRenderInlineChildren"]
-    }]
+    let childGroups = super.returnChildGroups();
+
+    childGroups[0].componentTypes.push("math", "m", "md");
+
+    return childGroups;
 
   }
 
@@ -22,7 +34,7 @@ export default class Latex extends TextComponent {
     stateVariableDefinitions.value.returnDependencies = () => ({
       mathTextLikeChildren: {
         dependencyType: "child",
-        childGroups: ["mathTextLike"],
+        childGroups: ["textLike"],
         variableNames: ["text", "latex"],
       },
     })
@@ -72,31 +84,6 @@ export default class Latex extends TextComponent {
           value: desiredStateVariableValues.value === null ? "" : String(desiredStateVariableValues.value)
         }]
       };
-    }
-
-    stateVariableDefinitions.text = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "text",
-      },
-      forRenderer: true,
-      returnDependencies: () => ({
-        value: {
-          dependencyType: "stateVariable",
-          variableName: "value"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        setValue: { text: dependencyValues.value }
-      }),
-      inverseDefinition: ({ desiredStateVariableValues }) => ({
-        success: true,
-        instructions: [{
-          setDependency: "value",
-          desiredValue: desiredStateVariableValues.text,
-        }]
-      })
-
     }
 
     stateVariableDefinitions.latex = {

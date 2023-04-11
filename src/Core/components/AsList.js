@@ -52,7 +52,7 @@ export default class AsList extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       returnDependencies: () => ({
         inlineChildren: {

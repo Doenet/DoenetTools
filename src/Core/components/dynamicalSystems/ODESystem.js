@@ -390,7 +390,7 @@ export default class ODESystem extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       forRenderer: true,
       returnDependencies() {

@@ -448,7 +448,7 @@ export default class PiecewiseFunction extends Function {
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       returnDependencies: () => ({
         variable: {

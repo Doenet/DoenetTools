@@ -1,5 +1,9 @@
 import { cesc } from '../../../../src/_utils/url';
 
+function cesc2(s) {
+  return cesc(cesc(s));
+}
+
 describe('TextInput Tag Tests', function () {
 
   beforeEach(() => {
@@ -1171,6 +1175,63 @@ describe('TextInput Tag Tests', function () {
     cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
+
+  })
+
+  it('use textinput as basic math input', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <textinput name="ti" />
+
+    <p>Math from text input: <math name="m1">$ti</math></p>
+    <p>Number from text input: <number name="n1">$ti</number></p>
+    <p>Math via latex from text input: <math name="m2">$ti.value{isLatex}</math></p>
+    <p>Number via latex from text input: <number name="n2">$ti.value{isLatex}</number></p>
+
+    `}, "*");
+    });
+
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', 'NaN')
+
+    cy.get(cesc2('#/ti_input')).type("4/2{enter}")
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").should('contain.text', '42')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '42')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', '42')
+    cy.get(cesc2('#/n1')).should('have.text', '2')
+    cy.get(cesc2('#/n2')).should('have.text', '2')
+
+
+    cy.get(cesc2('#/ti_input')).clear().type("xy{enter}")
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").should('contain.text', 'xy')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', 'xy')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', 'xy')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', 'NaN')
+
+    cy.get(cesc2('#/ti_input')).clear().type("\\frac{{}a}{{}b}{enter}")
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").should('contain.text', '\uff3f')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', 'ab')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', 'NaN')
+
+    cy.get(cesc2('#/ti_input')).clear().type("\\frac{{}6}{{}2}{enter}")
+
+    cy.get(cesc2('#/m2') + " .mjx-mrow").should('contain.text', '62')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', '62')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', '3')
 
   })
 

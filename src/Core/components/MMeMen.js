@@ -74,7 +74,7 @@ export class M extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       defaultValue: "",
       hasEssential: true,

@@ -1,4 +1,5 @@
 import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { getFromLatex, getFromText } from '../utils/math';
 import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
@@ -45,6 +46,13 @@ export default class Text extends InlineComponent {
       forRenderer: true
     };
 
+    attributes.isLatex = {
+      createComponentOfType: "boolean",
+      createStateVariable: "isLatex",
+      defaultValue: false,
+      public: true,
+    };
+
     Object.assign(attributes, returnAnchorAttributes())
 
     return attributes;
@@ -54,6 +62,7 @@ export default class Text extends InlineComponent {
 
   static returnChildGroups() {
 
+    // Note: Latex class extends Text and depends on "textLike" being the first entry
     return [{
       group: "textLike",
       componentTypes: ["string", "text", "_singleCharacterInline", "_inlineRenderInlineChildren"]
@@ -172,12 +181,88 @@ export default class Text extends InlineComponent {
 
     }
 
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      forRenderer: true,
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        },
+        isLatex: {
+          dependencyType: "stateVariable",
+          variableName: "isLatex"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let parser = dependencyValues.isLatex ? getFromLatex() : getFromText();
+        let expression;
+        try {
+          expression = parser(dependencyValues.value);
+        } catch (e) {
+          expression = me.fromAst('\uFF3F');
+        }
+        return { setValue: { math: expression } }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let text;
+        if (dependencyValues.isLatex) {
+          text = desiredStateVariableValues.math.toLatex();
+        } else {
+          text = desiredStateVariableValues.math.toString();
+        }
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: text,
+          }]
+        }
+      }
+
+    }
+
+
+
+    stateVariableDefinitions.number = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      forRenderer: true,
+      returnDependencies: () => ({
+        math: {
+          dependencyType: "stateVariable",
+          variableName: "math"
+        },
+      }),
+      definition({ dependencyValues }) {
+
+        return { setValue: { number: dependencyValues.math.evaluate_to_constant() } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "math",
+            desiredValue: me.fromAst(Number(desiredStateVariableValues.number)),
+          }]
+        }
+      }
+
+    }
+
     return stateVariableDefinitions;
 
   }
 
+  static adapters = ["math", "number"];
 
-  async moveText({ x, y, z, transient, actionId,
+  async moveText({
+    x, y, z, transient, actionId,
     sourceInformation = {}, skipRendererUpdate = false,
   }) {
 

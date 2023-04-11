@@ -140,6 +140,10 @@ export default class IonicCompound extends InlineComponent {
     }
 
     stateVariableDefinitions.latex = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "latex"
+      },
       additionalStateVariablesDefined: [{
         variableName: "latexWithInputChildren",
         forRenderer: true,

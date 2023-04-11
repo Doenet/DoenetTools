@@ -604,7 +604,7 @@ export default class MathList extends InlineComponent {
       additionalStateVariablesDefined: ["latexs"],
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       forRenderer: true,
       returnDependencies: () => ({
