@@ -60,7 +60,7 @@ const theme = extendTheme({
       mainBlue: '#1a5a99',
       lightBlue: '#b8d2ea',
       solidLightBlue: '#8fb8de',
-      mainGrey: '#e3e3e3',
+      mainGray: '#e3e3e3',
       donutBody: '#eea177',
       donutTopping: '#6d4445',
       mainRed: '#c1292e',
@@ -87,6 +87,7 @@ const theme = extendTheme({
         _disabled: {
           bg: '#E2E2E2',
           color: 'black',
+          cursor: 'none'
         },
       },
       variants: {
@@ -97,25 +98,21 @@ const theme = extendTheme({
           _hover: {
             bg: 'doenet.solidLightBlue',
             color: 'black',
-            // _disabled: { bg: "doenet.mainGrey"}
           },
         },
         outline: {
           borderColor: '#2D5994',
           _hover: {
             bg: 'solidLightBlue',
-            // _disabled: { bg: "#E2E2E2" }
           },
         },
         ghost: {
           _hover: {
             bg: 'solidLightBlue',
-            // _disabled: { bg: "#E2E2E2" }
           },
         },
         link: {
           color: 'solidLightBlue',
-          // _disabled: { bg: "white" }
         },
       },
     },
