@@ -10,7 +10,18 @@ import {
 } from '../../../_sharedRecoil/PageViewerRecoil';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
-import { Box, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Center,
+  Text,
+  IconButton,
+  Flex,
+  Link,
+  Image,
+  Tooltip,
+} from '@chakra-ui/react';
+import { HiOutlineMail } from 'react-icons/hi';
+import { BsGithub, BsDiscord } from 'react-icons/bs';
 // import { Link } from 'react-router-dom';
 // import RouterLogo from '../RouterLogo';
 
@@ -21,30 +32,6 @@ export async function loader() {
 }
 
 const HomeIntroVideo = lazy(() => import('./HomeIntroVideo'));
-
-const SectionText = styled.div`
-  text-align: center;
-  max-width: 800px;
-  display: inline-block;
-  margin-left: 3em;
-  margin-right: 3em;
-`;
-
-const Footer = styled.div`
-  background-color: var(--mainGray);
-  color: var(--canvastext);
-  font-size: 14px;
-  padding: 20px 40px;
-  text-align: center;
-`;
-
-const LinkStyling = styled.a`
-  color: var(--mainBlue);
-  border-radius: 5px;
-  &: focus {
-    outline: 2px solid var(--mainBlue);
-  }
-`;
 
 const CarouselSection = styled.div`
   display: flex;
@@ -308,58 +295,61 @@ export function Home() {
             </div>
           </div>
         </div>
-        <Footer>
-          <SectionText>
-            <div>
-              <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
-              <div style={{ marginBottom: '10px' }}>
-                <LinkStyling href="mailto:info@doenet.org">
-                  info@doenet.org
-                </LinkStyling>
-              </div>
-              <div style={{ marginBottom: '10px' }}>
-                <LinkStyling href="https://github.com/Doenet/">
-                  GitHub
-                </LinkStyling>
-              </div>
-              <div style={{ marginBottom: '40px' }}>
-                <LinkStyling href="https://discord.gg/PUduwtKJ5h">
-                  Discord Server
-                </LinkStyling>
-              </div>
-              <p>
-                <LinkStyling
-                  rel="license"
-                  href="http://creativecommons.org/licenses/by/4.0/"
-                >
-                  <img
-                    alt="Creative Commons License"
-                    style={{ borderWidth: 0 }}
-                    src="https://i.creativecommons.org/l/by/4.0/88x31.png"
-                  />
-                </LinkStyling>
-                <br />
-                This work is licensed under a{' '}
-                <LinkStyling
-                  rel="license"
-                  href="http://creativecommons.org/licenses/by/4.0/"
-                >
-                  Creative Commons Attribution 4.0 International License
-                </LinkStyling>
-                .
-              </p>
-              <p>
-                Doenet is a collaborative project involving the University of
-                Minnesota, the Ohio State University, and Cornell University,
-                with support from the National Science Foundation (DUE-1915294,
-                DUE-1915363, DUE-1915438). Any opinions, findings, and
-                conclusions or recommendations expressed in this material are
-                those of the author(s) and do not necessarily reflect the views
-                of the National Science Foundation.{' '}
-              </p>
-            </div>
-          </SectionText>
-        </Footer>
+        <Center
+          width="100%"
+          backgroundColor="doenet.mainGray"
+          color="doenet.canvastext"
+          padding="20px 40px"
+          display="flex"
+          flexDirection="column"
+          p="10px"
+          pb="100px"
+        >
+          <Flex columnGap="10px" m="10px">
+            <Link href="mailto:info@doenet.org">
+              <Tooltip label="mailto:info@doenet.org">
+                <IconButton
+                  size="sm"
+                  fontSize="16pt"
+                  icon={<HiOutlineMail />}
+                />
+              </Tooltip>
+            </Link>
+
+            <Link href="https://github.com/Doenet/">
+              <Tooltip label="Doenet Github">
+                <IconButton size="sm" fontSize="16pt" icon={<BsGithub />} />
+              </Tooltip>
+            </Link>
+            <Link href="https://discord.gg/PUduwtKJ5h">
+              <Tooltip label="Doenet Discord">
+                <IconButton size="sm" fontSize="16pt" icon={<BsDiscord />} />
+              </Tooltip>
+            </Link>
+
+            <Link href="http://creativecommons.org/licenses/by/4.0/">
+              <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+            </Link>
+          </Flex>
+          <Text as="div" fontSize="14px" maxWidth="750px" textAlign="center">
+            <Text>
+              This work is licensed under a{' '}
+              <Link
+                color="doenet.mainBlue"
+                href="http://creativecommons.org/licenses/by/4.0/"
+              >
+                Creative Commons Attribution 4.0 International License
+              </Link>
+            </Text>
+            Doenet is a collaborative project involving the University of
+            Minnesota, the Ohio State University, and Cornell University, with
+            support from the National Science Foundation (DUE-1915294,
+            DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
+            or recommendations expressed in this material are those of the
+            author(s) and do not necessarily reflect the views of the National
+            Science Foundation.{' '}
+          </Text>
+        </Center>
       </Main>
     </>
   );
