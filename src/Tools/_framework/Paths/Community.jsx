@@ -201,11 +201,12 @@ export function Community() {
       <>
         <Flex
           flexDirection="column"
-          p={10}
-          mt="2rem"
+          p={4}
+          mt="1rem"
           justifyContent="center"
           alignItems="center"
           textAlign="center"
+          height="20px"
         >
           <Box maxW={400} minW={200}>
             <Box w="400px">
@@ -233,7 +234,7 @@ export function Community() {
         </Box>
         <Tabs
           orientation="vertical"
-          minHeight="calc(100vh - 200px)"
+          minHeight="calc(100vh - 150px)"
           variant="line"
         >
           <TabList background="doenet.canvas" w={240}>
@@ -412,11 +413,12 @@ export function Community() {
     <>
       <Flex
         flexDirection="column"
-        p={10}
-        mt="2rem"
+        p={4}
+        mt="1rem"
         justifyContent="center"
         alignItems="center"
         textAlign="center"
+        height="20px"
       >
         <Box maxW={400} minW={200}>
           <Box width="400px">
