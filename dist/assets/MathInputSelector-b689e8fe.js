@@ -1,0 +1,1 @@
+import{ag as e}from"./index-c4368a4c.js";const a=e({key:"focusedMathField",default:()=>{}}),t=e({key:"focusedMathFieldReturn",default:()=>{}}),d=e({key:"palletRef",default:null}),f=e({key:"handleRef",default:null});e({key:"footerPanelToggle",default:!0});export{t as a,a as f,f as h,d as p};

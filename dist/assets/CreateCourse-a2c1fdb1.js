@@ -1,1 +1,0 @@
-import{bk as s,j as e,B as o}from"./index-9d63439d.js";import{B as a}from"./ButtonGroup-ec02b3e9.js";const n=r=>{const{createCourse:t}=s();return e("div",{style:r.style,children:e(a,{vertical:!0,children:e(o,{width:"menu",value:"Create New Course",onClick:t,"data-test":"createCourse",children:"Create New Course"})})})};export{n as default};
