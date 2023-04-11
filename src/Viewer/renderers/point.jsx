@@ -30,10 +30,12 @@ export default React.memo(function Point(props) {
 
   let lastPositionFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
   let switchable = useRef(false);
 
   lastPositionFromCore.current = SVs.numericalXs;
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
   switchable.current = SVs.switchable && !SVs.fixed;
 
   const darkMode = useRecoilValue(darkModeAtom);
@@ -97,7 +99,7 @@ export default React.memo(function Point(props) {
       highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
       size: normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle),
       face: normalizeStyle(SVs.selectedStyle.markerStyle),
-      highlight: !fixed.current
+      highlight: !fixLocation.current
     };
 
 
@@ -162,7 +164,7 @@ export default React.memo(function Point(props) {
       }
     }
 
-    if (fixed.current) {
+    if (fixLocation.current) {
       jsxPointAttributes.showInfoBox = false;
     } else {
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
@@ -190,6 +192,7 @@ export default React.memo(function Point(props) {
     shadowPointAttributes.highlightStrokeOpacity = 0;
 
     let newShadowPointJXG = board.create('point', coords, shadowPointAttributes);
+    newShadowPointJXG.isDraggable = !fixLocation.current;
 
     let newPointJXG = board.create('point', coords, jsxPointAttributes);
 
@@ -230,7 +233,7 @@ export default React.memo(function Point(props) {
           }
         });
         dragged.current = false;
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         if (switchable.current) {
           callAction({
             action: actions.switchPoint
@@ -440,9 +443,10 @@ export default React.memo(function Point(props) {
         shadowPointJXG.current.setAttribute({ layer });
       }
 
-      pointJXG.current.visProp.highlight = !fixed.current;
-      shadowPointJXG.current.visProp.highlight = !fixed.current;
+      pointJXG.current.visProp.highlight = !fixLocation.current;
+      shadowPointJXG.current.visProp.highlight = !fixLocation.current;
       shadowPointJXG.current.visProp.fixed = fixed.current;
+      shadowPointJXG.current.isDraggable = !fixLocation.current;
 
       if (pointJXG.current.visProp.strokecolor !== strokeColor) {
         pointJXG.current.visProp.strokecolor = strokeColor;
@@ -466,7 +470,7 @@ export default React.memo(function Point(props) {
         shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
-      if (fixed.current) {
+      if (fixLocation.current) {
         pointJXG.current.visProp.showinfobox = false;
       } else {
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;

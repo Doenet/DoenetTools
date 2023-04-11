@@ -189,6 +189,7 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.endpoints = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -378,6 +379,7 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.length = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
       },
@@ -620,6 +622,7 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.slope = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
@@ -723,13 +726,15 @@ export default class LineSegment extends GraphicalComponent {
 
   async lineSegmentClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
@@ -737,13 +742,15 @@ export default class LineSegment extends GraphicalComponent {
 
   async lineSegmentFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "focus",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

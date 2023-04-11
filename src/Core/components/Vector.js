@@ -376,6 +376,7 @@ export default class Vector extends GraphicalComponent {
     // that shadows the component adapted or copy
     stateVariableDefinitions.displacementShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "displacement",
       set: convertValueToMathExpression,
@@ -401,6 +402,7 @@ export default class Vector extends GraphicalComponent {
     // from serialized state with head value
     stateVariableDefinitions.headShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "head",
       set: convertValueToMathExpression,
@@ -425,6 +427,7 @@ export default class Vector extends GraphicalComponent {
     // from serialized state with tail value
     stateVariableDefinitions.tailShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "tail",
       set: convertValueToMathExpression,
@@ -995,6 +998,7 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.displacement = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros", "displayWithAngleBrackets"],
@@ -1323,6 +1327,7 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.head = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1507,6 +1512,7 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.tail = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1720,6 +1726,7 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.magnitude = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
       },
@@ -1848,6 +1855,7 @@ export default class Vector extends GraphicalComponent {
     }
 
     stateVariableDefinitions.displacementCoords = {
+      isLocation: true,
       returnDependencies: () => ({
         displacement: {
           dependencyType: "stateVariable",
@@ -2196,13 +2204,15 @@ export default class Vector extends GraphicalComponent {
 
   async vectorClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
@@ -2210,13 +2220,15 @@ export default class Vector extends GraphicalComponent {
 
   async vectorFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "focus",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

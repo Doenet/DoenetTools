@@ -367,6 +367,7 @@ export default class Point extends GraphicalComponent {
     // that shadows the component adapted or copied
     stateVariableDefinitions.coordsShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "coords",
       returnDependencies: () => ({}),
@@ -528,6 +529,7 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.unconstrainedXs = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["unconstrainedX"],
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
@@ -800,6 +802,7 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.xs = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -924,6 +927,7 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.coords = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1257,13 +1261,15 @@ export default class Point extends GraphicalComponent {
 
   async pointClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
@@ -1271,13 +1277,15 @@ export default class Point extends GraphicalComponent {
 
   async pointFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "focus",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

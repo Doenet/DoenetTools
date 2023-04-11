@@ -160,6 +160,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
     stateVariableDefinitions.vertices = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {

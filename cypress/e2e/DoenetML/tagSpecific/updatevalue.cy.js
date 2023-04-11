@@ -2218,7 +2218,7 @@ describe('UpdateValue Tag Tests', function () {
     <text>a</text>
     <p>n: <number name="n">1</number></p>
     <graph >
-      <updatevalue anchor="$anchorCoords1" name="updatevalue1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1" disabled="$disabled1" target="n" newValue="$n+1"><label>increment</label></updatevalue>
+      <updatevalue anchor="$anchorCoords1" name="updatevalue1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1" disabled="$disabled1" fixed="$fixed1" fixLocation="$fixLocation1" target="n" newValue="$n+1"><label>increment</label></updatevalue>
       <updatevalue name="updatevalue2" target="n" newValue="$n-1"><label>decrement</label></updatevalue>
     </graph>
 
@@ -2262,6 +2262,14 @@ describe('UpdateValue Tag Tests', function () {
     <p name="pDisabled2">Disabled 2: $disabled2</p>
     <p>Change disabled 1 <booleanInput name="disabled1" prefill="true" /></p>
     <p>Change disabled 2 <booleanInput name="disabled2" bindValueTo="$updatevalue2.disabled" /></p>
+    <p name="pFixed1">Fixed 1: $fixed1</p>
+    <p name="pFixed2">Fixed 2: $fixed2</p>
+    <p>Change fixed 1 <booleanInput name="fixed1" prefill="false" /></p>
+    <p>Change fixed 2 <booleanInput name="fixed2" bindValueTo="$updatevalue2.fixed" /></p>
+    <p name="pFixLocation1">FixLocation 1: $fixLocation1</p>
+    <p name="pFixLocation2">FixLocation 2: $fixLocation2</p>
+    <p>Change fixLocation 1 <booleanInput name="fixLocation1" prefill="false" /></p>
+    <p>Change fixLocation 2 <booleanInput name="fixLocation2" bindValueTo="$updatevalue2.fixLocation" /></p>
     <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
 
     ` }, "*");
@@ -2351,6 +2359,119 @@ describe('UpdateValue Tag Tests', function () {
     cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
     cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
+    cy.log('make draggable again')
+
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/updatevalue1",
+        args: { x: -10, y: -9 }
+      })
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/updatevalue2",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(−8,−7)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−10,−9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+
+    cy.log('fix location')
+
+    cy.get(cesc('#\\/fixLocation1')).click();
+    cy.get(cesc('#\\/fixLocation2')).click();
+    cy.get(cesc("#\\/pFixLocation1")).should('have.text', 'FixLocation 1: true')
+    cy.get(cesc("#\\/pFixLocation2")).should('have.text', 'FixLocation 2: true')
+
+
+    cy.log('can change coordinates entering coordinates only for button 1')
+
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(3,4){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(1,2){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(1,2)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('cannot move updatevalues by dragging')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/updatevalue1",
+        args: { x: 4, y: 6 }
+      })
+      win.callAction1({
+        actionName: "moveButton",
+        componentName: "/updatevalue2",
+        args: { x: 7, y: 8 }
+      })
+    })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'false');
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('can change position from anchor only for button 1');
+    cy.get(cesc('#\\/positionFromAnchor2')).select("bottom")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("top")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: top')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+    cy.log("can change disabled attribute")
+    cy.get(cesc('#\\/disabled1')).click();
+    cy.get(cesc('#\\/disabled2')).click();
+    cy.get(cesc("#\\/pDisabled1")).should('have.text', 'Disabled 1: false')
+    cy.get(cesc("#\\/pDisabled2")).should('have.text', 'Disabled 2: true')
+
+
+    cy.log('make completely fixed')
+    cy.get(cesc('#\\/fixed1')).click();
+    cy.get(cesc('#\\/fixed2')).click();
+    cy.get(cesc("#\\/pFixed1")).should('have.text', 'Fixed 1: true')
+    cy.get(cesc("#\\/pFixed2")).should('have.text', 'Fixed 2: true')
+
+
+    cy.log('can change coordinates entering coordinates only for button 1')
+
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(7,8){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(5,6){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(5,6)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('can change position from anchor only for button 1');
+    cy.get(cesc('#\\/positionFromAnchor2')).select("left")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("right")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: right')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+
+    cy.log("can change disabled attribute only for button 1")
+    cy.get(cesc('#\\/disabled2')).click();
+    cy.get(cesc('#\\/disabled1')).click();
+    cy.get(cesc("#\\/pDisabled1")).should('have.text', 'Disabled 1: true')
+    cy.get(cesc("#\\/pDisabled2")).should('have.text', 'Disabled 2: true')
 
 
   })

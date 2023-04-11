@@ -27,11 +27,13 @@ export default React.memo(function Polyline(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
   let verticesFixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalVertices;
   fixed.current = !SVs.draggable || SVs.fixed;
-  verticesFixed.current = !SVs.verticesDraggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
+  verticesFixed.current = !SVs.verticesDraggable || SVs.fixed || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -94,7 +96,7 @@ export default React.memo(function Polyline(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       lineCap: "butt"
     };
 
@@ -137,6 +139,7 @@ export default React.memo(function Polyline(props) {
     SVs.numericalVertices.forEach(z => { x.push(z[0]); y.push(z[1]) });
 
     let newPolylineJXG = board.create('curve', [x, y], jsxPolylineAttributes);
+    newPolylineJXG.isDraggable = !fixLocation.current;
 
     for (let i = 0; i < SVs.nVertices; i++) {
       pointsJXG.current[i].on('drag', (e) => dragHandler(i, e));
@@ -323,7 +326,7 @@ export default React.memo(function Polyline(props) {
           }
         })
       }
-    } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1)) {
+    } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1) && !fixed.current) {
       // Note: counting on fact that up on polyline itself (i===-1) will trigger before up on points
       callAction({
         action: actions.polylineClicked,
@@ -419,7 +422,8 @@ export default React.memo(function Polyline(props) {
       }
 
       polylineJXG.current.visProp.fixed = fixed.current;
-      polylineJXG.current.visProp.highlight = !fixed.current;
+      polylineJXG.current.visProp.highlight = !fixLocation.current;
+      polylineJXG.current.isDraggable = !fixLocation.current;
 
       let polylineLayer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = polylineJXG.current.visProp.layer !== polylineLayer;

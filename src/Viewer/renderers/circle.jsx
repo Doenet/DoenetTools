@@ -26,10 +26,12 @@ export default React.memo(function Circle(props) {
   let lastCenterFromCore = useRef(null);
   let throughAnglesFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
 
   lastCenterFromCore.current = SVs.numericalCenter;
   throughAnglesFromCore.current = SVs.throughAngles;
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -65,8 +67,6 @@ export default React.memo(function Circle(props) {
       return null;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
     let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
@@ -90,7 +90,7 @@ export default React.memo(function Circle(props) {
       fillOpacity: SVs.selectedStyle.fillOpacity,
       highlightFillColor: fillColor,
       highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
     };
 
 
@@ -118,6 +118,7 @@ export default React.memo(function Circle(props) {
       jsxCircleAttributes
     );
 
+    newCircleJXG.isDraggable = !fixLocation.current;
 
     newCircleJXG.on('drag', function (e) {
 
@@ -178,12 +179,13 @@ export default React.memo(function Circle(props) {
             throughAngles: throughAnglesAtDown.current,
           }
         })
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.circleClicked,
           args: { name }   // send name so get original name if adapted
         });
       }
+      pointerIsDown.current = false;
     });
 
 
@@ -328,7 +330,8 @@ export default React.memo(function Circle(props) {
 
 
       circleJXG.current.visProp.fixed = fixed.current;
-      circleJXG.current.visProp.highlight = !fixed.current;
+      circleJXG.current.visProp.highlight = !fixLocation.current;
+      circleJXG.current.isDraggable = !fixLocation.current;
 
       let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = circleJXG.current.visProp.layer !== layer;

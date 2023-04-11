@@ -14,6 +14,7 @@ export function returnAnchorAttributes() {
       public: true,
       forRenderer: true,
       toLowerCase: true,
+      isLocation: true,
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
     }
   }
@@ -27,6 +28,7 @@ export function returnAnchorStateVariableDefinition() {
       public: true,
       forRenderer: true,
       hasEssential: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "point"
       },

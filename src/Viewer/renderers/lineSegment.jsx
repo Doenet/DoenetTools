@@ -27,11 +27,13 @@ export default React.memo(function LineSegment(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
   let endpointsFixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
   fixed.current = !SVs.draggable || SVs.fixed;
-  endpointsFixed.current = !SVs.endpointsDraggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
+  endpointsFixed.current = !SVs.endpointsDraggable || SVs.fixed || SVs.fixLocation;
 
 
   const darkMode = useRecoilValue(darkModeAtom);
@@ -90,7 +92,7 @@ export default React.memo(function LineSegment(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
     };
 
     if (withlabel) {
@@ -167,6 +169,7 @@ export default React.memo(function LineSegment(props) {
     point2JXG.current = board.create('point', endpoints[1], jsxPointAttributes);
 
     lineSegmentJXG.current = board.create('segment', [point1JXG.current, point2JXG.current], jsxSegmentAttributes);
+    lineSegmentJXG.isDraggable = !fixLocation.current;
 
     point1JXG.current.on('drag', (e) => onDragHandler(1, e));
     point2JXG.current.on('drag', (e) => onDragHandler(2, e));
@@ -180,7 +183,7 @@ export default React.memo(function LineSegment(props) {
             point1coords: pointCoords.current,
           }
         })
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.lineSegmentClicked,
           args: { name }   // send name so get original name if adapted
@@ -197,7 +200,7 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current,
           }
         })
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.lineSegmentClicked,
           args: { name }   // send name so get original name if adapted
@@ -215,7 +218,7 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current[1],
           }
         })
-      } else if (!pointerMovedSinceDown.current && downOnPoint.current === null) {
+      } else if (!pointerMovedSinceDown.current && downOnPoint.current === null && !fixed.current) {
         // Note: counting on fact that up on line segment will trigger before up on points
         callAction({
           action: actions.lineSegmentClicked,
@@ -586,7 +589,8 @@ export default React.memo(function LineSegment(props) {
       point2JXG.current.visPropCalc["visible"] = endpointsVisible;
 
       lineSegmentJXG.current.visProp.fixed = fixed.current;
-      lineSegmentJXG.current.visProp.highlight = !fixed.current;
+      lineSegmentJXG.current.visProp.highlight = !fixLocation.current;
+      lineSegmentJXG.current.isDraggable = !fixLocation.current;
 
       let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = lineSegmentJXG.current.visProp.layer !== layer;

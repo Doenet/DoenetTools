@@ -12,6 +12,7 @@ export default class RegularPolygon extends Polygon {
     attributes.nVertices = {
       createComponentOfType: "number",
       createStateVariable: "nVertices",
+      isLocation: true,
       defaultValue: 3,
       public: true,
       forRenderer: true,
@@ -111,6 +112,7 @@ export default class RegularPolygon extends Polygon {
 
     stateVariableDefinitions.essentialDirection = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["essentialVertexX"],
       defaultValueByArrayKey: () => 0,
       hasEssential: true,
@@ -183,6 +185,7 @@ export default class RegularPolygon extends Polygon {
 
     stateVariableDefinitions.specifiedCenter = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["specifiedCenterX"],
       returnArraySizeDependencies: () => ({
         haveSpecifiedCenter: {
@@ -257,6 +260,7 @@ export default class RegularPolygon extends Polygon {
 
     stateVariableDefinitions.essentialCenter = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["essentialCenterX"],
       defaultValueByArrayKey: () => 0,
       hasEssential: true,
@@ -306,6 +310,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedCircumradius = {
+      isLocation: true,
       returnDependencies() {
         return {
           circumradiusAttr: {
@@ -370,6 +375,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedInradius = {
+      isLocation: true,
       returnDependencies() {
         return {
           inradiusAttr: {
@@ -426,6 +432,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedSideLength = {
+      isLocation: true,
       returnDependencies() {
         return {
           sideLengthAttr: {
@@ -464,6 +471,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedPerimeter = {
+      isLocation: true,
       returnDependencies() {
         return {
           perimeterAttr: {
@@ -502,6 +510,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedArea = {
+      isLocation: true,
       returnDependencies() {
         return {
           areaAttr: {
@@ -540,6 +549,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.essentialCircumradius = {
+      isLocation: true,
       hasEssential: true,
       defaultValue: 1,
       returnDependencies: () => ({}),
@@ -560,6 +570,7 @@ export default class RegularPolygon extends Polygon {
     // because we currently can't use additionalStateVariablesDefined with arrays
     // unless all state variables are arrays of the same size
     stateVariableDefinitions.centerComponents = {
+      isLocation: true,
       additionalStateVariablesDefined: ["directionWithRadius"],
       returnDependencies: () => ({
         nVertices: {
@@ -922,6 +933,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.vertices = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
@@ -1181,6 +1193,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.center = {
+      isLocation: true,
       public: true,
       isArray: true,
       entryPrefixes: ["centerX"],
@@ -1254,6 +1267,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.circumradius = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1321,6 +1335,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.inradius = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1370,6 +1385,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.sideLength = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1413,6 +1429,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.perimeter = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1456,6 +1473,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.area = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",

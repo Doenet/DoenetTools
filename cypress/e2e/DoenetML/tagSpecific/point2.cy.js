@@ -1,5 +1,5 @@
 import me from 'math-expressions';
-import { cesc } from '../../../../src/_utils/url';
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Point Tag Tests', function () {
 
@@ -6327,6 +6327,232 @@ describe('Point Tag Tests', function () {
     cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
     cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
 
+
+  })
+
+  it('fix location versus fixed', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <graph>
+      <point name="P" />
+    </graph>
+
+    <coords name="Pcoords" copysource="P.coords" />
+    <mathinput name="miP" bindValueTo="$P" />
+
+    <p>Fix location: <booleaninput name="fl" bindValueTo="$P.fixLocation" /> <boolean copySource="P.fixLocation" name="fl2" /></p>
+    <p>Fixed: <booleaninput name="fx" bindValueTo="$P.fixed" /> <boolean copySource="P.fixed" name="fx2" /></p>
+    <p>Draggable: <booleaninput name="dg" bindValueTo="$P.draggable" /> <boolean copySource="P.draggable" name="dg2" /></p>
+    <p>nClicks: <number name="nClicks">0</number><updateValue triggerWhenObjectsClicked="P" target="nClicks" newValue="$nClicks+1" /></p>
+    <p>nFocused: <number name="nFocused">0</number><updateValue triggerWhenObjectsFocused="P" target="nFocused" newValue="$nFocused+1" /></p>
+    <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
+
+    ` }, "*");
+    });
+
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").eq(0).should('have.text', '(0,0)');
+    cy.get(cesc2('#/nClicks')).should('have.text', '0');
+    cy.get(cesc2('#/nFocused')).should('have.text', '0');
+    cy.get(cesc2('#/fl2')).should('have.text', 'false');
+    cy.get(cesc2('#/fx2')).should('have.text', 'false');
+    cy.get(cesc2('#/dg2')).should('have.text', 'true');
+
+
+    cy.log("move point by dragging")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/P',
+        args: { x: 3, y: 5 }
+      })
+    });
+
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").should('contain.text', '(3,5)');
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").eq(0).should('have.text', '(3,5)');
+
+    cy.log("focus point")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "pointFocused",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+    });
+
+    cy.get(cesc2('#/nFocused')).should('have.text', '1');
+    cy.get(cesc2('#/nClicks')).should('have.text', '0');
+
+
+    cy.log("click point")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "pointClicked",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+    });
+
+    cy.get(cesc2('#/nClicks')).should('have.text', '1');
+    cy.get(cesc2('#/nFocused')).should('have.text', '1');
+
+    cy.log("Make not draggable")
+    cy.get(cesc2("#/dg")).click();
+    cy.get(cesc2('#/dg2')).should('have.text', 'false');
+
+
+    cy.log("can't move point by dragging")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/P',
+        args: { x: 9, y: 0 }
+      })
+    });
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
+
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").eq(0).should('have.text', '(3,5)');
+
+    cy.log("can move entering coordinates")
+    cy.get(cesc2('#/miP') + " textarea").type("{ctrl+home}{shift+end}{backspace}(8,7){enter}", { force: true })
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").should('contain.text', '(8,7)');
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").eq(0).should('have.text', '(8,7)');
+
+
+    cy.log("focus point")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "pointFocused",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+    });
+
+    cy.get(cesc2('#/nFocused')).should('have.text', '2');
+    cy.get(cesc2('#/nClicks')).should('have.text', '1');
+
+
+    cy.log("click point")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "pointClicked",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+    });
+
+    cy.get(cesc2('#/nClicks')).should('have.text', '2');
+    cy.get(cesc2('#/nFocused')).should('have.text', '2');
+
+
+    cy.log('fix location')
+    cy.get(cesc2("#/fl")).click();
+    cy.get(cesc2('#/fl2')).should('have.text', 'true');
+
+    cy.log("can still change draggable")
+    cy.get(cesc2("#/dg")).click();
+    cy.get(cesc2('#/dg2')).should('have.text', 'true');
+
+
+    cy.log("still can't move point by dragging")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: '/P',
+        args: { x: -4, y: 10 }
+      })
+    });
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'false');
+
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").eq(0).should('have.text', '(8,7)');
+
+
+    cy.log("can't move entering coordinates")
+    cy.get(cesc2('#/miP') + " textarea").type("{ctrl+home}{shift+end}{backspace}(-5,-9){enter}", { force: true })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true')
+
+    cy.get(cesc2('#/Pcoords') + " .mjx-mrow").eq(0).should('have.text', '(8,7)');
+
+    cy.log("focus point")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "pointFocused",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+    });
+
+    cy.get(cesc2('#/nFocused')).should('have.text', '3');
+    cy.get(cesc2('#/nClicks')).should('have.text', '2');
+
+
+    cy.log("click point")
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "pointClicked",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+    });
+
+    cy.get(cesc2('#/nClicks')).should('have.text', '3');
+    cy.get(cesc2('#/nFocused')).should('have.text', '3');
+
+
+    cy.log('fix point')
+    cy.get(cesc2("#/fx")).click();
+    cy.get(cesc2('#/fx2')).should('have.text', 'true');
+
+    cy.log('cannot change draggable or fix location')
+    cy.get(cesc2("#/fl")).click();
+    cy.get(cesc2("#/dg")).click();
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'false')
+
+
+    cy.get(cesc2('#/fl2')).should('have.text', 'true');
+    cy.get(cesc2('#/dg2')).should('have.text', 'true');
+
+
+    cy.log("trying to focus point or click point does not increment counters")
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "pointFocused",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+
+      await win.callAction1({
+        actionName: "pointClicked",
+        componentName: '/P',
+        args: { name: '/P' }
+      })
+    });
+
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true')
+
+
+    cy.get(cesc2('#/nFocused')).should('have.text', '3');
+    cy.get(cesc2('#/nClicks')).should('have.text', '3');
+
+
+    cy.log("can still change fixed")
+    cy.get(cesc2("#/fx")).click();
+    cy.get(cesc2('#/fx2')).should('have.text', 'false');
 
   })
 
