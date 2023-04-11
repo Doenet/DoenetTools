@@ -1,9 +1,5 @@
 import me from 'math-expressions';
-import { cesc } from '../../../../src/_utils/url';
-
-function cesc2(s) {
-  return cesc(cesc(s));
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 
 function nInDOM(n) {

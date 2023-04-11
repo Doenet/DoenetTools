@@ -1,10 +1,6 @@
 import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
 import { widthsBySize } from '../../../../src/Core/utils/size';
-import { cesc } from '../../../../src/_utils/url';
-
-function cesc2(s) {
-  return cesc(cesc(s));
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Graph Tag Tests', function () {
 

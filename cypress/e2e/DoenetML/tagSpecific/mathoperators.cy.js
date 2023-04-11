@@ -1,11 +1,7 @@
 import me from 'math-expressions';
 import { isStrictMode } from 'react-is';
 import { isStyledComponent } from 'styled-components';
-import { cesc } from '../../../../src/_utils/url';
-
-function cesc2(s) {
-  return cesc(cesc(s));
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Math Operator Tag Tests', function () {
 

@@ -1,8 +1,4 @@
-import { cesc } from '../../../../src/_utils/url';
-
-function cesc2(s) {
-  return cesc(cesc(s));
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Lorem Tag Tests', function () {
 
