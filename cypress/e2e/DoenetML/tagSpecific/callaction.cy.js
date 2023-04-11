@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('CallAction Tag Tests', function () {
 
@@ -36,11 +28,11 @@ describe('CallAction Tag Tests', function () {
     </sum></number></p>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let numbers, sum = 0;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let [ind, num] of numbers.entries()) {
@@ -50,18 +42,18 @@ describe('CallAction Tag Tests', function () {
         sum += num * 10 ** ind;
       }
     })
-    cy.get('#\\/sum').invoke('text').then(text => {
+    cy.get(cesc('#\\/sum')).invoke('text').then(text => {
       let sum2 = Number(text);
       expect(sum2).eq(sum);
     })
 
     // main purpose of sum is to make sure wait until recalculation has occured
-    cy.get('#\\/rs_button').click().then(() => {
-      cy.get('#\\/sum').should('not.contain', sum.toString());
+    cy.get(cesc('#\\/rs_button')).click().then(() => {
+      cy.get(cesc('#\\/sum')).should('not.contain', sum.toString());
     });
 
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -104,9 +96,9 @@ describe('CallAction Tag Tests', function () {
     <p><booleaninput name="bi" /><copy prop="value" target="bi" assignNames="b" /></p>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/p1').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/p1')).should('contain.text', '(1,2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -123,9 +115,9 @@ describe('CallAction Tag Tests', function () {
 
     });
 
-    cy.get('#\\/addPoint_button').click();
+    cy.get(cesc('#\\/addPoint_button')).click();
 
-    cy.get('#\\/p2').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(3,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -152,7 +144,7 @@ describe('CallAction Tag Tests', function () {
 
     });
 
-    cy.get('#\\/p2').should('contain.text', '(−2,5)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(−2,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -169,9 +161,9 @@ describe('CallAction Tag Tests', function () {
       }
     })
 
-    cy.get('#\\/addPoint_button').click();
+    cy.get(cesc('#\\/addPoint_button')).click();
 
-    cy.get('#\\/p3').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/p3')).should('contain.text', '(3,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -199,7 +191,7 @@ describe('CallAction Tag Tests', function () {
 
     });
 
-    cy.get('#\\/p3').should('contain.text', '(7,−9)');
+    cy.get(cesc('#\\/p3')).should('contain.text', '(7,−9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -217,9 +209,9 @@ describe('CallAction Tag Tests', function () {
     })
 
 
-    cy.get('#\\/deletePoint_button').click();
+    cy.get(cesc('#\\/deletePoint_button')).click();
 
-    cy.get('#\\/p3').should('not.exist');
+    cy.get(cesc('#\\/p3')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -244,7 +236,7 @@ describe('CallAction Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/p2').should('contain.text', '(1,0)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(1,0)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -262,9 +254,9 @@ describe('CallAction Tag Tests', function () {
 
     })
 
-    cy.get('#\\/deletePoint_button').click();
+    cy.get(cesc('#\\/deletePoint_button')).click();
 
-    cy.get('#\\/p2').should('not.exist');
+    cy.get(cesc('#\\/p2')).should('not.exist');
 
 
     cy.window().then(async (win) => {
@@ -285,13 +277,13 @@ describe('CallAction Tag Tests', function () {
     })
 
 
-    cy.get('#\\/deletePoint_button').click();
+    cy.get(cesc('#\\/deletePoint_button')).click();
 
     // since nothing happens, we wait for core to respond to booleaninput
-    cy.get('#\\/bi').click();
-    cy.get('#\\/b').should('have.text', 'true');
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/b')).should('have.text', 'true');
 
-    cy.get('#\\/p1').should('contain.text', '(1,2)');
+    cy.get(cesc('#\\/p1')).should('contain.text', '(1,2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -311,9 +303,9 @@ describe('CallAction Tag Tests', function () {
     })
 
 
-    cy.get('#\\/addPoint_button').click();
+    cy.get(cesc('#\\/addPoint_button')).click();
 
-    cy.get('#\\/p2').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(3,4)');
 
 
     cy.window().then(async (win) => {
@@ -363,9 +355,9 @@ describe('CallAction Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/addPoint_button').should("not.exist");
+    cy.get(cesc('#\\/addPoint_button')).should("not.exist");
 
 
     cy.window().then(async (win) => {
@@ -377,7 +369,7 @@ describe('CallAction Tag Tests', function () {
 
       let numbers;
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -387,9 +379,9 @@ describe('CallAction Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/rs_button').click();
+      cy.get(cesc('#\\/rs_button')).click();
 
-      cy.get('#\\/p2').should('contain.text', '(3,4');
+      cy.get(cesc('#\\/p2')).should('contain.text', '(3,4');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -410,7 +402,7 @@ describe('CallAction Tag Tests', function () {
 
       });
 
-      cy.get('#\\/p2').should('contain.text', '(−2,5)');
+      cy.get(cesc('#\\/p2')).should('contain.text', '(−2,5)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -421,7 +413,7 @@ describe('CallAction Tag Tests', function () {
         expect(stateVariables[pointNames[1]].stateValues.xs).eqls([-2, 5])
 
 
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2.length).eq(5);
           for (let num of numbers2) {
@@ -463,9 +455,9 @@ describe('CallAction Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/addPoint_button').should("not.exist");
+    cy.get(cesc('#\\/addPoint_button')).should("not.exist");
 
 
     cy.window().then(async (win) => {
@@ -477,7 +469,7 @@ describe('CallAction Tag Tests', function () {
 
       let numbers;
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -487,9 +479,9 @@ describe('CallAction Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/rs_button').click();
+      cy.get(cesc('#\\/rs_button')).click();
 
-      cy.get('#\\/p2').should('contain.text', '(3,4');
+      cy.get(cesc('#\\/p2')).should('contain.text', '(3,4');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -510,7 +502,7 @@ describe('CallAction Tag Tests', function () {
 
       });
 
-      cy.get('#\\/p2').should('contain.text', '(−2,5)');
+      cy.get(cesc('#\\/p2')).should('contain.text', '(−2,5)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -521,7 +513,7 @@ describe('CallAction Tag Tests', function () {
         expect(stateVariables[pointNames[1]].stateValues.xs).eqls([-2, 5])
 
 
-        cy.get('#\\/nums').invoke('text').then(text => {
+        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
           expect(numbers2.length).eq(5);
           for (let num of numbers2) {
@@ -568,12 +560,12 @@ describe('CallAction Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load\
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load\
 
 
     for (let ind = 1; ind <= 2; ind++) {
 
-      cy.get(`#\\/set${ind}\\/addPoint_button`).should("not.exist");
+      cy.get(cesc(`#\\/set${ind}\\/addPoint_button`)).should("not.exist");
 
 
       cy.window().then(async (win) => {
@@ -585,7 +577,7 @@ describe('CallAction Tag Tests', function () {
 
         let numbers;
 
-        cy.get(`#\\/set${ind}\\/nums`).invoke('text').then(text => {
+        cy.get(cesc(`#\\/set${ind}\\/nums`)).invoke('text').then(text => {
           numbers = text.split(',').map(Number);
           expect(numbers.length).eq(5);
           for (let num of numbers) {
@@ -595,9 +587,9 @@ describe('CallAction Tag Tests', function () {
           }
         })
 
-        cy.get(`#\\/set${ind}\\/rs_button`).click();
+        cy.get(cesc(`#\\/set${ind}\\/rs_button`)).click();
 
-        cy.get(`#\\/set${ind}\\/p2`).should('contain.text', '(3,4');
+        cy.get(cesc(`#\\/set${ind}\\/p2`)).should('contain.text', '(3,4');
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -618,7 +610,7 @@ describe('CallAction Tag Tests', function () {
 
         });
 
-        cy.get(`#\\/set${ind}\\/p2`).should('contain.text', '(−2,5)');
+        cy.get(cesc(`#\\/set${ind}\\/p2`)).should('contain.text', '(−2,5)');
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -629,7 +621,7 @@ describe('CallAction Tag Tests', function () {
           expect(stateVariables[pointNames[1]].stateValues.xs).eqls([-2, 5])
 
 
-          cy.get(`#\\/set${ind}\\/nums`).invoke('text').then(text => {
+          cy.get(cesc(`#\\/set${ind}\\/nums`)).invoke('text').then(text => {
             let numbers2 = text.split(',').map(Number);
             expect(numbers2.length).eq(5);
             for (let num of numbers2) {
@@ -677,9 +669,9 @@ describe('CallAction Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/addPoint').should("not.exist");
+    cy.get(cesc('#\\/addPoint')).should("not.exist");
 
     let numbers;
 
@@ -690,7 +682,7 @@ describe('CallAction Tag Tests', function () {
 
       expect(g.stateValues.graphicalDescendants.length).eq(1);
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -699,12 +691,12 @@ describe('CallAction Tag Tests', function () {
           expect(num).lte(6)
         }
       })
-      cy.get('#\\/n').should('have.text', '1');
+      cy.get(cesc('#\\/n')).should('have.text', '1');
     });
 
-    cy.get('#\\/rs_button').click();
+    cy.get(cesc('#\\/rs_button')).click();
 
-    cy.get('#\\/p2').should('contain.text', '(3,4');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(3,4');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -725,7 +717,7 @@ describe('CallAction Tag Tests', function () {
 
     });
 
-    cy.get('#\\/p2').should('contain.text', '(−2,5)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(−2,5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -736,7 +728,7 @@ describe('CallAction Tag Tests', function () {
       expect(stateVariables[pointNames[1]].stateValues.xs).eqls([-2, 5])
 
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2.length).eq(5);
         for (let num of numbers2) {
@@ -747,13 +739,13 @@ describe('CallAction Tag Tests', function () {
         expect(numbers2).not.eqls(numbers)
       })
 
-      cy.get('#\\/n').should('have.text', '1');
+      cy.get(cesc('#\\/n')).should('have.text', '1');
 
     })
 
-    cy.get('#\\/in_button').click();
+    cy.get(cesc('#\\/in_button')).click();
 
-    cy.get('#\\/p3').should('contain.text', '(3,4');
+    cy.get(cesc('#\\/p3')).should('contain.text', '(3,4');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -774,7 +766,7 @@ describe('CallAction Tag Tests', function () {
 
     });
 
-    cy.get('#\\/p3').should('contain.text', '(7,−9)');
+    cy.get(cesc('#\\/p3')).should('contain.text', '(7,−9)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -784,7 +776,7 @@ describe('CallAction Tag Tests', function () {
       let pointNames = g.stateValues.graphicalDescendants.map(x => x.componentName);
       expect(stateVariables[pointNames[2]].stateValues.xs).eqls([7, -9])
 
-      cy.get('#\\/n').should('have.text', '2');
+      cy.get(cesc('#\\/n')).should('have.text', '2');
 
     })
 
@@ -808,11 +800,11 @@ describe('CallAction Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let numbers;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let num of numbers) {
@@ -822,9 +814,9 @@ describe('CallAction Tag Tests', function () {
       }
     })
 
-    cy.get('#\\/P2').should('contain.text', '(−1,2)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−1,2)')
 
-    cy.get('#\\/rs').should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -833,9 +825,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: -1, y: -7 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(−1,−7)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(−1,−7)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -847,9 +839,9 @@ describe('CallAction Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/P2').should('contain.text', '(3,−4)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(3,−4)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -861,9 +853,9 @@ describe('CallAction Tag Tests', function () {
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
-      cy.get('#\\/P2').should('contain.text', '(1,7)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(1,7)')
 
-      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         if (numbers2.length !== 5) {
           return false;
@@ -893,9 +885,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: 5, y: 9 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(5,9)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(5,9)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -908,9 +900,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: -3, y: 4 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(−3,4)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(−3,4)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -923,9 +915,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: -6, y: 5 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(−6,5)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(−6,5)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -938,9 +930,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: 4, y: 2 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(4,2)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(4,2)')
 
-      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         if (numbers2.length !== 5) {
           return false;
@@ -969,9 +961,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: 9, y: 7 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(9,7)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(9,7)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -997,11 +989,11 @@ describe('CallAction Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let numbers;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let num of numbers) {
@@ -1011,9 +1003,9 @@ describe('CallAction Tag Tests', function () {
       }
     })
 
-    cy.get('#\\/P2').should('contain.text', '(−1,2)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−1,2)')
 
-    cy.get('#\\/rs').should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1021,9 +1013,9 @@ describe('CallAction Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/P2').should('contain.text', '(3,−4)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(3,−4)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -1033,9 +1025,10 @@ describe('CallAction Tag Tests', function () {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
-      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         if (numbers2.length !== 5) {
           return false;
@@ -1065,9 +1058,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: 5, y: 9 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(5,9)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(5,9)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -1078,9 +1071,10 @@ describe('CallAction Tag Tests', function () {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
-      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         if (numbers2.length !== 5) {
           return false;
@@ -1109,9 +1103,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: 9, y: 7 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(9,7)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(9,7)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -1141,7 +1135,7 @@ describe('CallAction Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -1153,10 +1147,10 @@ describe('CallAction Tag Tests', function () {
         let tReps = stateVariables[templateName].replacements;
         let graphName = tReps[1].componentName;
         let copyName = tReps[3].componentName;
-        let numsAnchor = '#' + cesc(tReps[5].componentName);
+        let numsAnchor = '#' + cesc2(tReps[5].componentName);
 
         let PName = stateVariables[graphName].activeChildren[0].componentName;
-        let P2Anchor = '#' + cesc(stateVariables[copyName].replacements[0].componentName);
+        let P2Anchor = '#' + cesc2(stateVariables[copyName].replacements[0].componentName);
 
 
         let numbers;
@@ -1192,6 +1186,7 @@ describe('CallAction Tag Tests', function () {
           await win.callAction1({
             actionName: "pointClicked",
             componentName: PName,
+            args: { name: PName }
           });
 
           cy.waitUntil(() => cy.get(numsAnchor).invoke('text').then(text => {
@@ -1237,6 +1232,7 @@ describe('CallAction Tag Tests', function () {
           await win.callAction1({
             actionName: "pointClicked",
             componentName: PName,
+            args: { name: PName }
           });
 
           cy.waitUntil(() => cy.get(numsAnchor).invoke('text').then(text => {
@@ -1285,7 +1281,7 @@ describe('CallAction Tag Tests', function () {
 
   })
 
-  it('action triggered when mouse down', () => {
+  it('action triggered when object focused', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1303,11 +1299,11 @@ describe('CallAction Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let numbers;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let num of numbers) {
@@ -1317,9 +1313,9 @@ describe('CallAction Tag Tests', function () {
       }
     })
 
-    cy.get('#\\/P2').should('contain.text', '(−1,2)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−1,2)')
 
-    cy.get('#\\/rs').should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -1327,9 +1323,9 @@ describe('CallAction Tag Tests', function () {
         componentName: "/P",
         args: { x: 3, y: -4 }
       });
-      cy.get('#\\/P2').should('contain.text', '(3,−4)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(3,−4)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -1337,11 +1333,12 @@ describe('CallAction Tag Tests', function () {
 
     cy.window().then(async (win) => {
       await win.callAction1({
-        actionName: "mouseDownOnPoint",
+        actionName: "pointFocused",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
-      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         if (numbers2.length !== 5) {
           return false;
@@ -1371,9 +1368,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: 5, y: 9 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(5,9)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(5,9)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -1382,11 +1379,12 @@ describe('CallAction Tag Tests', function () {
 
     cy.window().then(async (win) => {
       await win.callAction1({
-        actionName: "mouseDownOnPoint",
+        actionName: "pointFocused",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
-      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         if (numbers2.length !== 5) {
           return false;
@@ -1415,9 +1413,9 @@ describe('CallAction Tag Tests', function () {
         args: { x: 9, y: 7 }
       });
 
-      cy.get('#\\/P2').should('contain.text', '(9,7)')
+      cy.get(cesc('#\\/P2')).should('contain.text', '(9,7)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
@@ -1448,11 +1446,11 @@ describe('CallAction Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/P2').should('contain.text', '(−1,2)')
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−1,2)')
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1462,7 +1460,7 @@ describe('CallAction Tag Tests', function () {
 
     let numbers;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let num of numbers) {
@@ -1481,7 +1479,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(−1,−7)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−1,−7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1489,7 +1487,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(1);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1502,7 +1500,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(3,−4)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(3,−4)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1510,7 +1508,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(1);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1524,7 +1522,7 @@ describe('CallAction Tag Tests', function () {
       });
     });
 
-    cy.get('#\\/P2').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(1,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1532,7 +1530,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -1552,7 +1550,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(5,9)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(5,9)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1560,7 +1558,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1573,7 +1571,7 @@ describe('CallAction Tag Tests', function () {
       });
     });
 
-    cy.get('#\\/P2').should('contain.text', '(−3,4)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−3,4)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1581,7 +1579,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1593,7 +1591,7 @@ describe('CallAction Tag Tests', function () {
         args: { x: -6, y: 5 }
       });
     })
-    cy.get('#\\/P2').should('contain.text', '(−6,5)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−6,5)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1601,7 +1599,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1614,7 +1612,7 @@ describe('CallAction Tag Tests', function () {
       });
     });
 
-    cy.get('#\\/P2').should('contain.text', '(4,2)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(4,2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1622,7 +1620,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(3);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -1642,7 +1640,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(9,7)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(9,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1650,7 +1648,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(3);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1680,11 +1678,11 @@ describe('CallAction Tag Tests', function () {
     </callAction>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/P2').should('contain.text', '(−1,2)')
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−1,2)')
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1694,7 +1692,7 @@ describe('CallAction Tag Tests', function () {
 
     let numbers;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let num of numbers) {
@@ -1713,7 +1711,7 @@ describe('CallAction Tag Tests', function () {
       });
     });
 
-    cy.get('#\\/P2').should('contain.text', '(−1,−7)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−1,−7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1721,7 +1719,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(1);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -1741,7 +1739,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(3,−4)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(3,−4)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1749,7 +1747,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(1);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1762,7 +1760,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(1,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1770,7 +1768,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1783,7 +1781,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(5,9)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(5,9)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1791,7 +1789,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1804,7 +1802,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(−3,−4)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−3,−4)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1812,7 +1810,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -1832,7 +1830,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(−6,−5)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(−6,−5)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1840,7 +1838,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(2);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1853,7 +1851,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(4,2)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(4,2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1861,7 +1859,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(3);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1874,7 +1872,7 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/P2').should('contain.text', '(9,7)')
+    cy.get(cesc('#\\/P2')).should('contain.text', '(9,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1882,7 +1880,7 @@ describe('CallAction Tag Tests', function () {
       expect(g.stateValues.graphicalDescendants.length).eq(3);
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2).eqls(numbers)
     });
@@ -1915,11 +1913,11 @@ describe('CallAction Tag Tests', function () {
     </triggerSet>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1929,7 +1927,7 @@ describe('CallAction Tag Tests', function () {
 
     let numbers;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let num of numbers) {
@@ -1939,9 +1937,9 @@ describe('CallAction Tag Tests', function () {
       }
     })
 
-    cy.get('#\\/tset_button').click();
+    cy.get(cesc('#\\/tset_button')).click();
 
-    cy.get('#\\/p2').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(3,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1961,7 +1959,7 @@ describe('CallAction Tag Tests', function () {
 
     });
 
-    cy.get('#\\/p2').should('contain.text', '(−2,5)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(−2,5)');
 
 
     cy.window().then(async (win) => {
@@ -1975,7 +1973,7 @@ describe('CallAction Tag Tests', function () {
 
     })
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -2021,11 +2019,11 @@ describe('CallAction Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/rs').should('not.exist');
-    cy.get('#\\/addPoint').should('not.exist');
-    cy.get('#\\/sub').should('not.exist');
+    cy.get(cesc('#\\/rs')).should('not.exist');
+    cy.get(cesc('#\\/addPoint')).should('not.exist');
+    cy.get(cesc('#\\/sub')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2033,11 +2031,11 @@ describe('CallAction Tag Tests', function () {
       let g = stateVariables["/g"];
 
       let mathinputName = stateVariables['/ans'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
 
 
       cy.get(mathinputAnchor).type(`x`, { force: true });
@@ -2052,7 +2050,7 @@ describe('CallAction Tag Tests', function () {
 
       let numbers;
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         numbers = text.split(',').map(Number);
         expect(numbers.length).eq(5);
         for (let num of numbers) {
@@ -2062,10 +2060,10 @@ describe('CallAction Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/tset_button').click();
+      cy.get(cesc('#\\/tset_button')).click();
 
 
-      cy.get('#\\/p2').should('contain.text', '(3,4)');
+      cy.get(cesc('#\\/p2')).should('contain.text', '(3,4)');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2085,7 +2083,7 @@ describe('CallAction Tag Tests', function () {
 
       });
 
-      cy.get('#\\/p2').should('contain.text', '(−2,5)');
+      cy.get(cesc('#\\/p2')).should('contain.text', '(−2,5)');
 
 
       cy.window().then(async (win) => {
@@ -2100,7 +2098,7 @@ describe('CallAction Tag Tests', function () {
       })
 
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2.length).eq(5);
         for (let num of numbers2) {
@@ -2151,9 +2149,9 @@ describe('CallAction Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/addPoint').should("not.exist");
+    cy.get(cesc('#\\/addPoint')).should("not.exist");
 
 
     cy.window().then(async (win) => {
@@ -2165,7 +2163,7 @@ describe('CallAction Tag Tests', function () {
 
     let numbers;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let num of numbers) {
@@ -2174,12 +2172,12 @@ describe('CallAction Tag Tests', function () {
         expect(num).lte(6)
       }
     })
-    cy.get('#\\/n').should('have.text', "1");
+    cy.get(cesc('#\\/n')).should('have.text', "1");
 
-    cy.get('#\\/rs_button').click();
+    cy.get(cesc('#\\/rs_button')).click();
 
 
-    cy.get('#\\/p2').should('contain.text', '(3,4)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(3,4)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2199,7 +2197,7 @@ describe('CallAction Tag Tests', function () {
 
     });
 
-    cy.get('#\\/p2').should('contain.text', '(−2,5)');
+    cy.get(cesc('#\\/p2')).should('contain.text', '(−2,5)');
 
 
     cy.window().then(async (win) => {
@@ -2213,7 +2211,7 @@ describe('CallAction Tag Tests', function () {
     })
 
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -2224,7 +2222,7 @@ describe('CallAction Tag Tests', function () {
       expect(numbers2).not.eqls(numbers)
     })
 
-    cy.get('#\\/n').should('have.text', "2");
+    cy.get(cesc('#\\/n')).should('have.text', "2");
 
 
   })
@@ -2239,9 +2237,9 @@ describe('CallAction Tag Tests', function () {
     <p><callAction target="s" actionName="resample" name="rs" ><label>Hi <m>\\sum_{i=1}^5x_i</m></label></callAction></p>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/rs').should('contain.text', 'Hi ∑5i=1xi')
+    cy.get(cesc('#\\/rs')).should('contain.text', 'Hi ∑5i=1xi')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2260,9 +2258,9 @@ describe('CallAction Tag Tests', function () {
     <p><callAction target="s" actionName="resample" name="resample_numbers" labelIsName /></p>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/resample_numbers').should('contain.text', 'resample numbers')
+    cy.get(cesc('#\\/resample_numbers')).should('contain.text', 'resample numbers')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2286,11 +2284,11 @@ describe('CallAction Tag Tests', function () {
     </sum></number></p>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let numbers, sum = 0;
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       numbers = text.split(',').map(Number);
       expect(numbers.length).eq(5);
       for (let [ind, num] of numbers.entries()) {
@@ -2300,18 +2298,18 @@ describe('CallAction Tag Tests', function () {
         sum += num * 10 ** ind;
       }
     })
-    cy.get('#\\/sum').invoke('text').then(text => {
+    cy.get(cesc('#\\/sum')).invoke('text').then(text => {
       let sum2 = Number(text);
       expect(sum2).eq(sum);
     })
 
     // main purpose of sum is to make sure wait until recalculation has occured
-    cy.get('#\\/rs_button').click().then(() => {
-      cy.get('#\\/sum').should('not.contain', sum.toString());
+    cy.get(cesc('#\\/rs_button')).click().then(() => {
+      cy.get(cesc('#\\/sum')).should('not.contain', sum.toString());
     });
 
 
-    cy.get('#\\/nums').invoke('text').then(text => {
+    cy.get(cesc('#\\/nums')).invoke('text').then(text => {
       let numbers2 = text.split(',').map(Number);
       expect(numbers2.length).eq(5);
       for (let num of numbers2) {
@@ -2388,17 +2386,17 @@ describe('CallAction Tag Tests', function () {
 
     // TODO: how to click on the buttons and test if they are disabled?
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
 
 
     cy.log("move callactions by dragging")
@@ -2416,37 +2414,37 @@ describe('CallAction Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move callactions by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move callactions by dragging')
@@ -2464,11 +2462,11 @@ describe('CallAction Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
 

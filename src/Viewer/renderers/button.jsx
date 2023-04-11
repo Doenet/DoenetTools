@@ -27,17 +27,16 @@ export default React.memo(function ButtonComponent(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  let fixed = useRef(false);
+  fixed.current = !SVs.draggable || SVs.fixed;
+
   let label = SVs.label ? SVs.label : "Button";
 
   useEffect(() => {
     //On unmount
     return () => {
       if (buttonJXG.current !== null) {
-        buttonJXG.current.off('drag');
-        buttonJXG.current.off('down');
-        buttonJXG.current.off('up');
-        board?.removeObject(buttonJXG.current);
-        buttonJXG.current = null;
+        deleteButtonJXG();
       }
 
     }
@@ -45,11 +44,9 @@ export default React.memo(function ButtonComponent(props) {
 
   function createButtonJXG() {
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
     let jsxButtonAttributes = {
       visible: !SVs.hidden,
-      fixed,
+      fixed: fixed.current,
       disabled: SVs.disabled,
       useMathJax: SVs.labelHasLatex,
       parse: false,
@@ -74,15 +71,11 @@ export default React.memo(function ButtonComponent(props) {
         jsxButtonAttributes['visible'] = false;
       }
 
-      if (!jsxButtonAttributes.visible) {
-        // currently, creating an invisible button crashes jsxgraph
-        return;
-      }
-
       newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
 
     } catch (e) {
-      // currently, creating an invisible button crashes jsxgraph
+      jsxButtonAttributes['visible'] = false;
+      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
       return;
     }
 
@@ -101,7 +94,10 @@ export default React.memo(function ButtonComponent(props) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
+    });
 
+    newButtonJXG.on('hit', function (e) {
+      dragged.current = false;
     });
 
     newButtonJXG.on('up', function (e) {
@@ -113,22 +109,36 @@ export default React.memo(function ButtonComponent(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
       }
-      dragged.current = false;
 
     });
 
+    newButtonJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveButton,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newButtonJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
+
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newButtonJXG.size[0] / board.unitX;
@@ -155,14 +165,34 @@ export default React.memo(function ButtonComponent(props) {
       let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
       let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
+        var o = board.origin.scrCoords;
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+
+        calculatedX.current = newAnchorPointJXG.X() + newButtonJXG.relativeCoords.usrCoords[1];
+        calculatedY.current = newAnchorPointJXG.Y() + newButtonJXG.relativeCoords.usrCoords[2];
+
+      }
+
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
+
 
       callAction({
         action: actions.moveButton,
@@ -177,13 +207,23 @@ export default React.memo(function ButtonComponent(props) {
       newButtonJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
-
     });
+
+    newButtonJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveButton,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          })
+          dragged.current = false;
+        }
+      }
+    })
 
 
     buttonJXG.current = newButtonJXG;
@@ -205,6 +245,17 @@ export default React.memo(function ButtonComponent(props) {
 
       }, 1000)
     }
+  }
+
+  function deleteButtonJXG() {
+    buttonJXG.current.off('drag');
+    buttonJXG.current.off('down');
+    buttonJXG.current.off('hit');
+    buttonJXG.current.off('up');
+    buttonJXG.current.off('keyfocusout');
+    buttonJXG.current.off('keydown');
+    board.removeObject(buttonJXG.current);
+    buttonJXG.current = null;
   }
 
   if (board) {
@@ -253,10 +304,8 @@ export default React.memo(function ButtonComponent(props) {
         buttonJXG.current.setAttribute({ disabled: SVs.disabled })
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      buttonJXG.current.visProp.highlight = !fixed;
-      buttonJXG.current.visProp.fixed = fixed;
+      buttonJXG.current.visProp.highlight = !fixed.current;
+      buttonJXG.current.visProp.fixed = fixed.current;
 
       buttonJXG.current.needsUpdate = true;
 

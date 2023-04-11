@@ -9,7 +9,7 @@ export default class Ray extends GraphicalComponent {
     Object.assign(this.actions, {
       moveRay: this.moveRay.bind(this),
       rayClicked: this.rayClicked.bind(this),
-      mouseDownOnRay: this.mouseDownOnRay.bind(this),
+      rayFocused: this.rayFocused.bind(this),
     });
 
   }
@@ -1494,11 +1494,11 @@ export default class Ray extends GraphicalComponent {
 
   }
 
-  async rayClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+  async rayClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -1508,11 +1508,11 @@ export default class Ray extends GraphicalComponent {
 
   }
 
-  async mouseDownOnRay({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+  async rayFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

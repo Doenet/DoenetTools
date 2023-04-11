@@ -1,4 +1,6 @@
 import me from 'math-expressions';
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('EigenDecomposition Tag Tests', function () {
 
@@ -56,15 +58,15 @@ describe('EigenDecomposition Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/pAevs').should('have.text', "Eigenvalues of A: -1, 3");
-    cy.get('#\\/Aev1').should('have.text', '-1')
-    cy.get('#\\/Aev2').should('have.text', '3')
+    cy.get(cesc('#\\/pAevs')).should('have.text', "Eigenvalues of A: -1, 3");
+    cy.get(cesc('#\\/Aev1')).should('have.text', '-1')
+    cy.get(cesc('#\\/Aev2')).should('have.text', '3')
 
-    cy.get('#\\/pBevs').should('have.text', "Eigenvalues of B: 1 + 2 i, 1 - 2 i");
-    cy.get('#\\/Bev1').should('have.text', '1 + 2 i')
-    cy.get('#\\/Bev2').should('have.text', '1 - 2 i')
+    cy.get(cesc('#\\/pBevs')).should('have.text', "Eigenvalues of B: 1 + 2 i, 1 - 2 i");
+    cy.get(cesc('#\\/Bev1')).should('have.text', '1 + 2 i')
+    cy.get(cesc('#\\/Bev2')).should('have.text', '1 - 2 i')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -177,15 +179,15 @@ describe('EigenDecomposition Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/pAevs').should('have.text', "Eigenvalues of A: -1, 3");
-    cy.get('#\\/Aev1').should('have.text', '-1')
-    cy.get('#\\/Aev2').should('have.text', '3')
+    cy.get(cesc('#\\/pAevs')).should('have.text', "Eigenvalues of A: -1, 3");
+    cy.get(cesc('#\\/Aev1')).should('have.text', '-1')
+    cy.get(cesc('#\\/Aev2')).should('have.text', '3')
 
-    cy.get('#\\/pBevs').should('have.text', "Eigenvalues of B: 1 + 2 i, 1 - 2 i");
-    cy.get('#\\/Bev1').should('have.text', '1 + 2 i')
-    cy.get('#\\/Bev2').should('have.text', '1 - 2 i')
+    cy.get(cesc('#\\/pBevs')).should('have.text', "Eigenvalues of B: 1 + 2 i, 1 - 2 i");
+    cy.get(cesc('#\\/Bev1')).should('have.text', '1 + 2 i')
+    cy.get(cesc('#\\/Bev2')).should('have.text', '1 - 2 i')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

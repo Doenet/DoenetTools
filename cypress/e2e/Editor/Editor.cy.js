@@ -67,10 +67,10 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="PageVariant Menu"]').click();
 
     cy.get('[data-test="Variant Index Input"]').invoke('val', '3').type(' {enter}')
-    cy.get(`#\\/${componentName}`).contains('3')
+    cy.get(cesc(`#\\/${componentName}`)).contains('3')
 
     cy.get('[data-test="Variant Name Input"]').invoke('val', '4').trigger('change');
-    cy.get(`#\\/${componentName}`).contains('4')
+    cy.get(cesc(`#\\/${componentName}`)).contains('4')
 
 
   })
@@ -169,8 +169,8 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
 
-    cy.get('#page1\\/a textarea').type("{enter}", { force: true })
-    cy.get('#page1\\/_p2 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc('#page1\\/a') + ' textarea').type("{enter}", { force: true })
+    cy.get(cesc('#page1\\/_p2') + ' .mjx-mrow').should('contain.text', '\uff3f')
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
@@ -181,8 +181,8 @@ describe('doenetEditor test', function () {
 
     // TODO: why does this frequently fail if don't wait here?
     cy.wait(500)
-    cy.get('#page1\\/a textarea').type("2{enter}", { force: true })
-    cy.get('#page1\\/_p2 .mjx-mrow').should('contain.text', '2')
+    cy.get(cesc('#page1\\/a') + ' textarea').type("2{enter}", { force: true })
+    cy.get(cesc('#page1\\/_p2') + ' .mjx-mrow').should('contain.text', '2')
 
     cy.get('[data-test="Final Score"]').should('have.text', '5')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
@@ -205,8 +205,8 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="Possible Points"]').should('have.text', '10')
 
 
-    cy.get('#page2\\/a textarea').type("1{enter}", { force: true })
-    cy.get('#page2\\/_p2 .mjx-mrow').should('contain.text', '1')
+    cy.get(cesc('#page2\\/a') + ' textarea').type("1{enter}", { force: true })
+    cy.get(cesc('#page2\\/_p2') + ' .mjx-mrow').should('contain.text', '1')
 
     // cy.get('[data-test="Final Score"]').should('have.text', '10')
     // cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
@@ -232,7 +232,7 @@ describe('doenetEditor test', function () {
     cy.log('State on previous page was saved')
     cy.get('[data-test=previous]').click();
     cy.get('#page1\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#page1\\/_p2 .mjx-mrow').should('contain.text', '2')
+    cy.get(cesc('#page1\\/_p2') + ' .mjx-mrow').should('contain.text', '2')
 
     cy.get('[data-test=next]').click();
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
@@ -249,9 +249,9 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="Possible Points"]').should('have.text', '10')
 
     cy.get('[data-test=next]').click();
-    cy.get('#page2\\/a textarea').type("1{enter}", { force: true })
+    cy.get(cesc('#page2\\/a') + ' textarea').type("1{enter}", { force: true })
 
-    cy.get('#page2\\/_p2 .mjx-mrow').should('contain.text', '1')
+    cy.get(cesc('#page2\\/_p2') + ' .mjx-mrow').should('contain.text', '1')
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
@@ -267,7 +267,7 @@ describe('doenetEditor test', function () {
 
 
     cy.get('#page2\\/_section1_title').should('have.text', 'Section 2')
-    cy.get('#page2\\/_p2 .mjx-mrow').should('contain.text', '1')
+    cy.get(cesc('#page2\\/_p2') + ' .mjx-mrow').should('contain.text', '1')
 
     cy.get('[data-test="Final Score"]').should('have.text', '10')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
@@ -301,7 +301,7 @@ describe('doenetEditor test', function () {
 
     cy.get('[data-test="Viewer Update Button"]').click();
 
-    cy.get("#\\/np").should('have.text', 'More text')
+    cy.get(cesc("#\\/np")).should('have.text', 'More text')
 
     cy.log('ensure animation has stopped')
     cy.get('#\\/n').should('have.text', '1')
@@ -320,7 +320,7 @@ describe('doenetEditor test', function () {
 
     cy.get('[data-test="Viewer Update Button"]').click();
 
-    cy.get("#\\/np2").should('have.text', 'And more')
+    cy.get(cesc("#\\/np2")).should('have.text', 'And more')
 
     cy.log('ensure animation has stopped')
     cy.get('#\\/n').should('have.text', '1')

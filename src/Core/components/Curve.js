@@ -16,7 +16,7 @@ export default class Curve extends GraphicalComponent {
       changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
       switchCurve: this.switchCurve.bind(this),
       curveClicked: this.curveClicked.bind(this),
-      mouseDownOnCurve: this.mouseDownOnCurve.bind(this),
+      curveFocused: this.curveFocused.bind(this),
     });
 
   }
@@ -3350,10 +3350,10 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async mouseDownOnCurve({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+  async curveFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
+      triggeringAction: "focus",
       componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,

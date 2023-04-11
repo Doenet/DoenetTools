@@ -19,8 +19,10 @@ export default React.memo(function Text(props) {
 
   const board = useContext(BoardContext);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
 
   let calculatedX = useRef(null);
@@ -29,6 +31,9 @@ export default React.memo(function Text(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  let fixed = useRef(false);
+  fixed.current = !SVs.draggable || SVs.fixed;
+
   const darkMode = useRecoilValue(darkModeAtom);
 
 
@@ -36,19 +41,25 @@ export default React.memo(function Text(props) {
     //On unmount
     return () => {
       if (textJXG.current !== null) {
-        textJXG.current.off('drag');
-        textJXG.current.off('down');
-        textJXG.current.off('up');
-        board?.removeObject(textJXG.current);
-        textJXG.current = null;
+        deleteTextJXG();
+      }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
       }
 
     }
   }, [])
 
-  function createTextJXG() {
 
-    let fixed = !SVs.draggable || SVs.fixed;
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
+
+  function createTextJXG() {
 
     let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
     let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
@@ -61,7 +72,7 @@ export default React.memo(function Text(props) {
     //things to be passed to JSXGraph as attributes
     let jsxTextAttributes = {
       visible: !SVs.hidden,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
       cssStyle,
       highlightCssStyle: cssStyle,
@@ -69,11 +80,9 @@ export default React.memo(function Text(props) {
       strokeOpacity: 1,
       highlightStrokeColor: textColor,
       highlightStrokeOpacity: 0.5,
-      highlight: !fixed,
+      highlight: !fixed.current,
       parse: false,
-
     };
-
 
 
     let newAnchorPointJXG;
@@ -115,7 +124,23 @@ export default React.memo(function Text(props) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.textFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    });
 
+    newTextJXG.on('hit', function (e) {
+      pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
+      dragged.current = false;
+      callAction({
+        action: actions.textFocused,
+        args: { name }   // send name so get original name if adapted
+      });
     });
 
     newTextJXG.on('up', function (e) {
@@ -127,22 +152,42 @@ export default React.memo(function Text(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
+      } else if (!pointerMovedSinceDown.current) {
+        callAction({
+          action: actions.textClicked,
+          args: { name }   // send name so get original name if adapted
+        });
       }
-      dragged.current = false;
+      pointerIsDown.current = false;
 
     });
 
+    newTextJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveText,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newTextJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
+
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newTextJXG.size[0] / board.unitX;
@@ -169,13 +214,32 @@ export default React.memo(function Text(props) {
       let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
       let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
+        var o = board.origin.scrCoords;
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+
+        calculatedX.current = newAnchorPointJXG.X() + newTextJXG.relativeCoords.usrCoords[1];
+        calculatedY.current = newAnchorPointJXG.Y() + newTextJXG.relativeCoords.usrCoords[2];
+
+      }
+
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
@@ -191,13 +255,28 @@ export default React.memo(function Text(props) {
       newTextJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
 
     });
+
+    newTextJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveText,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          })
+          dragged.current = false;
+        }
+        callAction({
+          action: actions.textClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
 
 
     textJXG.current = newTextJXG;
@@ -205,6 +284,28 @@ export default React.memo(function Text(props) {
     previousPositionFromAnchor.current = SVs.positionFromAnchor;
 
 
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
+
+  function deleteTextJXG() {
+    textJXG.current.off('drag');
+    textJXG.current.off('down');
+    textJXG.current.off('hit');
+    textJXG.current.off('up');
+    textJXG.current.off('keyfocusout');
+    textJXG.current.off('keydown');
+    board.removeObject(textJXG.current);
+    textJXG.current = null;
   }
 
   if (board) {
@@ -274,10 +375,8 @@ export default React.memo(function Text(props) {
         textJXG.current.visProp.highlightcssstyle = cssStyle;
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      textJXG.current.visProp.highlight = !fixed;
-      textJXG.current.visProp.fixed = fixed;
+      textJXG.current.visProp.highlight = !fixed.current;
+      textJXG.current.visProp.fixed = fixed.current;
 
       textJXG.current.needsUpdate = true;
 

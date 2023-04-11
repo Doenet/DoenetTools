@@ -11,7 +11,7 @@ export default class Line extends GraphicalComponent {
       moveLine: this.moveLine.bind(this),
       switchLine: this.switchLine.bind(this),
       lineClicked: this.lineClicked.bind(this),
-      mouseDownOnLine: this.mouseDownOnLine.bind(this),
+      lineFocused: this.lineFocused.bind(this),
     });
 
   }
@@ -1685,11 +1685,11 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  async lineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -1699,11 +1699,11 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  async mouseDownOnLine({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

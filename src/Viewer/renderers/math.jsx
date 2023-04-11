@@ -7,6 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 import { textRendererStyle } from '../../Core/utils/style';
 import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
+import { cesc } from '../../_utils/url';
 
 export default React.memo(function MathComponent(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -20,8 +21,10 @@ export default React.memo(function MathComponent(props) {
 
   const board = useContext(BoardContext);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
 
   let calculatedX = useRef(null);
@@ -30,6 +33,9 @@ export default React.memo(function MathComponent(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  let fixed = useRef(false);
+  fixed.current = !SVs.draggable || SVs.fixed;
+
   const darkMode = useRecoilValue(darkModeAtom);
 
 
@@ -37,20 +43,25 @@ export default React.memo(function MathComponent(props) {
     //On unmount
     return () => {
       if (mathJXG.current !== null) {
-        mathJXG.current.off('drag');
-        mathJXG.current.off('down');
-        mathJXG.current.off('up');
-        board?.removeObject(mathJXG.current);
-        mathJXG.current = null;
+        deleteMathJXG();
+      }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
       }
 
     }
   }, [])
 
 
-  function createMathJXG() {
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
-    let fixed = !SVs.draggable || SVs.fixed;
+
+  function createMathJXG() {
 
     let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
     let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
@@ -63,7 +74,7 @@ export default React.memo(function MathComponent(props) {
     //things to be passed to JSXGraph as attributes
     let jsxMathAttributes = {
       visible: !SVs.hidden,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
       cssStyle,
       highlightCssStyle: cssStyle,
@@ -71,7 +82,7 @@ export default React.memo(function MathComponent(props) {
       strokeOpacity: 1,
       highlightStrokeColor: textColor,
       highlightStrokeOpacity: 0.5,
-      highlight: !fixed,
+      highlight: !fixed.current,
       useMathJax: true,
       parse: false,
     };
@@ -136,7 +147,24 @@ export default React.memo(function MathComponent(props) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.mathFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
 
+    });
+
+    newMathJXG.on('hit', function (e) {
+      pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
+      dragged.current = false;
+      callAction({
+        action: actions.mathFocused,
+        args: { name }   // send name so get original name if adapted
+      });
     });
 
     newMathJXG.on('up', function (e) {
@@ -148,22 +176,42 @@ export default React.memo(function MathComponent(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
+      } else if (!pointerMovedSinceDown.current) {
+        callAction({
+          action: actions.mathClicked,
+          args: { name }   // send name so get original name if adapted
+        });
       }
-      dragged.current = false;
+      pointerIsDown.current = false;
 
     });
 
+    newMathJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveMath,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newMathJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
+
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newMathJXG.size[0] / board.unitX;
@@ -190,13 +238,33 @@ export default React.memo(function MathComponent(props) {
       let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
       let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+      if (viaPointer) {
+
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
+        var o = board.origin.scrCoords;
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+
+        calculatedX.current = newAnchorPointJXG.X() + newMathJXG.relativeCoords.usrCoords[1];
+        calculatedY.current = newAnchorPointJXG.Y() + newMathJXG.relativeCoords.usrCoords[2];
+
+      }
+
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
@@ -212,13 +280,27 @@ export default React.memo(function MathComponent(props) {
       newMathJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
-
     });
+
+    newMathJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveMath,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          })
+          dragged.current = false;
+        }
+        callAction({
+          action: actions.mathClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
 
 
     mathJXG.current = newMathJXG;
@@ -239,6 +321,28 @@ export default React.memo(function MathComponent(props) {
       }
 
     }, 1000)
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
+
+  function deleteMathJXG() {
+    mathJXG.current.off('drag');
+    mathJXG.current.off('down');
+    mathJXG.current.off('hit');
+    mathJXG.current.off('up');
+    mathJXG.current.off('keyfocusout');
+    mathJXG.current.off('keydown');
+    board.removeObject(mathJXG.current);
+    mathJXG.current = null;
   }
 
   if (board) {
@@ -328,10 +432,8 @@ export default React.memo(function MathComponent(props) {
       }
 
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      mathJXG.current.visProp.highlight = !fixed;
-      mathJXG.current.visProp.fixed = fixed;
+      mathJXG.current.visProp.highlight = !fixed.current;
+      mathJXG.current.visProp.fixed = fixed.current;
 
       mathJXG.current.needsUpdate = true;
 
@@ -404,9 +506,10 @@ export default React.memo(function MathComponent(props) {
     <a name={id} key={id} />
   ];
   if (SVs.mrowChildNames) {
-    anchors.push(...SVs.mrowChildNames.map(x =>
-      <a name={x} key={x} id={x} />
-    ))
+    anchors.push(...SVs.mrowChildNames.map(x => {
+      let rowId = cesc(x);
+      return <a name={rowId} key={rowId} id={rowId} />
+    }))
   }
 
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { atomFamily, useRecoilValue, useSetRecoilState } from 'recoil';
 // import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
 import { renderersloadComponent } from './PageViewer';
+import { cesc } from '../_utils/url';
 
 export const rendererState = atomFamily({
   key: 'rendererState',
@@ -90,7 +91,7 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
   }
 
   return {
-    name: effectiveName, id: prefixForIds + effectiveName, SVs: stateValues, actions, children,
+    name: effectiveName, id: prefixForIds + cesc(effectiveName), SVs: stateValues, actions, children,
     sourceOfUpdate, ignoreUpdate, rendererName,
     initializeChildren: () => { }, callAction
   };

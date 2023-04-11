@@ -9,7 +9,7 @@ export default class Polyline extends GraphicalComponent {
       movePolyline: this.movePolyline.bind(this),
       finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
       polylineClicked: this.polylineClicked.bind(this),
-      mouseDownOnPolyline: this.mouseDownOnPolyline.bind(this),
+      polylineFocused: this.polylineFocused.bind(this),
     });
 
   }
@@ -658,11 +658,11 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  async polylineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async polylineClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -672,11 +672,11 @@ export default class Polyline extends GraphicalComponent {
 
   }
 
-  async mouseDownOnPolyline({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async polylineFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

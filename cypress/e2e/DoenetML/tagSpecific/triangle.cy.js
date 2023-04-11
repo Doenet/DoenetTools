@@ -1,4 +1,6 @@
 import me from 'math-expressions';
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Triangle Tag Tests', function () {
 
@@ -22,7 +24,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -131,7 +133,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -238,7 +240,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -346,7 +348,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -455,7 +457,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -577,7 +579,7 @@ describe('Triangle Tag Tests', function () {
 
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     async function checkTransformedTrianglesValues({ stateVariables,
@@ -916,7 +918,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1048,7 +1050,7 @@ describe('Triangle Tag Tests', function () {
 
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1140,7 +1142,7 @@ describe('Triangle Tag Tests', function () {
 
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1231,7 +1233,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1297,7 +1299,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1363,7 +1365,7 @@ describe('Triangle Tag Tests', function () {
   </graph>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

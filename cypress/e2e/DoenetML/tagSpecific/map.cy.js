@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 function nInDOM(n) {
   if (n < 0) {
@@ -40,7 +32,7 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -51,10 +43,10 @@ describe('Map Tag Tests', function () {
       let mathr2Anchor = '#' + mathr2Name;
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(mathr1Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${cesc2(mathr1Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(2x)+1');
       });
-      cy.get(`${cesc(mathr2Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${cesc2(mathr2Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(2y)+2');
       });
 
@@ -78,7 +70,7 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacements = stateVariables['/_map1'].replacements;
@@ -88,8 +80,8 @@ describe('Map Tag Tests', function () {
       let textr2Anchor = '#' + textr2Name;
 
       cy.log('Test values displayed in browser')
-      cy.get(cesc(textr1Anchor)).should('have.text', "You are a squirrel!");
-      cy.get(cesc(textr2Anchor)).should('have.text', "You are a bat!");
+      cy.get(cesc2(textr1Anchor)).should('have.text', "You are a squirrel!");
+      cy.get(cesc2(textr2Anchor)).should('have.text', "You are a bat!");
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(() => {
@@ -110,13 +102,13 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacements = stateVariables['/_map1'].replacements;
       let mathrNames = replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
+      let mathrAnchors = mathrNames.map(x => cesc2('#' + x));
 
       cy.log('Test values displayed in browser')
       cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -162,14 +154,14 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacements = stateVariables['/_map1'].replacements;
       let mathrNames = replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
+      let mathrAnchors = mathrNames.map(x => cesc2('#' + x));
 
       cy.log('Test values displayed in browser')
       cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -217,13 +209,13 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacements = stateVariables['/_map1'].replacements;
       let mathrNames = replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
+      let mathrAnchors = mathrNames.map(x => cesc2('#' + x));
 
       cy.log('Test values displayed in browser')
       cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -346,7 +338,7 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacements = stateVariables['/_map1'].replacements;
@@ -356,7 +348,7 @@ describe('Map Tag Tests', function () {
           ...stateVariables[stateVariables[c.componentName].replacements[0].componentName].replacements.reduce((a1, c1) => [...a1, ...stateVariables[c1.componentName].replacements.map(x => x.componentName)], [])
         ], []
       );
-      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
+      let mathrAnchors = mathrNames.map(x => cesc2('#' + x));
 
       cy.log('Test values displayed in browser')
       cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -419,7 +411,7 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -539,31 +531,31 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.log('Test values displayed in browser')
-    cy.get(`#\\/c1 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c1`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9,−5)');
     });
-    cy.get(`#\\/c2 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c2`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−8,−5)');
     });
-    cy.get(`#\\/c3 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c3`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9,5)');
     });
-    cy.get(`#\\/c4 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c4`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−8,5)');
     });
-    cy.get(`#\\/c5 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c5`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,−5)');
     });
-    cy.get(`#\\/c6 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c6`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,−5)');
     });
-    cy.get(`#\\/c7 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c7`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(6,5)');
     });
-    cy.get(`#\\/c8 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c8`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,5)');
     });
 
@@ -611,7 +603,7 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -658,13 +650,13 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementAnchors = replacementNames.map(x => cesc2('#' + x))
       let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
+      let replacementAnchors2 = replacementNames2.map(x => cesc2('#' + x))
 
       cy.log('Test values displayed in browser')
       cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -680,7 +672,7 @@ describe('Map Tag Tests', function () {
         expect(text.trim()).equal('x');
       });
 
-      cy.get(`${cesc('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${cesc2('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
 
@@ -722,13 +714,13 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementAnchors = replacementNames.map(x => cesc2('#' + x))
       let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
+      let replacementAnchors2 = replacementNames2.map(x => cesc2('#' + x))
 
       cy.log('Test values displayed in browser')
       cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -737,7 +729,7 @@ describe('Map Tag Tests', function () {
       cy.get(`${replacementAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${cesc2('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
       cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -750,15 +742,15 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('Double the length then test again')
-    cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
-    cy.get(cesc('#/length')).should('contain.text', '2')
+    cy.get(cesc2('#/_updatevalue1_button')).click(); //Update Button
+    cy.get(cesc2('#/length')).should('contain.text', '2')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementAnchors = replacementNames.map(x => cesc2('#' + x))
       let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
+      let replacementAnchors2 = replacementNames2.map(x => cesc2('#' + x))
 
       cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
@@ -772,7 +764,7 @@ describe('Map Tag Tests', function () {
       cy.get(`${replacementAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${cesc2('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
       cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -791,15 +783,15 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('Double the length again then test one more time')
-    cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
-    cy.get(cesc('#/length')).should('contain.text', '4')
+    cy.get(cesc2('#/_updatevalue1_button')).click(); //Update Button
+    cy.get(cesc2('#/length')).should('contain.text', '4')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementAnchors = replacementNames.map(x => cesc2('#' + x))
       let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
-      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
+      let replacementAnchors2 = replacementNames2.map(x => cesc2('#' + x))
 
       cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
@@ -825,7 +817,7 @@ describe('Map Tag Tests', function () {
       cy.get(`${replacementAnchors[7]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${cesc2('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
       cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -875,15 +867,15 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacementNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementAnchors = replacementNames.map(x => cesc2('#' + x))
       let replacementNames2 = stateVariables['/_map2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
+      let replacementAnchors2 = replacementNames2.map(x => cesc2('#' + x))
       let replacementNames3 = stateVariables['/mapcopy'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-      let replacementAnchors3 = replacementNames3.map(x => cesc('#' + x))
+      let replacementAnchors3 = replacementNames3.map(x => cesc2('#' + x))
 
 
       cy.log('Test values displayed in browser')
@@ -922,13 +914,13 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacementNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementAnchors = replacementNames.map(x => cesc2('#' + x))
       let replacementNames2 = stateVariables['/mapcopy'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
+      let replacementAnchors2 = replacementNames2.map(x => cesc2('#' + x))
 
       cy.log('Test values displayed in browser')
       cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -965,18 +957,18 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.log('Test values displayed in browser')
 
-    cy.get(`#\\/c1 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c1`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,−2)');
     });
-    cy.get(`#\\/c2 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c2`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,−3)');
     });
-    cy.get(`#\\/c3 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c3`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,−3)');
     });
 
@@ -1015,25 +1007,25 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.log('Test values displayed in browser')
-    cy.get(`${cesc('#/u/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/u/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,6)');
     });
-    cy.get(`${cesc('#/v/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/v/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,6)');
     });
-    cy.get(`${cesc('#/w/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/w/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6)');
     });
-    cy.get(`${cesc('#/c/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/c/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(4)');
     });
-    cy.get(`${cesc('#/d/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/d/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(5)');
     });
-    cy.get(`${cesc('#/e/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/e/_math1')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(6)');
     });
   });
@@ -1053,11 +1045,11 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let replacementNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-      let replacementAnchors = replacementNames.map(x => stateVariables[x].replacements.map(y => cesc('#' + stateVariables[y.componentName].replacements[0].componentName)))
+      let replacementAnchors = replacementNames.map(x => stateVariables[x].replacements.map(y => cesc2('#' + stateVariables[y.componentName].replacements[0].componentName)))
 
       cy.log('Test values displayed in browser')
       cy.get(`${replacementAnchors[0][0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -1113,25 +1105,25 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let p4 = stateVariables['/copymapthroughp'].replacements[0];
-      let p4Anchor = cesc('#' + p4.componentName);
+      let p4Anchor = cesc2('#' + p4.componentName);
       let p5 = stateVariables['/copymapthroughp2'].replacements[0];
-      let p5Anchor = cesc('#' + p5.componentName);
+      let p5Anchor = cesc2('#' + p5.componentName);
       let p6 = stateVariables['/copymapthroughp3'].replacements[0];
-      let p6Anchor = cesc('#' + p6.componentName);
+      let p6Anchor = cesc2('#' + p6.componentName);
 
 
       cy.log('At beginning, nothing shown')
-      cy.get(cesc('#/_p1')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
-      cy.get(cesc('#/_p2')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p2')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
-      cy.get(cesc('#/_p3')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p3')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
       cy.get(p4Anchor).invoke('text').then((text) => {
@@ -1146,31 +1138,31 @@ describe('Map Tag Tests', function () {
 
 
       cy.log('make sequence length 1');
-      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
-      cy.get(cesc('#/sequenceCount2')).should('contain.text', '1');
+      cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
+      cy.get(cesc2('#/sequenceCount2')).should('contain.text', '1');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map1mathAnchors = map1mathNames.map(x => cesc2('#' + x))
         let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map2mathAnchors = map2mathNames.map(x => cesc2('#' + x))
         let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map3mathAnchors = map3mathNames.map(x => cesc2('#' + x))
         let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map4mathAnchors = map4mathNames.map(x => cesc2('#' + x))
         let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map5mathAnchors = map5mathNames.map(x => cesc2('#' + x))
         let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
+        let map6mathAnchors = map6mathNames.map(x => cesc2('#' + x))
 
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
         cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1186,16 +1178,16 @@ describe('Map Tag Tests', function () {
       })
 
       cy.log('make sequence length 0 again');
-      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
-      cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
+      cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+      cy.get(cesc2('#/sequenceCount2')).should('contain.text', '0');
 
-      cy.get(cesc('#/_p1')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
-      cy.get(cesc('#/_p2')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p2')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
-      cy.get(cesc('#/_p3')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p3')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
       cy.get(p4Anchor).invoke('text').then((text) => {
@@ -1209,40 +1201,40 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 2');
-      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
-      cy.get(cesc('#/sequenceCount2')).should('contain.text', '2');
+      cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
+      cy.get(cesc2('#/sequenceCount2')).should('contain.text', '2');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map1mathAnchors = map1mathNames.map(x => cesc2('#' + x))
         let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map2mathAnchors = map2mathNames.map(x => cesc2('#' + x))
         let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map3mathAnchors = map3mathNames.map(x => cesc2('#' + x))
         let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map4mathAnchors = map4mathNames.map(x => cesc2('#' + x))
         let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map5mathAnchors = map5mathNames.map(x => cesc2('#' + x))
         let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
+        let map6mathAnchors = map6mathNames.map(x => cesc2('#' + x))
 
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
         cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1267,41 +1259,41 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('change limits');
-      cy.get(cesc('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
-      cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
-      cy.get(cesc('#/sequenceTo2')).should('contain.text', '5');
+      cy.get(cesc2('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+      cy.get(cesc2('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
+      cy.get(cesc2('#/sequenceTo2')).should('contain.text', '5');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map1mathAnchors = map1mathNames.map(x => cesc2('#' + x))
         let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map2mathAnchors = map2mathNames.map(x => cesc2('#' + x))
         let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map3mathAnchors = map3mathNames.map(x => cesc2('#' + x))
         let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map4mathAnchors = map4mathNames.map(x => cesc2('#' + x))
         let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map5mathAnchors = map5mathNames.map(x => cesc2('#' + x))
         let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
+        let map6mathAnchors = map6mathNames.map(x => cesc2('#' + x))
 
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
         cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1325,16 +1317,16 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 0 again');
-      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
-      cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
+      cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+      cy.get(cesc2('#/sequenceCount2')).should('contain.text', '0');
 
-      cy.get(cesc('#/_p1')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
-      cy.get(cesc('#/_p2')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p2')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
-      cy.get(cesc('#/_p3')).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p3')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
       });
       cy.get(p4Anchor).invoke('text').then((text) => {
@@ -1348,49 +1340,49 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 3');
-      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
-      cy.get(cesc('#/sequenceCount2')).should('contain.text', '3');
+      cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+      cy.get(cesc2('#/sequenceCount2')).should('contain.text', '3');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map1mathAnchors = map1mathNames.map(x => cesc2('#' + x))
         let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map2mathAnchors = map2mathNames.map(x => cesc2('#' + x))
         let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
-        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map3mathAnchors = map3mathNames.map(x => cesc2('#' + x))
         let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map4mathAnchors = map4mathNames.map(x => cesc2('#' + x))
         let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map5mathAnchors = map5mathNames.map(x => cesc2('#' + x))
         let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
-        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
+        let map6mathAnchors = map6mathNames.map(x => cesc2('#' + x))
 
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(cesc('#/_p1')).children(map1mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p1')).children(map1mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(cesc('#/_p2')).children(map2mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p2')).children(map2mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(cesc('#/_p3')).children(map3mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc2('#/_p3')).children(map3mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
         cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1454,32 +1446,32 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.log('Test values displayed in browser')
 
-    cy.get(`#\\/c1 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c1`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,2)');
     });
-    cy.get(`#\\/c2 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c2`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,4)');
     });
-    cy.get(`#\\/c3 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c3`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9,3)');
     });
-    cy.get(`#\\/c4 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c4`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,9)');
     });
-    cy.get(`#\\/c5 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c5`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(16,4)');
     });
-    cy.get(`#\\/c6 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/c6`) + ` .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,16)');
     });
-    cy.get(`${cesc('#/q')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/q')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1');
     });
-    cy.get(`${cesc('#/r')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+    cy.get(`${cesc2('#/r')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1');
     });
 
@@ -1694,10 +1686,10 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.log('At beginning, nothing shown')
-    cy.get(cesc('#/_p1')).invoke('text').then((text) => {
+    cy.get(cesc2('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
     });
 
@@ -1710,18 +1702,18 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 1');
-    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
-    cy.get(cesc('#/sequenceCount2')).should('contain.text', '1');
+    cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc2('#/sequenceCount2')).should('contain.text', '1');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
-      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
+      let coords1Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[1].componentName);
 
-      cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
       });
-      cy.get(cesc('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−1)');
       });
 
@@ -1743,10 +1735,10 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 0 again');
-    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
-    cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
+    cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc2('#/sequenceCount2')).should('contain.text', '0');
 
-    cy.get(cesc('#/_p1')).invoke('text').then((text) => {
+    cy.get(cesc2('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
     });
 
@@ -1760,26 +1752,26 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('make sequence length 2');
-    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
-    cy.get(cesc('#/sequenceCount2')).should('contain.text', '2');
+    cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc2('#/sequenceCount2')).should('contain.text', '2');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
-      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
-      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].componentName);
-      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].componentName);
+      let coords1Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[1].componentName);
+      let coords3Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[2].componentName);
+      let coords4Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[3].componentName);
 
-      cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
       });
-      cy.get(cesc('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−2,2)');
       });
-      cy.get(cesc('#/_p1')).children(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,−1)');
       });
-      cy.get(cesc('#/_p1')).children(coords4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,−2)');
       });
 
@@ -1810,27 +1802,27 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('change limits');
-    cy.get(cesc('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
-    cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
-    cy.get(cesc('#/sequenceTo2')).should('contain.text', '5');
+    cy.get(cesc2('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc2('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
+    cy.get(cesc2('#/sequenceTo2')).should('contain.text', '5');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
-      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
-      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].componentName);
-      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].componentName);
+      let coords1Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[1].componentName);
+      let coords3Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[2].componentName);
+      let coords4Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[3].componentName);
 
-      cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,9)');
       });
-      cy.get(cesc('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,15)');
       });
-      cy.get(cesc('#/_p1')).children(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−9)');
       });
-      cy.get(cesc('#/_p1')).children(coords4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−15)');
       });
 
@@ -1860,10 +1852,10 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 0 again');
-    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
-    cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
+    cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc2('#/sequenceCount2')).should('contain.text', '0');
 
-    cy.get(cesc('#/_p1')).invoke('text').then((text) => {
+    cy.get(cesc2('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
     });
 
@@ -1876,35 +1868,35 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 3');
-    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
-    cy.get(cesc('#/sequenceCount2')).should('contain.text', '3');
+    cy.get(cesc2('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc2('#/sequenceCount2')).should('contain.text', '3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
-      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
-      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].componentName);
-      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].componentName);
-      let coords5Anchor = cesc('#' + stateVariables["/_collect1"].replacements[4].componentName);
-      let coords6Anchor = cesc('#' + stateVariables["/_collect1"].replacements[5].componentName);
+      let coords1Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[1].componentName);
+      let coords3Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[2].componentName);
+      let coords4Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[3].componentName);
+      let coords5Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[4].componentName);
+      let coords6Anchor = cesc2('#' + stateVariables["/_collect1"].replacements[5].componentName);
 
 
-      cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,9)');
       });
-      cy.get(cesc('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,12)');
       });
-      cy.get(cesc('#/_p1')).children(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,15)');
       });
-      cy.get(cesc('#/_p1')).children(coords4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,−9)');
       });
-      cy.get(cesc('#/_p1')).children(coords5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−12)');
       });
-      cy.get(cesc('#/_p1')).children(coords6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc2('#/_p1')).children(coords6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−15)');
       });
 
@@ -1966,22 +1958,22 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/number") + " textarea").type("10{enter}", { force: true });
-    cy.get(cesc("#/number2")).should('contain.text', "10")
+    cy.get(cesc2("#/number") + " textarea").type("10{enter}", { force: true });
+    cy.get(cesc2("#/number2")).should('contain.text', "10")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/step") + " textarea").type("1{enter}", { force: true });
-    cy.get(cesc("#/step2")).should('contain.text', "1")
+    cy.get(cesc2("#/step") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/step2")).should('contain.text', "1")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(10);
@@ -1991,8 +1983,8 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.get(cesc("#/number2")).should('contain.text', "20")
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+    cy.get(cesc2("#/number2")).should('contain.text', "20")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2003,8 +1995,8 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/step") + " textarea").type("{end}{backspace}0.5{enter}", { force: true });
-    cy.get(cesc("#/step2")).should('contain.text', "0.5")
+    cy.get(cesc2("#/step") + " textarea").type("{end}{backspace}0.5{enter}", { force: true });
+    cy.get(cesc2("#/step2")).should('contain.text', "0.5")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(20);
@@ -2021,8 +2013,8 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.get(cesc("#/number2")).should('contain.text', "10")
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+    cy.get(cesc2("#/number2")).should('contain.text', "10")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(10);
@@ -2039,22 +2031,22 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/step") + " textarea").type("{ctrl+home}{shift+end}{backspace}{enter}", { force: true });
-    cy.get(cesc("#/step2")).should('contain.text', "\uff3f")
+    cy.get(cesc2("#/step") + " textarea").type("{ctrl+home}{shift+end}{backspace}{enter}", { force: true });
+    cy.get(cesc2("#/step2")).should('contain.text', "\uff3f")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.get(cesc("#/number2")).should('contain.text', "5")
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+    cy.get(cesc2("#/number2")).should('contain.text', "5")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/step") + " textarea").type("-3{enter}", { force: true });
-    cy.get(cesc("#/step2")).should('contain.text', `${nInDOM(-3)}`)
+    cy.get(cesc2("#/step") + " textarea").type("-3{enter}", { force: true });
+    cy.get(cesc2("#/step2")).should('contain.text', `${nInDOM(-3)}`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_math1'].activeChildren.length).eq(5);
@@ -2108,252 +2100,252 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
 
-    cy.get(cesc('#/p1/pt')).should('not.exist');
-    cy.get(cesc('#/p1a/pt')).should('not.exist');
-    cy.get(cesc('#/p1b')).should('not.exist');
-    cy.get(cesc('#/p2/pt')).should('not.exist');
-    cy.get(cesc('#/p2a/pt')).should('not.exist');
-    cy.get(cesc('#/p2b')).should('not.exist');
-    cy.get(cesc('#/p3/pt')).should('not.exist');
-    cy.get(cesc('#/p3a/pt')).should('not.exist');
-    cy.get(cesc('#/p3b')).should('not.exist');
+    cy.get(cesc2('#/p1/pt')).should('not.exist');
+    cy.get(cesc2('#/p1a/pt')).should('not.exist');
+    cy.get(cesc2('#/p1b')).should('not.exist');
+    cy.get(cesc2('#/p2/pt')).should('not.exist');
+    cy.get(cesc2('#/p2a/pt')).should('not.exist');
+    cy.get(cesc2('#/p2b')).should('not.exist');
+    cy.get(cesc2('#/p3/pt')).should('not.exist');
+    cy.get(cesc2('#/p3a/pt')).should('not.exist');
+    cy.get(cesc2('#/p3b')).should('not.exist');
 
-    cy.get(cesc('#/q1/pt')).should('not.exist');
-    cy.get(cesc('#/q1a/pt')).should('not.exist');
-    cy.get(cesc('#/q1b')).should('not.exist');
-    cy.get(cesc('#/q2/pt')).should('not.exist');
-    cy.get(cesc('#/q2a/pt')).should('not.exist');
-    cy.get(cesc('#/q2b')).should('not.exist');
-    cy.get(cesc('#/q3/pt')).should('not.exist');
-    cy.get(cesc('#/q3a/pt')).should('not.exist');
-    cy.get(cesc('#/q3b')).should('not.exist');
+    cy.get(cesc2('#/q1/pt')).should('not.exist');
+    cy.get(cesc2('#/q1a/pt')).should('not.exist');
+    cy.get(cesc2('#/q1b')).should('not.exist');
+    cy.get(cesc2('#/q2/pt')).should('not.exist');
+    cy.get(cesc2('#/q2a/pt')).should('not.exist');
+    cy.get(cesc2('#/q2b')).should('not.exist');
+    cy.get(cesc2('#/q3/pt')).should('not.exist');
+    cy.get(cesc2('#/q3a/pt')).should('not.exist');
+    cy.get(cesc2('#/q3b')).should('not.exist');
 
 
 
     cy.log('set number to be 2');
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}2{enter}", { force: true });
-    cy.get(cesc("#/number")).should('contain.text', '2');
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc2("#/number")).should('contain.text', '2');
 
-    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
 
-    cy.get(cesc('#/p2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,4)')
     })
-    cy.get(cesc('#/p2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,4)')
     })
-    cy.get(cesc('#/p2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,4)')
     })
 
-    cy.get(cesc('#/p3/pt')).should('not.exist');
-    cy.get(cesc('#/p3a/pt')).should('not.exist');
-    cy.get(cesc('#/p3b')).should('not.exist');
+    cy.get(cesc2('#/p3/pt')).should('not.exist');
+    cy.get(cesc2('#/p3a/pt')).should('not.exist');
+    cy.get(cesc2('#/p3b')).should('not.exist');
 
-    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
 
-    cy.get(cesc('#/q2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,16)')
     })
-    cy.get(cesc('#/q2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,16)')
     })
-    cy.get(cesc('#/q2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,16)')
     })
 
-    cy.get(cesc('#/q3/pt')).should('not.exist');
-    cy.get(cesc('#/q3a/pt')).should('not.exist');
-    cy.get(cesc('#/q3b')).should('not.exist');
+    cy.get(cesc2('#/q3/pt')).should('not.exist');
+    cy.get(cesc2('#/q3a/pt')).should('not.exist');
+    cy.get(cesc2('#/q3b')).should('not.exist');
 
 
 
     cy.log('set number to be 1');
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
-    cy.get(cesc("#/number")).should('contain.text', '1');
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc2("#/number")).should('contain.text', '1');
 
-    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
 
-    cy.get(cesc('#/p2/pt')).should('not.exist');
-    cy.get(cesc('#/p2a/pt')).should('not.exist');
-    cy.get(cesc('#/p2b')).should('not.exist');
-    cy.get(cesc('#/p3/pt')).should('not.exist');
-    cy.get(cesc('#/p3a/pt')).should('not.exist');
-    cy.get(cesc('#/p3b')).should('not.exist');
+    cy.get(cesc2('#/p2/pt')).should('not.exist');
+    cy.get(cesc2('#/p2a/pt')).should('not.exist');
+    cy.get(cesc2('#/p2b')).should('not.exist');
+    cy.get(cesc2('#/p3/pt')).should('not.exist');
+    cy.get(cesc2('#/p3a/pt')).should('not.exist');
+    cy.get(cesc2('#/p3b')).should('not.exist');
 
-    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
 
-    cy.get(cesc('#/q2/pt')).should('not.exist');
-    cy.get(cesc('#/q2a/pt')).should('not.exist');
-    cy.get(cesc('#/q2b')).should('not.exist');
-    cy.get(cesc('#/q3/pt')).should('not.exist');
-    cy.get(cesc('#/q3a/pt')).should('not.exist');
-    cy.get(cesc('#/q3b')).should('not.exist');
+    cy.get(cesc2('#/q2/pt')).should('not.exist');
+    cy.get(cesc2('#/q2a/pt')).should('not.exist');
+    cy.get(cesc2('#/q2b')).should('not.exist');
+    cy.get(cesc2('#/q3/pt')).should('not.exist');
+    cy.get(cesc2('#/q3a/pt')).should('not.exist');
+    cy.get(cesc2('#/q3b')).should('not.exist');
 
 
 
     cy.log('set number to be 3');
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}3{enter}", { force: true });
-    cy.get(cesc("#/number")).should('contain.text', '3');
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc2("#/number")).should('contain.text', '3');
 
-    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
 
-    cy.get(cesc('#/p2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,4)')
     })
-    cy.get(cesc('#/p2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,4)')
     })
-    cy.get(cesc('#/p2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,4)')
     })
 
-    cy.get(cesc('#/p3/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p3/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6)')
     })
-    cy.get(cesc('#/p3a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p3a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6)')
     })
-    cy.get(cesc('#/p3b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p3b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,6)')
     })
 
 
-    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
 
-    cy.get(cesc('#/q2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,16)')
     })
-    cy.get(cesc('#/q2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,16)')
     })
-    cy.get(cesc('#/q2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,16)')
     })
 
-    cy.get(cesc('#/q3/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q3/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9,36)')
     })
-    cy.get(cesc('#/q3a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q3a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9,36)')
     })
-    cy.get(cesc('#/q3b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q3b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9,36)')
     })
 
 
     cy.log('set number back to zero');
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}0{enter}", { force: true });
-    cy.get(cesc("#/number")).should('contain.text', '0');
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}0{enter}", { force: true });
+    cy.get(cesc2("#/number")).should('contain.text', '0');
 
-    cy.get(cesc('#/p1/pt')).should('not.exist');
-    cy.get(cesc('#/p1a/pt')).should('not.exist');
-    cy.get(cesc('#/p1b')).should('not.exist');
-    cy.get(cesc('#/p2/pt')).should('not.exist');
-    cy.get(cesc('#/p2a/pt')).should('not.exist');
-    cy.get(cesc('#/p2b')).should('not.exist');
-    cy.get(cesc('#/p3/pt')).should('not.exist');
-    cy.get(cesc('#/p3a/pt')).should('not.exist');
-    cy.get(cesc('#/p3b')).should('not.exist');
+    cy.get(cesc2('#/p1/pt')).should('not.exist');
+    cy.get(cesc2('#/p1a/pt')).should('not.exist');
+    cy.get(cesc2('#/p1b')).should('not.exist');
+    cy.get(cesc2('#/p2/pt')).should('not.exist');
+    cy.get(cesc2('#/p2a/pt')).should('not.exist');
+    cy.get(cesc2('#/p2b')).should('not.exist');
+    cy.get(cesc2('#/p3/pt')).should('not.exist');
+    cy.get(cesc2('#/p3a/pt')).should('not.exist');
+    cy.get(cesc2('#/p3b')).should('not.exist');
 
-    cy.get(cesc('#/q1/pt')).should('not.exist');
-    cy.get(cesc('#/q1a/pt')).should('not.exist');
-    cy.get(cesc('#/q1b')).should('not.exist');
-    cy.get(cesc('#/q2/pt')).should('not.exist');
-    cy.get(cesc('#/q2a/pt')).should('not.exist');
-    cy.get(cesc('#/q2b')).should('not.exist');
-    cy.get(cesc('#/q3/pt')).should('not.exist');
-    cy.get(cesc('#/q3a/pt')).should('not.exist');
-    cy.get(cesc('#/q3b')).should('not.exist');
+    cy.get(cesc2('#/q1/pt')).should('not.exist');
+    cy.get(cesc2('#/q1a/pt')).should('not.exist');
+    cy.get(cesc2('#/q1b')).should('not.exist');
+    cy.get(cesc2('#/q2/pt')).should('not.exist');
+    cy.get(cesc2('#/q2a/pt')).should('not.exist');
+    cy.get(cesc2('#/q2b')).should('not.exist');
+    cy.get(cesc2('#/q3/pt')).should('not.exist');
+    cy.get(cesc2('#/q3a/pt')).should('not.exist');
+    cy.get(cesc2('#/q3b')).should('not.exist');
 
 
     cy.log('set number back to 1');
-    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
-    cy.get(cesc("#/number")).should('contain.text', '1');
+    cy.get(cesc2("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc2("#/number")).should('contain.text', '1');
 
-    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
-    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
     })
 
-    cy.get(cesc('#/p2/pt')).should('not.exist');
-    cy.get(cesc('#/p2a/pt')).should('not.exist');
-    cy.get(cesc('#/p2b')).should('not.exist');
-    cy.get(cesc('#/p3/pt')).should('not.exist');
-    cy.get(cesc('#/p3a/pt')).should('not.exist');
-    cy.get(cesc('#/p3b')).should('not.exist');
+    cy.get(cesc2('#/p2/pt')).should('not.exist');
+    cy.get(cesc2('#/p2a/pt')).should('not.exist');
+    cy.get(cesc2('#/p2b')).should('not.exist');
+    cy.get(cesc2('#/p3/pt')).should('not.exist');
+    cy.get(cesc2('#/p3a/pt')).should('not.exist');
+    cy.get(cesc2('#/p3b')).should('not.exist');
 
-    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
-    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,4)')
     })
 
-    cy.get(cesc('#/q2/pt')).should('not.exist');
-    cy.get(cesc('#/q2a/pt')).should('not.exist');
-    cy.get(cesc('#/q2b')).should('not.exist');
-    cy.get(cesc('#/q3/pt')).should('not.exist');
-    cy.get(cesc('#/q3a/pt')).should('not.exist');
-    cy.get(cesc('#/q3b')).should('not.exist');
+    cy.get(cesc2('#/q2/pt')).should('not.exist');
+    cy.get(cesc2('#/q2a/pt')).should('not.exist');
+    cy.get(cesc2('#/q2b')).should('not.exist');
+    cy.get(cesc2('#/q3/pt')).should('not.exist');
+    cy.get(cesc2('#/q3a/pt')).should('not.exist');
+    cy.get(cesc2('#/q3b')).should('not.exist');
 
 
   });
@@ -2382,42 +2374,42 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  //wait for window to load
 
-    cy.get(cesc('#/a/ind')).should('have.text', '1');
-    cy.get(cesc('#/b/ind')).should('have.text', '2');
-    cy.get(cesc('#/c/ind')).should('have.text', '1');
-    cy.get(cesc('#/d/ind')).should('have.text', '2');
+    cy.get(cesc2('#/a/ind')).should('have.text', '1');
+    cy.get(cesc2('#/b/ind')).should('have.text', '2');
+    cy.get(cesc2('#/c/ind')).should('have.text', '1');
+    cy.get(cesc2('#/d/ind')).should('have.text', '2');
 
-    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}{backspace}3{enter}', { force: true })
-    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}{backspace}4{enter}', { force: true })
-    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}5{enter}', { force: true })
-    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}6{enter}', { force: true })
+    cy.get(cesc2('#/a/_mathinput1') + " textarea").type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc2('#/b/_mathinput1') + " textarea").type('{end}{backspace}4{enter}', { force: true })
+    cy.get(cesc2('#/c/_mathinput1') + " textarea").type('{end}{backspace}5{enter}', { force: true })
+    cy.get(cesc2('#/d/_mathinput1') + " textarea").type('{end}{backspace}6{enter}', { force: true })
 
-    cy.get(cesc('#/d/ind')).should('have.text', '6');
-    cy.get(cesc('#/a/ind')).should('have.text', '1');
-    cy.get(cesc('#/b/ind')).should('have.text', '2');
-    cy.get(cesc('#/c/ind')).should('have.text', '5');
+    cy.get(cesc2('#/d/ind')).should('have.text', '6');
+    cy.get(cesc2('#/a/ind')).should('have.text', '1');
+    cy.get(cesc2('#/b/ind')).should('have.text', '2');
+    cy.get(cesc2('#/c/ind')).should('have.text', '5');
 
-    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
-    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
-    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
-    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc2('#/a/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc2('#/b/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc2('#/c/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc2('#/d/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
 
-    cy.get(cesc('#/d/ind')).should('have.text', 'NaN');
-    cy.get(cesc('#/a/ind')).should('have.text', '1');
-    cy.get(cesc('#/b/ind')).should('have.text', '2');
-    cy.get(cesc('#/c/ind')).should('have.text', 'NaN');
+    cy.get(cesc2('#/d/ind')).should('have.text', 'NaN');
+    cy.get(cesc2('#/a/ind')).should('have.text', '1');
+    cy.get(cesc2('#/b/ind')).should('have.text', '2');
+    cy.get(cesc2('#/c/ind')).should('have.text', 'NaN');
 
-    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}7{enter}', { force: true })
-    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}8{enter}', { force: true })
-    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}9{enter}', { force: true })
-    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}10{enter}', { force: true })
+    cy.get(cesc2('#/a/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}7{enter}', { force: true })
+    cy.get(cesc2('#/b/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}8{enter}', { force: true })
+    cy.get(cesc2('#/c/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}9{enter}', { force: true })
+    cy.get(cesc2('#/d/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}10{enter}', { force: true })
 
-    cy.get(cesc('#/d/ind')).should('have.text', '10');
-    cy.get(cesc('#/a/ind')).should('have.text', '1');
-    cy.get(cesc('#/b/ind')).should('have.text', '2');
-    cy.get(cesc('#/c/ind')).should('have.text', '9');
+    cy.get(cesc2('#/d/ind')).should('have.text', '10');
+    cy.get(cesc2('#/a/ind')).should('have.text', '1');
+    cy.get(cesc2('#/b/ind')).should('have.text', '2');
+    cy.get(cesc2('#/c/ind')).should('have.text', '9');
 
 
   });
@@ -2455,66 +2447,66 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 ')
-    cy.get('#\\/m2').should('have.text', 'map 2: ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: hi1 hi2 hi3 hi4 ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: ')
 
-    cy.get('#\\/n1 textarea').type("{end}{backspace}6{enter}", { force: true })
-    cy.get('#\\/n2 textarea').type("{end}{backspace}6{enter}", { force: true })
-    cy.get('#\\/n2a').should('contain.text', '6');
-    cy.get('#\\/n1a').should('contain.text', '6');
+    cy.get(cesc('#\\/n1') + ' textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get(cesc('#\\/n2a')).should('contain.text', '6');
+    cy.get(cesc('#\\/n1a')).should('contain.text', '6');
 
-    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 ')
-    cy.get('#\\/m2').should('have.text', 'map 2: ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: ')
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
-    cy.get('#\\/h2a').should('contain.text', 'false');
-    cy.get('#\\/h1a').should('contain.text', 'true');
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
+    cy.get(cesc('#\\/h2a')).should('contain.text', 'false');
+    cy.get(cesc('#\\/h1a')).should('contain.text', 'true');
 
-    cy.get('#\\/m1').should('have.text', 'map 1: ')
-    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 ')
 
-    cy.get('#\\/n1 textarea').type("{end}{backspace}8{enter}", { force: true })
-    cy.get('#\\/n2 textarea').type("{end}{backspace}8{enter}", { force: true })
-    cy.get('#\\/n2a').should('contain.text', '8');
-    cy.get('#\\/n1a').should('contain.text', '8');
+    cy.get(cesc('#\\/n1') + ' textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get(cesc('#\\/n2a')).should('contain.text', '8');
+    cy.get(cesc('#\\/n1a')).should('contain.text', '8');
 
-    cy.get('#\\/m1').should('have.text', 'map 1: ')
-    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
-    cy.get('#\\/h2a').should('contain.text', 'true');
-    cy.get('#\\/h1a').should('contain.text', 'false');
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
+    cy.get(cesc('#\\/h2a')).should('contain.text', 'true');
+    cy.get(cesc('#\\/h1a')).should('contain.text', 'false');
 
-    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
-    cy.get('#\\/m2').should('have.text', 'map 2: ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: ')
 
-    cy.get('#\\/n1 textarea').type("{end}{backspace}3{enter}", { force: true })
-    cy.get('#\\/n2 textarea').type("{end}{backspace}3{enter}", { force: true })
-    cy.get('#\\/n2a').should('contain.text', '3');
-    cy.get('#\\/n1a').should('contain.text', '3');
+    cy.get(cesc('#\\/n1') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/n2a')).should('contain.text', '3');
+    cy.get(cesc('#\\/n1a')).should('contain.text', '3');
 
-    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 ')
-    cy.get('#\\/m2').should('have.text', 'map 2: ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: hi1 hi2 hi3 ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: ')
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
-    cy.get('#\\/h2a').should('contain.text', 'false');
-    cy.get('#\\/h1a').should('contain.text', 'true');
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
+    cy.get(cesc('#\\/h2a')).should('contain.text', 'false');
+    cy.get(cesc('#\\/h1a')).should('contain.text', 'true');
 
-    cy.get('#\\/m1').should('have.text', 'map 1: ')
-    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: hi1 hi2 hi3 ')
 
-    cy.get('#\\/n1 textarea').type("{end}{backspace}4{enter}", { force: true })
-    cy.get('#\\/n2 textarea').type("{end}{backspace}4{enter}", { force: true })
-    cy.get('#\\/n2a').should('contain.text', '4');
-    cy.get('#\\/n1a').should('contain.text', '4');
+    cy.get(cesc('#\\/n1') + ' textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get(cesc('#\\/n2') + ' textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get(cesc('#\\/n2a')).should('contain.text', '4');
+    cy.get(cesc('#\\/n1a')).should('contain.text', '4');
 
-    cy.get('#\\/m1').should('have.text', 'map 1: ')
-    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 ')
+    cy.get(cesc('#\\/m1')).should('have.text', 'map 1: ')
+    cy.get(cesc('#\\/m2')).should('have.text', 'map 2: hi1 hi2 hi3 hi4 ')
 
 
   });
@@ -2535,10 +2527,10 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/n1').should('have.text', '1')
-    cy.get('#\\/n2').should('have.text', '2')
+    cy.get(cesc('#\\/n1')).should('have.text', '1')
+    cy.get(cesc('#\\/n2')).should('have.text', '2')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2567,8 +2559,8 @@ describe('Map Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/p1').should('have.text', 'hi 1')
-    cy.get('#\\/p2').should('have.text', 'hi 2')
+    cy.get(cesc('#\\/p1')).should('have.text', 'hi 1')
+    cy.get(cesc('#\\/p2')).should('have.text', 'hi 2')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

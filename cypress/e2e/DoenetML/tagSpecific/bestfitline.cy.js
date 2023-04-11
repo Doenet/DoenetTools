@@ -1,4 +1,6 @@
 import me from 'math-expressions';
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('BestFitLine Tag Tests', function () {
 
@@ -32,9 +34,9 @@ describe('BestFitLine Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=−0.5x+4.5')
     })
 
@@ -72,8 +74,8 @@ describe('BestFitLine Tag Tests', function () {
 
     })
 
-    cy.get('#\\/eq').should('contain.text', 'y=2x+1')
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).should('contain.text', 'y=2x+1')
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+1')
     })
 
@@ -102,9 +104,9 @@ describe('BestFitLine Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
 
@@ -136,9 +138,9 @@ describe('BestFitLine Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
 
@@ -170,9 +172,9 @@ describe('BestFitLine Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=4')
     })
 
@@ -192,8 +194,8 @@ describe('BestFitLine Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/eq').should('contain.text', 'y=−8')
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).should('contain.text', 'y=−8')
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=−8')
     })
 
@@ -226,9 +228,9 @@ describe('BestFitLine Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=0.5x+2.5')
     })
 
@@ -249,8 +251,8 @@ describe('BestFitLine Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/eq').should('contain.text', 'y=−4');
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).should('contain.text', 'y=−4');
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=−4')
     })
 
@@ -271,8 +273,8 @@ describe('BestFitLine Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/eq').should('contain.text', 'y=2x+2')
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).should('contain.text', 'y=2x+2')
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+2')
     })
 
@@ -310,9 +312,9 @@ describe('BestFitLine Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=−0.5x+4.5')
     })
 
@@ -350,8 +352,8 @@ describe('BestFitLine Tag Tests', function () {
 
     })
 
-    cy.get('#\\/eq').should('contain.text', 'y=2x+1')
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).should('contain.text', 'y=2x+1')
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+1')
     })
 
@@ -394,9 +396,9 @@ describe('BestFitLine Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=−0.5x+4.5')
     })
 
@@ -434,9 +436,9 @@ describe('BestFitLine Tag Tests', function () {
 
     })
 
-    cy.get('#\\/eq').should('contain.text', 'y=2x+1')
+    cy.get(cesc('#\\/eq')).should('contain.text', 'y=2x+1')
 
-    cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/eq')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+1')
     })
 

@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('Legend Tag Tests', function () {
 
@@ -41,7 +33,7 @@ describe('Legend Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -98,7 +90,7 @@ describe('Legend Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -161,7 +153,7 @@ describe('Legend Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -176,9 +168,9 @@ describe('Legend Tag Tests', function () {
 
     })
 
-    cy.get('#\\/pos_input').type("upperLeft{enter}");
+    cy.get(cesc('#\\/pos_input')).type("upperLeft{enter}");
 
-    cy.get('#\\/pos2').should('have.text', 'upperLeft');
+    cy.get(cesc('#\\/pos2')).should('have.text', 'upperLeft');
 
 
     cy.window().then(async (win) => {
@@ -193,30 +185,9 @@ describe('Legend Tag Tests', function () {
 
     })
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', '3')
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperleft");
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(2);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
-
-    })
-
-
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', '4')
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -235,9 +206,30 @@ describe('Legend Tag Tests', function () {
     })
 
 
-    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
 
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', '5')
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '4')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_legend1'].stateValues.position).eq("upperleft");
+
+      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(2);
+
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+
+      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
+
+    })
+
+
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -259,9 +251,9 @@ describe('Legend Tag Tests', function () {
 
     })
 
-    cy.get('#\\/pos_input').clear().type("LowerRight{enter}");
+    cy.get(cesc('#\\/pos_input')).clear().type("LowerRight{enter}");
 
-    cy.get('#\\/pos2').should('have.text', 'LowerRight');
+    cy.get(cesc('#\\/pos2')).should('have.text', 'LowerRight');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -284,9 +276,9 @@ describe('Legend Tag Tests', function () {
     })
 
 
-    cy.get('#\\/n textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
 
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', '8')
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '8')
 
 
     cy.window().then(async (win) => {
@@ -314,9 +306,9 @@ describe('Legend Tag Tests', function () {
     })
 
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', '1')
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '1')
 
 
     cy.window().then(async (win) => {
@@ -331,9 +323,9 @@ describe('Legend Tag Tests', function () {
 
     })
 
-    cy.get('#\\/pos_input').clear().type("lowerleft{enter}");
+    cy.get(cesc('#\\/pos_input')).clear().type("lowerleft{enter}");
 
-    cy.get('#\\/pos2').should('have.text', 'lowerleft');
+    cy.get(cesc('#\\/pos2')).should('have.text', 'lowerleft');
 
 
     cy.window().then(async (win) => {
@@ -350,9 +342,9 @@ describe('Legend Tag Tests', function () {
 
 
 
-    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}10{enter}", { force: true });
 
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', '10')
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '10')
 
 
     cy.window().then(async (win) => {
@@ -423,7 +415,7 @@ describe('Legend Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -479,7 +471,7 @@ describe('Legend Tag Tests', function () {
     });
 
     cy.log('change displayClosedSwatches to true')
-    cy.get("#\\/closedSwatches").click();
+    cy.get(cesc("#\\/closedSwatches")).click();
 
 
     cy.window().then(async (win) => {
@@ -579,7 +571,7 @@ describe('Legend Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     cy.window().then(async (win) => {

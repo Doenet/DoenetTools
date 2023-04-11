@@ -10,7 +10,7 @@ export default class Circle extends Curve {
     Object.assign(this.actions, {
       moveCircle: this.moveCircle.bind(this),
       circleClicked: this.circleClicked.bind(this),
-      mouseDownOnCircle: this.mouseDownOnCircle.bind(this),
+      circleFocused: this.circleFocused.bind(this),
     });
 
   }
@@ -2444,11 +2444,11 @@ export default class Circle extends Curve {
 
   }
 
-  async circleClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async circleClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -2458,11 +2458,11 @@ export default class Circle extends Curve {
 
   }
 
-  async mouseDownOnCircle({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async circleFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

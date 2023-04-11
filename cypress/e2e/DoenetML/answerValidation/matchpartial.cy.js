@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 
 describe('Match partial validation tests', function () {
@@ -48,44 +40,44 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + ' textarea';
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + ' textarea';
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + ' textarea';
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + ' textarea';
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc2('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + ' textarea';
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + ' textarea';
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc2('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       let mathinput5Name = stateVariables['/_answer5'].stateValues.inputChildren[0].componentName
-      let mathinput5Anchor = cesc('#' + mathinput5Name) + ' textarea';
-      let mathinput5SubmitAnchor = cesc('#' + mathinput5Name + '_submit');
-      let mathinput5CorrectAnchor = cesc('#' + mathinput5Name + '_correct');
-      let mathinput5PartialAnchor = cesc('#' + mathinput5Name + '_partial');
-      let mathinput5IncorrectAnchor = cesc('#' + mathinput5Name + '_incorrect');
+      let mathinput5Anchor = cesc2('#' + mathinput5Name) + ' textarea';
+      let mathinput5SubmitAnchor = cesc2('#' + mathinput5Name + '_submit');
+      let mathinput5CorrectAnchor = cesc2('#' + mathinput5Name + '_correct');
+      let mathinput5PartialAnchor = cesc2('#' + mathinput5Name + '_partial');
+      let mathinput5IncorrectAnchor = cesc2('#' + mathinput5Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -507,37 +499,37 @@ describe('Match partial validation tests', function () {
     });
 
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc2('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc2('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -875,37 +867,37 @@ describe('Match partial validation tests', function () {
     });
 
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc2('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc2('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -1245,37 +1237,37 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc2('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc2('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -1615,37 +1607,37 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc2('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc2('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -1976,23 +1968,23 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -2179,65 +2171,65 @@ describe('Match partial validation tests', function () {
     });
 
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc2('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc2('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       let mathinput5Name = stateVariables['/_answer5'].stateValues.inputChildren[0].componentName
-      let mathinput5Anchor = cesc('#' + mathinput5Name) + " textarea";
-      let mathinput5SubmitAnchor = cesc('#' + mathinput5Name + '_submit');
-      let mathinput5CorrectAnchor = cesc('#' + mathinput5Name + '_correct');
-      let mathinput5PartialAnchor = cesc('#' + mathinput5Name + '_partial');
-      let mathinput5IncorrectAnchor = cesc('#' + mathinput5Name + '_incorrect');
+      let mathinput5Anchor = cesc2('#' + mathinput5Name) + " textarea";
+      let mathinput5SubmitAnchor = cesc2('#' + mathinput5Name + '_submit');
+      let mathinput5CorrectAnchor = cesc2('#' + mathinput5Name + '_correct');
+      let mathinput5PartialAnchor = cesc2('#' + mathinput5Name + '_partial');
+      let mathinput5IncorrectAnchor = cesc2('#' + mathinput5Name + '_incorrect');
 
       let mathinput6Name = stateVariables['/_answer6'].stateValues.inputChildren[0].componentName
-      let mathinput6Anchor = cesc('#' + mathinput6Name) + " textarea";
-      let mathinput6SubmitAnchor = cesc('#' + mathinput6Name + '_submit');
-      let mathinput6CorrectAnchor = cesc('#' + mathinput6Name + '_correct');
-      let mathinput6PartialAnchor = cesc('#' + mathinput6Name + '_partial');
-      let mathinput6IncorrectAnchor = cesc('#' + mathinput6Name + '_incorrect');
+      let mathinput6Anchor = cesc2('#' + mathinput6Name) + " textarea";
+      let mathinput6SubmitAnchor = cesc2('#' + mathinput6Name + '_submit');
+      let mathinput6CorrectAnchor = cesc2('#' + mathinput6Name + '_correct');
+      let mathinput6PartialAnchor = cesc2('#' + mathinput6Name + '_partial');
+      let mathinput6IncorrectAnchor = cesc2('#' + mathinput6Name + '_incorrect');
 
       let mathinput7Name = stateVariables['/_answer7'].stateValues.inputChildren[0].componentName
-      let mathinput7Anchor = cesc('#' + mathinput7Name) + " textarea";
-      let mathinput7SubmitAnchor = cesc('#' + mathinput7Name + '_submit');
-      let mathinput7CorrectAnchor = cesc('#' + mathinput7Name + '_correct');
-      let mathinput7PartialAnchor = cesc('#' + mathinput7Name + '_partial');
-      let mathinput7IncorrectAnchor = cesc('#' + mathinput7Name + '_incorrect');
+      let mathinput7Anchor = cesc2('#' + mathinput7Name) + " textarea";
+      let mathinput7SubmitAnchor = cesc2('#' + mathinput7Name + '_submit');
+      let mathinput7CorrectAnchor = cesc2('#' + mathinput7Name + '_correct');
+      let mathinput7PartialAnchor = cesc2('#' + mathinput7Name + '_partial');
+      let mathinput7IncorrectAnchor = cesc2('#' + mathinput7Name + '_incorrect');
 
       let mathinput8Name = stateVariables['/_answer8'].stateValues.inputChildren[0].componentName
-      let mathinput8Anchor = cesc('#' + mathinput8Name) + " textarea";
-      let mathinput8SubmitAnchor = cesc('#' + mathinput8Name + '_submit');
-      let mathinput8CorrectAnchor = cesc('#' + mathinput8Name + '_correct');
-      let mathinput8PartialAnchor = cesc('#' + mathinput8Name + '_partial');
-      let mathinput8IncorrectAnchor = cesc('#' + mathinput8Name + '_incorrect');
+      let mathinput8Anchor = cesc2('#' + mathinput8Name) + " textarea";
+      let mathinput8SubmitAnchor = cesc2('#' + mathinput8Name + '_submit');
+      let mathinput8CorrectAnchor = cesc2('#' + mathinput8Name + '_correct');
+      let mathinput8PartialAnchor = cesc2('#' + mathinput8Name + '_partial');
+      let mathinput8IncorrectAnchor = cesc2('#' + mathinput8Name + '_incorrect');
 
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
@@ -2669,23 +2661,23 @@ describe('Match partial validation tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/a_submit').should('be.visible');
-    cy.get('#\\/b_submit').should('be.visible');
-    cy.get('#\\/c_submit').should('be.visible');
-    cy.get('#\\/d_submit').should('be.visible');
-    cy.get('#\\/e_submit').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).should('be.visible');
 
     cy.log("Submit empty answers")
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_incorrect').should('be.visible');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2697,20 +2689,20 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("Submit correct answers")
-    cy.get('#\\/x textarea').type('x', { force: true, delay: 0 });
-    cy.get('#\\/y textarea').type('y', { force: true, delay: 0 });
-    cy.get('#\\/z textarea').type('z', { force: true, delay: 0 });
+    cy.get(cesc('#\\/x') + ' textarea').type('x', { force: true, delay: 0 });
+    cy.get(cesc('#\\/y') + ' textarea').type('y', { force: true, delay: 0 });
+    cy.get(cesc('#\\/z') + ' textarea').type('z', { force: true, delay: 0 });
 
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_correct').should('be.visible');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_correct')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_correct')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_correct')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2723,24 +2715,24 @@ describe('Match partial validation tests', function () {
 
     cy.log("Omit one component")
 
-    cy.get('#\\/y textarea').type('{end}{backspace}z', { force: true, delay: 0 });
-    cy.get('#\\/z textarea').type('{end}{backspace}', { force: true, delay: 0 });
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y') + ' textarea').type('{end}{backspace}z', { force: true, delay: 0 });
+    cy.get(cesc('#\\/z') + ' textarea').type('{end}{backspace}', { force: true, delay: 0 });
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2752,21 +2744,21 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("permute order")
-    cy.get('#\\/x textarea').type('{end}{backspace}z', { force: true, delay: 0 });
-    cy.get('#\\/y textarea').type('{end}{backspace}x', { force: true, delay: 0 });
-    cy.get('#\\/z textarea').type('{end}{backspace}y', { force: true, delay: 0 });
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/x') + ' textarea').type('{end}{backspace}z', { force: true, delay: 0 });
+    cy.get(cesc('#\\/y') + ' textarea').type('{end}{backspace}x', { force: true, delay: 0 });
+    cy.get(cesc('#\\/z') + ' textarea').type('{end}{backspace}y', { force: true, delay: 0 });
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2778,22 +2770,22 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("reverse order")
-    cy.get('#\\/y textarea').type('{end}{backspace}y', { force: true, delay: 0 });
-    cy.get('#\\/z textarea').type('{end}{backspace}x', { force: true, delay: 0 });
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y') + ' textarea').type('{end}{backspace}y', { force: true, delay: 0 });
+    cy.get(cesc('#\\/z') + ' textarea').type('{end}{backspace}x', { force: true, delay: 0 });
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2806,21 +2798,21 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("two components out of order")
-    cy.get('#\\/y textarea').type('{end}{backspace}', { force: true, delay: 0 });
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y') + ' textarea').type('{end}{backspace}', { force: true, delay: 0 });
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2832,21 +2824,21 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("add component")
-    cy.get('#\\/y textarea').type('{end}{backspace}x', { force: true, delay: 0 });
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y') + ' textarea').type('{end}{backspace}x', { force: true, delay: 0 });
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2859,24 +2851,24 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("extra component, but in right order")
-    cy.get('#\\/x textarea').type('{end}{backspace}x', { force: true, delay: 0 });
-    cy.get('#\\/z textarea').type('{end}{backspace}z', { force: true, delay: 0 });
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/x') + ' textarea').type('{end}{backspace}x', { force: true, delay: 0 });
+    cy.get(cesc('#\\/z') + ' textarea').type('{end}{backspace}z', { force: true, delay: 0 });
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2889,23 +2881,23 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("extra component, in right order, but only one in right position")
-    cy.get('#\\/z textarea').type('{end}{backspace}y', { force: true, delay: 0 });
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/z') + ' textarea').type('{end}{backspace}y', { force: true, delay: 0 });
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3001,23 +2993,23 @@ describe('Match partial validation tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/a_submit').should('be.visible');
-    cy.get('#\\/b_submit').should('be.visible');
-    cy.get('#\\/c_submit').should('be.visible');
-    cy.get('#\\/d_submit').should('be.visible');
-    cy.get('#\\/e_submit').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).should('be.visible');
 
     cy.log("Submit empty answers")
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_incorrect').should('be.visible');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3029,20 +3021,20 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("Submit correct answers")
-    cy.get('#\\/x_input').clear().type('x');
-    cy.get('#\\/y_input').clear().type('y');
-    cy.get('#\\/z_input').clear().type('z');
+    cy.get(cesc('#\\/x_input')).clear().type('x');
+    cy.get(cesc('#\\/y_input')).clear().type('y');
+    cy.get(cesc('#\\/z_input')).clear().type('z');
 
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_correct').should('be.visible');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_correct')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_correct')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_correct')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3055,24 +3047,24 @@ describe('Match partial validation tests', function () {
 
     cy.log("Omit one component")
 
-    cy.get('#\\/y_input').clear().type('z');
-    cy.get('#\\/z_input').clear();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y_input')).clear().type('z');
+    cy.get(cesc('#\\/z_input')).clear();
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3084,21 +3076,21 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("permute order")
-    cy.get('#\\/x_input').clear().type('z');
-    cy.get('#\\/y_input').clear().type('x');
-    cy.get('#\\/z_input').clear().type('y');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/x_input')).clear().type('z');
+    cy.get(cesc('#\\/y_input')).clear().type('x');
+    cy.get(cesc('#\\/z_input')).clear().type('y');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3110,22 +3102,22 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("reverse order")
-    cy.get('#\\/y_input').clear().type('y');
-    cy.get('#\\/z_input').clear().type('x');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y_input')).clear().type('y');
+    cy.get(cesc('#\\/z_input')).clear().type('x');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3138,21 +3130,21 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("two components out of order")
-    cy.get('#\\/y_input').clear();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y_input')).clear();
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3164,21 +3156,21 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("add component")
-    cy.get('#\\/y_input').clear().type('x');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y_input')).clear().type('x');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3191,24 +3183,24 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("extra component, but in right order")
-    cy.get('#\\/x_input').clear().type('x');
-    cy.get('#\\/z_input').clear().type('z');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/x_input')).clear().type('x');
+    cy.get(cesc('#\\/z_input')).clear().type('z');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3221,23 +3213,23 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("extra component, in right order, but only one in right position")
-    cy.get('#\\/z_input').clear().type('y');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/z_input')).clear().type('y');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3334,26 +3326,26 @@ describe('Match partial validation tests', function () {
     });
 
 
-    cy.get('#\\/a_submit').should('be.visible');
-    cy.get('#\\/b_submit').should('be.visible');
-    cy.get('#\\/c_submit').should('be.visible');
-    cy.get('#\\/d_submit').should('be.visible');
-    cy.get('#\\/e_submit').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).should('be.visible');
 
     cy.log("Submit correct answers")
-    cy.get('#\\/y').click();
-    cy.get('#\\/z').click();
+    cy.get(cesc('#\\/y')).click();
+    cy.get(cesc('#\\/z')).click();
 
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_correct').should('be.visible');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_correct')).should('be.visible');
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_correct')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_correct')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3365,24 +3357,24 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("All true")
-    cy.get('#\\/x').click();
+    cy.get(cesc('#\\/x')).click();
 
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3394,22 +3386,22 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("wrong order")
-    cy.get('#\\/y').click();
+    cy.get(cesc('#\\/y')).click();
 
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_correct').should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_correct')).should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_correct')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3421,22 +3413,22 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("wrong order and values")
-    cy.get('#\\/z').click();
+    cy.get(cesc('#\\/z')).click();
 
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3448,24 +3440,24 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("all false")
-    cy.get('#\\/x').click();
+    cy.get(cesc('#\\/x')).click();
 
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc('#\\/a_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/b_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/c_submit')).click();
+    cy.get(cesc('#\\/c_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
-    cy.get('#\\/e_submit').click();
-    cy.get('#\\/e_incorrect').should('be.visible');
+    cy.get(cesc('#\\/d_submit')).click();
+    cy.get(cesc('#\\/d_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/e_submit')).click();
+    cy.get(cesc('#\\/e_incorrect')).should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3509,62 +3501,62 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc("#\\/m1") + " textarea").type('(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("scalar in first tuple")
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log("scalar in second tuple")
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
     cy.log('permute order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('permute order also in second tuple')
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('correct order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible')
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible')
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible')
 
 
   });
@@ -3600,63 +3592,63 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc("#\\/m1") + " textarea").type('(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("scalar in first tuple")
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log("scalar in second tuple")
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
     cy.log('permute order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('permute order also in second tuple')
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('correct order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible')
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible')
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible')
 
 
   });
@@ -3691,63 +3683,63 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc("#\\/m1") + " textarea").type('(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("scalar in first tuple")
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log("scalar in second tuple")
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('25% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
     cy.log('permute order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('permute order also in second tuple')
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('correct order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible')
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible')
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible')
 
 
   });
@@ -3784,63 +3776,63 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc("#\\/m1") + " textarea").type('(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("scalar in first tuple")
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log("scalar in second tuple")
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('25% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
     cy.log('permute order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('permute order also in second tuple')
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('correct order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible')
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible')
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible')
 
 
   });
@@ -3876,64 +3868,64 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc("#\\/m1") + " textarea").type('(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("scalar in first tuple")
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log("scalar in second tuple")
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
     cy.log('permute order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('permute order also in second tuple')
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('correct order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
   });
@@ -3969,63 +3961,63 @@ describe('Match partial validation tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc("#\\/m1") + " textarea").type('(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("scalar in first tuple")
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}2{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log("scalar in second tuple")
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
     cy.log('permute order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(2,1){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(3,4){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('permute order also in second tuple')
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get("#\\/m2 textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_incorrect').should('be.visible')
+    cy.get(cesc("#\\/m2") + " textarea").type('{ctrl+home}{shift+end}{backspace}(4,3){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible')
 
 
     cy.log('correct order in first tuple')
-    cy.get("#\\/m1 textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
-    cy.get("#\\/partial_submit").click();
-    cy.get('#\\/partial_correct').should('be.visible')
-    cy.get("#\\/strict_submit").click();
-    cy.get('#\\/strict_correct').should('be.visible')
+    cy.get(cesc("#\\/m1") + " textarea").type('{ctrl+home}{shift+end}{backspace}(1,2){enter}', { force: true, delay: 0 });
+    cy.get(cesc("#\\/partial_submit")).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible')
+    cy.get(cesc("#\\/strict_submit")).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible')
 
 
   });
@@ -4077,65 +4069,65 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get('#\\/u_input').clear().type('u');
-    cy.get('#\\/v_input').clear().type('v');
-    cy.get('#\\/x_input').clear().type('x');
-    cy.get('#\\/y_input').clear().type('y');
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc('#\\/u_input')).clear().type('u');
+    cy.get(cesc('#\\/v_input')).clear().type('v');
+    cy.get(cesc('#\\/x_input')).clear().type('x');
+    cy.get(cesc('#\\/y_input')).clear().type('y');
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("Omit one component in first")
-    cy.get('#\\/u_input').clear().type('v');
-    cy.get('#\\/v_input').clear();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/u_input')).clear().type('v');
+    cy.get(cesc('#\\/v_input')).clear();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
 
     cy.log("Omit one component in second")
-    cy.get('#\\/x_input').clear().type('y');
-    cy.get('#\\/y_input').clear();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/x_input')).clear().type('y');
+    cy.get(cesc('#\\/y_input')).clear();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
 
     cy.log("permute order in first")
-    cy.get('#\\/v_input').type('u');
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/v_input')).type('u');
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
     cy.log("permute order in second")
-    cy.get('#\\/y_input').type('x');
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y_input')).type('x');
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
     cy.log("correct order in first")
-    cy.get('#\\/u_input').clear().type('u');
-    cy.get('#\\/v_input').clear().type('v');
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_correct').should('be.visible')
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc('#\\/u_input')).clear().type('u');
+    cy.get(cesc('#\\/v_input')).clear().type('v');
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible')
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
 
   });
@@ -4187,61 +4179,61 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answers")
-    cy.get('#\\/u').click();
-    cy.get('#\\/x').click();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_correct').should('be.visible');
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc('#\\/u')).click();
+    cy.get(cesc('#\\/x')).click();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
     cy.log("One incorrect in first")
-    cy.get('#\\/v').click();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/v')).click();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
 
     cy.log("One incorrect in second")
-    cy.get('#\\/y').click();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/y')).click();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
 
     cy.log("permute order in first")
-    cy.get('#\\/u').click();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/u')).click();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
     cy.log("permute order in second")
-    cy.get('#\\/x').click();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).click();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_incorrect').should('be.visible');
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_incorrect')).should('be.visible');
 
     cy.log("correct order in first")
-    cy.get('#\\/u').click();
-    cy.get('#\\/v').click();
-    cy.get('#\\/partial_submit').click();
-    cy.get('#\\/partial_correct').should('be.visible')
-    cy.get('#\\/strict_submit').click();
-    cy.get('#\\/strict_correct').should('be.visible');
+    cy.get(cesc('#\\/u')).click();
+    cy.get(cesc('#\\/v')).click();
+    cy.get(cesc('#\\/partial_submit')).click();
+    cy.get(cesc('#\\/partial_correct')).should('be.visible')
+    cy.get(cesc('#\\/strict_submit')).click();
+    cy.get(cesc('#\\/strict_correct')).should('be.visible');
 
 
   });
@@ -4272,38 +4264,38 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit first tuple")
-    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("(1,2){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit both tuples")
-    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -4337,38 +4329,38 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit first tuple")
-    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("(1,2){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit both tuples")
-    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -4402,61 +4394,61 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit first tuple")
-    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("(1,2){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit both tuples")
-    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit first as altvector")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 1,2\\rangle{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 1,2\\rangle{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
 
     cy.log("Submit both as alt vectors")
-    cy.get('#\\/mi textarea').type("{end},\\langle 3,4\\rangle{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},\\langle 3,4\\rangle{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
   });
@@ -4487,62 +4479,62 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit first tuple")
-    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("(1,2){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit both tuples")
-    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
     cy.log("Submit second tuple")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(3,4){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit first as altvector")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 1,2\\rangle{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 1,2\\rangle{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
 
 
     cy.log("Submit both as altvectors")
-    cy.get('#\\/mi textarea').type("{end},\\langle 3,4\\rangle{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},\\langle 3,4\\rangle{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
   });
 
@@ -4572,38 +4564,38 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit first interval")
-    cy.get('#\\/mi textarea').type("[1,2){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("[1,2){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit both intervals")
-    cy.get('#\\/mi textarea').type("{end},(3,4]{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},(3,4]{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
     cy.log("Submit second interval")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}(3,4]{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(3,4]{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -4637,38 +4629,38 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit first array")
-    cy.get('#\\/mi textarea').type("[1,2]{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("[1,2]{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans2_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Submit both arrays")
-    cy.get('#\\/mi textarea').type("{end},[3,4]{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end},[3,4]{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
     cy.log("Submit second array")
-    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}[3,4]{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{ctrl+home}{shift+end}{backspace}[3,4]{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/ans1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
@@ -4702,24 +4694,24 @@ describe('Match partial validation tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+    cy.get(cesc('#\\/_p1')).should('have.text', "a");  // to wait until loaded
 
     cy.log("Submit correct answer")
-    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("(1,2){enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_correct').should('be.visible')
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
 
     cy.log("Submit tuple with incorrect entry")
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}{backSpace}3{enter}", { force: true, delay: 0 })
-    cy.get('#\\/ans1_submit').click();
-    cy.get('#\\/ans2_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}{leftArrow}{backSpace}3{enter}", { force: true, delay: 0 })
+    cy.get(cesc('#\\/ans1_submit')).click();
+    cy.get(cesc('#\\/ans2_submit')).click();
 
-    cy.get('#\\/ans1_incorrect').should('be.visible')
-    cy.get('#\\/ans2_incorrect').should('be.visible')
+    cy.get(cesc('#\\/ans1_incorrect')).should('be.visible')
+    cy.get(cesc('#\\/ans2_incorrect')).should('be.visible')
 
 
 

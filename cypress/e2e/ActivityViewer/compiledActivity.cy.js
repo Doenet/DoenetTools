@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../src/_utils/url';
 
 describe('Compiled activity tests', function () {
 
@@ -33,7 +25,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('contain.text', 'hi')
+    cy.get(cesc('#\\/_document1')).should('contain.text', 'hi')
 
 
   })
@@ -53,7 +45,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('contain.text', 'hi')
+    cy.get(cesc('#\\/_document1')).should('contain.text', 'hi')
 
 
   })
@@ -71,7 +63,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('contain.text', 'hi')
+    cy.get(cesc('#\\/_document1')).should('contain.text', 'hi')
 
   })
 
@@ -86,7 +78,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('contain.text', 'hi')
+    cy.get(cesc('#\\/_document1')).should('contain.text', 'hi')
 
   })
 

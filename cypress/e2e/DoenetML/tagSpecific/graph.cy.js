@@ -1,14 +1,6 @@
-import cssesc from 'cssesc';
 import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
 import { widthsBySize } from '../../../../src/Core/utils/size';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Graph Tag Tests', function () {
 
@@ -27,7 +19,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -48,7 +40,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -74,7 +66,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -103,7 +95,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -146,13 +138,13 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     function checkLimits(xmin, xmax, ymin, ymax) {
-      cy.get('#\\/xmin').should('have.text', String(xmin));
-      cy.get('#\\/xmax').should('have.text', String(xmax));
-      cy.get('#\\/ymin').should('have.text', String(ymin));
-      cy.get('#\\/ymax').should('have.text', String(ymax));
+      cy.get(cesc('#\\/xmin')).should('have.text', String(xmin));
+      cy.get(cesc('#\\/xmax')).should('have.text', String(xmax));
+      cy.get(cesc('#\\/ymin')).should('have.text', String(ymin));
+      cy.get(cesc('#\\/ymax')).should('have.text', String(ymax));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -170,49 +162,49 @@ describe('Graph Tag Tests', function () {
 
     checkLimits(xmin, xmax, ymin, ymax)
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(6)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(6)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin += increment;
       ymax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(6)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(6)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin += increment;
       ymax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(5)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(5)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin -= increment;
       ymax -= increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(4)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(4)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin -= increment;
       xmax -= increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(7)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(7)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin += increment;
       xmax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(7)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(7)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin += increment;
       xmax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(3)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(3)').click().then((_) => {
       let meanx = (xmax + xmin) / 2;
       xmin = meanx + 0.8 * (xmin - meanx);
       xmax = meanx + 0.8 * (xmax - meanx);
@@ -222,7 +214,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(3)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(3)').click().then((_) => {
       let meanx = (xmax + xmin) / 2;
       xmin = meanx + 0.8 * (xmin - meanx);
       xmax = meanx + 0.8 * (xmax - meanx);
@@ -232,7 +224,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(1)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(1)').click().then((_) => {
       let meanx = (xmax + xmin) / 2;
       xmin = meanx + (xmin - meanx) / 0.8;
       xmax = meanx + (xmax - meanx) / 0.8;
@@ -242,34 +234,34 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/xminInput textarea').type(`{end}{backspace}{backspace}-8{enter}`, { force: true }).then((_) => {
+    cy.get(cesc('#\\/xminInput') + ' textarea').type(`{end}{backspace}{backspace}-8{enter}`, { force: true }).then((_) => {
       xmin = -8;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/xmaxInput textarea').type(`{end}{backspace}{backspace}12{enter}`, { force: true }).then((_) => {
+    cy.get(cesc('#\\/xmaxInput') + ' textarea').type(`{end}{backspace}{backspace}12{enter}`, { force: true }).then((_) => {
       xmax = 12;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/yminInput textarea').type(`{end}{backspace}{backspace}-4{enter}`, { force: true }).then((_) => {
+    cy.get(cesc('#\\/yminInput') + ' textarea').type(`{end}{backspace}{backspace}-4{enter}`, { force: true }).then((_) => {
       ymin = -4;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/ymaxInput textarea').type(`{end}{backspace}{backspace}16{enter}`, { force: true }).then((_) => {
+    cy.get(cesc('#\\/ymaxInput') + ' textarea').type(`{end}{backspace}{backspace}16{enter}`, { force: true }).then((_) => {
       ymax = 16;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(5)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(5)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin -= increment;
       ymax -= increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get('#\\/_graph1_navigationbar > :nth-child(4)').click().then((_) => {
+    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(4)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin -= increment;
       xmax -= increment;
@@ -317,7 +309,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
 
@@ -331,11 +323,11 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/g"].stateValues.ylabelAlignment).eq("left");
     })
 
-    cy.get('#\\/xlabel_input').clear().type("hello{enter}")
-    cy.get('#\\/ylabel_input').clear().type("bye{enter}")
-    cy.get('#\\/xlabelpos').select("left")
-    cy.get('#\\/ylabelpos').select("bottom")
-    cy.get('#\\/ylabelalign').select("right")
+    cy.get(cesc('#\\/xlabel_input')).clear().type("hello{enter}")
+    cy.get(cesc('#\\/ylabel_input')).clear().type("bye{enter}")
+    cy.get(cesc('#\\/xlabelpos')).select("left")
+    cy.get(cesc('#\\/ylabelpos')).select("bottom")
+    cy.get(cesc('#\\/ylabelalign')).select("right")
 
 
     cy.window().then(async (win) => {
@@ -364,8 +356,8 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/pxlabel').should('have.text', "x-label: ")
-    cy.get('#\\/pylabel').should('have.text', "y-label: ")
+    cy.get(cesc('#\\/pxlabel')).should('have.text', "x-label: ")
+    cy.get(cesc('#\\/pylabel')).should('have.text', "y-label: ")
 
 
     cy.window().then(async (win) => {
@@ -375,10 +367,10 @@ describe('Graph Tag Tests', function () {
     })
 
 
-    cy.get('#\\/uvx').click();
-    cy.get('#\\/pxlabel').should('have.text', "x-label: s")
-    cy.get('#\\/uvy').click();
-    cy.get('#\\/pylabel').should('have.text', "y-label: t")
+    cy.get(cesc('#\\/uvx')).click();
+    cy.get(cesc('#\\/pxlabel')).should('have.text', "x-label: s")
+    cy.get(cesc('#\\/uvy')).click();
+    cy.get(cesc('#\\/pylabel')).should('have.text', "y-label: t")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -406,13 +398,13 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     function checkLimits(xmin, xmax, ymin, ymax) {
-      cy.get('#\\/xmin').should('have.text', String(xmin));
-      cy.get('#\\/xmax').should('have.text', String(xmax));
-      cy.get('#\\/ymin').should('have.text', String(ymin));
-      cy.get('#\\/ymax').should('have.text', String(ymax));
+      cy.get(cesc('#\\/xmin')).should('have.text', String(xmin));
+      cy.get(cesc('#\\/xmax')).should('have.text', String(xmax));
+      cy.get(cesc('#\\/ymin')).should('have.text', String(ymin));
+      cy.get(cesc('#\\/ymax')).should('have.text', String(ymax));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -428,31 +420,31 @@ describe('Graph Tag Tests', function () {
     let xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
     checkLimits(xmin, xmax, ymin, ymax)
-    cy.get('#\\/g').invoke('css', 'width')
+    cy.get(cesc('#\\/g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get('#\\/g').invoke('css', 'height')
+    cy.get(cesc('#\\/g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -478,39 +470,39 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'b').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'b').then(() => {
       xmin = -5;
       xmax = 15;
       ymin = -10;
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -536,39 +528,39 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'c').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'c').then(() => {
       xmin = -15;
       xmax = 5;
       ymin = -10;
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -593,37 +585,37 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'd').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'd').then(() => {
       xmin = -10;
       xmax = 10;
       ymin = -5;
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymax = 35;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -648,37 +640,37 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'e').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'e').then(() => {
       xmin = -10;
       xmax = 10;
       ymin = -15;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -35;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -703,39 +695,39 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'f').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'f').then(() => {
       xmin = -20;
       xmax = 40;
       ymin = -30;
       ymax = 30;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -15;
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -60;
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -760,39 +752,39 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'g').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'g').then(() => {
       xmin = -30;
       xmax = 30;
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmin = -60;
       xmax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmin = -15;
       xmax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -818,39 +810,39 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'h').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'h').then(() => {
       xmin = -50;
       xmax = 30;
       ymin = -20;
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmax = 70;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmax = 30;
       ymax = 140;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -875,37 +867,37 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'i').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'i').then(() => {
       xmin = -30;
       xmax = 30;
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmin = -90;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -930,37 +922,37 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'j').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'j').then(() => {
       xmin = -30;
       xmax = 30;
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmax = 90;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -985,37 +977,37 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'k').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'k').then(() => {
       xmin = -50;
       xmax = 30;
       ymin = -40;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -120;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -1040,37 +1032,37 @@ describe('Graph Tag Tests', function () {
     });
 
     //wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'l').then(() => {
+    cy.get(cesc('#\\/_text1')).should('have.text', 'l').then(() => {
       xmin = -50;
       xmax = 30;
       ymin = -40;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
     cy.log('set aspect ratio to 2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
     cy.log('set aspect ratio to 1/2')
-    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
+    cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymax = 120;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get('#\\/g').invoke('css', 'width')
+      cy.get(cesc('#\\/g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get('#\\/g').invoke('css', 'height')
+      cy.get(cesc('#\\/g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -1098,13 +1090,13 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     function checkLimits(xmin, xmax, ymin, ymax) {
-      cy.get('#\\/xmin').should('have.text', String(xmin));
-      cy.get('#\\/xmax').should('have.text', String(xmax));
-      cy.get('#\\/ymin').should('have.text', String(ymin));
-      cy.get('#\\/ymax').should('have.text', String(ymax));
+      cy.get(cesc('#\\/xmin')).should('have.text', String(xmin));
+      cy.get(cesc('#\\/xmax')).should('have.text', String(xmax));
+      cy.get(cesc('#\\/ymin')).should('have.text', String(ymin));
+      cy.get(cesc('#\\/ymax')).should('have.text', String(ymax));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1118,9 +1110,9 @@ describe('Graph Tag Tests', function () {
     }
 
 
-    cy.get('#\\/g').invoke('css', 'width')
+    cy.get(cesc('#\\/g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get('#\\/g').invoke('css', 'height')
+    cy.get(cesc('#\\/g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
 
@@ -1128,23 +1120,23 @@ describe('Graph Tag Tests', function () {
 
 
     cy.log('set xmin to -5')
-    cy.get("#\\/xminInput textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}-5{enter}", { force: true });
+    cy.get(cesc("#\\/xminInput") + " textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}-5{enter}", { force: true });
 
-    cy.get('#\\/xmin').should('have.text', '-5');
-    cy.get('#\\/g').invoke('css', 'width')
+    cy.get(cesc('#\\/xmin')).should('have.text', '-5');
+    cy.get(cesc('#\\/g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get('#\\/g').invoke('css', 'height')
+    cy.get(cesc('#\\/g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 566).and('be.lte', 567)
 
     checkLimits(-5, 10, -10, 10)
 
     cy.log('set ymax to 0')
-    cy.get("#\\/ymaxInput textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}0{enter}", { force: true });
+    cy.get(cesc("#\\/ymaxInput") + " textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}0{enter}", { force: true });
 
-    cy.get('#\\/ymax').should('have.text', '0');
-    cy.get('#\\/g').invoke('css', 'width')
+    cy.get(cesc('#\\/ymax')).should('have.text', '0');
+    cy.get(cesc('#\\/g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get('#\\/g').invoke('css', 'height')
+    cy.get(cesc('#\\/g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 283).and('be.lte', 284)
 
     checkLimits(-5, 10, -10, 0)
@@ -1193,37 +1185,37 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
-    cy.get('#\\/sg1').should('have.text', 'none')
-    cy.get('#\\/sg2').should('have.text', 'none')
-    cy.get('#\\/sg3').should('have.text', 'medium')
-    cy.get('#\\/sg4').should('have.text', 'medium')
-    cy.get('#\\/sg5').should('have.text', 'dense')
-    cy.get('#\\/sg6').should('have.text', 'none')
-    cy.get('#\\/sg7').should('have.text', 'none')
+    cy.get(cesc('#\\/sg1')).should('have.text', 'none')
+    cy.get(cesc('#\\/sg2')).should('have.text', 'none')
+    cy.get(cesc('#\\/sg3')).should('have.text', 'medium')
+    cy.get(cesc('#\\/sg4')).should('have.text', 'medium')
+    cy.get(cesc('#\\/sg5')).should('have.text', 'dense')
+    cy.get(cesc('#\\/sg6')).should('have.text', 'none')
+    cy.get(cesc('#\\/sg7')).should('have.text', 'none')
 
-    cy.get('#\\/bi').click();
-    cy.get('#\\/sg6').should('have.text', 'medium')
+    cy.get(cesc('#\\/bi')).click();
+    cy.get(cesc('#\\/sg6')).should('have.text', 'medium')
 
-    cy.get('#\\/ti_input').type('true{enter}')
-    cy.get('#\\/sg7').should('have.text', 'medium')
+    cy.get(cesc('#\\/ti_input')).type('true{enter}')
+    cy.get(cesc('#\\/sg7')).should('have.text', 'medium')
 
-    cy.get('#\\/ti_input').clear().type('false{enter}')
-    cy.get('#\\/sg7').should('have.text', 'none')
+    cy.get(cesc('#\\/ti_input')).clear().type('false{enter}')
+    cy.get(cesc('#\\/sg7')).should('have.text', 'none')
 
-    cy.get('#\\/ti_input').clear().type('dense{enter}')
-    cy.get('#\\/sg7').should('have.text', 'dense')
+    cy.get(cesc('#\\/ti_input')).clear().type('dense{enter}')
+    cy.get(cesc('#\\/sg7')).should('have.text', 'dense')
 
-    cy.get('#\\/ti_input').clear().type('hello{enter}')
-    cy.get('#\\/sg7').should('have.text', 'none')
+    cy.get(cesc('#\\/ti_input')).clear().type('hello{enter}')
+    cy.get(cesc('#\\/sg7')).should('have.text', 'none')
 
-    cy.get('#\\/ti_input').clear().type('medium{enter}')
-    cy.get('#\\/sg7').should('have.text', 'medium')
+    cy.get(cesc('#\\/ti_input')).clear().type('medium{enter}')
+    cy.get(cesc('#\\/sg7')).should('have.text', 'medium')
 
-    cy.get('#\\/ti_input').clear().type('none{enter}')
-    cy.get('#\\/sg7').should('have.text', 'none')
+    cy.get(cesc('#\\/ti_input')).clear().type('none{enter}')
+    cy.get(cesc('#\\/sg7')).should('have.text', 'none')
 
 
 
@@ -1266,46 +1258,46 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/sg1').should('have.text', '1, 1.571')
-    cy.get('#\\/sg2').should('have.text', 'none')
-    cy.get('#\\/sg3').should('have.text', 'none')
-    cy.get('#\\/sg4').should('have.text', '2, 3')
-    cy.get('#\\/sg5').should('have.text', '2, 3')
+    cy.get(cesc('#\\/sg1')).should('have.text', '1, 1.571')
+    cy.get(cesc('#\\/sg2')).should('have.text', 'none')
+    cy.get(cesc('#\\/sg3')).should('have.text', 'none')
+    cy.get(cesc('#\\/sg4')).should('have.text', '2, 3')
+    cy.get(cesc('#\\/sg5')).should('have.text', '2, 3')
 
-    cy.get("#\\/g2x textarea").type("3", { force: true })
-    cy.get("#\\/g2y textarea").type("1.5", { force: true }).blur();
-    cy.get('#\\/sg2').should('have.text', '3, 1.5')
+    cy.get(cesc("#\\/g2x") + " textarea").type("3", { force: true })
+    cy.get(cesc("#\\/g2y") + " textarea").type("1.5", { force: true }).blur();
+    cy.get(cesc('#\\/sg2')).should('have.text', '3, 1.5')
 
-    cy.get("#\\/g3x textarea").type("3", { force: true })
-    cy.get("#\\/g3y textarea").type("1.5", { force: true }).blur();
-    cy.get('#\\/sg3').should('have.text', '3, 1.5')
+    cy.get(cesc("#\\/g3x") + " textarea").type("3", { force: true })
+    cy.get(cesc("#\\/g3y") + " textarea").type("1.5", { force: true }).blur();
+    cy.get(cesc('#\\/sg3')).should('have.text', '3, 1.5')
 
-    cy.get("#\\/g4x textarea").type("{end}{backspace}3", { force: true })
-    cy.get("#\\/g4y textarea").type("{end}.5", { force: true }).blur();
-    cy.get('#\\/sg4').should('have.text', '6, 4.5')
+    cy.get(cesc("#\\/g4x") + " textarea").type("{end}{backspace}3", { force: true })
+    cy.get(cesc("#\\/g4y") + " textarea").type("{end}.5", { force: true }).blur();
+    cy.get(cesc('#\\/sg4')).should('have.text', '6, 4.5')
 
-    cy.get("#\\/g5x textarea").type("{end}{backspace}3", { force: true })
-    cy.get("#\\/g5y textarea").type("{end}.5", { force: true }).blur();
-    cy.get('#\\/sg5').should('have.text', '6, 4.5')
+    cy.get(cesc("#\\/g5x") + " textarea").type("{end}{backspace}3", { force: true })
+    cy.get(cesc("#\\/g5y") + " textarea").type("{end}.5", { force: true }).blur();
+    cy.get(cesc('#\\/sg5')).should('have.text', '6, 4.5')
 
 
-    cy.get("#\\/g2x textarea").type("{end}e/2", { force: true })
-    cy.get("#\\/g2y textarea").type("{end}pi", { force: true }).blur();
-    cy.get('#\\/sg2').should('have.text', '4.077422743, 4.71238898')
+    cy.get(cesc("#\\/g2x") + " textarea").type("{end}e/2", { force: true })
+    cy.get(cesc("#\\/g2y") + " textarea").type("{end}pi", { force: true }).blur();
+    cy.get(cesc('#\\/sg2')).should('have.text', '4.077422743, 4.71238898')
 
-    cy.get("#\\/g3x textarea").type("{end}e/2", { force: true })
-    cy.get("#\\/g3y textarea").type("{end}pi", { force: true }).blur();
-    cy.get('#\\/sg3').should('have.text', '4.077422743, 4.71238898')
+    cy.get(cesc("#\\/g3x") + " textarea").type("{end}e/2", { force: true })
+    cy.get(cesc("#\\/g3y") + " textarea").type("{end}pi", { force: true }).blur();
+    cy.get(cesc('#\\/sg3')).should('have.text', '4.077422743, 4.71238898')
 
-    cy.get("#\\/g4x textarea").type("{end}pi/5", { force: true })
-    cy.get("#\\/g4y textarea").type("{end}e/6", { force: true }).blur();
-    cy.get('#\\/sg4').should('have.text', '3.77, 2.04')
+    cy.get(cesc("#\\/g4x") + " textarea").type("{end}pi/5", { force: true })
+    cy.get(cesc("#\\/g4y") + " textarea").type("{end}e/6", { force: true }).blur();
+    cy.get(cesc('#\\/sg4')).should('have.text', '3.77, 2.04')
 
-    cy.get("#\\/g5x textarea").type("{end}pi/5", { force: true })
-    cy.get("#\\/g5y textarea").type("{end}e/6", { force: true }).blur();
-    cy.get('#\\/sg5').should('have.text', '3.77, 2.04')
+    cy.get(cesc("#\\/g5x") + " textarea").type("{end}pi/5", { force: true })
+    cy.get(cesc("#\\/g5y") + " textarea").type("{end}e/6", { force: true }).blur();
+    cy.get(cesc('#\\/sg5')).should('have.text', '3.77, 2.04')
 
 
   });
@@ -1327,7 +1319,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
     // but main thing is that don't have an error
@@ -1338,12 +1330,12 @@ describe('Graph Tag Tests', function () {
       expect(stateVariables["/_graph1"].stateValues.xlabel).eq('\\(\uff3f\\)');
 
       let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
 
 
       cy.get(mathinputAnchor).type("x{enter}", { force: true });
 
-      cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x')
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').should('contain.text', 'x')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_graph1"].stateValues.xlabel).eq('\\(x\\)');
@@ -1372,11 +1364,11 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
-    cy.get('#\\/b1a').should('have.text', 'false')
-    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'false')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(false);
@@ -1384,40 +1376,40 @@ describe('Graph Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b1').click();
+    cy.get(cesc('#\\/b1')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'true')
-    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'true')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(true);
       expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(true);
     })
 
-    cy.get('#\\/b2').click();
+    cy.get(cesc('#\\/b2')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'true')
-    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'true')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'false')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(true);
       expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(false);
     })
 
-    cy.get('#\\/b1').click();
+    cy.get(cesc('#\\/b1')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'false')
-    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'false')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'false')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(false);
       expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(false);
     })
 
-    cy.get('#\\/b2').click();
+    cy.get(cesc('#\\/b2')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'false')
-    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'false')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(false);
@@ -1473,7 +1465,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     let expectedSizes = {
@@ -1519,7 +1511,7 @@ describe('Graph Tag Tests', function () {
     });
 
     for (let name in expectedSizes) {
-      cy.get(cesc("#/" + name)).invoke('css', 'width')
+      cy.get(cesc2("#/" + name)).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', widthsBySize[expectedSizes[name]] - 4).and('be.lte', widthsBySize[expectedSizes[name]] + 1)
     }
 
@@ -1540,7 +1532,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1570,7 +1562,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1613,171 +1605,171 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // Note: these are brittle tests and could start failing if internals of jsxgraph changes
 
 
-    cy.get('#\\/none').should('not.contain.text', 'π')
-    cy.get('#\\/none').should('not.contain.text', 'e')
-    cy.get('#\\/none').should('contain.text', '68')
-    cy.get('#\\/none').should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#\\/none')).should('not.contain.text', 'π')
+    cy.get(cesc('#\\/none')).should('not.contain.text', 'e')
+    cy.get(cesc('#\\/none')).should('contain.text', '68')
+    cy.get(cesc('#\\/none')).should('contain.text', '−2−4−6−8')
 
-    cy.get('#\\/xpi').should('contain.text', 'π2π3π')
-    cy.get('#\\/xpi').should('contain.text', '−π−2π−3π')
-    cy.get('#\\/xpi').should('contain.text', '24')
-    cy.get('#\\/xpi').should('contain.text', '68')
-    cy.get('#\\/xpi').should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#\\/xpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '24')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '68')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '−2−4−6−8')
 
-    cy.get('#\\/ypi').should('contain.text', 'π2π3π')
-    cy.get('#\\/ypi').should('contain.text', '−π−2π−3π')
-    cy.get('#\\/ypi').should('contain.text', '24')
-    cy.get('#\\/ypi').should('contain.text', '68')
-    cy.get('#\\/ypi').should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#\\/ypi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '24')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '68')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '−2−4−6−8')
 
-    cy.get('#\\/bothpi').should('contain.text', 'π2π3π')
-    cy.get('#\\/bothpi').should('contain.text', '−π−2π−3π')
-    cy.get('#\\/bothpi').should('not.contain.text', '24')
-    cy.get('#\\/bothpi').should('not.contain.text', '68')
-    cy.get('#\\/bothpi').should('not.contain.text', '−2−4−6−8')
+    cy.get(cesc('#\\/bothpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#\\/bothpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '24')
+    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '68')
+    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '−2−4−6−8')
 
-    cy.get('#\\/xe').should('contain.text', 'e2e3e')
-    cy.get('#\\/xe').should('contain.text', '−e−2e−3e')
-    cy.get('#\\/xe').should('contain.text', '24')
-    cy.get('#\\/xe').should('contain.text', '68')
-    cy.get('#\\/xe').should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#\\/xe')).should('contain.text', 'e2e3e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−e−2e−3e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '24')
+    cy.get(cesc('#\\/xe')).should('contain.text', '68')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−2−4−6−8')
 
-    cy.get('#\\/ye').should('contain.text', 'e2e3e')
-    cy.get('#\\/ye').should('contain.text', '−e−2e−3e')
-    cy.get('#\\/ye').should('contain.text', '24')
-    cy.get('#\\/ye').should('contain.text', '68')
-    cy.get('#\\/ye').should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#\\/ye')).should('contain.text', 'e2e3e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−e−2e−3e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '24')
+    cy.get(cesc('#\\/ye')).should('contain.text', '68')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−2−4−6−8')
 
-    cy.get('#\\/bothe').should('contain.text', 'e2e3e')
-    cy.get('#\\/bothe').should('contain.text', '−e−2e−3e')
-    cy.get('#\\/bothe').should('not.contain.text', '24')
-    cy.get('#\\/bothe').should('not.contain.text', '68')
-    cy.get('#\\/bothe').should('not.contain.text', '−2−4−6−8')
+    cy.get(cesc('#\\/bothe')).should('contain.text', 'e2e3e')
+    cy.get(cesc('#\\/bothe')).should('contain.text', '−e−2e−3e')
+    cy.get(cesc('#\\/bothe')).should('not.contain.text', '24')
+    cy.get(cesc('#\\/bothe')).should('not.contain.text', '68')
+    cy.get(cesc('#\\/bothe')).should('not.contain.text', '−2−4−6−8')
 
-    cy.get('#\\/ignorebad').should('not.contain.text', 'π')
-    cy.get('#\\/ignorebad').should('not.contain.text', 'e')
-    cy.get('#\\/ignorebad').should('contain.text', '68')
-    cy.get('#\\/ignorebad').should('contain.text', '−2−4−6−8')
-
-
-    cy.get('#\\/none_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/xpi_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/ypi_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/bothpi_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/xe_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/ye_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/bothe_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/ignorebad_navigationbar > :nth-child(1)').click();
-
-    cy.get('#\\/xmax').should('have.text', '12.5')
-
-    cy.get('#\\/none').should('not.contain.text', 'π')
-    cy.get('#\\/none').should('not.contain.text', 'e')
-    cy.get('#\\/none').should('contain.text', '10')
-    cy.get('#\\/none').should('contain.text', '−10')
-
-    cy.get('#\\/xpi').should('contain.text', 'π2π3π')
-    cy.get('#\\/xpi').should('contain.text', '−π−2π−3π')
-    cy.get('#\\/xpi').should('contain.text', '10')
-    cy.get('#\\/xpi').should('contain.text', '−10')
-
-    cy.get('#\\/ypi').should('contain.text', 'π2π3π')
-    cy.get('#\\/ypi').should('contain.text', '−π−2π−3π')
-    cy.get('#\\/ypi').should('contain.text', '10')
-    cy.get('#\\/ypi').should('contain.text', '−10')
-
-    cy.get('#\\/bothpi').should('contain.text', 'π2π3π')
-    cy.get('#\\/bothpi').should('contain.text', '−π−2π−3π')
-    cy.get('#\\/bothpi').should('not.contain.text', '10')
-    cy.get('#\\/bothpi').should('not.contain.text', '−10')
-
-    cy.get('#\\/xe').should('contain.text', 'e2e3e4e')
-    cy.get('#\\/xe').should('contain.text', '−e−2e')
-    cy.get('#\\/xe').should('contain.text', '−3e−4e')
-    cy.get('#\\/xe').should('contain.text', '10')
-    cy.get('#\\/xe').should('contain.text', '−10')
-
-    cy.get('#\\/ye').should('contain.text', 'e2e3e4e')
-    cy.get('#\\/ye').should('contain.text', '−e−2e')
-    cy.get('#\\/ye').should('contain.text', '−3e−4e')
-    cy.get('#\\/ye').should('contain.text', '10')
-    cy.get('#\\/ye').should('contain.text', '−10')
-
-    cy.get('#\\/bothe').should('contain.text', 'e2e3e4e')
-    cy.get('#\\/bothe').should('contain.text', '−e−2e')
-    cy.get('#\\/bothe').should('contain.text', '−3e−4e')
-    cy.get('#\\/bothe').should('not.contain.text', '10')
-    cy.get('#\\/bothe').should('not.contain.text', '−10')
-
-    cy.get('#\\/ignorebad').should('not.contain.text', 'π')
-    cy.get('#\\/ignorebad').should('not.contain.text', 'e')
-    cy.get('#\\/ignorebad').should('contain.text', '10')
-    cy.get('#\\/ignorebad').should('contain.text', '−10')
+    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'π')
+    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'e')
+    cy.get(cesc('#\\/ignorebad')).should('contain.text', '68')
+    cy.get(cesc('#\\/ignorebad')).should('contain.text', '−2−4−6−8')
 
 
-    cy.get('#\\/none_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/xpi_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/ypi_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/bothpi_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/xe_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/ye_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/bothe_navigationbar > :nth-child(1)').click();
-    cy.get('#\\/ignorebad_navigationbar > :nth-child(1)').click();
+    cy.get(cesc('#\\/none_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/xpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/ypi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/bothpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/xe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/ye_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/bothe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/ignorebad_navigationbar') + ' > :nth-child(1)').click();
 
-    cy.get('#\\/xmax').should('have.text', '15.625')
+    cy.get(cesc('#\\/xmax')).should('have.text', '12.5')
 
-    cy.get('#\\/none').should('not.contain.text', 'π')
-    cy.get('#\\/none').should('not.contain.text', 'e')
-    cy.get('#\\/none').should('contain.text', '10')
-    cy.get('#\\/none').should('contain.text', '−10')
+    cy.get(cesc('#\\/none')).should('not.contain.text', 'π')
+    cy.get(cesc('#\\/none')).should('not.contain.text', 'e')
+    cy.get(cesc('#\\/none')).should('contain.text', '10')
+    cy.get(cesc('#\\/none')).should('contain.text', '−10')
 
-    cy.get('#\\/xpi').should('contain.text', 'π2π3π4π')
-    cy.get('#\\/xpi').should('contain.text', '−π−2π')
-    cy.get('#\\/xpi').should('contain.text', '−3π−4π')
-    cy.get('#\\/xpi').should('contain.text', '10')
-    cy.get('#\\/xpi').should('contain.text', '−10')
+    cy.get(cesc('#\\/xpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '10')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '−10')
 
-    cy.get('#\\/ypi').should('contain.text', 'π2π3π4π')
-    cy.get('#\\/ypi').should('contain.text', '−π−2π')
-    cy.get('#\\/ypi').should('contain.text', '−3π−4π')
-    cy.get('#\\/ypi').should('contain.text', '10')
-    cy.get('#\\/ypi').should('contain.text', '−10')
+    cy.get(cesc('#\\/ypi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '10')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '−10')
 
-    cy.get('#\\/bothpi').should('contain.text', 'π2π3π4π')
-    cy.get('#\\/bothpi').should('contain.text', '−π−2π')
-    cy.get('#\\/bothpi').should('contain.text', '−3π−4π')
-    cy.get('#\\/bothpi').should('not.contain.text', '10')
-    cy.get('#\\/bothpi').should('not.contain.text', '−10')
+    cy.get(cesc('#\\/bothpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#\\/bothpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '10')
+    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '−10')
 
-    cy.get('#\\/xe').should('contain.text', 'e2e3e4e5e')
-    cy.get('#\\/xe').should('contain.text', '−e')
-    cy.get('#\\/xe').should('contain.text', '−2e−3e')
-    cy.get('#\\/xe').should('contain.text', '−4e−5e')
-    cy.get('#\\/xe').should('contain.text', '10')
-    cy.get('#\\/xe').should('contain.text', '−10')
+    cy.get(cesc('#\\/xe')).should('contain.text', 'e2e3e4e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−e−2e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−3e−4e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '10')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−10')
 
-    cy.get('#\\/ye').should('contain.text', 'e2e3e4e5e')
-    cy.get('#\\/ye').should('contain.text', '−e')
-    cy.get('#\\/ye').should('contain.text', '−2e−3e')
-    cy.get('#\\/ye').should('contain.text', '−4e−5e')
-    cy.get('#\\/ye').should('contain.text', '10')
-    cy.get('#\\/ye').should('contain.text', '−10')
+    cy.get(cesc('#\\/ye')).should('contain.text', 'e2e3e4e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−e−2e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−3e−4e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '10')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−10')
 
-    cy.get('#\\/bothe').should('contain.text', 'e2e3e4e5e')
-    cy.get('#\\/bothe').should('contain.text', '−e−2e')
-    cy.get('#\\/bothe').should('contain.text', '−3e−4e−5e')
-    cy.get('#\\/bothe').should('not.contain.text', '10')
-    cy.get('#\\/bothe').should('not.contain.text', '−10')
+    cy.get(cesc('#\\/bothe')).should('contain.text', 'e2e3e4e')
+    cy.get(cesc('#\\/bothe')).should('contain.text', '−e−2e')
+    cy.get(cesc('#\\/bothe')).should('contain.text', '−3e−4e')
+    cy.get(cesc('#\\/bothe')).should('not.contain.text', '10')
+    cy.get(cesc('#\\/bothe')).should('not.contain.text', '−10')
 
-    cy.get('#\\/ignorebad').should('not.contain.text', 'π')
-    cy.get('#\\/ignorebad').should('not.contain.text', 'e')
-    cy.get('#\\/ignorebad').should('contain.text', '10')
-    cy.get('#\\/ignorebad').should('contain.text', '−10')
+    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'π')
+    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'e')
+    cy.get(cesc('#\\/ignorebad')).should('contain.text', '10')
+    cy.get(cesc('#\\/ignorebad')).should('contain.text', '−10')
+
+
+    cy.get(cesc('#\\/none_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/xpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/ypi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/bothpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/xe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/ye_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/bothe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#\\/ignorebad_navigationbar') + ' > :nth-child(1)').click();
+
+    cy.get(cesc('#\\/xmax')).should('have.text', '15.625')
+
+    cy.get(cesc('#\\/none')).should('not.contain.text', 'π')
+    cy.get(cesc('#\\/none')).should('not.contain.text', 'e')
+    cy.get(cesc('#\\/none')).should('contain.text', '10')
+    cy.get(cesc('#\\/none')).should('contain.text', '−10')
+
+    cy.get(cesc('#\\/xpi')).should('contain.text', 'π2π3π4π')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '−π−2π')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '−3π−4π')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '10')
+    cy.get(cesc('#\\/xpi')).should('contain.text', '−10')
+
+    cy.get(cesc('#\\/ypi')).should('contain.text', 'π2π3π4π')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '−π−2π')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '−3π−4π')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '10')
+    cy.get(cesc('#\\/ypi')).should('contain.text', '−10')
+
+    cy.get(cesc('#\\/bothpi')).should('contain.text', 'π2π3π4π')
+    cy.get(cesc('#\\/bothpi')).should('contain.text', '−π−2π')
+    cy.get(cesc('#\\/bothpi')).should('contain.text', '−3π−4π')
+    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '10')
+    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '−10')
+
+    cy.get(cesc('#\\/xe')).should('contain.text', 'e2e3e4e5e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−2e−3e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−4e−5e')
+    cy.get(cesc('#\\/xe')).should('contain.text', '10')
+    cy.get(cesc('#\\/xe')).should('contain.text', '−10')
+
+    cy.get(cesc('#\\/ye')).should('contain.text', 'e2e3e4e5e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−2e−3e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−4e−5e')
+    cy.get(cesc('#\\/ye')).should('contain.text', '10')
+    cy.get(cesc('#\\/ye')).should('contain.text', '−10')
+
+    cy.get(cesc('#\\/bothe')).should('contain.text', 'e2e3e4e5e')
+    cy.get(cesc('#\\/bothe')).should('contain.text', '−e−2e')
+    cy.get(cesc('#\\/bothe')).should('contain.text', '−3e−4e−5e')
+    cy.get(cesc('#\\/bothe')).should('not.contain.text', '10')
+    cy.get(cesc('#\\/bothe')).should('not.contain.text', '−10')
+
+    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'π')
+    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'e')
+    cy.get(cesc('#\\/ignorebad')).should('contain.text', '10')
+    cy.get(cesc('#\\/ignorebad')).should('contain.text', '−10')
 
 
   });
@@ -1799,11 +1791,11 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
-    cy.get('#\\/b1a').should('have.text', 'false')
-    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'false')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(false);
@@ -1811,40 +1803,40 @@ describe('Graph Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b1').click();
+    cy.get(cesc('#\\/b1')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'true')
-    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'true')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(true);
       expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(true);
     })
 
-    cy.get('#\\/b2').click();
+    cy.get(cesc('#\\/b2')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'true')
-    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'true')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'false')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(true);
       expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(false);
     })
 
-    cy.get('#\\/b1').click();
+    cy.get(cesc('#\\/b1')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'false')
-    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'false')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'false')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(false);
       expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(false);
     })
 
-    cy.get('#\\/b2').click();
+    cy.get(cesc('#\\/b2')).click();
 
-    cy.get('#\\/b1a').should('have.text', 'false')
-    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.get(cesc('#\\/b1a')).should('have.text', 'false')
+    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(false);
@@ -1869,27 +1861,27 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
-    cy.get('#\\/ba').should('have.text', 'false')
+    cy.get(cesc('#\\/ba')).should('have.text', 'false')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(false);
     })
 
 
-    cy.get('#\\/b').click();
+    cy.get(cesc('#\\/b')).click();
 
-    cy.get('#\\/ba').should('have.text', 'true')
+    cy.get(cesc('#\\/ba')).should('have.text', 'true')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(true);
     })
 
-    cy.get('#\\/b').click();
+    cy.get(cesc('#\\/b')).click();
 
-    cy.get('#\\/ba').should('have.text', 'false')
+    cy.get(cesc('#\\/ba')).should('have.text', 'false')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(false);
@@ -1929,17 +1921,17 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/p').should('have.text', '-45.03232523, 8.285723423, -5.582342384, 7.83710375')
-    cy.get('#\\/pdg3').should('have.text', '-45, 8.29, -5.58, 7.84')
-    cy.get('#\\/pdg3b').should('have.text', '-45, 8.29, -5.58, 7.84')
-    cy.get('#\\/pdg3c').should('have.text', '-45, 8.29, -5.58, 7.84')
-    cy.get('#\\/pdg3d').should('have.text', '-45, 8.29, -5.58, 7.84')
-    cy.get('#\\/pdc5').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
-    cy.get('#\\/pdc5b').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
-    cy.get('#\\/pdc5c').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
-    cy.get('#\\/pdc5d').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get(cesc('#\\/p')).should('have.text', '-45.03232523, 8.285723423, -5.582342384, 7.83710375')
+    cy.get(cesc('#\\/pdg3')).should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get(cesc('#\\/pdg3b')).should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get(cesc('#\\/pdg3c')).should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get(cesc('#\\/pdg3d')).should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get(cesc('#\\/pdc5')).should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get(cesc('#\\/pdc5b')).should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get(cesc('#\\/pdc5c')).should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get(cesc('#\\/pdc5d')).should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
 
 
   });
@@ -1960,7 +1952,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
     cy.window().then(async (win) => {
@@ -1996,7 +1988,7 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
     cy.window().then(async (win) => {
@@ -2031,7 +2023,7 @@ describe('Graph Tag Tests', function () {
     
   `}, "*");
 
-      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+      cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
       // Not sure what to test as the interesting part is the graph renderer
       // The only new part from core is that the inner graph ignores its xmin, etc. attributes

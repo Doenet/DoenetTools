@@ -1,4 +1,5 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
+import { cesc } from "../../../src/_utils/url";
 
 
 describe('Credit achieved menu tests', function () {
@@ -56,11 +57,11 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/_problem1_title').should('have.text', 'Problem 1')
+    cy.get(cesc('#\\/_problem1_title')).should('have.text', 'Problem 1')
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
 
-    cy.get('#\\/ans textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/ans') + ' textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
 
     cy.get('[data-test="New Attempt"]').click();
@@ -108,7 +109,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
+    cy.get(cesc('#page1\\/_problem1_title')).should('have.text', 'Problem 1')
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
@@ -116,7 +117,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
 
-    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#page1\\/ans') + ' textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -125,7 +126,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="next"]').click();
 
-    cy.get('#page2\\/_problem1_title').should('have.text', 'Problem 2');
+    cy.get(cesc('#page2\\/_problem1_title')).should('have.text', 'Problem 2');
 
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -135,7 +136,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="next"]').click();
 
-    cy.get('#page3\\/_problem1_title').should('have.text', 'Problem 3');
+    cy.get(cesc('#page3\\/_problem1_title')).should('have.text', 'Problem 3');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
@@ -143,7 +144,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '50%')
 
-    cy.get('#page3\\/ans textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#page3\\/ans') + ' textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -152,7 +153,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Assignment Percent"]').should('have.text', '75%')
 
     cy.get('[data-test="next"]').click();
-    cy.get('#page4\\/_p1').should('have.text', 'No questions here, either');
+    cy.get(cesc('#page4\\/_p1')).should('have.text', 'No questions here, either');
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -211,7 +212,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
+    cy.get(cesc('#page1\\/_problem1_title')).should('have.text', 'Problem 1')
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
@@ -219,7 +220,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
 
-    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#page1\\/ans') + ' textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -228,7 +229,7 @@ describe('Credit achieved menu tests', function () {
 
 
     cy.get('#page2').scrollIntoView();
-    cy.get('#page2\\/_problem1_title').should('have.text', 'Problem 2');
+    cy.get(cesc('#page2\\/_problem1_title')).should('have.text', 'Problem 2');
 
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -238,7 +239,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('#page3').scrollIntoView();
 
-    cy.get('#page3\\/_problem1_title').should('have.text', 'Problem 3');
+    cy.get(cesc('#page3\\/_problem1_title')).should('have.text', 'Problem 3');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
@@ -246,7 +247,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 4 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '50%')
 
-    cy.get('#page3\\/ans textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#page3\\/ans') + ' textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -256,7 +257,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('#page4').scrollIntoView();
 
-    cy.get('#page4\\/_p1').should('have.text', 'No questions here, either');
+    cy.get(cesc('#page4\\/_p1')).should('have.text', 'No questions here, either');
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -309,7 +310,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
+    cy.get(cesc('#page1\\/_problem1_title')).should('have.text', 'Problem 1')
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Not started')
@@ -317,7 +318,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
 
-    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#page1\\/ans') + ' textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -326,7 +327,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="next"]').click();
 
-    cy.get('#page2\\/_problem1_title').should('have.text', 'Problem 2');
+    cy.get(cesc('#page2\\/_problem1_title')).should('have.text', 'Problem 2');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
@@ -336,7 +337,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="next"]').click();
 
-    cy.get('#page3\\/_problem1_title').should('have.text', 'Problem 3');
+    cy.get(cesc('#page3\\/_problem1_title')).should('have.text', 'Problem 3');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
@@ -344,7 +345,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 4 Credit"]').should('have.text', 'Not started')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '66.7%')
 
-    cy.get('#page3\\/ans textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#page3\\/ans') + ' textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
@@ -353,7 +354,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
     cy.get('[data-test="next"]').click();
-    cy.get('#page4\\/_p1').should('have.text', 'No questions here, either');
+    cy.get(cesc('#page4\\/_p1')).should('have.text', 'No questions here, either');
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', 'Complete')
@@ -400,9 +401,9 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
-    cy.get('#page2\\/_problem1_title').should('not.exist')
-    cy.get('#page3\\/_problem1_title').should('not.exist')
+    cy.get(cesc('#page1\\/_problem1_title')).should('have.text', 'Problem 1')
+    cy.get(cesc('#page2\\/_problem1_title')).should('not.exist')
+    cy.get(cesc('#page3\\/_problem1_title')).should('not.exist')
 
     cy.url().should('match', /#page1$/)
 
@@ -412,7 +413,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
 
-    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#page1\\/ans') + ' textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -420,14 +421,14 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="Item 3 Credit"]').click();
 
-    cy.get('#page3\\/_problem1_title').should('have.text', 'Problem 3');
-    cy.get('#page1\\/_problem1_title').should('not.exist')
-    cy.get('#page2\\/_problem1_title').should('not.exist')
+    cy.get(cesc('#page3\\/_problem1_title')).should('have.text', 'Problem 3');
+    cy.get(cesc('#page1\\/_problem1_title')).should('not.exist')
+    cy.get(cesc('#page2\\/_problem1_title')).should('not.exist')
 
     cy.url().should('match', /#page3$/)
 
 
-    cy.get('#page3\\/ans textarea').type("z{enter}", { force: true })
+    cy.get(cesc('#page3\\/ans') + ' textarea').type("z{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -436,13 +437,13 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="Item 2 Credit"]').click();
 
-    cy.get('#page2\\/_problem1_title').should('have.text', 'Problem 2');
-    cy.get('#page1\\/_problem1_title').should('not.exist')
-    cy.get('#page3\\/_problem1_title').should('not.exist')
+    cy.get(cesc('#page2\\/_problem1_title')).should('have.text', 'Problem 2');
+    cy.get(cesc('#page1\\/_problem1_title')).should('not.exist')
+    cy.get(cesc('#page3\\/_problem1_title')).should('not.exist')
 
     cy.url().should('match', /#page2$/)
 
-    cy.get('#page2\\/ans textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#page2\\/ans') + ' textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -452,9 +453,9 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="Item 1 Credit"]').click();
 
-    cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
-    cy.get('#page2\\/_problem1_title').should('not.exist')
-    cy.get('#page3\\/_problem1_title').should('not.exist')
+    cy.get(cesc('#page1\\/_problem1_title')).should('have.text', 'Problem 1')
+    cy.get(cesc('#page2\\/_problem1_title')).should('not.exist')
+    cy.get(cesc('#page3\\/_problem1_title')).should('not.exist')
 
     cy.url().should('match', /#page1$/)
 
@@ -502,13 +503,13 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
+    cy.get(cesc('#page1\\/_problem1_title')).should('have.text', 'Problem 1')
 
     cy.get('#page2').scrollIntoView();
-    cy.get('#page2\\/_problem1_title').should('have.text', 'Problem 2');
+    cy.get(cesc('#page2\\/_problem1_title')).should('have.text', 'Problem 2');
 
     cy.get('#page3').scrollIntoView();
-    cy.get('#page3\\/_problem1_title').should('have.text', 'Problem 3');
+    cy.get(cesc('#page3\\/_problem1_title')).should('have.text', 'Problem 3');
 
     cy.get('#page1').scrollIntoView();
 
@@ -520,7 +521,7 @@ describe('Credit achieved menu tests', function () {
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '0%')
 
-    cy.get('#page1\\/ans textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#page1\\/ans') + ' textarea').type("x{enter}", { force: true })
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '0%')
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '0%')
@@ -529,12 +530,12 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="Item 3 Credit"]').click();
 
-    cy.get('#page3\\/_problem1_title').should('have.text', 'Problem 3');
+    cy.get(cesc('#page3\\/_problem1_title')).should('have.text', 'Problem 3');
 
     cy.url().should('match', /#page3$/)
 
 
-    cy.get('#page3\\/ans textarea').type("z{enter}", { force: true })
+    cy.get(cesc('#page3\\/ans') + ' textarea').type("z{enter}", { force: true })
 
     cy.get('[data-test="Item 3 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -543,11 +544,11 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="Item 2 Credit"]').click();
 
-    cy.get('#page2\\/_problem1_title').should('have.text', 'Problem 2');
+    cy.get(cesc('#page2\\/_problem1_title')).should('have.text', 'Problem 2');
 
     cy.url().should('match', /#page2$/)
 
-    cy.get('#page2\\/ans textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#page2\\/ans') + ' textarea').type("y{enter}", { force: true })
 
     cy.get('[data-test="Item 2 Credit"]').should('have.text', '100%')
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '100%')
@@ -557,7 +558,7 @@ describe('Credit achieved menu tests', function () {
 
     cy.get('[data-test="Item 1 Credit"]').click();
 
-    cy.get('#page1\\/_problem1_title').should('have.text', 'Problem 1')
+    cy.get(cesc('#page1\\/_problem1_title')).should('have.text', 'Problem 1')
 
     cy.url().should('match', /#page1$/)
 

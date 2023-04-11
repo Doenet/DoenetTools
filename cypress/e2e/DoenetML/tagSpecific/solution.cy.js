@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Solution Tag Tests', function () {
 
@@ -18,18 +20,18 @@ describe('Solution Tag Tests', function () {
   </solution>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/solutionText").should('not.exist');
+    cy.get(cesc("#\\/solutionText")).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/solutionText']).be.undefined;
     })
 
-    cy.get("#\\/sol_button").click();
+    cy.get(cesc("#\\/sol_button")).click();
 
-    cy.get("#\\/solutionText").should('have.text', 'This is the text of the solution.');
+    cy.get(cesc("#\\/solutionText")).should('have.text', 'This is the text of the solution.');
 
 
     cy.window().then(async (win) => {
@@ -58,19 +60,19 @@ describe('Solution Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/solution1_button').should("contain.text", "Solution")
+    cy.get(cesc('#\\/solution1_button')).should("contain.text", "Solution")
 
-    cy.get('#\\/_title1').should('not.exist');
-    cy.get('#\\/_p1').should('not.exist');
-    cy.get('#\\/ti_input').should('be.disabled')
+    cy.get(cesc('#\\/_title1')).should('not.exist');
+    cy.get(cesc('#\\/_p1')).should('not.exist');
+    cy.get(cesc('#\\/ti_input')).should('be.disabled')
 
-    cy.get("#\\/solution1_button").click();
-    cy.get('#\\/_title1').should('have.text', 'Hello');
-    cy.get('#\\/_p1').should('have.text', 'Content');
+    cy.get(cesc("#\\/solution1_button")).click();
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Hello');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Content');
 
-    cy.get('#\\/solution1_button').click()
-    cy.get('#\\/_title1').should('not.exist');
-    cy.get('#\\/_p1').should('not.exist');
+    cy.get(cesc('#\\/solution1_button')).click()
+    cy.get(cesc('#\\/_title1')).should('not.exist');
+    cy.get(cesc('#\\/_p1')).should('not.exist');
 
   });
 
@@ -85,15 +87,15 @@ describe('Solution Tag Tests', function () {
   <boolean name="solOpen" copySource="sol.open" />
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/solOpen').should('have.text', 'false');
+    cy.get(cesc('#\\/solOpen')).should('have.text', 'false');
 
-    cy.get("#\\/sol_button").click();
-    cy.get('#\\/solOpen').should('have.text', 'true');
+    cy.get(cesc("#\\/sol_button")).click();
+    cy.get(cesc('#\\/solOpen')).should('have.text', 'true');
 
-    cy.get("#\\/sol_button").click();
-    cy.get('#\\/solOpen').should('have.text', 'false');
+    cy.get(cesc("#\\/sol_button")).click();
+    cy.get(cesc('#\\/solOpen')).should('have.text', 'false');
 
 
   })

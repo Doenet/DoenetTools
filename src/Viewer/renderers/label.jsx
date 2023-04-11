@@ -19,8 +19,10 @@ export default React.memo(function Label(props) {
 
   const board = useContext(BoardContext);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
 
   let calculatedX = useRef(null);
@@ -29,6 +31,9 @@ export default React.memo(function Label(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  let fixed = useRef(false);
+  fixed.current = !SVs.draggable || SVs.fixed;
+
   const darkMode = useRecoilValue(darkModeAtom);
 
 
@@ -36,19 +41,25 @@ export default React.memo(function Label(props) {
     //On unmount
     return () => {
       if (labelJXG.current !== null) {
-        labelJXG.current.off('drag');
-        labelJXG.current.off('down');
-        labelJXG.current.off('up');
-        board?.removeObject(labelJXG.current);
-        labelJXG.current = null;
+        deleteLabelJXG();
+      }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
       }
 
     }
   }, [])
 
-  function createLabelJXG() {
 
-    let fixed = !SVs.draggable || SVs.fixed;
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
+
+  function createLabelJXG() {
 
     let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
     let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
@@ -61,7 +72,7 @@ export default React.memo(function Label(props) {
     //things to be passed to JSXGraph as attributes
     let jsxLabelAttributes = {
       visible: !SVs.hidden,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + TEXT_LAYER_OFFSET,
       cssStyle,
       highlightCssStyle: cssStyle,
@@ -69,7 +80,7 @@ export default React.memo(function Label(props) {
       strokeOpacity: 1,
       highlightStrokeColor: textColor,
       highlightStrokeOpacity: 0.5,
-      highlight: !fixed,
+      highlight: !fixed.current,
       useMathJax: SVs.hasLatex,
       parse: false,
     };
@@ -115,7 +126,23 @@ export default React.memo(function Label(props) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.labelFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    });
 
+    newLabelJXG.on('hit', function (e) {
+      pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
+      dragged.current = false;
+      callAction({
+        action: actions.labelFocused,
+        args: { name }   // send name so get original name if adapted
+      });
     });
 
     newLabelJXG.on('up', function (e) {
@@ -127,23 +154,41 @@ export default React.memo(function Label(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
+      } else if (!pointerMovedSinceDown.current) {
+        callAction({
+          action: actions.labelClicked,
+          args: { name }   // send name so get original name if adapted
+        });
       }
-      dragged.current = false;
+      pointerIsDown.current = false;
 
     });
 
-    newLabelJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+    newLabelJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveLabel,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
 
+    newLabelJXG.on('drag', function (e) {
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newLabelJXG.size[0] / board.unitX;
@@ -170,13 +215,32 @@ export default React.memo(function Label(props) {
       let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
       let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
+        var o = board.origin.scrCoords;
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+
+        calculatedX.current = newAnchorPointJXG.X() + newLabelJXG.relativeCoords.usrCoords[1];
+        calculatedY.current = newAnchorPointJXG.Y() + newLabelJXG.relativeCoords.usrCoords[2];
+
+      }
+
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
@@ -192,13 +256,27 @@ export default React.memo(function Label(props) {
       newLabelJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
-
     });
+
+    newLabelJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveLabel,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          })
+          dragged.current = false;
+        }
+        callAction({
+          action: actions.labelClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
 
 
     labelJXG.current = newLabelJXG;
@@ -220,6 +298,28 @@ export default React.memo(function Label(props) {
 
       }, 1000)
     }
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
+
+  function deleteLabelJXG() {
+    labelJXG.current.off('drag');
+    labelJXG.current.off('down');
+    labelJXG.current.off('hit');
+    labelJXG.current.off('up');
+    labelJXG.current.off('keyfocusout');
+    labelJXG.current.off('keydown');
+    board.removeObject(labelJXG.current);
+    labelJXG.current = null;
   }
 
   if (board) {
@@ -289,11 +389,8 @@ export default React.memo(function Label(props) {
       }
 
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-
-      labelJXG.current.visProp.highlight = !fixed;
-      labelJXG.current.visProp.fixed = fixed;
+      labelJXG.current.visProp.highlight = !fixed.current;
+      labelJXG.current.visProp.fixed = fixed.current;
 
       labelJXG.current.needsUpdate = true;
 

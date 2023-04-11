@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Spreadsheet Tag Tests', function () {
 
@@ -6,7 +8,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.visit('/src/Tools/cypressTest/')
   })
 
-  var enterSpreadsheetText = function ({ id = "\\/_spreadsheet1", row, column, text = "", clear = false, verify = true }) {
+  var enterSpreadsheetText = function ({ id = cesc("\\/_spreadsheet1"), row, column, text = "", clear = false, verify = true }) {
     cy.get(`#${id} tbody > :nth-child(${row}) > :nth-child(${column + 1})`).click({ force: true });
     if (clear) {
       cy.get(`#${id} .handsontableInput`).clear({ force: true }).type(`${text}{enter}`, { force: true });
@@ -33,7 +35,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
     cy.log('check have spreadsheet cells')
     cy.window().then(async (win) => {
@@ -42,7 +44,7 @@ describe('Spreadsheet Tag Tests', function () {
     })
     cy.log("enter text in B3");
     enterSpreadsheetText({ row: 3, column: 2, text: "hello" });
-    cy.get('#\\/B3a').should('have.text', 'hello')
+    cy.get(cesc('#\\/B3a')).should('have.text', 'hello')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq("hello");
@@ -50,7 +52,7 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("delete text in B3");
     enterSpreadsheetText({ row: 3, column: 2, clear: true });
-    cy.get('#\\/B3a').should('have.text', '')
+    cy.get(cesc('#\\/B3a')).should('have.text', '')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq("");
@@ -58,7 +60,7 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text in A1");
     enterSpreadsheetText({ row: 1, column: 1, text: "first" });
-    cy.get('#\\/A1a').should('have.text', 'first')
+    cy.get(cesc('#\\/A1a')).should('have.text', 'first')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("first");
@@ -67,7 +69,7 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text in D2");
     enterSpreadsheetText({ row: 2, column: 4, text: "right" });
-    cy.get('#\\/D2a').should('have.text', 'right')
+    cy.get(cesc('#\\/D2a')).should('have.text', 'right')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("first");
@@ -95,9 +97,9 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'first')
-    cy.get('#\\/t2').should('have.text', '')
-    cy.get('#\\/t3').should('have.text', 'hello')
+    cy.get(cesc('#\\/t1')).should('have.text', 'first')
+    cy.get(cesc('#\\/t2')).should('have.text', '')
+    cy.get(cesc('#\\/t3')).should('have.text', 'hello')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -116,9 +118,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("overwrite text in A1");
     enterSpreadsheetText({ row: 1, column: 1, text: "new" });
-    cy.get('#\\/t1').should('have.text', 'new')
-    cy.get('#\\/t2').should('have.text', '')
-    cy.get('#\\/t3').should('have.text', 'hello')
+    cy.get(cesc('#\\/t1')).should('have.text', 'new')
+    cy.get(cesc('#\\/t2')).should('have.text', '')
+    cy.get(cesc('#\\/t3')).should('have.text', 'hello')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("new");
@@ -135,9 +137,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text in new cell C1");
     enterSpreadsheetText({ row: 1, column: 3, text: "third" });
-    cy.get('#\\/t2').should('have.text', 'third')
-    cy.get('#\\/t1').should('have.text', 'new')
-    cy.get('#\\/t3').should('have.text', 'hello')
+    cy.get(cesc('#\\/t2')).should('have.text', 'third')
+    cy.get(cesc('#\\/t1')).should('have.text', 'new')
+    cy.get(cesc('#\\/t3')).should('have.text', 'hello')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("new");
@@ -156,9 +158,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("delete text in C3");
     enterSpreadsheetText({ row: 3, column: 3, clear: true });
-    cy.get('#\\/t3').should('have.text', '')
-    cy.get('#\\/t1').should('have.text', 'new')
-    cy.get('#\\/t2').should('have.text', 'third')
+    cy.get(cesc('#\\/t3')).should('have.text', '')
+    cy.get(cesc('#\\/t1')).should('have.text', 'new')
+    cy.get(cesc('#\\/t2')).should('have.text', 'third')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("new");
@@ -208,7 +210,7 @@ describe('Spreadsheet Tag Tests', function () {
   <copy name="C2a" source="C2" assignNames="ss2b" />
   `}, "*");
     });
-    cy.get('#\\/_spreadsheet1')//wait for window to load
+    cy.get(cesc('#\\/_spreadsheet1'))//wait for window to load
 
     let cellLocations = {
       1: [[1, 1], [4, 2]],
@@ -233,11 +235,11 @@ describe('Spreadsheet Tag Tests', function () {
     };
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'first')
-    cy.get('#\\/t2').should('have.text', 'hello')
-    cy.get('#\\/t3').should('have.text', 'bye')
-    cy.get('#\\/t4').should('have.text', 'last')
-    cy.get('#\\/t5').should('have.text', 'mid')
+    cy.get(cesc('#\\/t1')).should('have.text', 'first')
+    cy.get(cesc('#\\/t2')).should('have.text', 'hello')
+    cy.get(cesc('#\\/t3')).should('have.text', 'bye')
+    cy.get(cesc('#\\/t4')).should('have.text', 'last')
+    cy.get(cesc('#\\/t5')).should('have.text', 'mid')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -290,7 +292,7 @@ describe('Spreadsheet Tag Tests', function () {
 
         for (let cellNum in allCellValues) {
           let cLoc = cellLocations[cellNum][ssNumChange];
-          enterSpreadsheetText({ id: ssNameChange, row: cLoc[0], column: cLoc[1], text: allCellValues[cellNum][valueInd] });
+          enterSpreadsheetText({ id: cesc(ssNameChange), row: cLoc[0], column: cLoc[1], text: allCellValues[cellNum][valueInd] });
         }
 
 
@@ -299,11 +301,11 @@ describe('Spreadsheet Tag Tests', function () {
           // have to use a different valueInd variable
           // since the code is run asynchronously
           valueInd2++;
-          cy.get('#\\/t1').should('have.text', allCellValues[1][valueInd2])
-          cy.get('#\\/t2').should('have.text', allCellValues[2][valueInd2])
-          cy.get('#\\/t3').should('have.text', allCellValues[3][valueInd2])
-          cy.get('#\\/t4').should('have.text', allCellValues[4][valueInd2])
-          cy.get('#\\/t5').should('have.text', allCellValues[5][valueInd2])
+          cy.get(cesc('#\\/t1')).should('have.text', allCellValues[1][valueInd2])
+          cy.get(cesc('#\\/t2')).should('have.text', allCellValues[2][valueInd2])
+          cy.get(cesc('#\\/t3')).should('have.text', allCellValues[3][valueInd2])
+          cy.get(cesc('#\\/t4')).should('have.text', allCellValues[4][valueInd2])
+          cy.get(cesc('#\\/t5')).should('have.text', allCellValues[5][valueInd2])
 
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
@@ -393,11 +395,11 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'first')
-    cy.get('#\\/t2').should('have.text', 'hello')
-    cy.get('#\\/t3').should('have.text', 'bye')
-    cy.get('#\\/t4').should('have.text', 'last')
-    cy.get('#\\/t5').should('have.text', 'mid')
+    cy.get(cesc('#\\/t1')).should('have.text', 'first')
+    cy.get(cesc('#\\/t2')).should('have.text', 'hello')
+    cy.get(cesc('#\\/t3')).should('have.text', 'bye')
+    cy.get(cesc('#\\/t4')).should('have.text', 'last')
+    cy.get(cesc('#\\/t5')).should('have.text', 'mid')
 
     let cellLocations = {
       1: [[1, 1], [4, 2]],
@@ -472,7 +474,7 @@ describe('Spreadsheet Tag Tests', function () {
 
         for (let cellNum in allCellValues) {
           let cLoc = cellLocations[cellNum][ssNumChange];
-          enterSpreadsheetText({ id: ssNameChange, row: cLoc[0], column: cLoc[1], text: allCellValues[cellNum][valueInd] });
+          enterSpreadsheetText({ id: cesc(ssNameChange), row: cLoc[0], column: cLoc[1], text: allCellValues[cellNum][valueInd] });
         }
 
         cy.window().then(async (win) => {
@@ -480,11 +482,11 @@ describe('Spreadsheet Tag Tests', function () {
           // have to use a different valueInd variable
           // since the code is run asynchronously
           valueInd2++;
-          cy.get('#\\/t1').should('have.text', allCellValues[1][valueInd2])
-          cy.get('#\\/t2').should('have.text', allCellValues[2][valueInd2])
-          cy.get('#\\/t3').should('have.text', allCellValues[3][valueInd2])
-          cy.get('#\\/t4').should('have.text', allCellValues[4][valueInd2])
-          cy.get('#\\/t5').should('have.text', allCellValues[5][valueInd2])
+          cy.get(cesc('#\\/t1')).should('have.text', allCellValues[1][valueInd2])
+          cy.get(cesc('#\\/t2')).should('have.text', allCellValues[2][valueInd2])
+          cy.get(cesc('#\\/t3')).should('have.text', allCellValues[3][valueInd2])
+          cy.get(cesc('#\\/t4')).should('have.text', allCellValues[4][valueInd2])
+          cy.get(cesc('#\\/t5')).should('have.text', allCellValues[5][valueInd2])
 
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
@@ -551,7 +553,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'A1')
+    cy.get(cesc('#\\/t1')).should('have.text', 'A1')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -585,7 +587,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 7; ind++) {
       enterSpreadsheetText({ row: ind, column: 1, text: `row${ind}` });
     }
-    cy.get('#\\/t7').should('have.text', 'row7')
+    cy.get(cesc('#\\/t7')).should('have.text', 'row7')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -617,7 +619,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'A1')
+    cy.get(cesc('#\\/t1')).should('have.text', 'A1')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -651,7 +653,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 7; ind++) {
       enterSpreadsheetText({ row: 1, column: ind, text: `column${ind}` });
     }
-    cy.get('#\\/t7').should('have.text', 'column7')
+    cy.get(cesc('#\\/t7')).should('have.text', 'column7')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -695,7 +697,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'C3')
+    cy.get(cesc('#\\/t1')).should('have.text', 'C3')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -733,7 +735,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 8; ind++) {
       enterSpreadsheetText({ row: 5, column: ind, text: `column${ind}` });
     }
-    cy.get('#\\/t8').should('have.text', 'column8')
+    cy.get(cesc('#\\/t8')).should('have.text', 'column8')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -776,7 +778,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'A1')
+    cy.get(cesc('#\\/t1')).should('have.text', 'A1')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -809,9 +811,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text into third row of first spreadsheet");
     for (let ind = 1; ind <= 4; ind++) {
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 3, column: ind, text: `column${ind}` });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 3, column: ind, text: `column${ind}` });
     }
-    cy.get('#\\/t2').should('have.text', 'column4')
+    cy.get(cesc('#\\/t2')).should('have.text', 'column4')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -827,9 +829,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text into second column of second spreadsheet");
     for (let ind = 1; ind <= 4; ind++) {
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: ind, column: 2, text: `row${ind}` });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: ind, column: 2, text: `row${ind}` });
     }
-    cy.get('#\\/t3').should('have.text', 'row4')
+    cy.get(cesc('#\\/t3')).should('have.text', 'row4')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -874,7 +876,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'A1')
+    cy.get(cesc('#\\/t1')).should('have.text', 'A1')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -905,9 +907,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text into second row of first spreadsheet");
     for (let ind = 1; ind <= 4; ind++) {
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: ind, text: `column${ind}` });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 2, column: ind, text: `column${ind}` });
     }
-    cy.get('#\\/t2').should('have.text', 'column4')
+    cy.get(cesc('#\\/t2')).should('have.text', 'column4')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -929,9 +931,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text into fifth column of second spreadsheet");
     for (let ind = 1; ind <= 4; ind++) {
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: ind, column: 5, text: `row${ind}` });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: ind, column: 5, text: `row${ind}` });
     }
-    cy.get('#\\/t3').should('have.text', 'row4')
+    cy.get(cesc('#\\/t3')).should('have.text', 'row4')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -976,7 +978,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'A1')
+    cy.get(cesc('#\\/t1')).should('have.text', 'A1')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -999,9 +1001,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text into second row of first spreadsheet");
     for (let ind = 1; ind <= 3; ind++) {
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: ind, text: `column${ind}` });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 2, column: ind, text: `column${ind}` });
     }
-    cy.get('#\\/t2').should('have.text', 'column3')
+    cy.get(cesc('#\\/t2')).should('have.text', 'column3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1016,9 +1018,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text into fourth column of second spreadsheet");
     for (let ind = 1; ind <= 5; ind++) {
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: ind, column: 4, text: `row${ind}` });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: ind, column: 4, text: `row${ind}` });
     }
-    cy.get('#\\/t3').should('have.text', 'row5')
+    cy.get(cesc('#\\/t3')).should('have.text', 'row5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1057,7 +1059,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'alpha')
+    cy.get(cesc('#\\/t1')).should('have.text', 'alpha')
 
     let cellBlockUpperLefts = [[0, 0], [0, 3], [2, 3]];
 
@@ -1078,12 +1080,12 @@ describe('Spreadsheet Tag Tests', function () {
     })
 
     cy.log("enter text in first spreadsheet block");
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 5, text: `a` });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 6, text: `b` });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 5, text: `c` });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 6, text: `d` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 5, text: `a` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 6, text: `b` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 2, column: 5, text: `c` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 2, column: 6, text: `d` });
 
-    cy.get('#\\/t2').should('have.text', 'd')
+    cy.get(cesc('#\\/t2')).should('have.text', 'd')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1104,12 +1106,12 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("enter text in other spreadsheet blocks");
-    enterSpreadsheetText({ id: "\\/_spreadsheet2", row: 1, column: 1, text: `first` });
-    enterSpreadsheetText({ id: "\\/_spreadsheet2", row: 1, column: 5, text: `second` });
-    enterSpreadsheetText({ id: "\\/_spreadsheet2", row: 4, column: 4, text: `third` });
-    enterSpreadsheetText({ id: "\\/_spreadsheet2", row: 4, column: 5, text: `fourth` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: 1, column: 1, text: `first` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: 1, column: 5, text: `second` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: 4, column: 4, text: `third` });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: 4, column: 5, text: `fourth` });
 
-    cy.get('#\\/t3').should('have.text', 'fourth')
+    cy.get(cesc('#\\/t3')).should('have.text', 'fourth')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1170,7 +1172,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', '(1,2)')
+    cy.get(cesc('#\\/t1')).should('have.text', '(1,2)')
 
     cy.log('check initial cell values')
     cy.window().then(async (win) => {
@@ -1202,8 +1204,8 @@ describe('Spreadsheet Tag Tests', function () {
     // })
 
     cy.log('type in different coordinates');
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: '(4,9)', clear: true });
-    cy.get('#\\/t1').should('have.text', '(4,9)')
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 1, text: '(4,9)', clear: true });
+    cy.get(cesc('#\\/t1')).should('have.text', '(4,9)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(4,9)');
@@ -1220,8 +1222,8 @@ describe('Spreadsheet Tag Tests', function () {
     })
 
     cy.log('enter new point B3');
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 3, column: 2, text: '(5,4)', clear: true });
-    cy.get('#\\/t2').should('have.text', '(5,4)')
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 3, column: 2, text: '(5,4)', clear: true });
+    cy.get(cesc('#\\/t2')).should('have.text', '(5,4)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(4,9)');
@@ -1258,8 +1260,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log('enter random text on top of point in A1');
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: ')x,-', clear: true });
-    cy.get('#\\/t1').should('have.text', ')x,-')
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 1, text: ')x,-', clear: true });
+    cy.get(cesc('#\\/t1')).should('have.text', ')x,-')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq(')x,-');
@@ -1278,8 +1280,8 @@ describe('Spreadsheet Tag Tests', function () {
     })
 
     cy.log('enter new point in A4');
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 4, column: 1, text: '(3,2)', clear: true });
-    cy.get('#\\/t3').should('have.text', '(3,2)')
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 4, column: 1, text: '(3,2)', clear: true });
+    cy.get(cesc('#\\/t3')).should('have.text', '(3,2)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq(')x,-');
@@ -1302,8 +1304,8 @@ describe('Spreadsheet Tag Tests', function () {
     })
 
     cy.log('enter point on top of text in A1');
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: '(7,3)', clear: true });
-    cy.get('#\\/t1').should('have.text', '(7,3)')
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 1, text: '(7,3)', clear: true });
+    cy.get(cesc('#\\/t1')).should('have.text', '(7,3)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(7,3)');
@@ -1329,8 +1331,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log('non-numerical point added (but not graphed) in D2');
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 4, text: '(x,q)', clear: true });
-    cy.get('#\\/t4').should('have.text', '(x,q)')
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 2, column: 4, text: '(x,q)', clear: true });
+    cy.get(cesc('#\\/t4')).should('have.text', '(x,q)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(7,3)');
@@ -1359,8 +1361,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log('3D point added (but not graphed) in A2');
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 1, text: '(1,2,3)', clear: true });
-    cy.get('#\\/t5').should('have.text', '(1,2,3)')
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 2, column: 1, text: '(1,2,3)', clear: true });
+    cy.get(cesc('#\\/t5')).should('have.text', '(1,2,3)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(7,3)');
@@ -1449,15 +1451,15 @@ describe('Spreadsheet Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.log('initial values')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('x2')
     })
-    cy.get('#\\/t1').should('have.text', 'hello')
-    cy.get('#\\/n1').should('have.text', '5')
-    cy.get('#\\/b1').should('have.text', 'true')
+    cy.get(cesc('#\\/t1')).should('have.text', 'hello')
+    cy.get(cesc('#\\/n1')).should('have.text', '5')
+    cy.get(cesc('#\\/b1')).should('have.text', 'true')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1468,18 +1470,18 @@ describe('Spreadsheet Tag Tests', function () {
     })
 
     cy.log("changing spreadsheet doesn't change prefill sources")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: '3(-', clear: true });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 2, text: 'bye', clear: true });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 3, text: 'ab', clear: true });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 4, text: '1+q', clear: true });
-    cy.get('#\\/D1a').should('have.text', '1+q');
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 1, text: '3(-', clear: true });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 2, text: 'bye', clear: true });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 3, text: 'ab', clear: true });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: 1, column: 4, text: '1+q', clear: true });
+    cy.get(cesc('#\\/D1a')).should('have.text', '1+q');
 
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('x2')
     })
-    cy.get('#\\/t1').should('have.text', 'hello')
-    cy.get('#\\/n1').should('have.text', '5')
-    cy.get('#\\/b1').should('have.text', 'true')
+    cy.get(cesc('#\\/t1')).should('have.text', 'hello')
+    cy.get(cesc('#\\/n1')).should('have.text', '5')
+    cy.get(cesc('#\\/b1')).should('have.text', 'true')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1521,7 +1523,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', 'first')
+    cy.get(cesc('#\\/t1')).should('have.text', 'first')
 
     let firstInds = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]];
     let secondInds = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [2, 0]];
@@ -1547,7 +1549,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of second group in first spreadsheet")
     for (let indsChange of secondInds) {
       let newText = `a${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -1564,7 +1566,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of first group in first spreadsheet")
     for (let indsChange of firstInds) {
       let newText = `b${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -1664,8 +1666,8 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of second group in first spreadsheet")
     for (let indsChange of secondInds) {
       let newText = `a${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
-      cy.get('#\\/_spreadsheet1 ')
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      cy.get(cesc('#\\/_spreadsheet1') + ' ')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -1682,7 +1684,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of first group in first spreadsheet")
     for (let indsChange of firstInds) {
       let newText = `b${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -1737,7 +1739,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of block1Inds) {
       let newText = `e${indsChange[0]}${indsChange[1]}`
       blockTexts1.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1757,7 +1759,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of block2Inds) {
       let newText = `f${indsChange[0]}${indsChange[1]}`
       blockTexts2.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1864,7 +1866,7 @@ describe('Spreadsheet Tag Tests', function () {
       for (let colChange = 0; colChange < numcols; colChange++) {
         let newText = `a${rowChange}${colChange}`;
         thisNew.push(newText);
-        enterSpreadsheetText({ id: "\\/_spreadsheet1", row: rowChange + 1, column: colChange + 1, text: newText });
+        enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: rowChange + 1, column: colChange + 1, text: newText });
       }
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1952,7 +1954,7 @@ describe('Spreadsheet Tag Tests', function () {
       for (let rowChange = 0; rowChange < numRows; rowChange++) {
         let newText = `a${colChange}${rowChange}`;
         thisNew.push(newText);
-        enterSpreadsheetText({ id: "\\/_spreadsheet1", column: colChange + 1, row: rowChange + 1, text: newText });
+        enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: colChange + 1, row: rowChange + 1, text: newText });
       }
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2060,7 +2062,7 @@ describe('Spreadsheet Tag Tests', function () {
       for (let rowChange = 0; rowChange < numRows; rowChange++) {
         let newText = `a${colChange}${rowChange}`;
         thisNew.push(newText);
-        enterSpreadsheetText({ id: "\\/_spreadsheet1", column: colChange + 1, row: rowChange + 1, text: newText });
+        enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: colChange + 1, row: rowChange + 1, text: newText });
       }
       if (colChange === 0) {
         newGroupTexts.push([...groupTexts])
@@ -2221,7 +2223,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of second group in first spreadsheet")
     for (let indsChange of secondInds) {
       let newText = `a${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -2238,7 +2240,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of first group in first spreadsheet")
     for (let indsChange of firstInds) {
       let newText = `b${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -2256,7 +2258,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of first group in second spreadsheet")
     for (let indsChange of firstInds) {
       let newText = `c${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -2273,7 +2275,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.log("change text of second group in second spreadsheet")
     for (let indsChange of secondInds) {
       let newText = `d${indsChange[0]}${indsChange[1]}`
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let inds of firstInds) {
@@ -2293,7 +2295,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of [...block1Inds, ...block2Inds]) {
       let newText = `e${indsChange[0]}${indsChange[1]}`
       blockTexts1.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2312,7 +2314,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of [...block1Inds, ...block2Inds]) {
       let newText = `f${indsChange[0]}${indsChange[1]}`
       blockTexts2.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2331,7 +2333,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of [...row1Inds, ...row2Inds]) {
       let newText = `e${indsChange[0]}${indsChange[1]}`
       rowTexts1.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2350,7 +2352,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of [...row1Inds, ...row2Inds]) {
       let newText = `f${indsChange[0]}${indsChange[1]}`
       rowTexts2.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2426,7 +2428,7 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of [...inds1A, ...inds1C]) {
       let newText = `a${indsChange[0]}${indsChange[1]}`;
       textsA.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2447,12 +2449,12 @@ describe('Spreadsheet Tag Tests', function () {
     for (let indsChange of inds1B) {
       let newText = `b${indsChange[0]}${indsChange[1]}`;
       textsB.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet1", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     for (let indsChange of inds2) {
       let newText = `c${indsChange[0]}${indsChange[1]}`;
       textsB.push(newText);
-      enterSpreadsheetText({ id: "\\/_spreadsheet2", row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
+      enterSpreadsheetText({ id: cesc("\\/_spreadsheet2"), row: indsChange[0] + 1, column: indsChange[1] + 1, text: newText });
     }
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2487,7 +2489,7 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/t1').should('have.text', '4')
+    cy.get(cesc('#\\/t1')).should('have.text', '4')
 
 
     cy.log('check initial cell values')
@@ -2504,8 +2506,8 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     cy.log("increase rownum and colnum in first spreadsheet")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "6" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 1, text: "7" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "6" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 1, text: "7" });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.numRows).eq(6);
@@ -2520,8 +2522,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("can't decrease rownum and colnum")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "3", verify: false });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 1, text: "2", verify: false });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "3", verify: false });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 1, text: "2", verify: false });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.numRows).eq(6);
@@ -2536,8 +2538,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("can't make non-numeric rownum and colnum")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "hello", verify: false });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 1, text: "x", verify: false });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "hello", verify: false });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 1, text: "x", verify: false });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.numRows).eq(6);
@@ -2600,8 +2602,8 @@ describe('Spreadsheet Tag Tests', function () {
     });
 
     cy.log("increase rownum and colnum in first spreadsheet")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "6" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 1, text: "7" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "6" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 1, text: "7" });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.numRows).eq(6);
@@ -2616,8 +2618,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("can't decrease rownum and colnum")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "3" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 1, text: "2" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "3" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 1, text: "2" });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.numRows).eq(6);
@@ -2632,8 +2634,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("can't make non-numeric rownum and colnum")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "hello" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 1, text: "x" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "hello" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 1, text: "x" });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.numRows).eq(6);
@@ -2690,19 +2692,19 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log('check initial cell values')
 
-    cy.get('#\\/_p1').should('have.text', '1 A');
+    cy.get(cesc('#\\/_p1')).should('have.text', '1 A');
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
-    cy.get('#\\/_number1').should('have.text', '2')
-    cy.get('#\\/_text1').should('have.text', '1 B');
+    cy.get(cesc('#\\/_number1')).should('have.text', '2')
+    cy.get(cesc('#\\/_text1')).should('have.text', '1 B');
 
-    cy.get('#\\/_math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+＿')
     })
-    cy.get('#\\/_number2').should('have.text', 'NaN')
-    cy.get('#\\/_text2').should('have.text', '1 + ');
+    cy.get(cesc('#\\/_number2')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/_text2')).should('have.text', '1 + ');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2711,80 +2713,80 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("different numbers in cells")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "5" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "7" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "5" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 2, text: "7" });
 
 
-    cy.get('#\\/_text2').should('have.text', '5 + 7');
-    cy.get('#\\/_p1').should('have.text', '5 A');
+    cy.get(cesc('#\\/_text2')).should('have.text', '5 + 7');
+    cy.get(cesc('#\\/_p1')).should('have.text', '5 A');
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6')
     })
-    cy.get('#\\/_number1').should('have.text', '6')
-    cy.get('#\\/_text1').should('have.text', '5 B');
+    cy.get(cesc('#\\/_number1')).should('have.text', '6')
+    cy.get(cesc('#\\/_text1')).should('have.text', '5 B');
 
-    cy.get('#\\/_math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('12')
     })
-    cy.get('#\\/_number2').should('have.text', '12')
+    cy.get(cesc('#\\/_number2')).should('have.text', '12')
 
 
     cy.log("different variables in cells")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "x" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "y" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "x" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 2, text: "y" });
 
-    cy.get('#\\/_text2').should('have.text', 'x + y');
-    cy.get('#\\/_p1').should('have.text', 'x A');
+    cy.get(cesc('#\\/_text2')).should('have.text', 'x + y');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'x A');
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+1')
     })
-    cy.get('#\\/_number1').should('have.text', 'NaN')
-    cy.get('#\\/_text1').should('have.text', 'x B');
+    cy.get(cesc('#\\/_number1')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'x B');
 
-    cy.get('#\\/_math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     })
-    cy.get('#\\/_number2').should('have.text', 'NaN')
+    cy.get(cesc('#\\/_number2')).should('have.text', 'NaN')
 
 
     cy.log("non-valid math in one cell")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "q(" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "sin(w)" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "q(" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 2, text: "sin(w)" });
 
-    cy.get('#\\/_text2').should('have.text', 'q( + sin(w)');
-    cy.get('#\\/_p1').should('have.text', 'q( A');
+    cy.get(cesc('#\\/_text2')).should('have.text', 'q( + sin(w)');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'q( A');
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿+1')
     })
-    cy.get('#\\/_number1').should('have.text', 'NaN')
-    cy.get('#\\/_text1').should('have.text', 'q( B');
+    cy.get(cesc('#\\/_number1')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'q( B');
 
-    cy.get('#\\/_math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿+sin(w)')
     })
-    cy.get('#\\/_number2').should('have.text', 'NaN')
+    cy.get(cesc('#\\/_number2')).should('have.text', 'NaN')
 
 
     cy.log("one cell is blank")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "", clear: true });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "5" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "", clear: true });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 2, text: "5" });
 
-    cy.get('#\\/_text2').should('have.text', ' + 5');
-    cy.get('#\\/_p1').should('have.text', ' A');
+    cy.get(cesc('#\\/_text2')).should('have.text', ' + 5');
+    cy.get(cesc('#\\/_p1')).should('have.text', ' A');
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿+1')
     })
-    cy.get('#\\/_number1').should('have.text', 'NaN')
-    cy.get('#\\/_text1').should('have.text', ' B');
+    cy.get(cesc('#\\/_number1')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/_text1')).should('have.text', ' B');
 
-    cy.get('#\\/_math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2') + ' .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿+5')
     })
-    cy.get('#\\/_number2').should('have.text', 'NaN')
+    cy.get(cesc('#\\/_number2')).should('have.text', 'NaN')
 
   })
 
@@ -2816,20 +2818,20 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log('check initial cell values')
 
-    cy.get('#\\/c1').should('have.text', '2');
-    cy.get('#\\/c2').should('have.text', '1');
-    cy.get('#\\/_row1').should('have.text', '2Hello');
-    cy.get('#\\/_row2').should('have.text', 'Bye1');
+    cy.get(cesc('#\\/c1')).should('have.text', '2');
+    cy.get(cesc('#\\/c2')).should('have.text', '1');
+    cy.get(cesc('#\\/_row1')).should('have.text', '2Hello');
+    cy.get(cesc('#\\/_row2')).should('have.text', 'Bye1');
 
     cy.log("change cells")
-    enterSpreadsheetText({ id: "\\/s", column: 1, row: 1, text: "A" });
-    enterSpreadsheetText({ id: "\\/s", column: 2, row: 1, text: "B" });
-    enterSpreadsheetText({ id: "\\/s", column: 2, row: 2, text: "C" });
+    enterSpreadsheetText({ id: cesc("\\/s"), column: 1, row: 1, text: "A" });
+    enterSpreadsheetText({ id: cesc("\\/s"), column: 2, row: 1, text: "B" });
+    enterSpreadsheetText({ id: cesc("\\/s"), column: 2, row: 2, text: "C" });
 
-    cy.get('#\\/_row1').should('have.text', 'BHelloC');
-    cy.get('#\\/c1').should('have.text', 'B');
-    cy.get('#\\/c2').should('have.text', 'A');
-    cy.get('#\\/_row2').should('have.text', 'ByeA');
+    cy.get(cesc('#\\/_row1')).should('have.text', 'BHelloC');
+    cy.get(cesc('#\\/c1')).should('have.text', 'B');
+    cy.get(cesc('#\\/c2')).should('have.text', 'A');
+    cy.get(cesc('#\\/_row2')).should('have.text', 'ByeA');
 
   })
 
@@ -2847,12 +2849,12 @@ describe('Spreadsheet Tag Tests', function () {
 <math name="x" simplify><copy prop="cellA1" source="_spreadsheet1" />+1</math>
   `}, "*");
     });
-    cy.get('#\\/_spreadsheet1')//wait for window to load
+    cy.get(cesc('#\\/_spreadsheet1'))//wait for window to load
 
 
     cy.log('check initial cell values')
 
-    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
 
@@ -2875,9 +2877,9 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("enter different defining numbers")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "7" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "8" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 3, row: 2, text: "9" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 1, text: "7" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 1, row: 2, text: "8" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 3, row: 2, text: "9" });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2898,8 +2900,8 @@ describe('Spreadsheet Tag Tests', function () {
 
 
     cy.log("enter different resulting numbers")
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 1, text: "3" });
-    enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 2, row: 2, text: "4" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 1, text: "3" });
+    enterSpreadsheetText({ id: cesc("\\/_spreadsheet1"), column: 2, row: 2, text: "4" });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2940,15 +2942,15 @@ describe('Spreadsheet Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/x1 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/x1') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/t1').should('have.text', '( 3, 2 )')
+    cy.get(cesc('#\\/t1')).should('have.text', '( 3, 2 )')
 
-    cy.get('#\\/x2 textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get(cesc('#\\/x2') + ' textarea').type("{end}{backspace}4{enter}", { force: true })
 
-    cy.get('#\\/t1').should('have.text', '( 3, 4 )')
+    cy.get(cesc('#\\/t1')).should('have.text', '( 3, 4 )')
 
   });
 
@@ -2969,15 +2971,15 @@ describe('Spreadsheet Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/x1 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/x1') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/t1').should('have.text', '( 3, 2 )')
+    cy.get(cesc('#\\/t1')).should('have.text', '( 3, 2 )')
 
-    cy.get('#\\/x2 textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get(cesc('#\\/x2') + ' textarea').type("{end}{backspace}4{enter}", { force: true })
 
-    cy.get('#\\/t1').should('have.text', '( 3, 4 )')
+    cy.get(cesc('#\\/t1')).should('have.text', '( 3, 4 )')
 
   });
 
@@ -3014,50 +3016,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["A", "B", "C"];
     let column = ["B", "E", "H"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3094,50 +3096,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["A", "B", "C"];
     let column = ["B", "E", "H"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3175,50 +3177,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["A", "B", "C"];
     let column = ["B", "E", "H"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3256,50 +3258,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["A", "B", "C"];
     let column = ["B", "E", "H"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3337,51 +3339,51 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let rows = [["A", "B", "C"], ["D", "E", "F"], ["G", "H", "I"]];
     let columns = [["A", "D", "G"], ["B", "E", "H"], ["C", "F", "I"]];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', rows[0][0]);
-    cy.get('#\\/R2').should('have.text', rows[0][1]);
-    cy.get('#\\/R3').should('have.text', rows[0][2]);
-    cy.get('#\\/C1').should('have.text', columns[0][0]);
-    cy.get('#\\/C2').should('have.text', columns[0][1]);
-    cy.get('#\\/C3').should('have.text', columns[0][2]);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', rows[0][0]);
+    cy.get(cesc('#\\/R2')).should('have.text', rows[0][1]);
+    cy.get(cesc('#\\/R3')).should('have.text', rows[0][2]);
+    cy.get(cesc('#\\/C1')).should('have.text', columns[0][0]);
+    cy.get(cesc('#\\/C2')).should('have.text', columns[0][1]);
+    cy.get(cesc('#\\/C3')).should('have.text', columns[0][2]);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', rows[1][0]);
-    cy.get('#\\/R2').should('have.text', rows[1][1]);
-    cy.get('#\\/R3').should('have.text', rows[1][2]);
-    cy.get('#\\/C1').should('have.text', columns[1][0]);
-    cy.get('#\\/C2').should('have.text', columns[1][1]);
-    cy.get('#\\/C3').should('have.text', columns[1][2]);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', rows[1][0]);
+    cy.get(cesc('#\\/R2')).should('have.text', rows[1][1]);
+    cy.get(cesc('#\\/R3')).should('have.text', rows[1][2]);
+    cy.get(cesc('#\\/C1')).should('have.text', columns[1][0]);
+    cy.get(cesc('#\\/C2')).should('have.text', columns[1][1]);
+    cy.get(cesc('#\\/C3')).should('have.text', columns[1][2]);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', rows[2][0]);
-    cy.get('#\\/R2').should('have.text', rows[2][1]);
-    cy.get('#\\/R3').should('have.text', rows[2][2]);
-    cy.get('#\\/C1').should('have.text', columns[2][0]);
-    cy.get('#\\/C2').should('have.text', columns[2][1]);
-    cy.get('#\\/C3').should('have.text', columns[2][2]);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', rows[2][0]);
+    cy.get(cesc('#\\/R2')).should('have.text', rows[2][1]);
+    cy.get(cesc('#\\/R3')).should('have.text', rows[2][2]);
+    cy.get(cesc('#\\/C1')).should('have.text', columns[2][0]);
+    cy.get(cesc('#\\/C2')).should('have.text', columns[2][1]);
+    cy.get(cesc('#\\/C3')).should('have.text', columns[2][2]);
 
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3419,50 +3421,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["1", "2", "3"];
     let column = ["2", "5", "7"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3500,50 +3502,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["1", "2", "3"];
     let column = ["2", "5", "7"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3581,50 +3583,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["1", "2", "3"];
     let column = ["2", "5", "7"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3662,50 +3664,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let row = ["1", "2", "3"];
     let column = ["2", "5", "7"];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[0]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[0]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[1]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[1]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[1]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[1]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', row[2]);
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('have.text', column[2]);
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', row[2]);
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('have.text', column[2]);
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3743,50 +3745,50 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let rows = [["1", "2", "3"], ["D", "5", "F"], ["F", "7", "I"]];
     let columns = [["1", "D", "F"], ["2", "5", "7"], ["3", "F", "I"]];
 
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', rows[0][0]);
-    cy.get('#\\/R2').should('have.text', rows[0][1]);
-    cy.get('#\\/R3').should('have.text', rows[0][2]);
-    cy.get('#\\/C1').should('have.text', columns[0][0]);
-    cy.get('#\\/C2').should('have.text', columns[0][1]);
-    cy.get('#\\/C3').should('have.text', columns[0][2]);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', rows[0][0]);
+    cy.get(cesc('#\\/R2')).should('have.text', rows[0][1]);
+    cy.get(cesc('#\\/R3')).should('have.text', rows[0][2]);
+    cy.get(cesc('#\\/C1')).should('have.text', columns[0][0]);
+    cy.get(cesc('#\\/C2')).should('have.text', columns[0][1]);
+    cy.get(cesc('#\\/C3')).should('have.text', columns[0][2]);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', rows[1][0]);
-    cy.get('#\\/R2').should('have.text', rows[1][1]);
-    cy.get('#\\/R3').should('have.text', rows[1][2]);
-    cy.get('#\\/C1').should('have.text', columns[1][0]);
-    cy.get('#\\/C2').should('have.text', columns[1][1]);
-    cy.get('#\\/C3').should('have.text', columns[1][2]);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', rows[1][0]);
+    cy.get(cesc('#\\/R2')).should('have.text', rows[1][1]);
+    cy.get(cesc('#\\/R3')).should('have.text', rows[1][2]);
+    cy.get(cesc('#\\/C1')).should('have.text', columns[1][0]);
+    cy.get(cesc('#\\/C2')).should('have.text', columns[1][1]);
+    cy.get(cesc('#\\/C3')).should('have.text', columns[1][2]);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/R1').should('have.text', rows[2][0]);
-    cy.get('#\\/R2').should('have.text', rows[2][1]);
-    cy.get('#\\/R3').should('have.text', rows[2][2]);
-    cy.get('#\\/C1').should('have.text', columns[2][0]);
-    cy.get('#\\/C2').should('have.text', columns[2][1]);
-    cy.get('#\\/C3').should('have.text', columns[2][2]);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('have.text', rows[2][0]);
+    cy.get(cesc('#\\/R2')).should('have.text', rows[2][1]);
+    cy.get(cesc('#\\/R3')).should('have.text', rows[2][2]);
+    cy.get(cesc('#\\/C1')).should('have.text', columns[2][0]);
+    cy.get(cesc('#\\/C2')).should('have.text', columns[2][1]);
+    cy.get(cesc('#\\/C3')).should('have.text', columns[2][2]);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/R1').should('not.exist');
-    cy.get('#\\/R2').should('not.exist');
-    cy.get('#\\/R3').should('not.exist');
-    cy.get('#\\/C1').should('not.exist');
-    cy.get('#\\/C2').should('not.exist');
-    cy.get('#\\/C3').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/R1')).should('not.exist');
+    cy.get(cesc('#\\/R2')).should('not.exist');
+    cy.get(cesc('#\\/R3')).should('not.exist');
+    cy.get(cesc('#\\/C1')).should('not.exist');
+    cy.get(cesc('#\\/C2')).should('not.exist');
+    cy.get(cesc('#\\/C3')).should('not.exist');
 
 
   });
@@ -3812,7 +3814,7 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let c1 = "(1,2)";
@@ -3820,44 +3822,44 @@ describe('Spreadsheet Tag Tests', function () {
     let c3 = "(5,6)";
     let c4 = "(7,8)";
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c1);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c3);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c2);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c4);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
 
   });
@@ -3883,7 +3885,7 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let c1 = "(1,2)";
@@ -3891,44 +3893,44 @@ describe('Spreadsheet Tag Tests', function () {
     let c3 = "(5,6)";
     let c4 = "(7,8)";
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c1);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c3);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c2);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c4);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
 
   });
@@ -3954,7 +3956,7 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let c1 = "(1,2)";
@@ -3962,44 +3964,44 @@ describe('Spreadsheet Tag Tests', function () {
     let c3 = "(5,6)";
     let c4 = "(7,8)";
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c1);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c3);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c2);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c4);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
 
   });
@@ -4025,7 +4027,7 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let c1 = "(1,2)";
@@ -4033,44 +4035,44 @@ describe('Spreadsheet Tag Tests', function () {
     let c3 = "(5,6)";
     let c4 = "(7,8)";
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c1);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c3);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c2);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c4);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
 
   });
@@ -4096,7 +4098,7 @@ describe('Spreadsheet Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let c1 = "(1,2)";
@@ -4104,44 +4106,44 @@ describe('Spreadsheet Tag Tests', function () {
     let c3 = "(5,6)";
     let c4 = "(7,8)";
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
-    cy.get('#\\/P2 .mjx-mrow').should('contain.text', c2);
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c1);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c1);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('contain.text', c2);
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c1);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c3);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
-    cy.get('#\\/P5 .mjx-mrow').should('contain.text', c4);
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c3);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c3);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('contain.text', c4);
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c4);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c2);
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', c4);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('contain.text', c2);
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P5') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/P6') + ' .mjx-mrow').should('not.exist')
 
 
   });

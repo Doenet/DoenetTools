@@ -3,22 +3,15 @@ import { sizeToCSS } from './utils/css';
 import useDoenetRender from '../useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import JXG from './jsxgraph-distrib/jsxgraphcore.mjs';
+import { cesc } from '../../_utils/url';
 
 
 export const BoardContext = createContext();
 
 export default React.memo(function Graph(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
-  // console.log({ name, SVs, children, actions })
+  // console.log({ name, id, SVs, children, actions })
 
   const [board, setBoard] = useState(null);
 
@@ -133,6 +126,42 @@ export default React.memo(function Graph(props) {
 
     previousShowNavigation.current = showNavigation;
 
+    // Question: jsxgraph has added a "hit" listener for keyfocusin
+    // so we just add a keyfocusout listener.
+    // Should we add a keyfocusin listener so we can have parity
+    // in the event names?
+    // (And in case they change "hit" to include focus by mouse)
+
+    function keyFocusOutListener(evt) {
+      let id_node = evt.target.id;
+
+      if (id_node === '') {
+        return false;
+      }
+
+      let el_id = id_node.replace(id + '_', '');
+      let el = newBoard.select(el_id);
+      el.triggerEventHandlers?.(['keyfocusout'], [evt]);
+    }
+
+    newBoard.containerObj.addEventListener("focusout", keyFocusOutListener)
+
+
+    function keyDownListener(evt) {
+      let id_node = evt.target.id;
+
+      if (id_node === '') {
+        return false;
+      }
+
+
+      let el_id = id_node.replace(id + '_', '');
+      let el = newBoard.select(el_id);
+      el.triggerEventHandlers?.(['keydown'], [evt]);
+    }
+
+    newBoard.containerObj.addEventListener("keydown", keyDownListener)
+
     // on unmount
     return () => {
       newBoard.off('boundingbox');
@@ -241,11 +270,11 @@ export default React.memo(function Graph(props) {
       }
     } else {
       if (xaxis.current) {
-        xaxis.current.defaultTicks.setAttribute({ majorHeight: 20 });
+        xaxis.current.defaultTicks.setAttribute({ majorHeight: 12 });
         xaxis.current.defaultTicks.setAttribute({ minorHeight: 10 });
       }
       if (yaxis.current) {
-        yaxis.current.defaultTicks.setAttribute({ majorHeight: 20 });
+        yaxis.current.defaultTicks.setAttribute({ majorHeight: 12 });
         yaxis.current.defaultTicks.setAttribute({ minorHeight: 10 });
       }
     }
@@ -459,7 +488,7 @@ export default React.memo(function Graph(props) {
       yaxisOptions.ticks.majorHeight = -1;
       yaxisOptions.ticks.minorHeight = 10;
     } else {
-      yaxisOptions.ticks.majorHeight = 20;
+      yaxisOptions.ticks.majorHeight = 12;
       yaxisOptions.ticks.minorHeight = 10;
     }
 
@@ -622,7 +651,7 @@ export default React.memo(function Graph(props) {
       xaxisOptions.ticks.majorHeight = -1;
       xaxisOptions.ticks.minorHeight = 10;
     } else {
-      xaxisOptions.ticks.majorHeight = 20;
+      xaxisOptions.ticks.majorHeight = 12;
       xaxisOptions.ticks.minorHeight = 10;
     }
 

@@ -20,7 +20,9 @@ export default React.memo(function Curve(props) {
   let previousCurveType = useRef(null);
   let draggedControlPoint = useRef(null);
   let draggedThroughPoint = useRef(null);
-  let updateSinceDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let previousFlipFunction = useRef(null);
   let segmentAttributes = useRef(null);
   let throughPointAttributes = useRef(null);
@@ -33,9 +35,14 @@ export default React.memo(function Curve(props) {
   let hitObject = useRef(null);
   let vectorControlDirections = useRef(null);
   let previousVectorControlDirections = useRef(null);
+  let fixed = useRef(false);
+  let switchable = useRef(false);
 
   let tpCoords = useRef([]);
   let cvCoords = useRef([]);
+
+  fixed.current = !SVs.draggable || SVs.fixed;
+  switchable.current = SVs.switchable && !SVs.fixed;
 
   vectorControlDirections.current = SVs.vectorControlDirections;
 
@@ -55,8 +62,19 @@ export default React.memo(function Curve(props) {
       if (curveJXG.current) {
         deleteCurveJXG();
       }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
 
@@ -70,12 +88,11 @@ export default React.memo(function Curve(props) {
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
 
-    //things to be passed to JSXGraph as attributes
     var curveAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      fixed: true,
+      fixed: false,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -192,11 +209,11 @@ export default React.memo(function Curve(props) {
     draggedControlPoint.current = null;
     draggedThroughPoint.current = null;
 
+    newCurveJXG.isDraggable = false;
+
     newCurveJXG.on('up', function (e) {
-      // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
-      // as useEffect will not be rerun
-      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null) {
-        if (SVs.switchable && !SVs.fixed) {
+      if (!pointerMovedSinceDown.current) {
+        if (switchable.current) {
           callAction({
             action: actions.switchCurve
           });
@@ -206,18 +223,50 @@ export default React.memo(function Curve(props) {
           args: { name }   // send name so get original name if adapted
         });
       }
+      pointerIsDown.current = false;
     });
+
+
+    newCurveJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (switchable.current) {
+          callAction({
+            action: actions.switchCurve
+          });
+        }
+        callAction({
+          action: actions.curveClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
+
 
     if (SVs.curveType === "bezier") {
 
       board.on('up', upBoard);
-      newCurveJXG.on('down', () => {
+      newCurveJXG.on('down', (e) => {
+        pointerAtDown.current = [e.x, e.y];
+        pointerIsDown.current = true;
+        pointerMovedSinceDown.current = false;
         downOther();
+
         callAction({
-          action: actions.mouseDownOnCurve,
+          action: actions.curveFocused,
           args: { name }   // send name so get original name if adapted
         });
 
+      });
+
+
+      newCurveJXG.on('hit', function (e) {
+        downOther();
+
+        callAction({
+          action: actions.curveFocused,
+          args: { name }   // send name so get original name if adapted
+        });
       });
 
       segmentAttributes.current = {
@@ -266,7 +315,7 @@ export default React.memo(function Curve(props) {
         size: 2,
       };
 
-      if (SVs.draggable && !SVs.fixed) {
+      if (!fixed.current) {
 
 
         createControls();
@@ -283,21 +332,47 @@ export default React.memo(function Curve(props) {
       }
 
     } else {
+
       newCurveJXG.on('down', function (e) {
-        updateSinceDown.current = false;
+        pointerAtDown.current = [e.x, e.y];
+        pointerIsDown.current = true;
+        pointerMovedSinceDown.current = false;
+
         callAction({
-          action: actions.mouseDownOnCurve,
+          action: actions.curveFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+
+      });
+
+      newCurveJXG.on('hit', function (e) {
+        callAction({
+          action: actions.curveFocused,
           args: { name }   // send name so get original name if adapted
         });
       });
+
     }
+
     return newCurveJXG;
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
   }
 
   function deleteCurveJXG() {
     board.off('up', upBoard);
     curveJXG.current.off('down');
     curveJXG.current.off('up');
+    curveJXG.current.off('keydown');
     board.removeObject(curveJXG.current);
     curveJXG.current = null;
     deleteControls();
@@ -321,13 +396,15 @@ export default React.memo(function Curve(props) {
       segmentsJXG.current.push([seg1, seg2]);
       tp.on('drag', e => dragThroughPoint(i));
       tp.on('down', e => downThroughPoint(i, e));
+      tp.on('hit', e => downThroughPoint(i, e));
       tp.on('up', e => upThroughPoint(i));
+      tp.on('keyfocusout', e => upThroughPoint(i));
       cp1.on('drag', e => dragControlPoint(i, 0));
       cp2.on('drag', e => dragControlPoint(i, 1));
       cp1.on('down', downOther);
       cp2.on('down', downOther);
       seg1.on('down', downOther);
-      seg1.on('down', downOther);
+      seg2.on('down', downOther);
       cp1.on('up', e => upControlPoint(i, 0));
       cp2.on('up', e => upControlPoint(i, 1));
     }
@@ -357,17 +434,40 @@ export default React.memo(function Curve(props) {
       throughPointsJXG.current.forEach(x => {
         x.off('drag')
         x.off('down')
+        x.off('hit')
         x.off('up')
+        x.off('keyfocusout')
         board.removeObject(x)
       });
       throughPointsJXG.current = [];
     }
   }
 
+  function downThroughPoint(i, e) {
+    // console.log(`down through point: ${i}`)
+
+    // also called when navigate to point using keyboard
+    if (fixed.current) {
+      return;
+    }
+
+    draggedThroughPoint.current = null;
+    draggedControlPoint.current = null;
+
+    let viaPointer = e.type === "pointerdown";
+
+    hitObject.current = viaPointer;
+
+    makeThroughPointsAlwaysVisible();
+    makeVectorControlVisible(i);
+    board.updateRenderer();
+  }
+
   function dragThroughPoint(i) {
     draggedThroughPoint.current = i;
 
     tpCoords.current[i] = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
+
     callAction({
       action: actions.moveThroughPoint,
       args: {
@@ -384,6 +484,8 @@ export default React.memo(function Curve(props) {
   }
 
   function upThroughPoint(i) {
+    // also called when navigate away from point using keyboard
+
     if (draggedThroughPoint.current !== i) {
       return;
     }
@@ -494,7 +596,7 @@ export default React.memo(function Curve(props) {
   }
 
   function upBoard() {
-    if (!SVs.draggable || SVs.fixed) {
+    if (fixed.current) {
       return;
     }
     if (hitObject.current !== true && !SVs.bezierControlsAlwaysVisible) {
@@ -503,23 +605,6 @@ export default React.memo(function Curve(props) {
       board.updateRenderer();
     }
     hitObject.current = false;
-  }
-
-  function downThroughPoint(i, e) {
-
-    if (!SVs.draggable || SVs.fixed) {
-      return;
-    }
-
-    draggedThroughPoint.current = null;
-    draggedControlPoint.current = null;
-
-    // console.log(`down through point: ${i}`)
-    hitObject.current = true;
-
-    makeThroughPointsAlwaysVisible();
-    makeVectorControlVisible(i);
-    board.updateRenderer();
   }
 
   function makeVectorControlVisible(i) {
@@ -555,7 +640,7 @@ export default React.memo(function Curve(props) {
   }
 
   function downOther() {
-    if (!SVs.draggable || SVs.fixed) {
+    if (fixed.current) {
       return;
     }
 
@@ -563,8 +648,6 @@ export default React.memo(function Curve(props) {
     draggedControlPoint.current = null;
 
     hitObject.current = true;
-
-    updateSinceDown.current = false;
 
     makeThroughPointsAlwaysVisible();
     board.updateRenderer();
@@ -607,8 +690,6 @@ export default React.memo(function Curve(props) {
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
         board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
-
-      updateSinceDown.current = true;
 
       let visible = !SVs.hidden;
 
@@ -706,7 +787,7 @@ export default React.memo(function Curve(props) {
       }
 
 
-      if (!SVs.draggable || SVs.fixed) {
+      if (fixed.current) {
         if (segmentsJXG.current.length > 0) {
           deleteControls();
         }
@@ -757,7 +838,9 @@ export default React.memo(function Curve(props) {
 
           tp.on('drag', e => dragThroughPoint(i));
           tp.on('down', e => downThroughPoint(i, e));
+          tp.on('hit', e => downThroughPoint(i, e));
           tp.on('up', e => upThroughPoint(i));
+          tp.on('keyfocusout', e => upThroughPoint(i));
           cp1.on('drag', e => dragControlPoint(i, 0));
           cp1.on('down', downOther);
           cp1.on('up', e => upControlPoint(i, 0));
@@ -801,6 +884,8 @@ export default React.memo(function Curve(props) {
           tp.off('drag')
           tp.off('down')
           tp.off('up')
+          tp.off('hit')
+          tp.off('keyfocusout')
           board.removeObject(tp);
         }
 

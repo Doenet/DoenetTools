@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Text Tag Tests', function () {
 
@@ -26,8 +18,8 @@ describe('Text Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('p#\\/_p1').invoke('text').should('contain', 'Hello there!')
-    cy.get('p#\\/_p2').invoke('text').should('contain', 'We could be there.')
+    cy.get('p' + cesc('#\\/_p1')).invoke('text').should('contain', 'Hello there!')
+    cy.get('p' + cesc('#\\/_p2')).invoke('text').should('contain', 'We could be there.')
 
   })
 
@@ -41,9 +33,9 @@ describe('Text Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'true')
-    cy.get('#\\/_text2').should('have.text', '3')
-    cy.get('#\\/_text3').should('have.text', '5 - 2')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'true')
+    cy.get(cesc('#\\/_text2')).should('have.text', '3')
+    cy.get(cesc('#\\/_text3')).should('have.text', '5 - 2')
 
   })
 
@@ -59,9 +51,9 @@ describe('Text Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/orig').should('have.text', `“Hello,” said the cow.  ‘Bye,’ came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
-    cy.get('#\\/textOnly').should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
-    cy.get('#\\/insideText').should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    cy.get(cesc('#\\/orig')).should('have.text', `“Hello,” said the cow.  ‘Bye,’ came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    cy.get(cesc('#\\/textOnly')).should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    cy.get(cesc('#\\/insideText')).should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -84,9 +76,9 @@ describe('Text Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/orig').should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
-    cy.get('#\\/textOnly').should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
-    cy.get('#\\/insideText').should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
+    cy.get(cesc('#\\/orig')).should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
+    cy.get(cesc('#\\/textOnly')).should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
+    cy.get(cesc('#\\/insideText')).should('have.text', 'Pick a ‘number’ from 1 – 2 — no, “maybe” from\u00a03…')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -108,10 +100,10 @@ describe('Text Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_boolean1').should('have.text', 'true')
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'true')
 
   })
 
@@ -170,19 +162,19 @@ describe('Text Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
-    cy.get("#\\/pContent1").should('have.text', 'Content 1: hello')
-    cy.get("#\\/pContent2").should('have.text', 'Content 2: bye')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pContent1")).should('have.text', 'Content 1: hello')
+    cy.get(cesc("#\\/pContent2")).should('have.text', 'Content 2: bye')
 
 
     cy.log("move texts by dragging")
@@ -200,37 +192,37 @@ describe('Text Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move texts by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move texts by dragging')
@@ -248,20 +240,20 @@ describe('Text Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log("change content of text")
-    cy.get('#\\/content1_input').type("{end} there{enter}")
-    cy.get('#\\/content2_input').type("{end} now{enter}")
+    cy.get(cesc('#\\/content1_input')).type("{end} there{enter}")
+    cy.get(cesc('#\\/content2_input')).type("{end} now{enter}")
 
 
-    cy.get("#\\/pContent1").should('have.text', 'Content 1: hello there')
-    cy.get("#\\/pContent2").should('have.text', 'Content 2: bye now')
+    cy.get(cesc("#\\/pContent1")).should('have.text', 'Content 1: hello there')
+    cy.get(cesc("#\\/pContent2")).should('have.text', 'Content 2: bye now')
 
   })
 
@@ -283,26 +275,26 @@ describe('Text Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'x')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'x')
 
 
     cy.log("give good anchor coords")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
 
     cy.log("give bad anchor coords again")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', 'q')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', 'q')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'q')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'q')
 
 
   });
@@ -333,78 +325,78 @@ describe('Text Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'black');
-    cy.get('#\\/tc_variable_style').should('have.text', 'black');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
     // TODO: how to test color in graph
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'green');
-    cy.get('#\\/tc_variable_style').should('have.text', 'green');
-    cy.get('#\\/bc_variable_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
 
 
-    cy.get('#\\/sn textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
-    cy.get('#\\/tsd_variable_style').should('have.text', 'red with a blue background');
-    cy.get('#\\/tc_variable_style').should('have.text', 'red');
-    cy.get('#\\/bc_variable_style').should('have.text', 'blue');
+    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'red with a blue background');
+    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'red');
+    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'blue');
 
-    cy.get('#\\/tsd_no_style').should('have.text', 'black');
-    cy.get('#\\/tc_no_style').should('have.text', 'black');
-    cy.get('#\\/bc_no_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
+    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
 
-    cy.get('#\\/tsd_fixed_style').should('have.text', 'green');
-    cy.get('#\\/tc_fixed_style').should('have.text', 'green');
-    cy.get('#\\/bc_fixed_style').should('have.text', 'none');
+    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
+    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
 
-    cy.get('#\\/no_style').should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get('#\\/no_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
+    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/fixed_style').should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get('#\\/fixed_style').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
+    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get('#\\/variable_style').should('have.css', 'color', 'rgb(255, 0, 0)');
-    cy.get('#\\/variable_style').should('have.css', 'background-color', 'rgb(0, 0, 255)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
+    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
 
 
   })
@@ -451,7 +443,7 @@ describe('Text Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -465,10 +457,10 @@ describe('Text Tag Tests', function () {
       let t1dName = stateVariables["/p2"].activeChildren[0].componentName;
       let t2dName = stateVariables["/p2"].activeChildren[2].componentName;
 
-      let t1cAnchor = '#' + cesc(t1cName);
-      let t2cAnchor = '#' + cesc(t2cName);
-      let t1dAnchor = '#' + cesc(t1dName);
-      let t2dAnchor = '#' + cesc(t2dName);
+      let t1cAnchor = '#' + cesc2(t1cName);
+      let t2cAnchor = '#' + cesc2(t2cName);
+      let t1dAnchor = '#' + cesc2(t1dName);
+      let t2dAnchor = '#' + cesc2(t2dName);
 
       cy.get(t1cAnchor).should('have.text', 'One')
       cy.get(t1dAnchor).should('have.text', 'One')
@@ -480,12 +472,12 @@ describe('Text Tag Tests', function () {
       cy.get(t2cAnchor).should('have.css', 'color', 'rgb(255, 0, 0)');
       cy.get(t2dAnchor).should('have.css', 'color', 'rgb(0, 0, 0)');
 
-      cy.get('#\\/t1coords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/t2coords .mjx-mrow').eq(0).should('have.text', '(3,4)')
-      cy.get('#\\/t1acoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/t2acoords .mjx-mrow').eq(0).should('have.text', '(3,4)')
-      cy.get('#\\/t1bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/t2bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t1coords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t2coords') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
+      cy.get(cesc('#\\/t1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
+      cy.get(cesc('#\\/t1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
 
 
@@ -503,14 +495,14 @@ describe('Text Tag Tests', function () {
         })
       })
 
-      cy.get('#\\/t2coords .mjx-mrow').should('contain.text', '(4,−5)')
+      cy.get(cesc('#\\/t2coords') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-      cy.get('#\\/t1coords .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-      cy.get('#\\/t2coords .mjx-mrow').eq(0).should('have.text', '(4,−5)')
-      cy.get('#\\/t1acoords .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-      cy.get('#\\/t2acoords .mjx-mrow').eq(0).should('have.text', '(4,−5)')
-      cy.get('#\\/t1bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/t2bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t1coords') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+      cy.get(cesc('#\\/t2coords') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+      cy.get(cesc('#\\/t1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+      cy.get(cesc('#\\/t2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+      cy.get(cesc('#\\/t1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
 
       cy.log("move second texts")
@@ -527,14 +519,14 @@ describe('Text Tag Tests', function () {
         })
       })
 
-      cy.get('#\\/t2coords .mjx-mrow').should('contain.text', '(−8,2)')
+      cy.get(cesc('#\\/t2coords') + ' .mjx-mrow').should('contain.text', '(−8,2)')
 
-      cy.get('#\\/t1coords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/t2coords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/t1acoords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/t2acoords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/t1bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get('#\\/t2bcoords .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t1coords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/t2coords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/t1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/t2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/t1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc('#\\/t2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
 
       cy.log("move third texts")
@@ -551,14 +543,14 @@ describe('Text Tag Tests', function () {
         })
       })
 
-      cy.get('#\\/t2bcoords .mjx-mrow').should('contain.text', '(−5,−4)')
+      cy.get(cesc('#\\/t2bcoords') + ' .mjx-mrow').should('contain.text', '(−5,−4)')
 
-      cy.get('#\\/t1coords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/t2coords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/t1acoords .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get('#\\/t2acoords .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get('#\\/t1bcoords .mjx-mrow').eq(0).should('have.text', '(−6,3)')
-      cy.get('#\\/t2bcoords .mjx-mrow').eq(0).should('have.text', '(−5,−4)')
+      cy.get(cesc('#\\/t1coords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/t2coords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/t1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
+      cy.get(cesc('#\\/t2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
+      cy.get(cesc('#\\/t1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(−6,3)')
+      cy.get(cesc('#\\/t2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−4)')
 
 
 

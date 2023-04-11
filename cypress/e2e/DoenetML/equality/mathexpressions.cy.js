@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 describe('Math expressions equality tests', function () {
 
   beforeEach(() => {
@@ -920,7 +922,7 @@ describe('Math expressions equality tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'a')
 
 
     cy.window().then(async (win) => {

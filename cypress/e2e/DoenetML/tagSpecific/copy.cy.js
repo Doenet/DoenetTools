@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 function nInDOM(n) {
   if (n < 0) {
@@ -41,7 +33,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -77,7 +69,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -129,7 +121,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -208,7 +200,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -272,7 +264,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -306,7 +298,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -346,7 +338,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -415,7 +407,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -484,7 +476,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -553,7 +545,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
     cy.window().then(async (win) => {
@@ -621,10 +613,10 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial position`);
-    cy.get('#\\/p1a').should("contain.text", "(1,2)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(1,2)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(1);
@@ -644,7 +636,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p1a').should("contain.text", "(−3,5)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(−3,5)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-3);
@@ -664,7 +656,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p2a').should("contain.text", "(6,−9)")
+    cy.get(cesc('#\\/p2a')).should("contain.text", "(6,−9)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(6);
@@ -684,7 +676,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p3a').should("contain.text", "(−1,−7)")
+    cy.get(cesc('#\\/p3a')).should("contain.text", "(−1,−7)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-7);
@@ -719,10 +711,10 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial position`);
-    cy.get('#\\/p1a').should("contain.text", "(1,2)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(1,2)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(1);
@@ -742,7 +734,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p1a').should("contain.text", "(−3,5)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(−3,5)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-3);
@@ -762,7 +754,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p2a').should("contain.text", "(6,−9)")
+    cy.get(cesc('#\\/p2a')).should("contain.text", "(6,−9)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(6);
@@ -782,7 +774,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p3a').should("contain.text", "(−1,−7)")
+    cy.get(cesc('#\\/p3a')).should("contain.text", "(−1,−7)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-7);
@@ -817,10 +809,10 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial position`);
-    cy.get('#\\/p1a').should("contain.text", "(1,2)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(1,2)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(1);
@@ -840,7 +832,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p1a').should("contain.text", "(−3,5)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(−3,5)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-3);
@@ -860,7 +852,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p2a').should("contain.text", "(6,−9)")
+    cy.get(cesc('#\\/p2a')).should("contain.text", "(6,−9)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(6);
@@ -880,7 +872,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p3a').should("contain.text", "(−1,−7)")
+    cy.get(cesc('#\\/p3a')).should("contain.text", "(−1,−7)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-7);
@@ -915,10 +907,10 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial position`);
-    cy.get('#\\/p1a').should("contain.text", "(1,2)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(1,2)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(1);
@@ -938,7 +930,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p1a').should("contain.text", "(−3,5)")
+    cy.get(cesc('#\\/p1a')).should("contain.text", "(−3,5)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-3);
@@ -958,7 +950,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p2a').should("contain.text", "(6,−9)")
+    cy.get(cesc('#\\/p2a')).should("contain.text", "(6,−9)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(6);
@@ -978,7 +970,7 @@ describe('Copy Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/p3a').should("contain.text", "(−1,−7)")
+    cy.get(cesc('#\\/p3a')).should("contain.text", "(−1,−7)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(-7);
@@ -1038,7 +1030,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial positions`);
     cy.window().then(async (win) => {
@@ -1048,7 +1040,7 @@ describe('Copy Tag Tests', function () {
       let v_head = displacement.map((x, i) => x + v_tail[i]);
       let d_head = displacement.map((x, i) => x + d_tail[i]);
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
@@ -1079,7 +1071,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1112,7 +1104,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
 
@@ -1146,7 +1138,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1179,7 +1171,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1218,7 +1210,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial positions`);
     cy.window().then(async (win) => {
@@ -1228,7 +1220,7 @@ describe('Copy Tag Tests', function () {
       let v_head = displacement.map((x, i) => x + v_tail[i]);
       let d_head = displacement.map((x, i) => x + d_tail[i]);
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
@@ -1259,7 +1251,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1292,7 +1284,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
 
@@ -1326,7 +1318,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1359,7 +1351,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1398,7 +1390,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial positions`);
     cy.window().then(async (win) => {
@@ -1408,7 +1400,7 @@ describe('Copy Tag Tests', function () {
       let v_head = displacement.map((x, i) => x + v_tail[i]);
       let d_head = displacement.map((x, i) => x + d_tail[i]);
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
@@ -1439,7 +1431,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1472,7 +1464,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
 
@@ -1506,7 +1498,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1539,7 +1531,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1578,7 +1570,7 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial positions`);
     cy.window().then(async (win) => {
@@ -1588,7 +1580,7 @@ describe('Copy Tag Tests', function () {
       let v_head = displacement.map((x, i) => x + v_tail[i]);
       let d_head = displacement.map((x, i) => x + d_tail[i]);
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
@@ -1619,7 +1611,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1652,7 +1644,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
 
@@ -1686,7 +1678,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1719,7 +1711,7 @@ describe('Copy Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+      cy.get(cesc('#\\/v1a')).should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1760,97 +1752,97 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
 
 
-    cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("2{enter}", { force: true });
 
-    cy.get('#\\/_p1').should('contain.text', 'a, b');
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'a, b');
 
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/_p1').should('contain.text', 'a, b, c, d, e');
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'a, b, c, d, e');
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/_p1').should('not.contain.text', 'a, b, c, d, e');
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('not.contain.text', 'a, b, c, d, e');
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}6{enter}", { force: true });
-    cy.get('#\\/_p1').should('contain.text', 'a, b, c, d, e, f');
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}6{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'a, b, c, d, e, f');
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
 
@@ -1881,97 +1873,97 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('')
     });
 
 
-    cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("2{enter}", { force: true });
 
-    cy.get('#\\/_p1').should('contain.text', 'a, b');
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'a, b');
 
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/_p1').should('contain.text', 'a, b, c, d, e');
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'a, b, c, d, e');
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/_p1').should('not.contain.text', 'a, b, c, d, e');
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('not.contain.text', 'a, b, c, d, e');
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}6{enter}", { force: true });
-    cy.get('#\\/_p1').should('contain.text', 'a, b, c, d, e, f');
-    cy.get('#\\/_p1').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}6{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'a, b, c, d, e, f');
+    cy.get(cesc('#\\/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/_p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/p2').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p2')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/_p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
-    cy.get('#\\/p3').invoke('text').then((text) => {
+    cy.get(cesc('#\\/p3')).invoke('text').then((text) => {
       expect(text.trim()).equal('a, b, c, d, e, f')
     });
 
@@ -1998,50 +1990,50 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/orig').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/orig')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
     })
-    cy.get('#\\/single').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/single')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
     })
-    cy.get('#\\/double').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/double')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=$$s')
     })
-    cy.get('#\\/triple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/triple')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=$$$s')
     })
-    cy.get('#\\/singlem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/singlem')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
     })
-    cy.get('#\\/doublem').should('have.text', '$$_m1');
-    cy.get('#\\/triplem').should('have.text', '$$$_m1');
+    cy.get(cesc('#\\/doublem')).should('have.text', '$$_m1');
+    cy.get(cesc('#\\/triplem')).should('have.text', '$$$_m1');
 
 
     cy.log('Enter new numbers');
-    cy.get('#\\/a textarea').type("{end}{backspace}9{enter}", { force: true })
-    cy.get('#\\/b textarea').type("{end}{backspace}6{enter}", { force: true })
-    cy.get('#\\/c textarea').type("{end}{backspace}7{enter}", { force: true })
+    cy.get(cesc('#\\/a') + ' textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get(cesc('#\\/b') + ' textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get(cesc('#\\/c') + ' textarea').type("{end}{backspace}7{enter}", { force: true })
 
-    cy.get('#\\/orig').should('contain.text', 'ax2+bx+c=9x2+6x+7')
-    cy.get('#\\/orig').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/orig')).should('contain.text', 'ax2+bx+c=9x2+6x+7')
+    cy.get(cesc('#\\/orig')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
     })
-    cy.get('#\\/single').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/single')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
     })
-    cy.get('#\\/double').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/double')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=$$s')
     })
-    cy.get('#\\/triple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/triple')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=$$$s')
     })
-    cy.get('#\\/singlem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/singlem')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
     })
-    cy.get('#\\/doublem').should('have.text', '$$_m1');
-    cy.get('#\\/triplem').should('have.text', '$$$_m1');
+    cy.get(cesc('#\\/doublem')).should('have.text', '$$_m1');
+    cy.get(cesc('#\\/triplem')).should('have.text', '$$$_m1');
 
 
   });
@@ -2062,11 +2054,11 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_p1').should('have.text', "hi, $$t, $ bye,\n    hi, $$u, bye")
-    cy.get('#\\/_p2').should('have.text', "bye, $$t(, hi,\n    bye, $$u, hi")
-    cy.get('#\\/_p3').should('have.text', "hi, $$$t, $5, bye, $$5, hi, $$$5, bye")
+    cy.get(cesc('#\\/_p1')).should('have.text', "hi, $$t, $ bye,\n    hi, $$u, bye")
+    cy.get(cesc('#\\/_p2')).should('have.text', "bye, $$t(, hi,\n    bye, $$u, hi")
+    cy.get(cesc('#\\/_p3')).should('have.text', "hi, $$$t, $5, bye, $$5, hi, $$$5, bye")
   })
 
   it('copy ignores hide by default', () => {
@@ -2082,11 +2074,11 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_p1').should('have.text', 'Hidden text: ');
-    cy.get('#\\/_p2').should('have.text', 'Revealed by default: secret');
-    cy.get('#\\/_p3').should('have.text', 'Force to stay hidden: ');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hidden text: ');
+    cy.get(cesc('#\\/_p2')).should('have.text', 'Revealed by default: secret');
+    cy.get(cesc('#\\/_p3')).should('have.text', 'Force to stay hidden: ');
 
 
   });
@@ -2104,11 +2096,11 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_p1').should('have.text', 'Hidden text: ');
-    cy.get('#\\/_p2').should('have.text', 'Revealed by default: secret');
-    cy.get('#\\/_p3').should('have.text', 'Force to stay hidden: ');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hidden text: ');
+    cy.get(cesc('#\\/_p2')).should('have.text', 'Revealed by default: secret');
+    cy.get(cesc('#\\/_p3')).should('have.text', 'Force to stay hidden: ');
 
 
   });
@@ -2128,12 +2120,12 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/theP').should('have.text', 'Hidden text: ');
-    cy.get('#\\/pReveal').should('have.text', 'Revealed: secret');
-    cy.get('#\\/theP2').should('have.text', 'Hidden text: ');
-    cy.get('#\\/pReveal2').should('have.text', 'Revealed 2: secret');
+    cy.get(cesc('#\\/theP')).should('have.text', 'Hidden text: ');
+    cy.get(cesc('#\\/pReveal')).should('have.text', 'Revealed: secret');
+    cy.get(cesc('#\\/theP2')).should('have.text', 'Hidden text: ');
+    cy.get(cesc('#\\/pReveal2')).should('have.text', 'Revealed 2: secret');
 
 
   });
@@ -2153,12 +2145,12 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/theP').should('have.text', 'Hidden text: ');
-    cy.get('#\\/pReveal').should('have.text', 'Revealed: secret');
-    cy.get('#\\/theP2').should('have.text', 'Hidden text: ');
-    cy.get('#\\/pReveal2').should('have.text', 'Revealed 2: secret');
+    cy.get(cesc('#\\/theP')).should('have.text', 'Hidden text: ');
+    cy.get(cesc('#\\/pReveal')).should('have.text', 'Revealed: secret');
+    cy.get(cesc('#\\/theP2')).should('have.text', 'Hidden text: ');
+    cy.get(cesc('#\\/pReveal2')).should('have.text', 'Revealed 2: secret');
 
 
   });
@@ -2183,22 +2175,22 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
-    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+    cy.get(cesc('#\\/c1')).should('have.text', 'copy 1: hello')
+    cy.get(cesc('#\\/c2')).should('have.text', 'copy 2: ')
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
 
-    cy.get('#\\/c1').should('have.text', 'copy 1: ')
-    cy.get('#\\/c2').should('have.text', 'copy 2: hello')
+    cy.get(cesc('#\\/c1')).should('have.text', 'copy 1: ')
+    cy.get(cesc('#\\/c2')).should('have.text', 'copy 2: hello')
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
 
-    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
-    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+    cy.get(cesc('#\\/c1')).should('have.text', 'copy 1: hello')
+    cy.get(cesc('#\\/c2')).should('have.text', 'copy 2: ')
 
   })
 
@@ -2222,22 +2214,22 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
-    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+    cy.get(cesc('#\\/c1')).should('have.text', 'copy 1: hello')
+    cy.get(cesc('#\\/c2')).should('have.text', 'copy 2: ')
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
 
-    cy.get('#\\/c1').should('have.text', 'copy 1: ')
-    cy.get('#\\/c2').should('have.text', 'copy 2: hello')
+    cy.get(cesc('#\\/c1')).should('have.text', 'copy 1: ')
+    cy.get(cesc('#\\/c2')).should('have.text', 'copy 2: hello')
 
-    cy.get('#\\/h1').click();
-    cy.get('#\\/h2').click();
+    cy.get(cesc('#\\/h1')).click();
+    cy.get(cesc('#\\/h2')).click();
 
-    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
-    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+    cy.get(cesc('#\\/c1')).should('have.text', 'copy 1: hello')
+    cy.get(cesc('#\\/c2')).should('have.text', 'copy 2: ')
 
   })
 
@@ -2252,15 +2244,15 @@ describe('Copy Tag Tests', function () {
     <copy assignNames="problem2" uri="doenet:doeneTiD=hijklmnop&CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
     `}, "*");
     });
-    cy.get('#\\/_title1').should('have.text', 'Two problems');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Two problems');  // to wait for page to load
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc2('#/problem1/_title1')).should('have.text', 'Animal sounds')
 
-    cy.get(cesc('#/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2276,38 +2268,38 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc2('#/problem2/_title1')).should('have.text', 'Derivative problem')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
@@ -2339,16 +2331,16 @@ describe('Copy Tag Tests', function () {
     <problem name="problem2" copyFromUri="doenet:doeneTiD=hijklmnop&CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
     `}, "*");
     });
-    cy.get('#\\/_title1').should('have.text', 'Two problems');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Two problems');  // to wait for page to load
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc2('#/problem1/_title1')).should('have.text', 'Animal sounds')
 
 
-    cy.get(cesc('#/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2357,38 +2349,38 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc2('#/problem2/_title1')).should('have.text', 'Derivative problem')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
@@ -2436,16 +2428,16 @@ describe('Copy Tag Tests', function () {
     <p>End paragraph</p>
     `}, "*");
     });
-    cy.get('#\\/_title1').should('have.text', 'Two problems');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Two problems');  // to wait for page to load
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/problem1/_title1')).should('not.exist')
-    cy.get(cesc('#/_title2')).should('have.text', 'Extra animal sounds')
-    cy.get(cesc('#/_p1')).should('have.text', 'New content at bottom')
-    cy.get(cesc('#/_p3')).should('have.text', 'End paragraph')
+    cy.get(cesc2('#/problem1/_title1')).should('not.exist')
+    cy.get(cesc2('#/_title2')).should('have.text', 'Extra animal sounds')
+    cy.get(cesc2('#/_p1')).should('have.text', 'New content at bottom')
+    cy.get(cesc2('#/_p3')).should('have.text', 'End paragraph')
 
 
     cy.window().then(async (win) => {
@@ -2453,7 +2445,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/problem1"].stateValues.title).eq("Extra animal sounds")
     })
 
-    cy.get(cesc('#/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2462,65 +2454,65 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/problem2/_title1')).should('not.exist')
-    cy.get(cesc('#/_title3')).should('have.text', 'Derivative with second derivative')
+    cy.get(cesc2('#/problem2/_title1')).should('not.exist')
+    cy.get(cesc2('#/_title3')).should('have.text', 'Derivative with second derivative')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
 
       let mathinput2Name = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + ' textarea';
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + ' textarea';
 
 
       expect(stateVariables["/problem2"].stateValues.title).eq("Derivative with second derivative")
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_incorrect')).should('be.visible')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_incorrect')).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
       cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_partial')).should('contain.text', '50%')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_partial')).should('contain.text', '50%')
 
 
 
       cy.log(`enter incorrect answer for problem 2, part 2`);
       cy.get(mathinput2Anchor).type('3{enter}', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_partial')).should('contain.text', '50%')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_partial')).should('contain.text', '50%')
 
 
       cy.log(`enter correct answer for problem 2, part 2`);
       cy.get(mathinput2Anchor).type('{end}{backspace}2', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_correct')).should('be.visible')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_correct')).should('be.visible')
 
 
 
@@ -2555,16 +2547,16 @@ describe('Copy Tag Tests', function () {
     <p>End paragraph</p>
     `}, "*");
     });
-    cy.get('#\\/_title1').should('have.text', 'Two problems');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Two problems');  // to wait for page to load
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/problem1/_title1')).should('not.exist')
-    cy.get(cesc('#/problem1/_title2')).should('have.text', 'Extra animal sounds')
-    cy.get(cesc('#/problem1/_p4')).should('have.text', 'New content at bottom')
-    cy.get(cesc('#/_p1')).should('have.text', 'End paragraph')
+    cy.get(cesc2('#/problem1/_title1')).should('not.exist')
+    cy.get(cesc2('#/problem1/_title2')).should('have.text', 'Extra animal sounds')
+    cy.get(cesc2('#/problem1/_p4')).should('have.text', 'New content at bottom')
+    cy.get(cesc2('#/_p1')).should('have.text', 'End paragraph')
 
 
     cy.window().then(async (win) => {
@@ -2572,7 +2564,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/problem1"].stateValues.title).eq("Extra animal sounds")
     })
 
-    cy.get(cesc('#/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2581,65 +2573,65 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/problem2/_title1')).should('not.exist')
-    cy.get(cesc('#/problem2/_title2')).should('have.text', 'Derivative with second derivative')
+    cy.get(cesc2('#/problem2/_title1')).should('not.exist')
+    cy.get(cesc2('#/problem2/_title2')).should('have.text', 'Derivative with second derivative')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
 
       let mathinput2Name = stateVariables['/problem2/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + ' textarea';
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + ' textarea';
 
 
       expect(stateVariables["/problem2"].stateValues.title).eq("Derivative with second derivative")
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_incorrect')).should('be.visible')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_incorrect')).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
       cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_partial')).should('contain.text', '50%')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_partial')).should('contain.text', '50%')
 
 
 
       cy.log(`enter incorrect answer for problem 2, part 2`);
       cy.get(mathinput2Anchor).type('3{enter}', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_partial')).should('contain.text', '50%')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_partial')).should('contain.text', '50%')
 
 
       cy.log(`enter correct answer for problem 2, part 2`);
       cy.get(mathinput2Anchor).type('{end}{backspace}2', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_correct')).should('be.visible')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_correct')).should('be.visible')
 
 
 
@@ -2674,16 +2666,16 @@ describe('Copy Tag Tests', function () {
 
     `}, "*");
     });
-    cy.get('#\\/_title1').should('have.text', 'Two problems');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Two problems');  // to wait for page to load
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
-    cy.get(cesc('#/_title2')).should('not.exist')
-    cy.get(cesc('#/_p1')).should('not.exist')
-    cy.get(cesc('#/_p3')).should('have.text', 'End paragraph')
+    cy.get(cesc2('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc2('#/_title2')).should('not.exist')
+    cy.get(cesc2('#/_p1')).should('not.exist')
+    cy.get(cesc2('#/_p3')).should('have.text', 'End paragraph')
 
 
     cy.window().then(async (win) => {
@@ -2691,7 +2683,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/problem1"].stateValues.title).eq("Animal sounds")
     })
 
-    cy.get(cesc('#/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2700,36 +2692,36 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Derivative problem')
-    cy.get(cesc('#/_title3')).should('not.exist')
+    cy.get(cesc2('#/problem2/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc2('#/_title3')).should('not.exist')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
 
 
       expect(stateVariables['/_answer1']).eq(undefined)
@@ -2738,13 +2730,13 @@ describe('Copy Tag Tests', function () {
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_incorrect')).should('be.visible')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_incorrect')).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
       cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
-      cy.get(cesc('#/problem2_submit')).click()
-      cy.get(cesc('#/problem2_correct')).should('be.visible')
+      cy.get(cesc2('#/problem2_submit')).click()
+      cy.get(cesc2('#/problem2_correct')).should('be.visible')
 
 
     })
@@ -2763,13 +2755,13 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_title1').should('have.text', 'Four problems');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Four problems');  // to wait for page to load
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/problem12/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem12/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2778,38 +2770,38 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem12/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem12/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem12/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem12/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem12/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem12/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem12/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem12/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem12/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem12/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem12/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem12/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem12/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem12/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem12/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/problem12/problem2/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc2('#/problem12/problem2/_title1')).should('have.text', 'Derivative problem')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/problem12/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
@@ -2829,7 +2821,7 @@ describe('Copy Tag Tests', function () {
     })
 
 
-    cy.get(cesc('#/set2/problem34/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/set2/problem34/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2838,38 +2830,38 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/set2/problem34/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/set2/problem34/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/set2/problem34/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/set2/problem34/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/set2/problem34/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/set2/problem34/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/set2/problem34/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/set2/problem34/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/set2/problem34/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/set2/problem34/problem2/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc2('#/set2/problem34/problem2/_title1')).should('have.text', 'Derivative problem')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/set2/problem34/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
@@ -2904,13 +2896,13 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_title1').should('have.text', 'Four problems');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Four problems');  // to wait for page to load
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/set1/problem12/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/set1/problem12/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2919,38 +2911,38 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/set1/problem12/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/set1/problem12/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/set1/problem12/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/set1/problem12/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/set1/problem12/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/set1/problem12/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/set1/problem12/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/set1/problem12/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/set1/problem12/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/set1/problem12/problem2/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc2('#/set1/problem12/problem2/_title1')).should('have.text', 'Derivative problem')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/set1/problem12/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
@@ -2970,7 +2962,7 @@ describe('Copy Tag Tests', function () {
     })
 
 
-    cy.get(cesc('#/problem34/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem34/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -2979,38 +2971,38 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem34/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem34/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem34/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem34/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem34/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem34/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem34/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem34/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem34/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem34/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem34/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem34/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem34/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem34/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem34/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
 
-    cy.get(cesc('#/problem34/problem2/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc2('#/problem34/problem2/_title1')).should('have.text', 'Derivative problem')
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/problem34/problem2/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.log(`enter incorrect answer for problem 2`);
       cy.get(mathinputAnchor).type('2y{enter}', { force: true });
@@ -3048,9 +3040,9 @@ describe('Copy Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_title1').should('have.text', 'Two variants from copied document');  // to wait for page to load
+    cy.get(cesc('#\\/_title1')).should('have.text', 'Two variants from copied document');  // to wait for page to load
 
-    cy.get('#\\/thedoc').should('contain.text', 'first')
+    cy.get(cesc('#\\/thedoc')).should('contain.text', 'first')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3071,7 +3063,7 @@ describe('Copy Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/thedoc').should('contain.text', 'last')
+    cy.get(cesc('#\\/thedoc')).should('contain.text', 'last')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3094,13 +3086,13 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/problem1_title').should('have.text', 'Animal sounds');
+    cy.get(cesc('#\\/problem1_title')).should('have.text', 'Animal sounds');
 
     let problem1Version;
     let animalOptions = ["cat", "dog", "mouse", "fish"];
     let soundOptions = ["meow", "woof", "squeak", "blub"]
 
-    cy.get(cesc('#/problem1/_p1')).invoke('text').then(text => {
+    cy.get(cesc2('#/problem1/_p1')).invoke('text').then(text => {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
@@ -3114,24 +3106,24 @@ describe('Copy Tag Tests', function () {
     cy.log(`select correct answer for problem 1`).then(() => {
       let animal = animalOptions[problem1Version];
       let sound = soundOptions[problem1Version]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('be.visible');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
-      cy.get(cesc('#/problem1/_feedback2')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc2('#/problem1/_feedback2')).should('not.exist');
 
     })
 
     cy.log(`select incorrect answer for problem 1`).then(() => {
       let incorrectInd = (problem1Version + 1) % 4;
       let sound = soundOptions[incorrectInd]
-      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
-      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
-      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('not.exist');
-      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('be.visible');
-      cy.get(cesc('#/problem1/_feedback1')).should('not.exist');
-      cy.get(cesc('#/problem1/_feedback2')).should('have.text', `Try again.`)
+      cy.get(cesc2('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc2('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc2('#/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc2('#/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc2('#/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc2('#/problem1/_feedback2')).should('have.text', `Try again.`)
 
     })
 
@@ -3149,9 +3141,9 @@ describe('Copy Tag Tests', function () {
     });
 
 
-    cy.get('#\\/problem1_title').should('have.text', 'Problem 1');
+    cy.get(cesc('#\\/problem1_title')).should('have.text', 'Problem 1');
 
-    cy.get('#\\/_document1').should('not.contain.text', 'Animal sounds')
+    cy.get(cesc('#\\/_document1')).should('not.contain.text', 'Animal sounds')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3178,14 +3170,14 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/forVerb').should('have.text', 'jump');
-    cy.get('#\\/verb2').should('have.text', 'jump');
+    cy.get(cesc('#\\/forVerb')).should('have.text', 'jump');
+    cy.get(cesc('#\\/verb2')).should('have.text', 'jump');
 
-    cy.get('#\\/b').click();
-    cy.get('#\\/forVerb').should('have.text', 'skip');
-    cy.get('#\\/verb2').should('have.text', 'skip');
+    cy.get(cesc('#\\/b')).click();
+    cy.get(cesc('#\\/forVerb')).should('have.text', 'skip');
+    cy.get(cesc('#\\/verb2')).should('have.text', 'skip');
 
 
 
@@ -3210,14 +3202,14 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/forVerb').should('have.text', 'jump');
-    cy.get('#\\/verb2').should('have.text', 'jump');
+    cy.get(cesc('#\\/forVerb')).should('have.text', 'jump');
+    cy.get(cesc('#\\/verb2')).should('have.text', 'jump');
 
-    cy.get('#\\/b').click();
-    cy.get('#\\/forVerb').should('have.text', 'skip');
-    cy.get('#\\/verb2').should('have.text', 'skip');
+    cy.get(cesc('#\\/b')).click();
+    cy.get(cesc('#\\/forVerb')).should('have.text', 'skip');
+    cy.get(cesc('#\\/verb2')).should('have.text', 'skip');
 
 
 
@@ -3239,15 +3231,15 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/_p1').should('have.text', "We can't see  in paragraph or  in text.")
+    cy.get(cesc('#\\/_p1')).should('have.text', "We can't see  in paragraph or  in text.")
 
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿+＿')
     })
 
-    cy.get('#\\/_boolean1').should('have.text', "true");
+    cy.get(cesc('#\\/_boolean1')).should('have.text', "true");
 
 
 
@@ -3282,15 +3274,15 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('x+x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('x+x')
     })
 
@@ -3305,16 +3297,16 @@ describe('Copy Tag Tests', function () {
     });
 
     cy.log('simplify copies')
-    cy.get('#\\/s2_input').clear().type("full{enter}");
+    cy.get(cesc('#\\/s2_input')).clear().type("full{enter}");
 
-    cy.get(`#\\/m2`).should('contain.text', '2x')
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).should('contain.text', '2x')
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
 
@@ -3327,17 +3319,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('stop simplifying original')
-    cy.get('#\\/s1_input').clear().type("none{enter}");
+    cy.get(cesc('#\\/s1_input')).clear().type("none{enter}");
 
-    cy.get(`#\\/m`).should('contain.text', 'x+x')
+    cy.get(cesc(`#\\/m`)).should('contain.text', 'x+x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('x+x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
 
@@ -3350,17 +3342,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('double original')
-    cy.get('#\\/doubleOriginal_button').click();
+    cy.get(cesc('#\\/doubleOriginal_button')).click();
 
-    cy.get(`#\\/m`).should('contain.text', '2(x+x)')
+    cy.get(cesc(`#\\/m`)).should('contain.text', '2(x+x)')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2(x+x)')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
 
@@ -3373,17 +3365,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('double copy1')
-    cy.get('#\\/doubleCopy1_button').click();
+    cy.get(cesc('#\\/doubleCopy1_button')).click();
 
-    cy.get(`#\\/m2`).should('contain.text', '4x')
+    cy.get(cesc(`#\\/m2`)).should('contain.text', '4x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2(x+x)')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
 
@@ -3396,17 +3388,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('double copy2')
-    cy.get('#\\/doubleCopy2_button').click();
+    cy.get(cesc('#\\/doubleCopy2_button')).click();
 
-    cy.get(`#\\/m3`).should('contain.text', '8x')
+    cy.get(cesc(`#\\/m3`)).should('contain.text', '8x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('8x')
     })
 
@@ -3419,17 +3411,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('stop simplifying copies')
-    cy.get('#\\/s2_input').clear().type("none{enter}");
+    cy.get(cesc('#\\/s2_input')).clear().type("none{enter}");
 
-    cy.get(`#\\/m2`).should('contain.text', '2⋅2x')
+    cy.get(cesc(`#\\/m2`)).should('contain.text', '2⋅2x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
     })
 
@@ -3470,15 +3462,15 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('x+x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('x+x')
     })
 
@@ -3491,16 +3483,16 @@ describe('Copy Tag Tests', function () {
     });
 
     cy.log('simplify copies')
-    cy.get('#\\/s2_input').clear().type("full{enter}");
+    cy.get(cesc('#\\/s2_input')).clear().type("full{enter}");
 
-    cy.get(`#\\/m2`).should('contain.text', '2x')
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).should('contain.text', '2x')
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
 
@@ -3513,17 +3505,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('stop simplifying original')
-    cy.get('#\\/s1_input').clear().type("none{enter}");
+    cy.get(cesc('#\\/s1_input')).clear().type("none{enter}");
 
-    cy.get(`#\\/m`).should('contain.text', 'x+x')
+    cy.get(cesc(`#\\/m`)).should('contain.text', 'x+x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('x+x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
 
@@ -3536,17 +3528,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('double original')
-    cy.get('#\\/doubleOriginal_button').click();
+    cy.get(cesc('#\\/doubleOriginal_button')).click();
 
-    cy.get(`#\\/m`).should('contain.text', '2(x+x)')
+    cy.get(cesc(`#\\/m`)).should('contain.text', '2(x+x)')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2(x+x)')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
 
@@ -3559,17 +3551,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('double copy1')
-    cy.get('#\\/doubleCopy1_button').click();
+    cy.get(cesc('#\\/doubleCopy1_button')).click();
 
-    cy.get(`#\\/m2`).should('contain.text', '4x')
+    cy.get(cesc(`#\\/m2`)).should('contain.text', '4x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2(x+x)')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
 
@@ -3582,17 +3574,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('double copy2')
-    cy.get('#\\/doubleCopy2_button').click();
+    cy.get(cesc('#\\/doubleCopy2_button')).click();
 
-    cy.get(`#\\/m3`).should('contain.text', '8x')
+    cy.get(cesc(`#\\/m3`)).should('contain.text', '8x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('8x')
     })
 
@@ -3605,17 +3597,17 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('stop simplifying copies')
-    cy.get('#\\/s2_input').clear().type("none{enter}");
+    cy.get(cesc('#\\/s2_input')).clear().type("none{enter}");
 
-    cy.get(`#\\/m2`).should('contain.text', '2⋅2x')
+    cy.get(cesc(`#\\/m2`)).should('contain.text', '2⋅2x')
 
-    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
     })
-    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅2x')
     })
-    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/m3`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
     })
 
@@ -3675,9 +3667,9 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(`#\\/Ax`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/Ax`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('1')
     })
 
@@ -3719,7 +3711,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Ac").should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/Ac")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3750,7 +3742,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Bc").should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
+    cy.get(cesc("#\\/Bc")).should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3786,7 +3778,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/lp1").should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
+    cy.get(cesc("#\\/lp1")).should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3817,7 +3809,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A2c").should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
+    cy.get(cesc("#\\/A2c")).should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3852,7 +3844,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l2p1").should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
+    cy.get(cesc("#\\/l2p1")).should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3884,7 +3876,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A3c").should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/A3c")).should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3914,7 +3906,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A4c").should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
+    cy.get(cesc("#\\/A4c")).should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3944,7 +3936,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B4c").should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
+    cy.get(cesc("#\\/B4c")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3974,7 +3966,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A5c").should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
+    cy.get(cesc("#\\/A5c")).should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4004,7 +3996,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B5c").should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
+    cy.get(cesc("#\\/B5c")).should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4037,7 +4029,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l3p1").should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
+    cy.get(cesc("#\\/l3p1")).should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4107,9 +4099,9 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(`#\\/Ax`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/Ax`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('1')
     })
 
@@ -4151,7 +4143,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Ac").should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/Ac")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4182,7 +4174,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Bc").should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
+    cy.get(cesc("#\\/Bc")).should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4218,7 +4210,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/lp1").should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
+    cy.get(cesc("#\\/lp1")).should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4249,7 +4241,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A2c").should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
+    cy.get(cesc("#\\/A2c")).should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4284,7 +4276,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l2p1").should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
+    cy.get(cesc("#\\/l2p1")).should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4316,7 +4308,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A3c").should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/A3c")).should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4346,7 +4338,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A4c").should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
+    cy.get(cesc("#\\/A4c")).should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4376,7 +4368,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B4c").should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
+    cy.get(cesc("#\\/B4c")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4406,7 +4398,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A5c").should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
+    cy.get(cesc("#\\/A5c")).should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4436,7 +4428,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B5c").should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
+    cy.get(cesc("#\\/B5c")).should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4469,7 +4461,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l3p1").should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
+    cy.get(cesc("#\\/l3p1")).should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4540,9 +4532,9 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(`#\\/Ax`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/Ax`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('1')
     })
 
@@ -4578,7 +4570,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Ac").should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/Ac")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4609,7 +4601,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Bc").should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
+    cy.get(cesc("#\\/Bc")).should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4645,7 +4637,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/lp1").should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
+    cy.get(cesc("#\\/lp1")).should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4676,7 +4668,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A2c").should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
+    cy.get(cesc("#\\/A2c")).should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4711,7 +4703,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l2p1").should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
+    cy.get(cesc("#\\/l2p1")).should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4743,7 +4735,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A3c").should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/A3c")).should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4773,7 +4765,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A4c").should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
+    cy.get(cesc("#\\/A4c")).should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4803,7 +4795,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B4c").should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
+    cy.get(cesc("#\\/B4c")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4833,7 +4825,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A5c").should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
+    cy.get(cesc("#\\/A5c")).should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4863,7 +4855,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B5c").should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
+    cy.get(cesc("#\\/B5c")).should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4896,7 +4888,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l3p1").should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
+    cy.get(cesc("#\\/l3p1")).should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4967,9 +4959,9 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(`#\\/Ax`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/Ax`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('1')
     })
 
@@ -5005,7 +4997,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Ac").should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/Ac")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5036,7 +5028,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/Bc").should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
+    cy.get(cesc("#\\/Bc")).should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5072,7 +5064,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/lp1").should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
+    cy.get(cesc("#\\/lp1")).should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5103,7 +5095,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A2c").should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
+    cy.get(cesc("#\\/A2c")).should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5138,7 +5130,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l2p1").should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
+    cy.get(cesc("#\\/l2p1")).should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5170,7 +5162,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A3c").should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
+    cy.get(cesc("#\\/A3c")).should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5200,7 +5192,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A4c").should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
+    cy.get(cesc("#\\/A4c")).should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5230,7 +5222,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B4c").should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
+    cy.get(cesc("#\\/B4c")).should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5260,7 +5252,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/A5c").should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
+    cy.get(cesc("#\\/A5c")).should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5290,7 +5282,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/B5c").should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
+    cy.get(cesc("#\\/B5c")).should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5323,7 +5315,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get("#\\/l3p1").should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
+    cy.get(cesc("#\\/l3p1")).should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5357,10 +5349,10 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/_p1").should('have.text', 'Hello')
-    cy.get("#\\/p2").should('have.text', 'Hello')
+    cy.get(cesc("#\\/_p1")).should('have.text', 'Hello')
+    cy.get(cesc("#\\/p2")).should('have.text', 'Hello')
 
   });
 
@@ -5375,10 +5367,10 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/_p1").should('have.text', 'Hello')
-    cy.get("#\\/p2").should('have.text', 'Hello')
+    cy.get(cesc("#\\/_p1")).should('have.text', 'Hello')
+    cy.get(cesc("#\\/p2")).should('have.text', 'Hello')
 
   });
 
@@ -5394,10 +5386,10 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/_p1").should('have.text', 'hello hello')
-    cy.get("#\\/_p2").should('have.text', 'hello hello')
+    cy.get(cesc("#\\/_p1")).should('have.text', 'hello hello')
+    cy.get(cesc("#\\/_p2")).should('have.text', 'hello hello')
 
   });
 
@@ -5413,10 +5405,10 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/_p1").should('have.text', 'hello hello')
-    cy.get("#\\/_p2").should('have.text', 'hello hello')
+    cy.get(cesc("#\\/_p1")).should('have.text', 'hello hello')
+    cy.get(cesc("#\\/_p2")).should('have.text', 'hello hello')
 
   });
 
@@ -5450,45 +5442,45 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxb").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxb")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxc").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxc")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxd").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxd")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxe").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxe")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxf").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxf")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxh").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxh")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxi").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxi")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxj").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxj")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxk").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxk")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxl").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxl")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
 
@@ -5524,45 +5516,45 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxb").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxb")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxc").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxc")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxd").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxd")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxe").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxe")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxf").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxf")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxh").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxh")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxi").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxi")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxj").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxj")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxk").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxk")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxl").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxl")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
 
@@ -5588,141 +5580,141 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
 
     cy.log('change first simplify')
-    cy.get('#\\/sim_input').clear().type("none{enter}")
+    cy.get(cesc('#\\/sim_input')).clear().type("none{enter}")
 
-    cy.get("#\\/twoxa").should('contain.text', 'x+x')
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).should('contain.text', 'x+x')
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
 
     cy.log('change second simplify')
-    cy.get('#\\/g2\\/sim_input').clear().type("none{enter}")
+    cy.get(cesc('#\\/g2\\/sim_input')).clear().type("none{enter}")
 
-    cy.get("#\\/g2\\/twoxa").should('contain.text', 'x+x')
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).should('contain.text', 'x+x')
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
 
     cy.log('change third simplify')
-    cy.get('#\\/g3\\/sim_input').clear().type("none{enter}")
+    cy.get(cesc('#\\/g3\\/sim_input')).clear().type("none{enter}")
 
-    cy.get("#\\/g3\\/twoxa").should('contain.text', 'x+x')
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).should('contain.text', 'x+x')
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
@@ -5750,141 +5742,141 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
 
     cy.log('change first simplify')
-    cy.get('#\\/sim_input').clear().type("none{enter}")
+    cy.get(cesc('#\\/sim_input')).clear().type("none{enter}")
 
-    cy.get("#\\/twoxa").should('contain.text', 'x+x')
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).should('contain.text', 'x+x')
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
 
     cy.log('change second simplify')
-    cy.get('#\\/g2\\/sim_input').clear().type("none{enter}")
+    cy.get(cesc('#\\/g2\\/sim_input')).clear().type("none{enter}")
 
-    cy.get("#\\/g2\\/twoxa").should('contain.text', 'x+x')
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).should('contain.text', 'x+x')
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("2x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("3x")
     })
 
 
     cy.log('change third simplify')
-    cy.get('#\\/g3\\/sim_input').clear().type("none{enter}")
+    cy.get(cesc('#\\/g3\\/sim_input')).clear().type("none{enter}")
 
-    cy.get("#\\/g3\\/twoxa").should('contain.text', 'x+x')
-    cy.get("#\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).should('contain.text', 'x+x')
+    cy.get(cesc("#\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g2\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g2\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g2\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
-    cy.get("#\\/g3\\/twox").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twox")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/twoxa").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/twoxa")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x")
     })
-    cy.get("#\\/g3\\/threex").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/g3\\/threex")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x+x+x")
     })
 
@@ -5906,25 +5898,25 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinput1Anchor = cesc('#' + stateVariables["/g/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + stateVariables["/g2/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput1Anchor = cesc2('#' + stateVariables["/g/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc2('#' + stateVariables["/g2/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
 
-      cy.get(cesc('#/g/ca')).should('have.text', '0')
-      cy.get(cesc('#/g2/ca')).should('have.text', '0')
+      cy.get(cesc2('#/g/ca')).should('have.text', '0')
+      cy.get(cesc2('#/g2/ca')).should('have.text', '0')
 
       cy.get(mathinput1Anchor).type("2x{enter}", { force: true })
 
-      cy.get(cesc('#/g/ca')).should('have.text', '1')
-      cy.get(cesc('#/g2/ca')).should('have.text', '0')
+      cy.get(cesc2('#/g/ca')).should('have.text', '1')
+      cy.get(cesc2('#/g2/ca')).should('have.text', '0')
 
       cy.get(mathinput2Anchor).type("2x{enter}", { force: true })
 
-      cy.get(cesc('#/g/ca')).should('have.text', '1')
-      cy.get(cesc('#/g2/ca')).should('have.text', '1')
+      cy.get(cesc2('#/g/ca')).should('have.text', '1')
+      cy.get(cesc2('#/g2/ca')).should('have.text', '1')
 
     });
   });
@@ -5944,25 +5936,25 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinput1Anchor = cesc('#' + stateVariables["/g/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + stateVariables["/g2/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput1Anchor = cesc2('#' + stateVariables["/g/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc2('#' + stateVariables["/g2/p/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
 
-      cy.get(cesc('#/g/ca')).should('have.text', '0')
-      cy.get(cesc('#/g2/ca')).should('have.text', '0')
+      cy.get(cesc2('#/g/ca')).should('have.text', '0')
+      cy.get(cesc2('#/g2/ca')).should('have.text', '0')
 
       cy.get(mathinput1Anchor).type("2x{enter}", { force: true })
 
-      cy.get(cesc('#/g/ca')).should('have.text', '1')
-      cy.get(cesc('#/g2/ca')).should('have.text', '0')
+      cy.get(cesc2('#/g/ca')).should('have.text', '1')
+      cy.get(cesc2('#/g2/ca')).should('have.text', '0')
 
       cy.get(mathinput2Anchor).type("2x{enter}", { force: true })
 
-      cy.get(cesc('#/g/ca')).should('have.text', '1')
-      cy.get(cesc('#/g2/ca')).should('have.text', '1')
+      cy.get(cesc2('#/g/ca')).should('have.text', '1')
+      cy.get(cesc2('#/g2/ca')).should('have.text', '1')
 
     });
   });
@@ -5983,7 +5975,7 @@ describe('Copy Tag Tests', function () {
     });
 
     // just testing that page loads, i.e., that bug is removed so that don't get error
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
   });
@@ -6004,7 +5996,7 @@ describe('Copy Tag Tests', function () {
     });
 
     // just testing that page loads, i.e., that bug is removed so that don't get error
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
   });
@@ -6027,12 +6019,12 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/g/w')).should('have.text', 'bye')
-    cy.get(cesc('#/g/Plabel')).should('have.text', 'bye')
-    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
-    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+    cy.get(cesc2('#/g/w')).should('have.text', 'bye')
+    cy.get(cesc2('#/g/Plabel')).should('have.text', 'bye')
+    cy.get(cesc2('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc2('#/g2/Plabel')).should('have.text', 'bye')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6041,12 +6033,12 @@ describe('Copy Tag Tests', function () {
 
     })
 
-    cy.get(cesc('#/external_input')).clear().type('hi{enter}')
+    cy.get(cesc2('#/external_input')).clear().type('hi{enter}')
 
-    cy.get(cesc('#/g/w')).should('have.text', 'hi')
-    cy.get(cesc('#/g/Plabel')).should('have.text', 'hi')
-    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
-    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+    cy.get(cesc2('#/g/w')).should('have.text', 'hi')
+    cy.get(cesc2('#/g/Plabel')).should('have.text', 'hi')
+    cy.get(cesc2('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc2('#/g2/Plabel')).should('have.text', 'bye')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6077,12 +6069,12 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/g/w')).should('have.text', 'bye')
-    cy.get(cesc('#/g/Plabel')).should('have.text', 'bye')
-    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
-    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+    cy.get(cesc2('#/g/w')).should('have.text', 'bye')
+    cy.get(cesc2('#/g/Plabel')).should('have.text', 'bye')
+    cy.get(cesc2('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc2('#/g2/Plabel')).should('have.text', 'bye')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6091,12 +6083,12 @@ describe('Copy Tag Tests', function () {
 
     })
 
-    cy.get(cesc('#/external_input')).clear().type('hi{enter}')
+    cy.get(cesc2('#/external_input')).clear().type('hi{enter}')
 
-    cy.get(cesc('#/g/w')).should('have.text', 'hi')
-    cy.get(cesc('#/g/Plabel')).should('have.text', 'hi')
-    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
-    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+    cy.get(cesc2('#/g/w')).should('have.text', 'hi')
+    cy.get(cesc2('#/g/Plabel')).should('have.text', 'hi')
+    cy.get(cesc2('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc2('#/g2/Plabel')).should('have.text', 'bye')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6133,12 +6125,12 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/g/a/w')).should('have.text', 'hello')
-    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'hello')
-    cy.get(cesc('#/g2/a/w')).should('have.text', 'hello')
-    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'hello')
+    cy.get(cesc2('#/g/a/w')).should('have.text', 'hello')
+    cy.get(cesc2('#/g/a/Plabel')).should('have.text', 'hello')
+    cy.get(cesc2('#/g2/a/w')).should('have.text', 'hello')
+    cy.get(cesc2('#/g2/a/Plabel')).should('have.text', 'hello')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6147,13 +6139,13 @@ describe('Copy Tag Tests', function () {
 
     })
 
-    cy.get(cesc('#/g/ti_input')).clear().type('one{enter}')
-    cy.get(cesc('#/g2/ti_input')).clear().type('two{enter}')
+    cy.get(cesc2('#/g/ti_input')).clear().type('one{enter}')
+    cy.get(cesc2('#/g2/ti_input')).clear().type('two{enter}')
 
-    cy.get(cesc('#/g/a/w')).should('have.text', 'one')
-    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'one')
-    cy.get(cesc('#/g2/a/w')).should('have.text', 'two')
-    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'two')
+    cy.get(cesc2('#/g/a/w')).should('have.text', 'one')
+    cy.get(cesc2('#/g/a/Plabel')).should('have.text', 'one')
+    cy.get(cesc2('#/g2/a/w')).should('have.text', 'two')
+    cy.get(cesc2('#/g2/a/Plabel')).should('have.text', 'two')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6191,12 +6183,12 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/g/a/w')).should('have.text', 'hello')
-    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'hello')
-    cy.get(cesc('#/g2/a/w')).should('have.text', 'hello')
-    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'hello')
+    cy.get(cesc2('#/g/a/w')).should('have.text', 'hello')
+    cy.get(cesc2('#/g/a/Plabel')).should('have.text', 'hello')
+    cy.get(cesc2('#/g2/a/w')).should('have.text', 'hello')
+    cy.get(cesc2('#/g2/a/Plabel')).should('have.text', 'hello')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6205,13 +6197,13 @@ describe('Copy Tag Tests', function () {
 
     })
 
-    cy.get(cesc('#/g/ti_input')).clear().type('one{enter}')
-    cy.get(cesc('#/g2/ti_input')).clear().type('two{enter}')
+    cy.get(cesc2('#/g/ti_input')).clear().type('one{enter}')
+    cy.get(cesc2('#/g2/ti_input')).clear().type('two{enter}')
 
-    cy.get(cesc('#/g/a/w')).should('have.text', 'one')
-    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'one')
-    cy.get(cesc('#/g2/a/w')).should('have.text', 'two')
-    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'two')
+    cy.get(cesc2('#/g/a/w')).should('have.text', 'one')
+    cy.get(cesc2('#/g/a/Plabel')).should('have.text', 'one')
+    cy.get(cesc2('#/g2/a/w')).should('have.text', 'two')
+    cy.get(cesc2('#/g2/a/Plabel')).should('have.text', 'two')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6241,16 +6233,16 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/n')).should('have.text', '2')
-    cy.get(cesc('#/m')).should('have.text', '4')
-    cy.get(cesc('#/g/m1')).should('have.text', '4')
-    cy.get(cesc('#/g/m2')).should('have.text', '4')
-    cy.get(cesc('#/g2/m1')).should('have.text', '4')
-    cy.get(cesc('#/g2/m2')).should('have.text', '4')
-    cy.get(cesc('#/g3/m1')).should('have.text', '4')
-    cy.get(cesc('#/g3/m2')).should('have.text', '4')
+    cy.get(cesc2('#/n')).should('have.text', '2')
+    cy.get(cesc2('#/m')).should('have.text', '4')
+    cy.get(cesc2('#/g/m1')).should('have.text', '4')
+    cy.get(cesc2('#/g/m2')).should('have.text', '4')
+    cy.get(cesc2('#/g2/m1')).should('have.text', '4')
+    cy.get(cesc2('#/g2/m2')).should('have.text', '4')
+    cy.get(cesc2('#/g3/m1')).should('have.text', '4')
+    cy.get(cesc2('#/g3/m2')).should('have.text', '4')
 
   });
 
@@ -6274,16 +6266,16 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/n')).should('have.text', '2')
-    cy.get(cesc('#/m')).should('have.text', '4')
-    cy.get(cesc('#/g/m1')).should('have.text', '4')
-    cy.get(cesc('#/g/m2')).should('have.text', '4')
-    cy.get(cesc('#/g2/m1')).should('have.text', '4')
-    cy.get(cesc('#/g2/m2')).should('have.text', '4')
-    cy.get(cesc('#/g3/m1')).should('have.text', '4')
-    cy.get(cesc('#/g3/m2')).should('have.text', '4')
+    cy.get(cesc2('#/n')).should('have.text', '2')
+    cy.get(cesc2('#/m')).should('have.text', '4')
+    cy.get(cesc2('#/g/m1')).should('have.text', '4')
+    cy.get(cesc2('#/g/m2')).should('have.text', '4')
+    cy.get(cesc2('#/g2/m1')).should('have.text', '4')
+    cy.get(cesc2('#/g2/m2')).should('have.text', '4')
+    cy.get(cesc2('#/g3/m1')).should('have.text', '4')
+    cy.get(cesc2('#/g3/m2')).should('have.text', '4')
 
   });
 
@@ -6334,201 +6326,201 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/section1_title')).should('have.text', 'Section 1')
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
+    cy.get(cesc2('#/section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
 
-    cy.get(cesc('#/section2_title')).should('have.text', 'Section 2')
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
+    cy.get(cesc2('#/section2_title')).should('have.text', 'Section 2')
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
 
-    cy.get(cesc('#/section3_title')).should('have.text', 'Section 3')
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
+    cy.get(cesc2('#/section3_title')).should('have.text', 'Section 3')
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
 
-    cy.get(cesc('#/section4_title')).should('have.text', 'Section 4')
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
+    cy.get(cesc2('#/section4_title')).should('have.text', 'Section 4')
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
 
-    cy.get(cesc('#/section5_title')).should('have.text', 'Section 5')
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
+    cy.get(cesc2('#/section5_title')).should('have.text', 'Section 5')
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
 
-    cy.get(cesc('#/section6_title')).should('have.text', 'Section 6')
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
+    cy.get(cesc2('#/section6_title')).should('have.text', 'Section 6')
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7_title')).should('have.text', 'Section 7')
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
-
-
-    cy.get(cesc('#/section1/addP_button')).click();
-
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section1/p4')).should('not.exist');
-
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
-
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
-
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section5/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/p4a')).should('not.exist');
-
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section7/p4')).should('not.exist');
+    cy.get(cesc2('#/section7_title')).should('have.text', 'Section 7')
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
 
 
-    cy.get(cesc('#/section7/removeP_button')).click();
+    cy.get(cesc2('#/section1/addP_button')).click();
 
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
 
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
 
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
 
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
-
-
-    cy.get(cesc('#/section4/addP_button')).click();
-
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
-
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
-
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section4/p4')).should('not.exist');
-
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
-
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
 
 
-    cy.get(cesc('#/section4/removeP_button')).click();
+    cy.get(cesc2('#/section7/removeP_button')).click();
 
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
 
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
 
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
 
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc2('#/section4/addP_button')).click();
+
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
+
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc2('#/section4/removeP_button')).click();
+
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
+
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
 
 
   });
@@ -6580,201 +6572,201 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/section1_title')).should('have.text', 'Section 1')
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
+    cy.get(cesc2('#/section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
 
-    cy.get(cesc('#/section2_title')).should('have.text', 'Section 2')
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
+    cy.get(cesc2('#/section2_title')).should('have.text', 'Section 2')
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
 
-    cy.get(cesc('#/section3_title')).should('have.text', 'Section 3')
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
+    cy.get(cesc2('#/section3_title')).should('have.text', 'Section 3')
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
 
-    cy.get(cesc('#/section4_title')).should('have.text', 'Section 4')
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
+    cy.get(cesc2('#/section4_title')).should('have.text', 'Section 4')
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
 
-    cy.get(cesc('#/section5_title')).should('have.text', 'Section 5')
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
+    cy.get(cesc2('#/section5_title')).should('have.text', 'Section 5')
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
 
-    cy.get(cesc('#/section6_title')).should('have.text', 'Section 6')
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
+    cy.get(cesc2('#/section6_title')).should('have.text', 'Section 6')
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7_title')).should('have.text', 'Section 7')
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
-
-
-    cy.get(cesc('#/section1/addP_button')).click();
-
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section1/p4')).should('not.exist');
-
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
-
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
-
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section5/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/p4a')).should('not.exist');
-
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section7/p4')).should('not.exist');
+    cy.get(cesc2('#/section7_title')).should('have.text', 'Section 7')
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
 
 
-    cy.get(cesc('#/section7/removeP_button')).click();
+    cy.get(cesc2('#/section1/addP_button')).click();
 
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
 
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
 
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
 
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
-
-
-    cy.get(cesc('#/section4/addP_button')).click();
-
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
-
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
-
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('have.text', "i=3, v=13");
-    cy.get(cesc('#/section4/p4')).should('not.exist');
-
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
-
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
-
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
 
 
-    cy.get(cesc('#/section4/removeP_button')).click();
+    cy.get(cesc2('#/section7/removeP_button')).click();
 
-    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section1/p3')).should('not.exist');
-    cy.get(cesc('#/section1/p4')).should('not.exist');
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
 
-    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section2/p3')).should('not.exist');
-    cy.get(cesc('#/section2/p4')).should('not.exist');
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3')).should('not.exist');
-    cy.get(cesc('#/p4')).should('not.exist');
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
 
-    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section4/p3')).should('not.exist');
-    cy.get(cesc('#/section4/p4')).should('not.exist');
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
 
-    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section5/p3')).should('not.exist');
-    cy.get(cesc('#/section5/p4')).should('not.exist');
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
 
-    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/p3a')).should('not.exist');
-    cy.get(cesc('#/p4a')).should('not.exist');
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
-    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
-    cy.get(cesc('#/section7/p3')).should('not.exist');
-    cy.get(cesc('#/section7/p4')).should('not.exist');
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc2('#/section4/addP_button')).click();
+
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
+
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc2('#/section4/removeP_button')).click();
+
+    cy.get(cesc2('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section1/p3')).should('not.exist');
+    cy.get(cesc2('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section2/p3')).should('not.exist');
+    cy.get(cesc2('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3')).should('not.exist');
+    cy.get(cesc2('#/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section4/p3')).should('not.exist');
+    cy.get(cesc2('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc2('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section5/p3')).should('not.exist');
+    cy.get(cesc2('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc2('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/p3a')).should('not.exist');
+    cy.get(cesc2('#/p4a')).should('not.exist');
+
+    cy.get(cesc2('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc2('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc2('#/section7/p3')).should('not.exist');
+    cy.get(cesc2('#/section7/p4')).should('not.exist');
 
 
   });
@@ -6817,24 +6809,24 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/A2')).should('not.exist')
-    cy.get(cesc('#/B2')).should('not.exist')
-    cy.get(cesc('#/C2')).should('not.exist')
-    cy.get(cesc('#/D2')).should('not.exist')
-    cy.get(cesc('#/E2')).should('not.exist')
-    cy.get(cesc('#/F2')).should('not.exist')
+    cy.get(cesc2('#/A2')).should('not.exist')
+    cy.get(cesc2('#/B2')).should('not.exist')
+    cy.get(cesc2('#/C2')).should('not.exist')
+    cy.get(cesc2('#/D2')).should('not.exist')
+    cy.get(cesc2('#/E2')).should('not.exist')
+    cy.get(cesc2('#/F2')).should('not.exist')
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
 
-    cy.get(cesc('#/A2') + ' .mjx-mrow').should('contain.text', '(1,2)')
-    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
-    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
-    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
-    cy.get(cesc('#/D2')).should('not.exist')
-    cy.get(cesc('#/E2')).should('not.exist')
-    cy.get(cesc('#/F2')).should('not.exist')
+    cy.get(cesc2('#/A2') + ' .mjx-mrow').should('contain.text', '(1,2)')
+    cy.get(cesc2('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc2('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
+    cy.get(cesc2('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
+    cy.get(cesc2('#/D2')).should('not.exist')
+    cy.get(cesc2('#/E2')).should('not.exist')
+    cy.get(cesc2('#/F2')).should('not.exist')
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -6854,23 +6846,23 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/C2') + ' .mjx-mrow').should('contain.text', '(7,2)')
-    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
-    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
-    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
-    cy.get(cesc('#/D2')).should('not.exist')
-    cy.get(cesc('#/E2')).should('not.exist')
-    cy.get(cesc('#/F2')).should('not.exist')
+    cy.get(cesc2('#/C2') + ' .mjx-mrow').should('contain.text', '(7,2)')
+    cy.get(cesc2('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc2('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc2('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc2('#/D2')).should('not.exist')
+    cy.get(cesc2('#/E2')).should('not.exist')
+    cy.get(cesc2('#/F2')).should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get(cesc('#/D2') + ' .mjx-mrow').should('contain.text', '(2,3)')
-    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
-    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
-    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
-    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)')
-    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(4,5)')
-    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc2('#/D2') + ' .mjx-mrow').should('contain.text', '(2,3)')
+    cy.get(cesc2('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc2('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc2('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc2('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)')
+    cy.get(cesc2('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(4,5)')
+    cy.get(cesc2('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
 
 
     cy.window().then(async (win) => {
@@ -6891,32 +6883,32 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
-    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
-    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
-    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
-    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
-    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
-    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
+    cy.get(cesc2('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
+    cy.get(cesc2('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc2('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc2('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc2('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
+    cy.get(cesc2('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
+    cy.get(cesc2('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}0{enter}", { force: true });
 
-    cy.get(cesc('#/A2')).should('not.exist')
-    cy.get(cesc('#/B2')).should('not.exist')
-    cy.get(cesc('#/C2')).should('not.exist')
-    cy.get(cesc('#/D2')).should('not.exist')
-    cy.get(cesc('#/E2')).should('not.exist')
-    cy.get(cesc('#/F2')).should('not.exist')
+    cy.get(cesc2('#/A2')).should('not.exist')
+    cy.get(cesc2('#/B2')).should('not.exist')
+    cy.get(cesc2('#/C2')).should('not.exist')
+    cy.get(cesc2('#/D2')).should('not.exist')
+    cy.get(cesc2('#/E2')).should('not.exist')
+    cy.get(cesc2('#/F2')).should('not.exist')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get(cesc('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
-    cy.get(cesc('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
-    cy.get(cesc('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
-    cy.get(cesc('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
-    cy.get(cesc('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
-    cy.get(cesc('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
-    cy.get(cesc('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
+    cy.get(cesc2('#/F2') + ' .mjx-mrow').should('contain.text', '(2,8)')
+    cy.get(cesc2('#/A2') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)')
+    cy.get(cesc2('#/B2') + ' .mjx-mrow').eq(0).should('have.text', '(1,8)')
+    cy.get(cesc2('#/C2') + ' .mjx-mrow').eq(0).should('have.text', '(7,2)')
+    cy.get(cesc2('#/D2') + ' .mjx-mrow').eq(0).should('have.text', '(0,10)')
+    cy.get(cesc2('#/E2') + ' .mjx-mrow').eq(0).should('have.text', '(9,1)')
+    cy.get(cesc2('#/F2') + ' .mjx-mrow').eq(0).should('have.text', '(2,8)')
   });
 
   it('external content cannot reach outside namespace', () => {
@@ -6932,34 +6924,34 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greetings/hi')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c5')).should('have.text', 'Hello');
 
 
-    cy.get(cesc('#/greetings/s/hi')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c4')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c5')).should('have.text', 'Hello');
 
   });
 
@@ -6976,52 +6968,52 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/hi')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c5')).should('have.text', 'Hello');
 
 
-    cy.get(cesc('#/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/hi')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c5')).should('have.text', 'Hello');
 
   });
 
@@ -7038,52 +7030,52 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/hi')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c5')).should('have.text', 'Hello');
 
 
-    cy.get(cesc('#/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/hi')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c5')).should('have.text', 'Hello');
 
   });
 
@@ -7100,72 +7092,72 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greetings/hi')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/nm1')).should('not.exist');
-    cy.get(cesc('#/greetings/nm2')).should('not.exist');
-    cy.get(cesc('#/greetings/nm3')).should('not.exist');
-    cy.get(cesc('#/greetings/nm4')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm1')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm2')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm3')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm4')).should('not.exist');
 
-    cy.get(cesc('#/greetings/pNoMatch')).should('have.text', 'Four no matches:')
+    cy.get(cesc2('#/greetings/pNoMatch')).should('have.text', 'Four no matches:')
 
-    cy.get(cesc('#/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/hi')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/s/nm1')).should('not.exist');
-    cy.get(cesc('#/greetings/s/nm2')).should('not.exist');
-    cy.get(cesc('#/greetings/s/nm3')).should('not.exist');
-    cy.get(cesc('#/greetings/s/nm4')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm1')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm2')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm3')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm4')).should('not.exist');
 
-    cy.get(cesc('#/greetings/s/pNoMatch')).should('have.text', 'Four no matches:')
+    cy.get(cesc2('#/greetings/s/pNoMatch')).should('have.text', 'Four no matches:')
 
 
-    cy.get(cesc('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/s/s/nm1')).should('not.exist');
-    cy.get(cesc('#/greetings/s/s/nm2')).should('not.exist');
-    cy.get(cesc('#/greetings/s/s/nm3')).should('not.exist');
-    cy.get(cesc('#/greetings/s/s/nm4')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm1')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm2')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm3')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm4')).should('not.exist');
 
-    cy.get(cesc('#/greetings/s/s/pNoMatch')).should('have.text', 'Four no matches:')
+    cy.get(cesc2('#/greetings/s/s/pNoMatch')).should('have.text', 'Four no matches:')
 
 
   });
@@ -7183,72 +7175,72 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greetings/hi')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/nm1')).should('not.exist');
-    cy.get(cesc('#/greetings/nm2')).should('not.exist');
-    cy.get(cesc('#/greetings/nm3')).should('not.exist');
-    cy.get(cesc('#/greetings/nm4')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm1')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm2')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm3')).should('not.exist');
+    cy.get(cesc2('#/greetings/nm4')).should('not.exist');
 
-    cy.get(cesc('#/greetings/pNoMatch')).should('have.text', 'Four no matches:')
+    cy.get(cesc2('#/greetings/pNoMatch')).should('have.text', 'Four no matches:')
 
-    cy.get(cesc('#/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/hi')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/l5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/l5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/s/nm1')).should('not.exist');
-    cy.get(cesc('#/greetings/s/nm2')).should('not.exist');
-    cy.get(cesc('#/greetings/s/nm3')).should('not.exist');
-    cy.get(cesc('#/greetings/s/nm4')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm1')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm2')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm3')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/nm4')).should('not.exist');
 
-    cy.get(cesc('#/greetings/s/pNoMatch')).should('have.text', 'Four no matches:')
+    cy.get(cesc2('#/greetings/s/pNoMatch')).should('have.text', 'Four no matches:')
 
 
-    cy.get(cesc('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/hi')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l2')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l3')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l4')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greetings/s/s/l5')).should('have.text', 'Marhaban');
 
-    cy.get(cesc('#/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greetings/s/s/m5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greetings/s/s/m5')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greetings/s/s/c5')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greetings/s/s/nm1')).should('not.exist');
-    cy.get(cesc('#/greetings/s/s/nm2')).should('not.exist');
-    cy.get(cesc('#/greetings/s/s/nm3')).should('not.exist');
-    cy.get(cesc('#/greetings/s/s/nm4')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm1')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm2')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm3')).should('not.exist');
+    cy.get(cesc2('#/greetings/s/s/nm4')).should('not.exist');
 
-    cy.get(cesc('#/greetings/s/s/pNoMatch')).should('have.text', 'Four no matches:')
+    cy.get(cesc2('#/greetings/s/s/pNoMatch')).should('have.text', 'Four no matches:')
 
 
   });
@@ -7266,36 +7258,36 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Leave');
+    cy.get(cesc2('#/hi')).should('have.text', 'Leave');
 
-    cy.get(cesc('#/greet/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/greet/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greet/greetings/hi')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c5')).should('have.text', 'Hello');
 
 
-    cy.get(cesc('#/greet/greetings/s/hi')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c4')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greet/greetings/s/s/hi')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greet/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greet/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greet/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greet/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
 
   });
 
@@ -7312,42 +7304,42 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Leave');
+    cy.get(cesc2('#/hi')).should('have.text', 'Leave');
 
-    cy.get(cesc('#/greet/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/greet/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greet/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/hi')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greet/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c5')).should('have.text', 'Hello');
 
 
-    cy.get(cesc('#/greet/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/hi')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greet/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l5')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c4')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greet/greetings/s/s/hi')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greet/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greet/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greet/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greet/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
 
   });
 
@@ -7364,42 +7356,42 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/hi')).should('have.text', 'Leave');
+    cy.get(cesc2('#/hi')).should('have.text', 'Leave');
 
-    cy.get(cesc('#/greet/hi')).should('have.text', 'Bye');
+    cy.get(cesc2('#/greet/hi')).should('have.text', 'Bye');
 
-    cy.get(cesc('#/greet/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/hi')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greet/greetings/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/c5')).should('have.text', 'Hello');
 
 
-    cy.get(cesc('#/greet/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/hi')).should('have.text', 'Hola');
 
-    cy.get(cesc('#/greet/greetings/s/l1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l2')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l3')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l4')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/l5')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l2')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l3')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l4')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/l5')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/c4')).should('have.text', 'Hello');
 
-    cy.get(cesc('#/greet/greetings/s/s/hi')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greet/greetings/s/s/l1')).should('have.text', 'Marhaban');
-    cy.get(cesc('#/greet/greetings/s/s/m1')).should('have.text', 'Hola');
-    cy.get(cesc('#/greet/greetings/s/s/c1')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c2')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c3')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c4')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
-    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greet/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc2('#/greet/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc2('#/greet/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc2('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
 
   });
 
@@ -7426,23 +7418,23 @@ describe('Copy Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=')
     })
 
     cy.log('Add point')
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
-    cy.get('#\\/m1').should('contain.text', 'A1=(1,1)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true })
+    cy.get(cesc('#\\/m1')).should('contain.text', 'A1=(1,1)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(1,1)')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=')
     })
 
@@ -7456,48 +7448,48 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/m1').should('contain.text', 'A1=(−3,7)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m1')).should('contain.text', 'A1=(−3,7)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(−3,7)')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=')
     })
 
 
     cy.log('Remove point')
-    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}0{enter}", { force: true })
 
-    cy.get('#\\/m1').should('not.contain.text', 'A1=(−3,7)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m1')).should('not.contain.text', 'A1=(−3,7)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=')
     })
 
 
     cy.log('Remember coordinates when restore point since copy was maintained')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
-    cy.get('#\\/m1 .mjx-mrow').should('contain.text', 'A1=(−3,7)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m1') + ' .mjx-mrow').should('contain.text', 'A1=(−3,7)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(−3,7)')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=')
     })
 
 
     cy.log('Add second point')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', 'A2=(2,1)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', 'A2=(2,1)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(−3,7)')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=(2,1)')
     })
 
@@ -7512,35 +7504,35 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', 'A2=(5,−4)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', 'A2=(5,−4)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(−3,7)')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=(5,−4)')
     })
 
 
     cy.log('Remove both points')
-    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}0{enter}", { force: true })
 
-    cy.get('#\\/m1 .mjx-mrow').should('not.contain.text', 'A1=(−3,7)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m1') + ' .mjx-mrow').should('not.contain.text', 'A1=(−3,7)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=')
     })
 
 
     cy.log('Remember coordinates of both points')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
-    cy.get('#\\/m1 .mjx-mrow').should('contain.text', 'A1=(−3,7)')
-    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/m1') + ' .mjx-mrow').should('contain.text', 'A1=(−3,7)')
+    cy.get(cesc('#\\/m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(−3,7)')
     })
-    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/m2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A2=(5,−4)')
     })
 
@@ -7556,8 +7548,8 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/hi').should('have.text', 'Hello');
-    cy.get('#\\/_p1').should('have.text', 'Hello there')
+    cy.get(cesc('#\\/hi')).should('have.text', 'Hello');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hello there')
 
 
   });
@@ -7571,8 +7563,8 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/hi').should('have.text', 'Hello');
-    cy.get('#\\/_p1').should('have.text', 'Hello there')
+    cy.get(cesc('#\\/hi')).should('have.text', 'Hello');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hello there')
 
 
   });
@@ -7595,7 +7587,7 @@ describe('Copy Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let catInd, choiceOrder;
@@ -7607,12 +7599,12 @@ describe('Copy Tag Tests', function () {
       catInd = choices.indexOf("meow") + 1;
       choiceOrder = stateVariables['/problem1/_choiceinput1'].stateValues.choiceOrder;
 
-      cy.get(cesc(`#/problem1/_choiceinput1_choice${catInd}_input`)).click();
+      cy.get(cesc2(`#/problem1/_choiceinput1_choice${catInd}_input`)).click();
     })
 
 
-    cy.get(cesc(`#/problem1/_choiceinput1_submit`)).click();
-    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc2(`#/problem1/_choiceinput1_submit`)).click();
+    cy.get(cesc2(`#/problem1/_choiceinput1_correct`)).should('be.visible');
 
     cy.wait(2000);  // make sure 1 second debounce occurred
 
@@ -7625,7 +7617,7 @@ describe('Copy Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -7664,7 +7656,7 @@ describe('Copy Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let catInd, choiceOrder;
@@ -7676,12 +7668,12 @@ describe('Copy Tag Tests', function () {
       catInd = choices.indexOf("meow") + 1;
       choiceOrder = stateVariables['/problem1/_choiceinput1'].stateValues.choiceOrder;
 
-      cy.get(cesc(`#/problem1/_choiceinput1_choice${catInd}_input`)).click();
+      cy.get(cesc2(`#/problem1/_choiceinput1_choice${catInd}_input`)).click();
     })
 
 
-    cy.get(cesc(`#/problem1/_choiceinput1_submit`)).click();
-    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc2(`#/problem1/_choiceinput1_submit`)).click();
+    cy.get(cesc2(`#/problem1/_choiceinput1_correct`)).should('be.visible');
 
     cy.wait(2000);  // make sure 1 second debounce occurred
 
@@ -7694,7 +7686,7 @@ describe('Copy Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -7733,7 +7725,7 @@ describe('Copy Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let catInd, choiceOrder;
@@ -7745,12 +7737,12 @@ describe('Copy Tag Tests', function () {
       catInd = choices.indexOf("meow") + 1;
       choiceOrder = stateVariables['/problem1/_choiceinput1'].stateValues.choiceOrder;
 
-      cy.get(cesc(`#/problem1/_choiceinput1_choice${catInd}_input`)).click();
+      cy.get(cesc2(`#/problem1/_choiceinput1_choice${catInd}_input`)).click();
     })
 
 
-    cy.get(cesc(`#/problem1/_choiceinput1_submit`)).click();
-    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc2(`#/problem1/_choiceinput1_submit`)).click();
+    cy.get(cesc2(`#/problem1/_choiceinput1_correct`)).should('be.visible');
 
     cy.wait(2000);  // make sure 1 second debounce occurred
 
@@ -7763,7 +7755,7 @@ describe('Copy Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -7806,34 +7798,34 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/_number1')).should('have.text', '1');
-    cy.get(cesc('#/_number2')).should('have.text', '2');
-    cy.get(cesc('#/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/c1/_number1')).should('have.text', '1');
-    cy.get(cesc('#/c1/_number2')).should('have.text', '2');
-    cy.get(cesc('#/c1/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/c1/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/c1/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/c1/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/c4/_number1')).should('have.text', '1');
-    cy.get(cesc('#/c4/_number2')).should('have.text', '2');
-    cy.get(cesc('#/c4/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/c4/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/c4/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/c4/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/c9/c1/_number1')).should('have.text', '1');
-    cy.get(cesc('#/c9/c1/_number2')).should('have.text', '2');
-    cy.get(cesc('#/c9/c1/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/c9/c1/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/c9/c1/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/c9/c1/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/c5/p1b')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/c10/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
 
@@ -7849,21 +7841,21 @@ describe('Copy Tag Tests', function () {
       let c9s = stateVariables["/c9"].replacements[0].componentName;
       let c10s = stateVariables["/c10"].replacements[0].componentName;
 
-      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c5p)).should('have.text', 'values: 1 2 3')
 
-      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c7s)).invoke('text').then(text => {
         expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c8s)).invoke('text').then(text => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c9s)).invoke('text').then(text => {
         expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c10s)).invoke('text').then(text => {
         expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
 
@@ -7980,40 +7972,40 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/_number1')).should('have.text', '1');
-    cy.get(cesc('#/_number2')).should('have.text', '2');
-    cy.get(cesc('#/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/p1a/_number1')).should('have.text', '1');
-    cy.get(cesc('#/p1a/_number2')).should('have.text', '2');
-    cy.get(cesc('#/p1a/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/p1a/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/p1a/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/p1a/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/p1b/_number1')).should('have.text', '1');
-    cy.get(cesc('#/p1b/_number2')).should('have.text', '2');
-    cy.get(cesc('#/p1b/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/p1b/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/p1b/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/p1b/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/p1c/_number1')).should('have.text', '1');
-    cy.get(cesc('#/p1c/_number2')).should('have.text', '2');
-    cy.get(cesc('#/p1c/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/p1c/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/p1c/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/p1c/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/s1b/p1a/_number1')).should('have.text', '1');
-    cy.get(cesc('#/s1b/p1a/_number2')).should('have.text', '2');
-    cy.get(cesc('#/s1b/p1a/_number3')).should('have.text', '3');
+    cy.get(cesc2('#/s1b/p1a/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/s1b/p1a/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/s1b/p1a/_number3')).should('have.text', '3');
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1b')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1c')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1c')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
@@ -8067,34 +8059,34 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/n1')).should('have.text', '1');
-    cy.get(cesc('#/n2')).should('have.text', '2');
-    cy.get(cesc('#/n3')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/n1')).should('have.text', '1');
+    cy.get(cesc2('#/n2')).should('have.text', '2');
+    cy.get(cesc2('#/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/c1/n1')).should('have.text', '1');
-    cy.get(cesc('#/c1/n2')).should('have.text', '2');
-    cy.get(cesc('#/c1/n3')).should('have.text', '3');
+    cy.get(cesc2('#/c1/n1')).should('have.text', '1');
+    cy.get(cesc2('#/c1/n2')).should('have.text', '2');
+    cy.get(cesc2('#/c1/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/c4/n1')).should('have.text', '1');
-    cy.get(cesc('#/c4/n2')).should('have.text', '2');
-    cy.get(cesc('#/c4/n3')).should('have.text', '3');
+    cy.get(cesc2('#/c4/n1')).should('have.text', '1');
+    cy.get(cesc2('#/c4/n2')).should('have.text', '2');
+    cy.get(cesc2('#/c4/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/c9/c1/n1')).should('have.text', '1');
-    cy.get(cesc('#/c9/c1/n2')).should('have.text', '2');
-    cy.get(cesc('#/c9/c1/n3')).should('have.text', '3');
+    cy.get(cesc2('#/c9/c1/n1')).should('have.text', '1');
+    cy.get(cesc2('#/c9/c1/n2')).should('have.text', '2');
+    cy.get(cesc2('#/c9/c1/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/c5/p1b')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/c10/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
 
@@ -8109,20 +8101,20 @@ describe('Copy Tag Tests', function () {
       let c9s = stateVariables["/c9"].replacements[0].componentName;
       let c10s = stateVariables["/c10"].replacements[0].componentName;
 
-      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c7s)).invoke('text').then(text => {
         expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c8s)).invoke('text').then(text => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c9s)).invoke('text').then(text => {
         expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c10s)).invoke('text').then(text => {
         expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
       // put in window just so happens after above
@@ -8237,40 +8229,40 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/n1')).should('have.text', '1');
-    cy.get(cesc('#/n2')).should('have.text', '2');
-    cy.get(cesc('#/n3')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/n1')).should('have.text', '1');
+    cy.get(cesc2('#/n2')).should('have.text', '2');
+    cy.get(cesc2('#/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/p1a/n1')).should('have.text', '1');
-    cy.get(cesc('#/p1a/n2')).should('have.text', '2');
-    cy.get(cesc('#/p1a/n3')).should('have.text', '3');
+    cy.get(cesc2('#/p1a/n1')).should('have.text', '1');
+    cy.get(cesc2('#/p1a/n2')).should('have.text', '2');
+    cy.get(cesc2('#/p1a/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/p1b/n1')).should('have.text', '1');
-    cy.get(cesc('#/p1b/n2')).should('have.text', '2');
-    cy.get(cesc('#/p1b/n3')).should('have.text', '3');
+    cy.get(cesc2('#/p1b/n1')).should('have.text', '1');
+    cy.get(cesc2('#/p1b/n2')).should('have.text', '2');
+    cy.get(cesc2('#/p1b/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/p1c/n1')).should('have.text', '1');
-    cy.get(cesc('#/p1c/n2')).should('have.text', '2');
-    cy.get(cesc('#/p1c/n3')).should('have.text', '3');
+    cy.get(cesc2('#/p1c/n1')).should('have.text', '1');
+    cy.get(cesc2('#/p1c/n2')).should('have.text', '2');
+    cy.get(cesc2('#/p1c/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/s1b/p1a/n1')).should('have.text', '1');
-    cy.get(cesc('#/s1b/p1a/n2')).should('have.text', '2');
-    cy.get(cesc('#/s1b/p1a/n3')).should('have.text', '3');
+    cy.get(cesc2('#/s1b/p1a/n1')).should('have.text', '1');
+    cy.get(cesc2('#/s1b/p1a/n2')).should('have.text', '2');
+    cy.get(cesc2('#/s1b/p1a/n3')).should('have.text', '3');
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1b')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1c')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1c')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
@@ -8324,34 +8316,34 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/_number1')).should('have.text', '3');
 
-    cy.get(cesc('#/c1/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/c1/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/c1/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/c1/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/c1/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/c1/_number1')).should('have.text', '3');
 
-    cy.get(cesc('#/c4/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/c4/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/c4/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/c4/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/c4/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/c4/_number1')).should('have.text', '3');
 
-    cy.get(cesc('#/c9/c1/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/c9/c1/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/c9/c1/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/c9/c1/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/c9/c1/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/c9/c1/_number1')).should('have.text', '3');
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/c5/p1b')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/c10/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
 
@@ -8366,20 +8358,20 @@ describe('Copy Tag Tests', function () {
       let c9s = stateVariables["/c9"].replacements[0].componentName;
       let c10s = stateVariables["/c10"].replacements[0].componentName;
 
-      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c7s)).invoke('text').then(text => {
         expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c8s)).invoke('text').then(text => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c9s)).invoke('text').then(text => {
         expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c10s)).invoke('text').then(text => {
         expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
 
@@ -8495,37 +8487,37 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/_number1')).should('have.text', '3');
 
-    cy.get(cesc('#/p1a/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/p1a/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/p1a/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/p1a/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/p1a/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/p1a/_number1')).should('have.text', '3');
 
-    cy.get(cesc('#/p1b/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/p1b/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/p1b/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/p1b/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/p1b/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/p1b/_number1')).should('have.text', '3');
 
-    cy.get(cesc('#/p1c/grp/_number1')).should('have.text', '1');
-    cy.get(cesc('#/p1c/grp/_number2')).should('have.text', '2');
-    cy.get(cesc('#/p1c/_number1')).should('have.text', '3');
+    cy.get(cesc2('#/p1c/grp/_number1')).should('have.text', '1');
+    cy.get(cesc2('#/p1c/grp/_number2')).should('have.text', '2');
+    cy.get(cesc2('#/p1c/_number1')).should('have.text', '3');
 
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1b')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1c')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1c')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
@@ -8583,38 +8575,38 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/n1')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/n1')).should('have.text', '3');
 
-    cy.get(cesc('#/c1/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/c1/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/c1/n1')).should('have.text', '3');
+    cy.get(cesc2('#/c1/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/c1/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/c1/n1')).should('have.text', '3');
 
-    cy.get(cesc('#/c4/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/c4/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/c4/n1')).should('have.text', '3');
+    cy.get(cesc2('#/c4/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/c4/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/c4/n1')).should('have.text', '3');
 
-    cy.get(cesc('#/c9/c1/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/c9/c1/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/c9/c1/n1')).should('have.text', '3');
+    cy.get(cesc2('#/c9/c1/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/c9/c1/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/c9/c1/n1')).should('have.text', '3');
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/c6/grp')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/c10/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/c11/grp')).invoke('text').then(text => {
+    cy.get(cesc2('#/c11/grp')).invoke('text').then(text => {
       expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null
     })
 
@@ -8631,24 +8623,24 @@ describe('Copy Tag Tests', function () {
       let c10s = stateVariables["/c10"].replacements[0].componentName;
       let c11s = stateVariables["/c11"].replacements[0].componentName;
 
-      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c6p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc2('#' + c7s)).invoke('text').then(text => {
         expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c8s)).invoke('text').then(text => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c9s)).invoke('text').then(text => {
         expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c10s)).invoke('text').then(text => {
         expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
-      cy.get(cesc('#' + c11s)).invoke('text').then(text => {
+      cy.get(cesc2('#' + c11s)).invoke('text').then(text => {
         expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null
       })
 
@@ -8787,37 +8779,37 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
-    cy.get(cesc('#/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/n1')).should('have.text', '3');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/n1')).should('have.text', '3');
 
-    cy.get(cesc('#/p1a/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/p1a/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/p1a/n1')).should('have.text', '3');
+    cy.get(cesc2('#/p1a/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/p1a/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/p1a/n1')).should('have.text', '3');
 
-    cy.get(cesc('#/p1b/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/p1b/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/p1b/n1')).should('have.text', '3');
+    cy.get(cesc2('#/p1b/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/p1b/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/p1b/n1')).should('have.text', '3');
 
-    cy.get(cesc('#/p1c/grp/n1')).should('have.text', '1');
-    cy.get(cesc('#/p1c/grp/n2')).should('have.text', '2');
-    cy.get(cesc('#/p1c/n1')).should('have.text', '3');
+    cy.get(cesc2('#/p1c/grp/n1')).should('have.text', '1');
+    cy.get(cesc2('#/p1c/grp/n2')).should('have.text', '2');
+    cy.get(cesc2('#/p1c/n1')).should('have.text', '3');
 
 
-    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1b')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/p1c')).should('have.text', 'values: 1 2 3')
-    cy.get(cesc('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/p1c')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc2('#/s1b/p1a')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+    cy.get(cesc2('#/_section1')).invoke('text').then(text => {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1a')).invoke('text').then(text => {
       expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
-    cy.get(cesc('#/s1b')).invoke('text').then(text => {
+    cy.get(cesc2('#/s1b')).invoke('text').then(text => {
       expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
@@ -8868,38 +8860,38 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/grp/num1')).should('have.text', '1');
-    cy.get(cesc('#/grp/num2')).should('have.text', '2');
-    cy.get(cesc('#/grp/num3')).should('have.text', '3');
-    cy.get(cesc('#/grp/num4')).should('have.text', '4');
-    cy.get(cesc('#/grp/num5')).should('have.text', '5');
-    cy.get(cesc('#/grp/num6')).should('have.text', '6');
+    cy.get(cesc2('#/grp/num1')).should('have.text', '1');
+    cy.get(cesc2('#/grp/num2')).should('have.text', '2');
+    cy.get(cesc2('#/grp/num3')).should('have.text', '3');
+    cy.get(cesc2('#/grp/num4')).should('have.text', '4');
+    cy.get(cesc2('#/grp/num5')).should('have.text', '5');
+    cy.get(cesc2('#/grp/num6')).should('have.text', '6');
 
-    cy.get(cesc('#/grp2/num1')).should('have.text', '1');
-    cy.get(cesc('#/grp2/num2')).should('have.text', '2');
-    cy.get(cesc('#/grp2/num3')).should('have.text', '3');
-    cy.get(cesc('#/grp2/num4')).should('have.text', '4');
-    cy.get(cesc('#/grp2/num5')).should('have.text', '5');
-    cy.get(cesc('#/grp2/num6')).should('have.text', '6');
+    cy.get(cesc2('#/grp2/num1')).should('have.text', '1');
+    cy.get(cesc2('#/grp2/num2')).should('have.text', '2');
+    cy.get(cesc2('#/grp2/num3')).should('have.text', '3');
+    cy.get(cesc2('#/grp2/num4')).should('have.text', '4');
+    cy.get(cesc2('#/grp2/num5')).should('have.text', '5');
+    cy.get(cesc2('#/grp2/num6')).should('have.text', '6');
 
-    cy.get(cesc('#/grp3/num1')).should('have.text', '1');
-    cy.get(cesc('#/grp3/num2')).should('have.text', '2');
-    cy.get(cesc('#/grp3/num3')).should('have.text', '3');
-    cy.get(cesc('#/grp3/num4')).should('have.text', '4');
-    cy.get(cesc('#/grp3/num5')).should('have.text', '5');
-    cy.get(cesc('#/grp3/num6')).should('have.text', '6');
+    cy.get(cesc2('#/grp3/num1')).should('have.text', '1');
+    cy.get(cesc2('#/grp3/num2')).should('have.text', '2');
+    cy.get(cesc2('#/grp3/num3')).should('have.text', '3');
+    cy.get(cesc2('#/grp3/num4')).should('have.text', '4');
+    cy.get(cesc2('#/grp3/num5')).should('have.text', '5');
+    cy.get(cesc2('#/grp3/num6')).should('have.text', '6');
 
-    cy.get(cesc('#/grp4/num3')).should('have.text', '3');
-    cy.get(cesc('#/grp4/num4')).should('have.text', '4');
-    cy.get(cesc('#/grp4/num5')).should('have.text', '5');
-    cy.get(cesc('#/grp4/num6')).should('have.text', '6');
+    cy.get(cesc2('#/grp4/num3')).should('have.text', '3');
+    cy.get(cesc2('#/grp4/num4')).should('have.text', '4');
+    cy.get(cesc2('#/grp4/num5')).should('have.text', '5');
+    cy.get(cesc2('#/grp4/num6')).should('have.text', '6');
 
-    cy.get(cesc('#/grp5/num3')).should('have.text', '3');
-    cy.get(cesc('#/grp5/num4')).should('have.text', '4');
-    cy.get(cesc('#/grp5/num5')).should('have.text', '5');
-    cy.get(cesc('#/grp5/num6')).should('have.text', '6');
+    cy.get(cesc2('#/grp5/num3')).should('have.text', '3');
+    cy.get(cesc2('#/grp5/num4')).should('have.text', '4');
+    cy.get(cesc2('#/grp5/num5')).should('have.text', '5');
+    cy.get(cesc2('#/grp5/num6')).should('have.text', '6');
 
   })
 
@@ -8916,9 +8908,9 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get(cesc('#/_text1')).should('have.text', 'a');
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');
 
-    cy.get(cesc('#/_p1')).should('have.text', "1 2")
+    cy.get(cesc2('#/_p1')).should('have.text', "1 2")
 
   })
 
@@ -8952,14 +8944,14 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/Ax .mjx-mrow').should('not.exist');
-    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8977,12 +8969,12 @@ describe('Copy Tag Tests', function () {
 
     cy.log('restrict collection to first component');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true })
 
-    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9007,10 +8999,10 @@ describe('Copy Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9030,15 +9022,15 @@ describe('Copy Tag Tests', function () {
 
     cy.log('collect second component');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9066,10 +9058,10 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9119,14 +9111,14 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/Ax .mjx-mrow').should('not.exist');
-    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9144,12 +9136,12 @@ describe('Copy Tag Tests', function () {
 
     cy.log('restrict collection to first component');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true })
 
-    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9174,10 +9166,10 @@ describe('Copy Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9197,15 +9189,15 @@ describe('Copy Tag Tests', function () {
 
     cy.log('restrict collection to second component');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9233,10 +9225,10 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/Bx') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9286,12 +9278,12 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9312,8 +9304,8 @@ describe('Copy Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9329,13 +9321,13 @@ describe('Copy Tag Tests', function () {
 
     cy.log('restrict collection to second component');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9359,8 +9351,8 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9406,12 +9398,12 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9432,8 +9424,8 @@ describe('Copy Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9449,13 +9441,13 @@ describe('Copy Tag Tests', function () {
 
     cy.log('restrict collection to second component');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9479,8 +9471,8 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/Ax') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9522,18 +9514,18 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9551,16 +9543,16 @@ describe('Copy Tag Tests', function () {
 
     cy.log('set propIndex to 1');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true })
 
-    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9585,14 +9577,14 @@ describe('Copy Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9611,18 +9603,18 @@ describe('Copy Tag Tests', function () {
 
     cy.log('set componentIndex to 2');
 
-    cy.get('#\\/m textarea').type("2{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9650,14 +9642,14 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9676,18 +9668,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 2')
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9706,18 +9698,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 1')
-    cy.get('#\\/m textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9737,18 +9729,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 3')
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9767,18 +9759,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 1')
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9798,18 +9790,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 3')
-    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9828,18 +9820,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 2')
-    cy.get('#\\/m textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9857,16 +9849,16 @@ describe('Copy Tag Tests', function () {
     })
 
     cy.log('clear propIndex')
-    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{enter}", { force: true })
 
-    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9910,18 +9902,18 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9939,16 +9931,16 @@ describe('Copy Tag Tests', function () {
 
     cy.log('set propIndex to 1');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true })
 
-    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9973,14 +9965,14 @@ describe('Copy Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -9999,18 +9991,18 @@ describe('Copy Tag Tests', function () {
 
     cy.log('set componentIndex to 2');
 
-    cy.get('#\\/m textarea').type("2{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10038,14 +10030,14 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10064,18 +10056,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 2')
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10094,18 +10086,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 1')
-    cy.get('#\\/m textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10125,18 +10117,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 3')
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10155,18 +10147,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 1')
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10186,18 +10178,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 3')
-    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10216,18 +10208,18 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 2')
-    cy.get('#\\/m textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10245,16 +10237,16 @@ describe('Copy Tag Tests', function () {
     })
 
     cy.log('clear propIndex')
-    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{enter}", { force: true })
 
-    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/al2\\/n4') + ' .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -10298,14 +10290,14 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10327,8 +10319,8 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10341,12 +10333,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 2')
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10359,12 +10351,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 1')
-    cy.get('#\\/m textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10378,12 +10370,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 3')
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10396,12 +10388,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 1')
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10415,12 +10407,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 3')
-    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10433,13 +10425,13 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 2')
-    cy.get('#\\/m textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -10450,11 +10442,11 @@ describe('Copy Tag Tests', function () {
     })
 
     cy.log('clear propIndex')
-    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{enter}", { force: true })
 
     cy.window().then(async (win) => {
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10493,14 +10485,14 @@ describe('Copy Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10522,8 +10514,8 @@ describe('Copy Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10536,12 +10528,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 2')
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y2));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10554,12 +10546,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 1')
-    cy.get('#\\/m textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(y1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10573,12 +10565,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 3')
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10591,12 +10583,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set propIndex to 1')
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x1));
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10610,12 +10602,12 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 3')
-    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -10628,13 +10620,13 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('set componentIndex to 2')
-    cy.get('#\\/m textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get(cesc('#\\/al2\\/n2') + ' .mjx-mrow').should('not.exist');
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -10645,11 +10637,11 @@ describe('Copy Tag Tests', function () {
     })
 
     cy.log('clear propIndex')
-    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{enter}", { force: true })
 
     cy.window().then(async (win) => {
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get(cesc('#\\/al2\\/n1') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();

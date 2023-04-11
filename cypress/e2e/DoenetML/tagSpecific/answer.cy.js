@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Answer Tag Tests', function () {
 
@@ -27,23 +19,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -61,14 +53,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -87,16 +79,16 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
 
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
 
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -114,14 +106,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -138,14 +130,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -175,23 +167,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -209,14 +201,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -233,20 +225,20 @@ describe('Answer Tag Tests', function () {
       cy.log("Press enter to submit")
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
-      // wrap to change value of '#\\/sr1'
+      // wrap to change value of cesc('#\\/sr1')
       cy.window().then(async (win) => {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x+y');
-        cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-        cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+        cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
 
-        cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
-        cy.get('#\\/ca1').should('have.text', '1')
+        cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
         cy.log('Test internal values')
         cy.window().then(async (win) => {
@@ -264,14 +256,14 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
-        cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-        cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+        cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
-        cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
-        cy.get('#\\/ca1').should('have.text', '1')
+        cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
         cy.log('Test internal values')
         cy.window().then(async (win) => {
@@ -288,14 +280,14 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
-        cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-        cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+        cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
-        cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
-        cy.get('#\\/ca1').should('have.text', '0')
+        cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
         cy.log('Test internal values')
@@ -325,23 +317,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -359,14 +351,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -383,20 +375,20 @@ describe('Answer Tag Tests', function () {
       cy.log("Press enter to submit")
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
-      // wrap to change value of '#\\/sr1'
+      // wrap to change value of cesc('#\\/sr1')
       cy.window().then(async (win) => {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x+y');
-        cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-        cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+        cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
 
-        cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
-        cy.get('#\\/ca1').should('have.text', '1')
+        cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
         cy.log('Test internal values')
         cy.window().then(async (win) => {
@@ -414,14 +406,14 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
-        cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-        cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+        cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
-        cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
-        cy.get('#\\/ca1').should('have.text', '1')
+        cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
         cy.log('Test internal values')
         cy.window().then(async (win) => {
@@ -438,14 +430,14 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
-        cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-        cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+        cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
-        cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
-        cy.get('#\\/ca1').should('have.text', '0')
+        cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
         cy.log('Test internal values')
@@ -476,23 +468,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -510,14 +502,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -536,15 +528,15 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
 
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -562,14 +554,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -586,14 +578,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -622,23 +614,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -656,14 +648,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -682,15 +674,15 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
 
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -708,14 +700,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -732,14 +724,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -769,23 +761,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -803,14 +795,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -829,15 +821,15 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
 
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -855,14 +847,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -879,14 +871,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -916,19 +908,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -944,9 +936,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -964,9 +956,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -983,9 +975,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1001,9 +993,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1020,9 +1012,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1038,9 +1030,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1067,19 +1059,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1095,9 +1087,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1114,9 +1106,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there \n');
-      cy.get('#\\/cr1').should('have.text', ' hello there \n')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there \n')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1133,9 +1125,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there \n');
-      cy.get('#\\/cr1').should('have.text', ' hello there \n')
-      cy.get('#\\/sr1').should('have.text', ' hello there \n')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there \n')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there \n')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1151,9 +1143,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there \n')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there \n')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1169,9 +1161,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1188,9 +1180,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1206,9 +1198,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1236,19 +1228,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1264,9 +1256,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1284,9 +1276,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1303,9 +1295,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1321,9 +1313,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1340,9 +1332,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1358,9 +1350,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1386,20 +1378,20 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1415,9 +1407,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1435,9 +1427,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1454,9 +1446,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1472,9 +1464,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1491,9 +1483,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1509,9 +1501,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1538,19 +1530,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1566,9 +1558,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1586,9 +1578,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1605,9 +1597,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1623,9 +1615,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1642,9 +1634,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1660,9 +1652,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1689,19 +1681,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1717,9 +1709,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1737,9 +1729,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1756,9 +1748,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1774,9 +1766,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1793,9 +1785,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1811,9 +1803,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1840,19 +1832,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1868,9 +1860,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1888,9 +1880,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1907,9 +1899,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1925,9 +1917,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1944,9 +1936,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1962,9 +1954,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -1990,19 +1982,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2018,9 +2010,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2038,9 +2030,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2057,9 +2049,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2075,9 +2067,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2094,9 +2086,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2112,9 +2104,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2141,19 +2133,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2169,9 +2161,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2189,9 +2181,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2208,9 +2200,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2226,9 +2218,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2245,9 +2237,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2263,9 +2255,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2292,19 +2284,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2320,9 +2312,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2340,9 +2332,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2359,9 +2351,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2377,9 +2369,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2396,9 +2388,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2414,9 +2406,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2442,23 +2434,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
-      cy.get('#\\/_p2').should('have.text', 'Submitted responses: ')
+      cy.get(cesc('#\\/_p2')).should('have.text', 'Submitted responses: ')
 
       cy.log("Type correct answer in")
       cy.get(textinputAnchor).type(` hello there {enter}`)
 
-      cy.get('#\\/_p2').should('have.text', 'Submitted responses:  hello there ')
+      cy.get(cesc('#\\/_p2')).should('have.text', 'Submitted responses:  hello there ')
 
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2473,12 +2465,12 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).clear().type(`hellothere`).blur();
 
       cy.log('click boolean input to know when core has finished processing')
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true')
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true')
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2494,7 +2486,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2510,12 +2502,12 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).clear().type(`hello  there`).blur();
 
       cy.log('click boolean input to know when core has finished processing')
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'false')
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'false')
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2532,7 +2524,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2559,17 +2551,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2584,8 +2576,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2601,9 +2593,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2619,9 +2611,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2636,9 +2628,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2664,17 +2656,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2689,8 +2681,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2706,9 +2698,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2724,9 +2716,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2741,9 +2733,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2770,17 +2762,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2795,8 +2787,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2812,9 +2804,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2830,9 +2822,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2847,9 +2839,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2875,17 +2867,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2900,8 +2892,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2917,9 +2909,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2935,9 +2927,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2952,9 +2944,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -2979,23 +2971,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3012,14 +3004,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3038,14 +3030,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3063,14 +3055,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3087,14 +3079,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3121,23 +3113,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3154,14 +3146,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3180,14 +3172,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3205,14 +3197,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3229,14 +3221,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3264,23 +3256,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3297,14 +3289,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3323,14 +3315,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3348,14 +3340,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3372,14 +3364,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3407,23 +3399,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3440,14 +3432,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3466,14 +3458,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3491,14 +3483,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3515,14 +3507,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3550,23 +3542,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3583,14 +3575,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3609,14 +3601,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3634,14 +3626,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3658,14 +3650,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3693,23 +3685,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3726,14 +3718,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3752,14 +3744,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3777,14 +3769,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3801,14 +3793,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3842,23 +3834,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3875,14 +3867,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3901,14 +3893,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3926,14 +3918,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -3950,14 +3942,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -3984,23 +3976,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4016,14 +4008,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`x+y, z`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4040,14 +4032,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4063,14 +4055,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{end}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4085,14 +4077,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x,z')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -4115,15 +4107,15 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4147,15 +4139,15 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'z')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'z')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('z')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -4182,23 +4174,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4214,14 +4206,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`x+y, z`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4238,14 +4230,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4261,14 +4253,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{end}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4283,14 +4275,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x,z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x,z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x,z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x,z')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -4313,15 +4305,15 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4345,15 +4337,15 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'z')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'z')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'z')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'z')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('z')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('z')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -4383,30 +4375,30 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     let mathinput1Name = "/mi1";
-    let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+    let mathinput1Anchor = cesc2('#' + mathinput1Name) + " textarea";
     let mathinput2Name = "/mi2";
-    let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-    let submitAnchor = cesc('#/_answer1_submit');
+    let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+    let submitAnchor = cesc2('#/_answer1_submit');
 
     cy.log('Test value displayed in browser')
     // cy.get(mathinputAnchor).should('have.value', '');
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/ca1').should('have.text', '0')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -4423,21 +4415,21 @@ describe('Answer Tag Tests', function () {
     cy.get(mathinput2Anchor).type(`z`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-    cy.get('#\\/cr2 .mjx-mrow').should('have.text', 'z')
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+    cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('have.text', 'z')
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/ca1').should('have.text', '0')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
     cy.log('Test internal values')
@@ -4455,21 +4447,21 @@ describe('Answer Tag Tests', function () {
     cy.get(submitAnchor).type(`{enter}`);
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-    cy.get('#\\/sr2 .mjx-mrow').should('have.text', 'z')
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+    cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('have.text', 'z')
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/ca1').should('have.text', '1')
+    cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -4486,21 +4478,21 @@ describe('Answer Tag Tests', function () {
     cy.get(mathinput1Anchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-    cy.get('#\\/cr2 .mjx-mrow').should('have.text', 'z')
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+    cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('have.text', 'z')
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/ca1').should('have.text', '1')
+    cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -4516,21 +4508,21 @@ describe('Answer Tag Tests', function () {
     cy.get(submitAnchor).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-    cy.get('#\\/sr2 .mjx-mrow').should('have.text', 'z')
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+    cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('have.text', 'z')
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/ca1').should('have.text', '0.5')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -4553,23 +4545,23 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-    cy.get('#\\/cr2 .mjx-mrow').should('contain.text', '\uff3f')
-    cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-    cy.get('#\\/sr2 .mjx-mrow').should('contain.text', '\uff3f')
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+    cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+    cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('\uff3f')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('\uff3f')
     });
-    cy.get('#\\/ca1').should('have.text', '0')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
     cy.log('Test internal values')
@@ -4593,23 +4585,23 @@ describe('Answer Tag Tests', function () {
     cy.get(submitAnchor).type(`{enter}`);
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'z')
-    cy.get('#\\/cr2 .mjx-mrow').should('contain.text', '\uff3f')
-    cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'z')
-    cy.get('#\\/sr2 .mjx-mrow').should('contain.text', '\uff3f')
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'z')
+    cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'z')
+    cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('\uff3f')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('\uff3f')
     });
-    cy.get('#\\/ca1').should('have.text', '0.5')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -4637,23 +4629,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4668,14 +4660,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`1,  2`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '1,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '1,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4692,14 +4684,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '1,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '1,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4715,14 +4707,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{home}3`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '31,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '31,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4737,14 +4729,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '31,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '31,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31,2')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -4767,15 +4759,15 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '31')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '31')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '31')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '31')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4799,15 +4791,15 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '1')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '1')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '1')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -4834,23 +4826,23 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4865,14 +4857,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`1,  2`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '1,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '1,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4889,14 +4881,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '1,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '1,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4912,14 +4904,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{home}3`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '31,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '31,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1,2')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -4934,14 +4926,14 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '31,2')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '31,2')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31,2')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31,2')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -4964,15 +4956,15 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '31')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '31')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '31')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '31')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('31')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -4996,15 +4988,15 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', '1')
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', '1')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', '1')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -5031,19 +5023,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5059,9 +5051,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5079,9 +5071,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5098,9 +5090,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5116,9 +5108,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5135,9 +5127,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5153,9 +5145,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5180,19 +5172,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5208,9 +5200,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5228,9 +5220,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5247,9 +5239,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5265,9 +5257,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5284,9 +5276,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5302,9 +5294,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5329,19 +5321,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5357,9 +5349,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5377,9 +5369,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5396,9 +5388,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5414,9 +5406,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5433,9 +5425,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5451,9 +5443,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5479,19 +5471,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5507,9 +5499,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5527,9 +5519,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5546,9 +5538,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5564,9 +5556,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5583,9 +5575,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5601,9 +5593,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5628,19 +5620,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5656,9 +5648,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5676,9 +5668,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5695,9 +5687,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5713,9 +5705,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5732,9 +5724,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5750,9 +5742,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5778,19 +5770,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5806,9 +5798,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5826,9 +5818,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5845,9 +5837,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5863,9 +5855,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5882,9 +5874,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5900,9 +5892,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5937,19 +5929,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5965,9 +5957,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -5985,9 +5977,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6004,9 +5996,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6022,9 +6014,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hellothere');
-      cy.get('#\\/cr1').should('have.text', 'hellothere')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6041,9 +6033,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hellothere')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hellothere')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6059,9 +6051,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello  there');
-      cy.get('#\\/cr1').should('have.text', 'hello  there')
-      cy.get('#\\/sr1').should('have.text', 'hello  there')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello  there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6086,19 +6078,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6114,9 +6106,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello  , there ');
-      cy.get('#\\/cr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6133,9 +6125,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello  , there ');
-      cy.get('#\\/cr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/sr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6152,9 +6144,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello,then');
-      cy.get('#\\/cr1').should('have.text', 'hello,then')
-      cy.get('#\\/sr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello,then')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6170,9 +6162,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello,then');
-      cy.get('#\\/cr1').should('have.text', 'hello,then')
-      cy.get('#\\/sr1').should('have.text', 'hello,then')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello,then')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello,then')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6195,9 +6187,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello there');
-      cy.get('#\\/cr1').should('have.text', 'hello there')
-      cy.get('#\\/sr1').should('have.text', 'hello there')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6220,9 +6212,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'there');
-      cy.get('#\\/cr1').should('have.text', 'there')
-      cy.get('#\\/sr1').should('have.text', 'there')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6247,19 +6239,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6275,9 +6267,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello  , there ');
-      cy.get('#\\/cr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6294,9 +6286,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello  , there ');
-      cy.get('#\\/cr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/sr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6313,9 +6305,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello,then');
-      cy.get('#\\/cr1').should('have.text', 'hello,then')
-      cy.get('#\\/sr1').should('have.text', ' hello  , there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello,then')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello  , there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6331,9 +6323,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello,then');
-      cy.get('#\\/cr1').should('have.text', 'hello,then')
-      cy.get('#\\/sr1').should('have.text', 'hello,then')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello,then')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello,then')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6356,9 +6348,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'hello there');
-      cy.get('#\\/cr1').should('have.text', 'hello there')
-      cy.get('#\\/sr1').should('have.text', 'hello there')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'hello there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'hello there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6381,9 +6373,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'there');
-      cy.get('#\\/cr1').should('have.text', 'there')
-      cy.get('#\\/sr1').should('have.text', 'there')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'there')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'there')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6411,22 +6403,22 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     let textinput1Name = "/ti1";
-    let textinput1Anchor = cesc('#' + textinput1Name + '_input');
+    let textinput1Anchor = cesc2('#' + textinput1Name + '_input');
     let textinput2Name = "/ti2";
-    let textinput2Anchor = cesc('#' + textinput2Name + '_input');
-    let submitAnchor = cesc('#/_answer1_submit');
+    let textinput2Anchor = cesc2('#' + textinput2Name + '_input');
+    let submitAnchor = cesc2('#/_answer1_submit');
 
     cy.log('Test value displayed in browser')
     cy.get(textinput1Anchor).should('have.value', '');
     cy.get(textinput2Anchor).should('have.value', '');
-    cy.get('#\\/cr1').should('have.text', '')
-    cy.get('#\\/cr2').should('have.text', '')
-    cy.get('#\\/sr1').should('not.exist');
-    cy.get('#\\/sr2').should('not.exist');
-    cy.get('#\\/ca1').should('have.text', '0')
+    cy.get(cesc('#\\/cr1')).should('have.text', '')
+    cy.get(cesc('#\\/cr2')).should('have.text', '')
+    cy.get(cesc('#\\/sr1')).should('not.exist');
+    cy.get(cesc('#\\/sr2')).should('not.exist');
+    cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -6445,11 +6437,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test value displayed in browser')
     cy.get(textinput1Anchor).should('have.value', ' hello  ');
     cy.get(textinput2Anchor).should('have.value', ' there ');
-    cy.get('#\\/cr1').should('have.text', ' hello  ')
-    cy.get('#\\/cr2').should('have.text', ' there ')
-    cy.get('#\\/sr1').should('not.exist');
-    cy.get('#\\/sr2').should('not.exist');
-    cy.get('#\\/ca1').should('have.text', '0')
+    cy.get(cesc('#\\/cr1')).should('have.text', ' hello  ')
+    cy.get(cesc('#\\/cr2')).should('have.text', ' there ')
+    cy.get(cesc('#\\/sr1')).should('not.exist');
+    cy.get(cesc('#\\/sr2')).should('not.exist');
+    cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -6468,11 +6460,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test value displayed in browser')
     cy.get(textinput1Anchor).should('have.value', ' hello  ');
     cy.get(textinput2Anchor).should('have.value', ' there ');
-    cy.get('#\\/cr1').should('have.text', ' hello  ')
-    cy.get('#\\/cr2').should('have.text', ' there ')
-    cy.get('#\\/sr1').should('have.text', ' hello  ')
-    cy.get('#\\/sr2').should('have.text', ' there ')
-    cy.get('#\\/ca1').should('have.text', '1')
+    cy.get(cesc('#\\/cr1')).should('have.text', ' hello  ')
+    cy.get(cesc('#\\/cr2')).should('have.text', ' there ')
+    cy.get(cesc('#\\/sr1')).should('have.text', ' hello  ')
+    cy.get(cesc('#\\/sr2')).should('have.text', ' there ')
+    cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -6492,11 +6484,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test value displayed in browser')
     cy.get(textinput1Anchor).should('have.value', 'hello');
     cy.get(textinput2Anchor).should('have.value', 'then');
-    cy.get('#\\/cr1').should('have.text', 'hello')
-    cy.get('#\\/cr2').should('have.text', 'then')
-    cy.get('#\\/sr1').should('have.text', ' hello  ')
-    cy.get('#\\/sr2').should('have.text', ' there ')
-    cy.get('#\\/ca1').should('have.text', '1')
+    cy.get(cesc('#\\/cr1')).should('have.text', 'hello')
+    cy.get(cesc('#\\/cr2')).should('have.text', 'then')
+    cy.get(cesc('#\\/sr1')).should('have.text', ' hello  ')
+    cy.get(cesc('#\\/sr2')).should('have.text', ' there ')
+    cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -6514,11 +6506,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test value displayed in browser')
     cy.get(textinput1Anchor).should('have.value', 'hello');
     cy.get(textinput2Anchor).should('have.value', 'then');
-    cy.get('#\\/cr1').should('have.text', 'hello')
-    cy.get('#\\/cr2').should('have.text', 'then')
-    cy.get('#\\/sr1').should('have.text', 'hello')
-    cy.get('#\\/sr2').should('have.text', 'then')
-    cy.get('#\\/ca1').should('have.text', '0.5')
+    cy.get(cesc('#\\/cr1')).should('have.text', 'hello')
+    cy.get(cesc('#\\/cr2')).should('have.text', 'then')
+    cy.get(cesc('#\\/sr1')).should('have.text', 'hello')
+    cy.get(cesc('#\\/sr2')).should('have.text', 'then')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -6543,11 +6535,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test value displayed in browser')
     cy.get(textinput1Anchor).should('have.value', 'hello, there');
     cy.get(textinput2Anchor).should('have.value', '');
-    cy.get('#\\/cr1').should('have.text', 'hello, there')
-    cy.get('#\\/cr2').should('have.text', '')
-    cy.get('#\\/sr1').should('have.text', 'hello, there')
-    cy.get('#\\/sr2').should('have.text', '')
-    cy.get('#\\/ca1').should('have.text', '0')
+    cy.get(cesc('#\\/cr1')).should('have.text', 'hello, there')
+    cy.get(cesc('#\\/cr2')).should('have.text', '')
+    cy.get(cesc('#\\/sr1')).should('have.text', 'hello, there')
+    cy.get(cesc('#\\/sr2')).should('have.text', '')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -6571,11 +6563,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test value displayed in browser')
     cy.get(textinput1Anchor).should('have.value', 'there');
     cy.get(textinput2Anchor).should('have.value', '');
-    cy.get('#\\/cr1').should('have.text', 'there')
-    cy.get('#\\/cr2').should('have.text', '')
-    cy.get('#\\/sr1').should('have.text', 'there')
-    cy.get('#\\/sr2').should('have.text', '')
-    cy.get('#\\/ca1').should('have.text', '0.5')
+    cy.get(cesc('#\\/cr1')).should('have.text', 'there')
+    cy.get(cesc('#\\/cr2')).should('have.text', '')
+    cy.get(cesc('#\\/sr1')).should('have.text', 'there')
+    cy.get(cesc('#\\/sr2')).should('have.text', '')
+    cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -6601,17 +6593,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6626,8 +6618,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6643,9 +6635,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6661,9 +6653,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6678,9 +6670,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6706,17 +6698,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6731,8 +6723,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6748,9 +6740,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6766,9 +6758,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6783,9 +6775,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6812,17 +6804,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6837,8 +6829,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6854,9 +6846,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6872,9 +6864,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6889,9 +6881,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6918,17 +6910,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let booleaninputAnchor = cesc('#' + booleaninputName);
-      let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
+      let booleaninputAnchor = cesc2('#' + booleaninputName);
+      let booleaninputSubmitAnchor = cesc2('#' + booleaninputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6943,8 +6935,8 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6960,9 +6952,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'true')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6978,9 +6970,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'true')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'true')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -6995,9 +6987,9 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/cr1').should('have.text', 'false')
-      cy.get('#\\/sr1').should('have.text', 'false')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'false')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7023,23 +7015,23 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7057,14 +7049,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -7083,14 +7075,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7108,14 +7100,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7133,14 +7125,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -7160,14 +7152,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7185,14 +7177,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7228,23 +7220,23 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7262,14 +7254,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -7288,14 +7280,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7313,14 +7305,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7338,14 +7330,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -7364,14 +7356,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7389,14 +7381,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'y');
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'y')
-      cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'y')
+      cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7423,19 +7415,19 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7451,9 +7443,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7470,9 +7462,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7489,9 +7481,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get('#\\/cr1').should('have.text', 'bye')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7507,9 +7499,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get('#\\/cr1').should('have.text', 'bye')
-      cy.get('#\\/sr1').should('have.text', 'bye')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7526,9 +7518,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1').should('have.text', 'y')
-      cy.get('#\\/sr1').should('have.text', 'bye')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7544,9 +7536,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1').should('have.text', 'y')
-      cy.get('#\\/sr1').should('have.text', 'y')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7572,19 +7564,19 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7600,9 +7592,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7619,9 +7611,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7638,9 +7630,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get('#\\/cr1').should('have.text', 'bye')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7656,9 +7648,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get('#\\/cr1').should('have.text', 'bye')
-      cy.get('#\\/sr1').should('have.text', 'bye')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7675,9 +7667,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1').should('have.text', 'y')
-      cy.get('#\\/sr1').should('have.text', 'bye')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7693,9 +7685,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1').should('have.text', 'y')
-      cy.get('#\\/sr1').should('have.text', 'y')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7721,19 +7713,19 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/cr1').should('have.text', '')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', '')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7749,9 +7741,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', '')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', '')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7768,9 +7760,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get('#\\/cr1').should('have.text', ' hello there ')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7787,9 +7779,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get('#\\/cr1').should('have.text', 'bye')
-      cy.get('#\\/sr1').should('have.text', ' hello there ')
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/sr1')).should('have.text', ' hello there ')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7805,9 +7797,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get('#\\/cr1').should('have.text', 'bye')
-      cy.get('#\\/sr1').should('have.text', 'bye')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7824,9 +7816,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1').should('have.text', 'y')
-      cy.get('#\\/sr1').should('have.text', 'bye')
-      cy.get('#\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'bye')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7842,9 +7834,9 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', 'y');
-      cy.get('#\\/cr1').should('have.text', 'y')
-      cy.get('#\\/sr1').should('have.text', 'y')
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/cr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/sr1')).should('have.text', 'y')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7876,23 +7868,23 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/s/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', '');
-      cy.get('#\\/s\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/s\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/s\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/s\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7910,14 +7902,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/s\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/s\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/s\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/s\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get('#\\/s\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/s\\/ca1')).should('have.text', '0')
 
 
       cy.log('Test internal values')
@@ -7936,14 +7928,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get('#\\/s\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/s\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/s\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/s\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/s\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/s\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7961,14 +7953,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/s\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/s\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/s\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/s\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
-      cy.get('#\\/s\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/s\\/ca1')).should('have.text', '1')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -7986,14 +7978,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get('#\\/s\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/s\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/s\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/s\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/s\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/s\\/ca1')).should('have.text', '0.5')
 
 
       cy.log('Test internal values')
@@ -8012,14 +8004,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'y');
-      cy.get('#\\/s\\/cr1 .mjx-mrow').should('have.text', 'y')
-      cy.get('#\\/s\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/cr1') + ' .mjx-mrow').should('have.text', 'y')
+      cy.get(cesc('#\\/s\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/s\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get('#\\/s\\/ca1').should('have.text', '0.5')
+      cy.get(cesc('#\\/s\\/ca1')).should('have.text', '0.5')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -8037,14 +8029,14 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'y');
-      cy.get('#\\/s\\/sr1 .mjx-mrow').should('have.text', 'y')
-      cy.get('#\\/s\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1') + ' .mjx-mrow').should('have.text', 'y')
+      cy.get(cesc('#\\/s\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/s\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/s\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('y')
       });
-      cy.get('#\\/s\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/s\\/ca1')).should('have.text', '0')
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
@@ -8081,43 +8073,43 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    // cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    // cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -8147,56 +8139,56 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter a correct answer in")
-    cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`x+y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`2x-y`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+y')
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', '2x−y')
-    cy.get(`#\\/cr .mjx-mrow`).should('contain.text', 'x+y')
-    cy.get(`#\\/cr1 .mjx-mrow`).should('contain.text', 'x+y')
-    cy.get(`#\\/crsa .mjx-mrow`).should('contain.text', 'x+y')
-    cy.get(`#\\/cr2 .mjx-mrow`).should('contain.text', '2x−y')
-    cy.get(`#\\/crsb .mjx-mrow`).should('contain.text', '2x−y')
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).should('contain.text', 'x+y')
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).should('contain.text', '2x−y')
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(cesc(`#\\/crsa`) + ` .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('contain.text', '2x−y')
+    cy.get(cesc(`#\\/crsb`) + ` .mjx-mrow`).should('contain.text', '2x−y')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
     })
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x−y')
     })
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    // cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    // cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
     cy.log('Test internal values')
@@ -8227,54 +8219,54 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
 
-    cy.get(`#\\/sr .mjx-mrow`).should('contain.text', 'x+y')
-    cy.get(`#\\/sr1 .mjx-mrow`).should('contain.text', 'x+y')
-    cy.get(`#\\/srsa .mjx-mrow`).should('contain.text', 'x+y')
-    cy.get(`#\\/sr2 .mjx-mrow`).should('contain.text', '2x−y')
-    cy.get(`#\\/srsb .mjx-mrow`).should('contain.text', '2x−y')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(cesc(`#\\/srsa`) + ` .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('contain.text', '2x−y')
+    cy.get(cesc(`#\\/srsb`) + ` .mjx-mrow`).should('contain.text', '2x−y')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
     })
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x−y')
     })
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
 
     cy.log('Test internal values')
@@ -8306,58 +8298,58 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
 
 
     cy.log('Test value displayed in browser')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x')
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', '3−x')
-    cy.get(`#\\/cr .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/cr1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/crsa .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/cr2 .mjx-mrow`).should('contain.text', '3−x')
-    cy.get(`#\\/crsb .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).should('contain.text', 'x')
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('contain.text', 'x')
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('contain.text', 'x')
+    cy.get(cesc(`#\\/crsa`) + ` .mjx-mrow`).should('contain.text', 'x')
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/crsb`) + ` .mjx-mrow`).should('contain.text', '3−x')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3−x')
     })
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -8387,55 +8379,55 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
 
     cy.log('Test value displayed in browser')
 
-    cy.get(`#\\/sr .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/sr1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/srsa .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/sr2 .mjx-mrow`).should('contain.text', '3−x')
-    cy.get(`#\\/srsb .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('contain.text', 'x')
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('contain.text', 'x')
+    cy.get(cesc(`#\\/srsa`) + ` .mjx-mrow`).should('contain.text', 'x')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/srsb`) + ` .mjx-mrow`).should('contain.text', '3−x')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3−x')
     })
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -8466,56 +8458,56 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter incorrect answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'y')
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', '3−x')
-    cy.get(`#\\/cr .mjx-mrow`).should('contain.text', 'y')
-    cy.get(`#\\/cr1 .mjx-mrow`).should('contain.text', 'y')
-    cy.get(`#\\/crsa .mjx-mrow`).should('contain.text', 'y')
-    cy.get(`#\\/cr2 .mjx-mrow`).should('contain.text', '3−x')
-    cy.get(`#\\/crsb .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).should('contain.text', 'y')
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('contain.text', 'y')
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('contain.text', 'y')
+    cy.get(cesc(`#\\/crsa`) + ` .mjx-mrow`).should('contain.text', 'y')
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/crsb`) + ` .mjx-mrow`).should('contain.text', '3−x')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y')
     })
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3−x')
     })
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -8546,53 +8538,53 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    cy.get(`#\\/sr .mjx-mrow`).should('contain.text', 'y')
-    cy.get(`#\\/sr1 .mjx-mrow`).should('contain.text', 'y')
-    cy.get(`#\\/srsa .mjx-mrow`).should('contain.text', 'y')
-    cy.get(`#\\/sr2 .mjx-mrow`).should('contain.text', '3−x')
-    cy.get(`#\\/srsb .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('contain.text', 'y')
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('contain.text', 'y')
+    cy.get(cesc(`#\\/srsa`) + ` .mjx-mrow`).should('contain.text', 'y')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('contain.text', '3−x')
+    cy.get(cesc(`#\\/srsb`) + ` .mjx-mrow`).should('contain.text', '3−x')
 
-    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y')
     })
-    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/_mathinput2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3−x')
     })
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -8646,44 +8638,44 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    // cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    // cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -8713,47 +8705,47 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter a correct answer in")
-    cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`x+y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`2x-y`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x+y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '2x-y');
 
-    cy.get(`#\\/cr .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/cr1 .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/cr2 .mjx-mrow`).should('have.text', '2x−y');
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('have.text', '2x−y');
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    // cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    // cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -8784,47 +8776,47 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x+y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '2x-y');
 
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/sr1 .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/sr2 .mjx-mrow`).should('have.text', '2x−y');
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('have.text', '2x−y');
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -8855,47 +8847,47 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
-    cy.get(`#\\/cr .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/cr1 .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/cr2 .mjx-mrow`).should('have.text', '3−x');
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('have.text', '3−x');
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -8925,48 +8917,48 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/sr1 .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/sr2 .mjx-mrow`).should('have.text', '3−x');
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('have.text', '3−x');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -8997,46 +8989,46 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter incorrect answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
-    cy.get(`#\\/cr .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/cr1 .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/cr2 .mjx-mrow`).should('have.text', '3−x')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('have.text', '3−x')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -9067,47 +9059,47 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/sr1 .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/sr2 .mjx-mrow`).should('have.text', '3−x')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('have.text', '3−x')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9166,44 +9158,44 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    // cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    // cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9233,47 +9225,47 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter a correct answer in")
-    cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`x+y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`2x-y`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x+y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '2x-y');
 
-    cy.get(`#\\/cr .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/cr1 .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/cr2 .mjx-mrow`).should('have.text', '2x−y');
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('have.text', '2x−y');
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    // cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    // cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('＿')
     // });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9304,47 +9296,47 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x+y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '2x-y');
 
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/sr1 .mjx-mrow`).should('have.text', 'x+y');
-    cy.get(`#\\/sr2 .mjx-mrow`).should('have.text', '2x−y');
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('have.text', 'x+y');
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('have.text', '2x−y');
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9375,47 +9367,47 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
-    cy.get(`#\\/cr .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/cr1 .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/cr2 .mjx-mrow`).should('have.text', '3−x');
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('have.text', '3−x');
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x−y')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9445,48 +9437,48 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'x');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/sr1 .mjx-mrow`).should('have.text', 'x');
-    cy.get(`#\\/sr2 .mjx-mrow`).should('have.text', '3−x');
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('have.text', 'x');
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('have.text', '3−x');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -9517,46 +9509,46 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter incorrect answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
-    cy.get(`#\\/cr .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/cr1 .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/cr2 .mjx-mrow`).should('have.text', '3−x')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should('have.text', '3−x')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
 
     cy.log('Test internal values')
@@ -9587,47 +9579,47 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', 'y');
+    // cy.get(cesc('#\\/_mathinput2_input')).should('have.value', '3-x');
 
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/sr1 .mjx-mrow`).should('have.text', 'y')
-    cy.get(`#\\/sr2 .mjx-mrow`).should('have.text', '3−x')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should('have.text', 'y')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should('have.text', '3−x')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/crsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/crsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/crsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/srsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsa`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get(`#\\/srsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/srsb`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3−x')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9684,24 +9676,24 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', '');
-    cy.get('#\\/_textinput2_input').should('have.value', '');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', '');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', '');
 
-    cy.get(`#\\/cr`).should('have.text', '')
-    cy.get(`#\\/cr1`).should('have.text', '')
-    cy.get(`#\\/cr2`).should('have.text', '')
-    cy.get(`#\\/crsa`).should('have.text', '')
-    cy.get(`#\\/crsb`).should('have.text', '')
-    cy.get(`#\\/sr`).should('have.text', '')
-    cy.get(`#\\/sr1`).should('have.text', '')
-    cy.get(`#\\/sr2`).should('have.text', '')
-    // cy.get(`#\\/srsa`).should('have.text', '＿')
-    // cy.get(`#\\/srsb`).should('have.text', '＿')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/cr`)).should('have.text', '')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', '')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', '')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    // cy.get(cesc(`#\\/srsa`)).should('have.text', '＿')
+    // cy.get(cesc(`#\\/srsb`)).should('have.text', '＿')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9731,24 +9723,24 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter a correct answer in")
-    cy.get('#\\/_textinput1_input').type(`rain`).blur();
-    cy.get('#\\/_textinput2_input').type(`snow{enter}`).blur();
+    cy.get(cesc('#\\/_textinput1_input')).type(`rain`).blur();
+    cy.get(cesc('#\\/_textinput2_input')).type(`snow{enter}`).blur();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
 
-    cy.get(`#\\/cr`).should('have.text', 'rain')
-    cy.get(`#\\/cr1`).should('have.text', 'rain')
-    cy.get(`#\\/cr2`).should('have.text', 'snow')
-    cy.get(`#\\/crsa`).should('have.text', 'rain')
-    cy.get(`#\\/crsb`).should('have.text', 'snow')
-    cy.get(`#\\/sr`).should('have.text', '')
-    cy.get(`#\\/sr1`).should('have.text', '')
-    cy.get(`#\\/sr2`).should('have.text', '')
-    // cy.get(`#\\/srsa`).should('have.text', '＿')
-    // cy.get(`#\\/srsb`).should('have.text', '＿')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    // cy.get(cesc(`#\\/srsa`)).should('have.text', '＿')
+    // cy.get(cesc(`#\\/srsb`)).should('have.text', '＿')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9779,23 +9771,23 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
 
-    cy.get(`#\\/cr`).should('have.text', 'rain')
-    cy.get(`#\\/cr1`).should('have.text', 'rain')
-    cy.get(`#\\/cr2`).should('have.text', 'snow')
-    cy.get(`#\\/crsa`).should('have.text', 'rain')
-    cy.get(`#\\/crsb`).should('have.text', 'snow')
-    cy.get(`#\\/sr`).should('have.text', 'rain')
-    cy.get(`#\\/sr1`).should('have.text', 'rain')
-    cy.get(`#\\/sr2`).should('have.text', 'snow')
-    cy.get(`#\\/srsa`).should('have.text', 'rain')
-    cy.get(`#\\/srsb`).should('have.text', 'snow')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9826,23 +9818,23 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_textinput2_input').clear().type(`rain`).blur();
+    cy.get(cesc('#\\/_textinput2_input')).clear().type(`rain`).blur();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'rain');
 
-    cy.get(`#\\/cr`).should('have.text', 'rain')
-    cy.get(`#\\/cr1`).should('have.text', 'rain')
-    cy.get(`#\\/cr2`).should('have.text', 'rain')
-    cy.get(`#\\/crsa`).should('have.text', 'rain')
-    cy.get(`#\\/crsb`).should('have.text', 'rain')
-    cy.get(`#\\/sr`).should('have.text', 'rain')
-    cy.get(`#\\/sr1`).should('have.text', 'rain')
-    cy.get(`#\\/sr2`).should('have.text', 'snow')
-    cy.get(`#\\/srsa`).should('have.text', 'rain')
-    cy.get(`#\\/srsb`).should('have.text', 'snow')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.wait(100)
 
@@ -9874,23 +9866,23 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'rain');
 
-    cy.get(`#\\/cr`).should('have.text', 'rain')
-    cy.get(`#\\/cr1`).should('have.text', 'rain')
-    cy.get(`#\\/cr2`).should('have.text', 'rain')
-    cy.get(`#\\/crsa`).should('have.text', 'rain')
-    cy.get(`#\\/crsb`).should('have.text', 'rain')
-    cy.get(`#\\/sr`).should('have.text', 'rain')
-    cy.get(`#\\/sr1`).should('have.text', 'rain')
-    cy.get(`#\\/sr2`).should('have.text', 'rain')
-    cy.get(`#\\/srsa`).should('have.text', 'rain')
-    cy.get(`#\\/srsb`).should('have.text', 'rain')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -9920,23 +9912,23 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Make correct again");
-    cy.get('#\\/_textinput1_input').clear().type(`snow`).blur();
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`snow`).blur();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'snow');
-    cy.get('#\\/_textinput2_input').should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'rain');
 
-    cy.get(`#\\/cr`).should('have.text', 'snow')
-    cy.get(`#\\/cr1`).should('have.text', 'snow')
-    cy.get(`#\\/cr2`).should('have.text', 'rain')
-    cy.get(`#\\/crsa`).should('have.text', 'snow')
-    cy.get(`#\\/crsb`).should('have.text', 'rain')
-    cy.get(`#\\/sr`).should('have.text', 'rain')
-    cy.get(`#\\/sr1`).should('have.text', 'rain')
-    cy.get(`#\\/sr2`).should('have.text', 'rain')
-    cy.get(`#\\/srsa`).should('have.text', 'rain')
-    cy.get(`#\\/srsb`).should('have.text', 'rain')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
     cy.wait(100)
 
@@ -9968,23 +9960,23 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'snow');
-    cy.get('#\\/_textinput2_input').should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'rain');
 
-    cy.get(`#\\/cr`).should('have.text', 'snow')
-    cy.get(`#\\/cr1`).should('have.text', 'snow')
-    cy.get(`#\\/cr2`).should('have.text', 'rain')
-    cy.get(`#\\/crsa`).should('have.text', 'snow')
-    cy.get(`#\\/crsb`).should('have.text', 'rain')
-    cy.get(`#\\/sr`).should('have.text', 'snow')
-    cy.get(`#\\/sr1`).should('have.text', 'snow')
-    cy.get(`#\\/sr2`).should('have.text', 'rain')
-    cy.get(`#\\/srsa`).should('have.text', 'snow')
-    cy.get(`#\\/srsb`).should('have.text', 'rain')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -10014,23 +10006,23 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Enter another partially correct answer")
-    cy.get('#\\/_textinput2_input').clear().type(`snow`).blur();
+    cy.get(cesc('#\\/_textinput2_input')).clear().type(`snow`).blur();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'snow');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
 
-    cy.get(`#\\/cr`).should('have.text', 'snow')
-    cy.get(`#\\/cr1`).should('have.text', 'snow')
-    cy.get(`#\\/cr2`).should('have.text', 'snow')
-    cy.get(`#\\/crsa`).should('have.text', 'snow')
-    cy.get(`#\\/crsb`).should('have.text', 'snow')
-    cy.get(`#\\/sr`).should('have.text', 'snow')
-    cy.get(`#\\/sr1`).should('have.text', 'snow')
-    cy.get(`#\\/sr2`).should('have.text', 'rain')
-    cy.get(`#\\/srsa`).should('have.text', 'snow')
-    cy.get(`#\\/srsb`).should('have.text', 'rain')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'rain')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
     cy.wait(100)
 
@@ -10063,23 +10055,23 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'snow');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
 
-    cy.get(`#\\/cr`).should('have.text', 'snow')
-    cy.get(`#\\/cr1`).should('have.text', 'snow')
-    cy.get(`#\\/cr2`).should('have.text', 'snow')
-    cy.get(`#\\/crsa`).should('have.text', 'snow')
-    cy.get(`#\\/crsb`).should('have.text', 'snow')
-    cy.get(`#\\/sr`).should('have.text', 'snow')
-    cy.get(`#\\/sr1`).should('have.text', 'snow')
-    cy.get(`#\\/sr2`).should('have.text', 'snow')
-    cy.get(`#\\/srsa`).should('have.text', 'snow')
-    cy.get(`#\\/srsb`).should('have.text', 'snow')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -10110,24 +10102,24 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Enter incorrect answer")
-    cy.get('#\\/_textinput1_input').clear().type(`fog`).blur();
-    cy.get('#\\/_textinput2_input').clear().type(`hail`).blur();
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`fog`).blur();
+    cy.get(cesc('#\\/_textinput2_input')).clear().type(`hail`).blur();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'fog');
-    cy.get('#\\/_textinput2_input').should('have.value', 'hail');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'fog');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'hail');
 
-    cy.get(`#\\/cr`).should('have.text', 'fog')
-    cy.get(`#\\/cr1`).should('have.text', 'fog')
-    cy.get(`#\\/cr2`).should('have.text', 'hail')
-    cy.get(`#\\/crsa`).should('have.text', 'fog')
-    cy.get(`#\\/crsb`).should('have.text', 'hail')
-    cy.get(`#\\/sr`).should('have.text', 'snow')
-    cy.get(`#\\/sr1`).should('have.text', 'snow')
-    cy.get(`#\\/sr2`).should('have.text', 'snow')
-    cy.get(`#\\/srsa`).should('have.text', 'snow')
-    cy.get(`#\\/srsb`).should('have.text', 'snow')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hail')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'hail')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'snow')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
     cy.wait(100)
 
@@ -10160,23 +10152,23 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc('#\\/_answer1_submit')).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', 'fog');
-    cy.get('#\\/_textinput2_input').should('have.value', 'hail');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'fog');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'hail');
 
-    cy.get(`#\\/cr`).should('have.text', 'fog')
-    cy.get(`#\\/cr1`).should('have.text', 'fog')
-    cy.get(`#\\/cr2`).should('have.text', 'hail')
-    cy.get(`#\\/crsa`).should('have.text', 'fog')
-    cy.get(`#\\/crsb`).should('have.text', 'hail')
-    cy.get(`#\\/sr`).should('have.text', 'fog')
-    cy.get(`#\\/sr1`).should('have.text', 'fog')
-    cy.get(`#\\/sr2`).should('have.text', 'hail')
-    cy.get(`#\\/srsa`).should('have.text', 'fog')
-    cy.get(`#\\/srsb`).should('have.text', 'hail')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/cr`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/cr1`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hail')
+    cy.get(cesc(`#\\/crsa`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/crsb`)).should('have.text', 'hail')
+    cy.get(cesc(`#\\/sr`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/sr1`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'hail')
+    cy.get(cesc(`#\\/srsa`)).should('have.text', 'fog')
+    cy.get(cesc(`#\\/srsb`)).should('have.text', 'hail')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -10224,49 +10216,49 @@ describe('Answer Tag Tests', function () {
 
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test initial values')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.log("Submit a correct answer")
-    cy.get('#\\/m textarea').type(`6`, { force: true });
-    cy.get('#\\/m_submit').click();
+    cy.get(cesc('#\\/m') + ' textarea').type(`6`, { force: true });
+    cy.get(cesc('#\\/m_submit')).click();
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', '6')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', '6')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
 
     cy.log("Submit an incorrect answer")
-    cy.get('#\\/m textarea').type(`{rightarrow}{backspace}5`, { force: true });
-    cy.get('#\\/m_submit').click();
+    cy.get(cesc('#\\/m') + ' textarea').type(`{rightarrow}{backspace}5`, { force: true });
+    cy.get(cesc('#\\/m_submit')).click();
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', '5')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', '5')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
     cy.log("Submit a different correct answer")
-    cy.get('#\\/m textarea').type(`{rightarrow}{backspace}-3`, { force: true });
-    cy.get('#\\/m_submit').click();
+    cy.get(cesc('#\\/m') + ' textarea').type(`{rightarrow}{backspace}-3`, { force: true });
+    cy.get(cesc('#\\/m_submit')).click();
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', '−3')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', '−3')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
 
     cy.log("Submit a correct answer that must be simplified")
-    cy.get('#\\/m textarea').type(`{end}{backspace}{backspace}5xy-5xy+9`, { force: true });
-    cy.get('#\\/m_submit').click();
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{backspace}{backspace}5xy-5xy+9`, { force: true });
+    cy.get(cesc('#\\/m_submit')).click();
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', '5xy−5xy+9')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', '5xy−5xy+9')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
 
     cy.log("Submit a non-numerical answer")
-    cy.get('#\\/m textarea').type(`{end}{leftarrow}{leftarrow}z`, { force: true });
-    cy.get('#\\/m_submit').click();
+    cy.get(cesc('#\\/m') + ' textarea').type(`{end}{leftarrow}{leftarrow}z`, { force: true });
+    cy.get(cesc('#\\/m_submit')).click();
 
-    cy.get(`#\\/sr .mjx-mrow`).should('have.text', '5xy−5xyz+9')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', '5xy−5xyz+9')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
   });
@@ -10285,18 +10277,18 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', '');
 
     let answers1 = { "1": "1", "-1": "1", "0.5": "1", "1.1": "0", "-2": "0", "x-x": "1", "x": "0" }
 
     for (let answerString in answers1) {
-      cy.get('#\\/_mathinput1 textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
-      cy.get('#\\/_mathinput1_submit').click();
+      cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
+      cy.get(cesc('#\\/_mathinput1_submit')).click();
 
-      cy.get(`#\\/sr .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
-      cy.get(`#\\/ca`).should('have.text', answers1[answerString])
+      cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
+      cy.get(cesc(`#\\/ca`)).should('have.text', answers1[answerString])
     }
 
 
@@ -10315,17 +10307,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'b');  // to wait until loaded
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', '');
 
     let answers2 = { "1": "0", "-1": "0", "0.5": "1", "0.99": "1", "-2": "0", "x-x": "1", "x": "0" }
     for (let answerString in answers2) {
-      cy.get('#\\/_mathinput1 textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
-      cy.get('#\\/_mathinput1_submit').click();
+      cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
+      cy.get(cesc('#\\/_mathinput1_submit')).click();
 
-      cy.get(`#\\/sr .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
-      cy.get(`#\\/ca`).should('have.text', answers2[answerString])
+      cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
+      cy.get(cesc(`#\\/ca`)).should('have.text', answers2[answerString])
     }
 
 
@@ -10344,18 +10336,18 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'c');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'c');  // to wait until loaded
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', '');
 
     let answers3 = { "1": "0", "-1": "1", "0.5": "1", "0.99": "1", "-2": "0", "x-x": "1", "x": "0" }
 
     for (let answerString in answers3) {
-      cy.get('#\\/_mathinput1 textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
-      cy.get('#\\/_mathinput1_submit').click();
+      cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
+      cy.get(cesc('#\\/_mathinput1_submit')).click();
 
-      cy.get(`#\\/sr .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
-      cy.get(`#\\/ca`).should('have.text', answers3[answerString])
+      cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
+      cy.get(cesc(`#\\/ca`)).should('have.text', answers3[answerString])
     }
   });
 
@@ -10381,25 +10373,25 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get(cesc('#\\/_mathinput1_input')).should('have.value', '');
 
     let answers1 = [["1", "x", "z", "6"], ["0", "x", "x", "6"], ["0", "x", "z", "5"],
     ["1", "y", "y", "7"], ["0", "y", "z", "7"], ["0", "y", "q", "7"], ["1", "y", "y^2", "7"],
     ["0", "y", "y", "a"]];
 
     for (let answer of answers1) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}" + answer[1], { delay: 5, force: true }).blur();
-      cy.get('#\\/_mathinput2 textarea').type("{ctrl+home}{shift+end}{backspace}" + answer[2], { delay: 5, force: true }).blur();
-      cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}" + answer[3], { delay: 5, force: true }).blur();
-      cy.get('#\\/_answer1_submit').click();
+      cy.get(cesc('#\\/_mathinput1') + ' textarea').type("{end}{backspace}" + answer[1], { delay: 5, force: true }).blur();
+      cy.get(cesc('#\\/_mathinput2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}" + answer[2], { delay: 5, force: true }).blur();
+      cy.get(cesc('#\\/_mathinput3') + ' textarea').type("{end}{backspace}" + answer[3], { delay: 5, force: true }).blur();
+      cy.get(cesc('#\\/_answer1_submit')).click();
 
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', answer[1])
-      cy.get('#\\/sr2 .mjx-mrow').should('contain.text', answer[2].replace("^", ""))
-      cy.get('#\\/sr3 .mjx-mrow').should('have.text', answer[3])
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', answer[1])
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('contain.text', answer[2].replace("^", ""))
+      cy.get(cesc('#\\/sr3') + ' .mjx-mrow').should('have.text', answer[3])
 
-      cy.get('#\\/ca').should('have.text', answer[0])
+      cy.get(cesc('#\\/ca')).should('have.text', answer[0])
 
     }
 
@@ -10422,46 +10414,46 @@ describe('Answer Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinput1Name = stateVariables['/a/_answer1'].stateValues.inputChildren[0].componentName;
-      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
-      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
+      let mathinput1Anchor = cesc2('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc2('#' + mathinput1Name + '_submit');
 
       let mathinput2Name = stateVariables['/b/_answer1'].stateValues.inputChildren[0].componentName;
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
 
       let mathinput3Name = stateVariables['/c/_answer1'].stateValues.inputChildren[0].componentName;
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinput1Anchor).should('have.value', '');
       // cy.get(mathinput2Anchor).should('have.value', '');
       // cy.get(mathinput3Anchor).should('have.value', '');
-      cy.get("#\\/a\\/ca").should('have.text', '0');
-      cy.get("#\\/b\\/ca").should('have.text', '0');
-      cy.get("#\\/c\\/ca").should('have.text', '0');
-      cy.get("#\\/a\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/b\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/c\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/a\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get("#\\/b\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get("#\\/c\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get("#\\/a\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get("#\\/b\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get("#\\/c\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
 
@@ -10496,29 +10488,29 @@ describe('Answer Tag Tests', function () {
       // cy.get(mathinput3Anchor).should('have.value', 'x^3');
 
 
-      cy.get("#\\/a\\/cr .mjx-mrow").should('have.text', 'x')
-      cy.get("#\\/b\\/cr .mjx-mrow").should('contain.text', 'x2')
-      cy.get("#\\/c\\/cr .mjx-mrow").should('contain.text', 'x3')
+      cy.get(cesc("#\\/a\\/cr") + " .mjx-mrow").should('have.text', 'x')
+      cy.get(cesc("#\\/b\\/cr") + " .mjx-mrow").should('contain.text', 'x2')
+      cy.get(cesc("#\\/c\\/cr") + " .mjx-mrow").should('contain.text', 'x3')
 
-      cy.get("#\\/a\\/ca").should('have.text', '0');
-      cy.get("#\\/b\\/ca").should('have.text', '0');
-      cy.get("#\\/c\\/ca").should('have.text', '0');
-      cy.get("#\\/a\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/b\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/c\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/a\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get("#\\/b\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')
       });
-      cy.get("#\\/c\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3')
       });
-      cy.get("#\\/a\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get("#\\/b\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get("#\\/c\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
 
@@ -10553,28 +10545,28 @@ describe('Answer Tag Tests', function () {
       // cy.get(mathinput2Anchor).should('have.value', 'x^2');
       // cy.get(mathinput3Anchor).should('have.value', 'x^3');
 
-      cy.get("#\\/a\\/ca").should('have.text', '1');
-      cy.get("#\\/b\\/ca").should('have.text', '1');
-      cy.get("#\\/c\\/ca").should('have.text', '1');
-      cy.get("#\\/a\\/sr .mjx-mrow").should('have.text', 'x')
-      cy.get("#\\/b\\/sr .mjx-mrow").should('contain.text', 'x2')
-      cy.get("#\\/c\\/sr .mjx-mrow").should('contain.text', 'x3')
-      cy.get("#\\/a\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/ca")).should('have.text', '1');
+      cy.get(cesc("#\\/b\\/ca")).should('have.text', '1');
+      cy.get(cesc("#\\/c\\/ca")).should('have.text', '1');
+      cy.get(cesc("#\\/a\\/sr") + " .mjx-mrow").should('have.text', 'x')
+      cy.get(cesc("#\\/b\\/sr") + " .mjx-mrow").should('contain.text', 'x2')
+      cy.get(cesc("#\\/c\\/sr") + " .mjx-mrow").should('contain.text', 'x3')
+      cy.get(cesc("#\\/a\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get("#\\/b\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')
       });
-      cy.get("#\\/c\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3')
       });
-      cy.get("#\\/a\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get("#\\/b\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')
       });
-      cy.get("#\\/c\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3')
       });
 
@@ -10610,31 +10602,31 @@ describe('Answer Tag Tests', function () {
       // cy.get(mathinput3Anchor).should('have.value', 'w');
 
 
-      cy.get("#\\/a\\/cr .mjx-mrow").should('have.text', 'u')
-      cy.get("#\\/b\\/cr .mjx-mrow").should('have.text', 'v')
-      cy.get("#\\/c\\/cr .mjx-mrow").should('have.text', 'w')
+      cy.get(cesc("#\\/a\\/cr") + " .mjx-mrow").should('have.text', 'u')
+      cy.get(cesc("#\\/b\\/cr") + " .mjx-mrow").should('have.text', 'v')
+      cy.get(cesc("#\\/c\\/cr") + " .mjx-mrow").should('have.text', 'w')
 
-      cy.get("#\\/a\\/ca").should('have.text', '1');
-      cy.get("#\\/b\\/ca").should('have.text', '1');
-      cy.get("#\\/c\\/ca").should('have.text', '1');
+      cy.get(cesc("#\\/a\\/ca")).should('have.text', '1');
+      cy.get(cesc("#\\/b\\/ca")).should('have.text', '1');
+      cy.get(cesc("#\\/c\\/ca")).should('have.text', '1');
 
-      cy.get("#\\/a\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('u')
       });
-      cy.get("#\\/b\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('v')
       });
-      cy.get("#\\/c\\/cr" + ' .mjx-mrow').should('have.text', 'w')
-      cy.get("#\\/c\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/cr") + ' .mjx-mrow').should('have.text', 'w')
+      cy.get(cesc("#\\/c\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('w')
       });
-      cy.get("#\\/a\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
-      cy.get("#\\/b\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')
       });
-      cy.get("#\\/c\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3')
       });
 
@@ -10670,30 +10662,30 @@ describe('Answer Tag Tests', function () {
       // cy.get(mathinput2Anchor).should('have.value', 'v');
       // cy.get(mathinput3Anchor).should('have.value', 'w');
 
-      cy.get("#\\/a\\/ca").should('have.text', '0');
-      cy.get("#\\/b\\/ca").should('have.text', '0');
-      cy.get("#\\/c\\/ca").should('have.text', '0');
+      cy.get(cesc("#\\/a\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/b\\/ca")).should('have.text', '0');
+      cy.get(cesc("#\\/c\\/ca")).should('have.text', '0');
 
-      cy.get("#\\/a\\/sr .mjx-mrow").should('have.text', 'u')
-      cy.get("#\\/b\\/sr .mjx-mrow").should('have.text', 'v')
-      cy.get("#\\/c\\/sr .mjx-mrow").should('have.text', 'w')
+      cy.get(cesc("#\\/a\\/sr") + " .mjx-mrow").should('have.text', 'u')
+      cy.get(cesc("#\\/b\\/sr") + " .mjx-mrow").should('have.text', 'v')
+      cy.get(cesc("#\\/c\\/sr") + " .mjx-mrow").should('have.text', 'w')
 
-      cy.get("#\\/a\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('u')
       });
-      cy.get("#\\/b\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('v')
       });
-      cy.get("#\\/c\\/cr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/cr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('w')
       });
-      cy.get("#\\/a\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/a\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('u')
       });
-      cy.get("#\\/b\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/b\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('v')
       });
-      cy.get("#\\/c\\/sr").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/c\\/sr")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('w')
       });
 
@@ -10733,16 +10725,16 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
 
       // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(mathinputSubmitAnchor).should('be.visible');
@@ -10998,16 +10990,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
-      let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
-      let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
-      let textinputPartialAnchor = cesc('#' + textinputName + '_partial');
+      let textinputAnchor = cesc2('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
+      let textinputCorrectAnchor = cesc2('#' + textinputName + '_correct');
+      let textinputIncorrectAnchor = cesc2('#' + textinputName + '_incorrect');
+      let textinputPartialAnchor = cesc2('#' + textinputName + '_partial');
 
       cy.get(textinputAnchor).should('have.value', '');
       cy.get(textinputSubmitAnchor).should('be.visible');
@@ -11217,227 +11209,227 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Enter correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true });
-    cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true })
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`x+y`, { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`2x-y`, { force: true })
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_mathinput2 textarea').blur();
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').blur();
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Type letter in input1")
-    cy.get('#\\/_mathinput1 textarea').type('{end}z', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}z', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Delete letter (no longer goes back to saying correct)")
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Type letter in input2")
-    cy.get('#\\/_mathinput1 textarea').blur();
-    cy.get('#\\/_mathinput2 textarea').type('{end}q', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}q', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Delete letter (no longer goes back to saying correct)")
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Type letter in input1")
-    cy.get('#\\/_mathinput1 textarea').type('{end}z', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}z', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Type letter in input2")
-    cy.get('#\\/_mathinput1 textarea').blur();
-    cy.get('#\\/_mathinput2 textarea').type('{end}q', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}q', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Delete letter in input1")
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Don't go back to saying correct if return to previous answer")
-    cy.get('#\\/_mathinput1 textarea').blur();
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true }).blur();
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}', { force: true }).blur();
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
 
     cy.log("Delete letter in input1")
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Add letter back (no longer goes back to saying partially correct)")
-    cy.get('#\\/_mathinput1 textarea').type('{end}x', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}x', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Enter incorrect answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}y`, { force: true }).blur();
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type(`{end}{backspace}y`, { force: true }).blur();
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     });
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').type("{enter}", { force: true });
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).type("{enter}", { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Delete letter in input2")
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Add letter back (no longer goes back to saying incorrect)")
-    cy.get('#\\/_mathinput2 textarea').type('{end}x', { force: true });
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}x', { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').type("{enter}", { force: true });
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).type("{enter}", { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
   });
 
@@ -11458,257 +11450,257 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_textinput1_input').should('have.value', '');
-    cy.get('#\\/_textinput2_input').should('have.value', '');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', '');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', '');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Enter a correct answer")
-    cy.get('#\\/_textinput1_input').type(`rain`);
-    cy.get('#\\/_textinput2_input').type(`snow`).blur();
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).type(`rain`);
+    cy.get(cesc('#\\/_textinput2_input')).type(`snow`).blur();
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Type letter in input1")
-    cy.get('#\\/_textinput1_input').type('z');
-    cy.get('#\\/_textinput1_input').should('have.value', 'rainz');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).type('z');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rainz');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Delete letter (no longer goes back to saying correct)")
-    cy.get('#\\/_textinput1_input').type('{backspace}');
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).type('{backspace}');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Type letter in input2")
-    cy.get('#\\/_textinput1_input').blur();
-    cy.get('#\\/_textinput2_input').type('q');
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snowq');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).blur();
+    cy.get(cesc('#\\/_textinput2_input')).type('q');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snowq');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Delete letter (no longer goes back to saying correct)")
-    cy.get('#\\/_textinput2_input').type('{backspace}');
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).type('{backspace}');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Type letter in input1")
-    cy.get('#\\/_textinput1_input').type('z');
-    cy.get('#\\/_textinput1_input').should('have.value', 'rainz');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).type('z');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rainz');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Type letter in input2")
-    cy.get('#\\/_textinput2_input').type('q');
-    cy.get('#\\/_textinput1_input').should('have.value', 'rainz');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snowq');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).type('q');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rainz');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snowq');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Delete letter in input1")
-    cy.get('#\\/_textinput1_input').type('{backspace}');
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snowq');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).type('{backspace}');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snowq');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Don't go back to saying correct if return to previous answer")
-    cy.get('#\\/_textinput2_input').type('{backspace}').blur();
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).type('{backspace}').blur();
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'rain');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_textinput1_input').clear().type(`x`).blur();
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`x`).blur();
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
 
     cy.log("Delete letter in input2")
-    cy.get('#\\/_textinput2_input').type('{backspace}');
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', 'sno');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).type('{backspace}');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'sno');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Add letter back (no longer to back to saying partially correct)")
-    cy.get('#\\/_textinput2_input').type('w');
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).type('w');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'snow');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("Enter incorrect answer")
-    cy.get('#\\/_textinput2_input').clear().type(`y`).blur();
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', 'y');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).clear().type(`y`).blur();
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'y');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     });
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').type("{enter}", { force: true });
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', 'y');
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).type("{enter}", { force: true });
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'y');
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Delete letter in input2")
-    cy.get('#\\/_textinput2_input').type('{backspace}');
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', '');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).type('{backspace}');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', '');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Add letter back (no longer go back to saying incorrect")
-    cy.get('#\\/_textinput2_input').type('y');
-    cy.get('#\\/_textinput1_input').should('have.value', 'x');
-    cy.get('#\\/_textinput2_input').should('have.value', 'y');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput2_input')).type('y');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'x');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'y');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').type("{enter}", { force: true });
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).type("{enter}", { force: true });
+    cy.get(cesc('#\\/_answer1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
   });
 
@@ -11729,136 +11721,136 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    // cy.get('#\\/var textarea').should('have.value', 'x');
-    // cy.get('#\\/var2 textarea').should('have.value', 'y');
-    // cy.get('#\\/ans textarea').should('have.value', '');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    // cy.get(cesc('#\\/var') + ' textarea').should('have.value', 'x');
+    // cy.get(cesc('#\\/var2') + ' textarea').should('have.value', 'y');
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', '');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Type correct answer in")
-    cy.get('#\\/ans textarea').type(`x`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'x');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`x`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'x');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'x');
-    cy.get('#\\/ans_submit').should('not.exist');
-    cy.get('#\\/ans_correct').should('be.visible');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{enter}`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'x');
+    cy.get(cesc('#\\/ans_submit')).should('not.exist');
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Change correct answer");
-    cy.get('#\\/var textarea').type(`{end}{backspace}u{enter}`, { force: true });
-    // cy.get('#\\/var textarea').should('have.value', 'u');
-    // cy.get('#\\/ans textarea').should('have.value', 'x');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/var') + ' textarea').type(`{end}{backspace}u{enter}`, { force: true });
+    // cy.get(cesc('#\\/var') + ' textarea').should('have.value', 'u');
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'x');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'x');
-    cy.get('#\\/ans_submit').should('not.exist');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('be.visible');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{enter}`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'x');
+    cy.get(cesc('#\\/ans_submit')).should('not.exist');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
 
     cy.log("Change to new correct answer")
-    cy.get('#\\/ans textarea').type(`{end}{backspace}u`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'u');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{end}{backspace}u`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'u');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'u');
-    cy.get('#\\/ans_submit').should('not.exist');
-    cy.get('#\\/ans_correct').should('be.visible');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{enter}`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'u');
+    cy.get(cesc('#\\/ans_submit')).should('not.exist');
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Change partial credit answer");
-    cy.get('#\\/var2 textarea').type(`{end}{backspace}v{enter}`, { force: true });
-    // cy.get('#\\/var2 textarea').should('have.value', 'v');
-    // cy.get('#\\/var textarea').should('have.value', 'u');
-    // cy.get('#\\/ans textarea').should('have.value', 'u');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/var2') + ' textarea').type(`{end}{backspace}v{enter}`, { force: true });
+    // cy.get(cesc('#\\/var2') + ' textarea').should('have.value', 'v');
+    // cy.get(cesc('#\\/var') + ' textarea').should('have.value', 'u');
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'u');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'u');
-    cy.get('#\\/ans_submit').should('not.exist');
-    cy.get('#\\/ans_correct').should('be.visible');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{enter}`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'u');
+    cy.get(cesc('#\\/ans_submit')).should('not.exist');
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
 
     cy.log("Change to new partial correct answer")
-    cy.get('#\\/ans textarea').type(`{end}{backspace}v`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'v');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{end}{backspace}v`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'v');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'v');
-    cy.get('#\\/ans_submit').should('not.exist');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('be.visible');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{enter}`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'v');
+    cy.get(cesc('#\\/ans_submit')).should('not.exist');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('be.visible');
 
 
     cy.log("Change correct answer");
-    cy.get('#\\/var textarea').type(`{end}{backspace}w{enter}`, { force: true });
-    // cy.get('#\\/var textarea').should('have.value', 'w');
-    // cy.get('#\\/ans textarea').should('have.value', 'v');
-    // cy.get('#\\/var2 textarea').should('have.value', 'v');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/var') + ' textarea').type(`{end}{backspace}w{enter}`, { force: true });
+    // cy.get(cesc('#\\/var') + ' textarea').should('have.value', 'w');
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'v');
+    // cy.get(cesc('#\\/var2') + ' textarea').should('have.value', 'v');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'v');
-    cy.get('#\\/ans_submit').should('not.exist');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('be.visible');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{enter}`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'v');
+    cy.get(cesc('#\\/ans_submit')).should('not.exist');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('be.visible');
 
 
     cy.log("Change to new correct answer")
-    cy.get('#\\/ans textarea').type(`{end}{backspace}w`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'w');
-    cy.get('#\\/ans_submit').should('be.visible');
-    cy.get('#\\/ans_correct').should('not.exist');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{end}{backspace}w`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'w');
+    cy.get(cesc('#\\/ans_submit')).should('be.visible');
+    cy.get(cesc('#\\/ans_correct')).should('not.exist');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
-    // cy.get('#\\/ans textarea').should('have.value', 'w');
-    cy.get('#\\/ans_submit').should('not.exist');
-    cy.get('#\\/ans_correct').should('be.visible');
-    cy.get('#\\/ans_incorrect').should('not.exist');
-    cy.get('#\\/ans_partial').should('not.exist');
+    cy.get(cesc('#\\/ans') + ' textarea').type(`{enter}`, { force: true });
+    // cy.get(cesc('#\\/ans') + ' textarea').should('have.value', 'w');
+    cy.get(cesc('#\\/ans_submit')).should('not.exist');
+    cy.get(cesc('#\\/ans_correct')).should('be.visible');
+    cy.get(cesc('#\\/ans_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/ans_partial')).should('not.exist');
 
   });
 
@@ -11880,17 +11872,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', '')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', '')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = {};
     cy.window().then(async (win) => {
@@ -11909,15 +11901,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').select(`dog`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`dog`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11929,15 +11921,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11949,15 +11941,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11969,15 +11961,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11989,15 +11981,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').select(`cat`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`cat`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12009,15 +12001,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50 %');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12030,15 +12022,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer again")
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12051,15 +12043,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Does not remember previously submitted answer")
-    cy.get('#\\/_choiceinput1').select(`cat`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`cat`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12071,15 +12063,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50 %');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12108,16 +12100,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
+      let choiceinputAnchor = cesc2('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
+      let choiceinputCorrectAnchor = cesc2('#' + choiceinputName + '_correct');
+      let choiceinputIncorrectAnchor = cesc2('#' + choiceinputName + '_incorrect');
+      let choiceinputPartialAnchor = cesc2('#' + choiceinputName + '_partial');
 
 
       cy.get(choiceinputAnchor).should('have.value', '');
@@ -12126,9 +12118,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', '')
+      cy.get(cesc("#\\/sr")).should('have.text', '')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       let indexByName = {};
       cy.window().then(async (win) => {
@@ -12153,9 +12145,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/sr")).should('have.text', '')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12173,9 +12165,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12193,9 +12185,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12213,9 +12205,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12233,9 +12225,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12253,9 +12245,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12274,9 +12266,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12295,9 +12287,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12315,9 +12307,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12348,17 +12340,17 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', '')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', '')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = {};
     cy.window().then(async (win) => {
@@ -12377,15 +12369,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').select(`dog`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`dog`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12397,15 +12389,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12417,15 +12409,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12437,15 +12429,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12457,15 +12449,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').select(`cat`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`cat`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12477,15 +12469,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50 %');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12498,15 +12490,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer again")
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12519,15 +12511,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Does not remember previously submitted answer")
-    cy.get('#\\/_choiceinput1').select(`cat`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`cat`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12539,15 +12531,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit answer")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50 %');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12578,19 +12570,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get('#\\/_choiceinput1').should('have.text', 'catdogmonkey');
+    cy.get(cesc('#\\/_choiceinput1')).should('have.text', 'catdogmonkey');
 
-    cy.get("#\\/cr").should('have.text', '')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', '')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
@@ -12609,15 +12601,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').select(`dog`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`dog`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12629,15 +12621,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12649,15 +12641,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12669,15 +12661,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12689,15 +12681,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').select(`cat`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`cat`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12709,15 +12701,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50 %');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12730,15 +12722,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12751,15 +12743,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Does not remember previously submitted answer")
-    cy.get('#\\/_choiceinput1').select(`cat`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`cat`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12772,15 +12764,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50 %');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12811,16 +12803,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
+      let choiceinputAnchor = cesc2('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
+      let choiceinputCorrectAnchor = cesc2('#' + choiceinputName + '_correct');
+      let choiceinputIncorrectAnchor = cesc2('#' + choiceinputName + '_incorrect');
+      let choiceinputPartialAnchor = cesc2('#' + choiceinputName + '_partial');
 
       cy.get(choiceinputAnchor).should('have.value', '');
       cy.get(choiceinputSubmitAnchor).should('be.visible');
@@ -12830,9 +12822,9 @@ describe('Answer Tag Tests', function () {
 
       cy.get(choiceinputAnchor).should('have.text', 'catdogmonkey');
 
-      cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', '')
+      cy.get(cesc("#\\/sr")).should('have.text', '')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       let indexByName = { cat: 1, dog: 2, monkey: 3 };
       cy.window().then(async (win) => {
@@ -12857,9 +12849,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/sr")).should('have.text', '')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12877,9 +12869,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12897,9 +12889,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12917,9 +12909,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12937,9 +12929,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12957,9 +12949,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12978,9 +12970,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -12999,9 +12991,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13020,9 +13012,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13053,19 +13045,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').invoke('val').should('deep.equal', []);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).invoke('val').should('deep.equal', []);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get('#\\/_choiceinput1').should('have.text', 'catdogmonkey');
+    cy.get(cesc('#\\/_choiceinput1')).should('have.text', 'catdogmonkey');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: ')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: ')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
@@ -13084,15 +13076,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select half of correct answer")
-    cy.get('#\\/_choiceinput1').select([`dog`]);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select([`dog`]);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13104,15 +13096,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50 %');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13125,15 +13117,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log('Select both correct answers')
-    cy.get('#\\/_choiceinput1').select(['dog', 'cat']);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(['dog', 'cat']);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13146,15 +13138,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13167,15 +13159,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13187,15 +13179,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13207,15 +13199,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select all answers")
-    cy.get('#\\/_choiceinput1').select([`monkey`, `cat`, `dog`]);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select([`monkey`, `cat`, `dog`]);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13227,15 +13219,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '67 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '67 %');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.6666666667')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13248,15 +13240,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select partially correct and incorrect answers")
-    cy.get('#\\/_choiceinput1').select([`monkey`, , `dog`]);
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).select([`monkey`, , `dog`]);
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.6666666667')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13268,15 +13260,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '33 %');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '33 %');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.3333333333')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.3333333333')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13306,16 +13298,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
+      let choiceinputAnchor = cesc2('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
+      let choiceinputCorrectAnchor = cesc2('#' + choiceinputName + '_correct');
+      let choiceinputIncorrectAnchor = cesc2('#' + choiceinputName + '_incorrect');
+      let choiceinputPartialAnchor = cesc2('#' + choiceinputName + '_partial');
 
       cy.get(choiceinputAnchor).invoke('val').should('deep.equal', []);
       cy.get(choiceinputSubmitAnchor).should('be.visible');
@@ -13325,9 +13317,9 @@ describe('Answer Tag Tests', function () {
 
       cy.get(choiceinputAnchor).should('have.text', 'catdogmonkey');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: ')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: ')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       let indexByName = { cat: 1, dog: 2, monkey: 3 };
       cy.window().then(async (win) => {
@@ -13352,9 +13344,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13372,9 +13364,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13393,9 +13385,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13414,9 +13406,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13435,9 +13427,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13455,9 +13447,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13475,9 +13467,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13495,9 +13487,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '67 %');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0.6666666667')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13516,9 +13508,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0.6666666667')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13536,9 +13528,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '33 %');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0.3333333333')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.3333333333')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13571,19 +13563,19 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', '')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', '')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = {};
     cy.window().then(async (win) => {
@@ -13602,17 +13594,17 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', '')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', '')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13624,17 +13616,17 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13646,17 +13638,17 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`monkey`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`monkey`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13668,17 +13660,17 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13690,17 +13682,17 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13712,17 +13704,17 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13735,17 +13727,17 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer again")
-    cy.get('#\\/_choiceinput1').contains(`monkey`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`monkey`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'monkey')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13758,17 +13750,17 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Does not remember previously submitted answer")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13781,17 +13773,17 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
-    cy.get("#\\/cr").should('have.text', 'cat')
-    cy.get("#\\/sr").should('have.text', 'cat')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -13822,16 +13814,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
+      let choiceinputAnchor = cesc2('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
+      let choiceinputCorrectAnchor = cesc2('#' + choiceinputName + '_correct');
+      let choiceinputIncorrectAnchor = cesc2('#' + choiceinputName + '_incorrect');
+      let choiceinputPartialAnchor = cesc2('#' + choiceinputName + '_partial');
 
       cy.get(choiceinputAnchor).should('have.value', '');
       cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
@@ -13841,9 +13833,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', '')
+      cy.get(cesc("#\\/sr")).should('have.text', '')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       let indexByName = {};
       cy.window().then(async (win) => {
@@ -13870,9 +13862,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/sr")).should('have.text', '')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13892,9 +13884,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13914,9 +13906,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13936,9 +13928,9 @@ describe('Answer Tag Tests', function () {
       });
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13958,9 +13950,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -13980,9 +13972,9 @@ describe('Answer Tag Tests', function () {
         expect(text.trim().toLowerCase()).equal('50% correct')
       })
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14003,9 +13995,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14026,9 +14018,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14049,9 +14041,9 @@ describe('Answer Tag Tests', function () {
         expect(text.trim().toLowerCase()).equal('50% correct')
       })
 
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/sr")).should('have.text', 'cat')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14083,16 +14075,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: ')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: ')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
@@ -14111,15 +14103,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select half of correct answer")
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14131,15 +14123,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14152,15 +14144,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log('Select both correct answers')
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14173,15 +14165,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14194,17 +14186,17 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`monkey`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`monkey`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14216,15 +14208,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14236,16 +14228,16 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select all answers")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14257,15 +14249,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14278,15 +14270,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select partially correct and incorrect answers")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14298,15 +14290,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14336,25 +14328,25 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
+      let choiceinputAnchor = cesc2('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
+      let choiceinputCorrectAnchor = cesc2('#' + choiceinputName + '_correct');
+      let choiceinputIncorrectAnchor = cesc2('#' + choiceinputName + '_incorrect');
+      let choiceinputPartialAnchor = cesc2('#' + choiceinputName + '_partial');
 
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get(choiceinputCorrectAnchor).should('not.exist');
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: ')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: ')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       let indexByName = { cat: 1, dog: 2, monkey: 3 };
       cy.window().then(async (win) => {
@@ -14379,9 +14371,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14399,9 +14391,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14420,9 +14412,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14441,9 +14433,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14464,9 +14456,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14484,9 +14476,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14505,9 +14497,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14525,9 +14517,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14546,9 +14538,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14566,9 +14558,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14600,16 +14592,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: ')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: ')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
@@ -14628,15 +14620,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select half of correct answer")
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14648,15 +14640,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50% Correct');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50% Correct');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14669,15 +14661,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log('Select both correct answers')
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14690,15 +14682,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14711,17 +14703,17 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`monkey`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`monkey`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14733,15 +14725,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14753,16 +14745,16 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select all answers")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14774,15 +14766,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '67% Correct');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '67% Correct');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.6666666667')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14795,15 +14787,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select partially correct and incorrect answers")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.6666666667')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14815,15 +14807,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '33% Correct');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '33% Correct');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.3333333333')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.3333333333')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -14853,25 +14845,25 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
+      let choiceinputAnchor = cesc2('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
+      let choiceinputCorrectAnchor = cesc2('#' + choiceinputName + '_correct');
+      let choiceinputIncorrectAnchor = cesc2('#' + choiceinputName + '_incorrect');
+      let choiceinputPartialAnchor = cesc2('#' + choiceinputName + '_partial');
 
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get(choiceinputCorrectAnchor).should('not.exist');
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: ')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: ')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       let indexByName = { cat: 1, dog: 2, monkey: 3 };
       cy.window().then(async (win) => {
@@ -14896,9 +14888,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14916,9 +14908,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '50% Correct');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14937,9 +14929,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-      cy.get("#\\/credit").should('have.text', '0.5')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14958,9 +14950,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -14981,9 +14973,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-      cy.get("#\\/credit").should('have.text', '1')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+      cy.get(cesc("#\\/credit")).should('have.text', '1')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -15001,9 +14993,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('be.visible');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -15022,9 +15014,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-      cy.get("#\\/credit").should('have.text', '0')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -15042,9 +15034,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '67% Correct');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0.6666666667')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -15063,9 +15055,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0.6666666667')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -15083,9 +15075,9 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
       cy.get(choiceinputPartialAnchor).should('have.text', '33% Correct');
 
-      cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-      cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
-      cy.get("#\\/credit").should('have.text', '0.3333333333')
+      cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+      cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog, monkey')
+      cy.get(cesc("#\\/credit")).should('have.text', '0.3333333333')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -15117,16 +15109,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: ')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: ')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
@@ -15145,15 +15137,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select half of correct answer")
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: ')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15165,15 +15157,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '50% Correct');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '50% Correct');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15186,15 +15178,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log('Select both correct answers')
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
-    cy.get("#\\/credit").should('have.text', '0.5')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15207,15 +15199,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15228,17 +15220,17 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`monkey`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`monkey`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
-    cy.get("#\\/credit").should('have.text', '1')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog')
+    cy.get(cesc("#\\/credit")).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15250,15 +15242,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15270,16 +15262,16 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Select all answers")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
-    cy.get("#\\/credit").should('have.text', '0')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15291,15 +15283,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '67% Correct');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '67% Correct');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.6666666667')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: cat, dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15312,15 +15304,15 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Select partially correct and incorrect answers")
-    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').should('be.visible');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1')).contains(`cat`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.6666666667')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15332,15 +15324,15 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('have.text', '33% Correct');
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('have.text', '33% Correct');
 
-    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
-    cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
-    cy.get("#\\/credit").should('have.text', '0.3333333333')
+    cy.get(cesc("#\\/cr")).should('have.text', 'Current response: dog, monkey')
+    cy.get(cesc("#\\/sr")).should('have.text', 'Submitted response: dog, monkey')
+    cy.get(cesc("#\\/credit")).should('have.text', '0.3333333333')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15370,43 +15362,43 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     })
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`dog`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
 
   });
@@ -15434,15 +15426,15 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -15450,346 +15442,346 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 1`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 1`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`plus a bit is 0.001`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`plus a bit is 0.001`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.5`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.5`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
     cy.log("add another choice");
-    cy.get("#\\/num textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc("#\\/num") + " textarea").type("{end}{backspace}4{enter}", { force: true });
 
-    cy.get('#\\/_choiceinput1 label:nth-of-type(4)').should('be.visible')
+    cy.get(cesc('#\\/_choiceinput1') + ' label:nth-of-type(4)').should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(4);
     })
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 1`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 1`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`plus a bit is 0.001`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`plus a bit is 0.001`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.333`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.333`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
 
     cy.log("Select another partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.667`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.667`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
 
     cy.log("go back to 3 choices")
-    cy.get("#\\/num textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc("#\\/num") + " textarea").type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/_choiceinput1 label:nth-of-type(4)').should('not.exist')
+    cy.get(cesc('#\\/_choiceinput1') + ' label:nth-of-type(4)').should('not.exist')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(3);
     })
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 1`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 1`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`plus a bit is 0.001`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`plus a bit is 0.001`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.5`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.5`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
 
 
     cy.log("create 6 choices");
-    cy.get("#\\/num textarea").type("{end}{backspace}6{enter}", { force: true });
+    cy.get(cesc("#\\/num") + " textarea").type("{end}{backspace}6{enter}", { force: true });
 
-    cy.get('#\\/_choiceinput1 label:nth-of-type(6)').should('be.visible')
+    cy.get(cesc('#\\/_choiceinput1') + ' label:nth-of-type(6)').should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(6);
     })
 
-    cy.get('#\\/_choiceinput1').should('have.value', '');
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).should('have.value', '');
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 1`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 1`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Click submit button")
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select incorrect answer")
-    cy.get('#\\/_choiceinput1').contains(`plus a bit is 0.001`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`plus a bit is 0.001`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     });
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Select partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.2`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.2`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('20% correct')
     })
 
     cy.log("Select another partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.4`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.4`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
     cy.log("Select another partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.6`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.6`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('60% correct')
     })
 
     cy.log("Select another partially correct answer")
-    cy.get('#\\/_choiceinput1').contains(`Get 0.8`).click({ force: true });
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1')).contains(`Get 0.8`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).should('not.exist');
 
     cy.log("Press enter on submit button")
-    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
-    cy.get('#\\/_choiceinput1_submit').should('not.exist');
-    cy.get('#\\/_choiceinput1_correct').should('not.exist');
-    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
-    cy.get('#\\/_choiceinput1_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).type(`{enter}`, { force: true });
+    cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_choiceinput1_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
@@ -15814,11 +15806,11 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let choiceinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
+      let choiceinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -15852,7 +15844,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log('Change partial credit for cat')
-      cy.get("#\\/catcredit textarea").type("{end}{backspace}4{enter}", { force: true });
+      cy.get(cesc("#\\/catcredit") + " textarea").type("{end}{backspace}4{enter}", { force: true });
       cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('check work')
       })
@@ -15870,7 +15862,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log('Change last choice')
-      cy.get('#\\/last_input').clear().type('mouse{enter}')
+      cy.get(cesc('#\\/last_input')).clear().type('mouse{enter}')
       cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('check work')
       })
@@ -15907,7 +15899,7 @@ describe('Answer Tag Tests', function () {
       })
 
       cy.log('Change partial credit for cat')
-      cy.get("#\\/catcredit textarea").type("{end}{backspace}2{enter}", { force: true });
+      cy.get(cesc("#\\/catcredit") + " textarea").type("{end}{backspace}2{enter}", { force: true });
       cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('check work')
       })
@@ -15944,7 +15936,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log('Change animal name')
-      cy.get('#\\/last_input').clear().type('rabbit{enter}')
+      cy.get(cesc('#\\/last_input')).clear().type('rabbit{enter}')
       cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('check work')
       })
@@ -15979,11 +15971,11 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let choiceinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
+      let choiceinputName = cesc2(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -16000,7 +15992,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log("toggle inline")
-      cy.get('#\\/inline').click();
+      cy.get(cesc('#\\/inline')).click();
       cy.get(`${choiceinputAnchor} option:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputAnchor).should('have.value', '');
       cy.get(choiceinputSubmitAnchor).should('be.visible');
@@ -16023,7 +16015,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log("toggle inline")
-      cy.get('#\\/inline').click();
+      cy.get(cesc('#\\/inline')).click();
       cy.get(`${choiceinputAnchor} label:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
@@ -16051,7 +16043,7 @@ describe('Answer Tag Tests', function () {
       })
 
       cy.log("toggle inline")
-      cy.get('#\\/inline').click();
+      cy.get(cesc('#\\/inline')).click();
       cy.get(`${choiceinputAnchor} option:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputCorrectAnchor).should('not.exist');
@@ -16078,29 +16070,29 @@ describe('Answer Tag Tests', function () {
  `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    // cy.get('#\\/userx_input_input').should('have.value', '');
-    cy.get('#\\/userx_input_submit').should('be.visible');
+    // cy.get(cesc('#\\/userx_input_input')).should('have.value', '');
+    cy.get(cesc('#\\/userx_input_submit')).should('be.visible');
 
     cy.log("Enter a letter")
-    cy.get("#\\/userx_input textarea").type("a{enter}", { force: true });
-    cy.get('#\\/userx_input_correct').should('be.visible');
+    cy.get(cesc("#\\/userx_input") + " textarea").type("a{enter}", { force: true });
+    cy.get(cesc('#\\/userx_input_correct')).should('be.visible');
 
     cy.log("Enter letter combination")
-    cy.get("#\\/userx_input textarea").type("{end}{backspace}c,d", { force: true });
-    cy.get('#\\/userx_input_submit').click();
-    cy.get('#\\/userx_input_incorrect').should('be.visible');
+    cy.get(cesc("#\\/userx_input") + " textarea").type("{end}{backspace}c,d", { force: true });
+    cy.get(cesc('#\\/userx_input_submit')).click();
+    cy.get(cesc('#\\/userx_input_incorrect')).should('be.visible');
 
     cy.log("Enter another letter")
-    cy.get("#\\/userx_input textarea").type("{ctrl+home}{shift+end}{backspace}q", { force: true });
-    cy.get('#\\/userx_input_submit').click();
-    cy.get('#\\/userx_input_correct').should('be.visible');
+    cy.get(cesc("#\\/userx_input") + " textarea").type("{ctrl+home}{shift+end}{backspace}q", { force: true });
+    cy.get(cesc('#\\/userx_input_submit')).click();
+    cy.get(cesc('#\\/userx_input_correct')).should('be.visible');
 
     cy.log("Enter a number")
-    cy.get("#\\/userx_input textarea").type("{end}{backspace}1", { force: true });
-    cy.get('#\\/userx_input_submit').click();
-    cy.get('#\\/userx_input_incorrect').should('be.visible');
+    cy.get(cesc("#\\/userx_input") + " textarea").type("{end}{backspace}1", { force: true });
+    cy.get(cesc('#\\/userx_input_submit')).click();
+    cy.get(cesc('#\\/userx_input_incorrect')).should('be.visible');
   });
 
   it('answer element of user defined set', () => {
@@ -16121,60 +16113,60 @@ describe('Answer Tag Tests', function () {
  `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    // cy.get('#\\/element_input').should('have.value', '');
-    // cy.get('#\\/set_input').should('have.value', '{ 1, 2, 3 }');
-    cy.get('#\\/element_submit').should('be.visible');
+    // cy.get(cesc('#\\/element_input')).should('have.value', '');
+    // cy.get(cesc('#\\/set_input')).should('have.value', '{ 1, 2, 3 }');
+    cy.get(cesc('#\\/element_submit')).should('be.visible');
 
     cy.log("Enter a number from set")
-    cy.get("#\\/element textarea").type("2{enter}", { force: true });
-    cy.get('#\\/element_correct').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc('#\\/element_correct')).should('be.visible');
 
     cy.log("Enter all numbers from set")
-    cy.get("#\\/element textarea").type("{end}{backspace}1,2,3", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_incorrect').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("{end}{backspace}1,2,3", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_incorrect')).should('be.visible');
 
     cy.log("Enter a letter")
-    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}c", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_incorrect').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("{ctrl+home}{shift+end}{backspace}c", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_incorrect')).should('be.visible');
 
     cy.log("Change set to letters")
-    cy.get("#\\/set textarea").type("{ctrl+home}{shift+end}{backspace}{{}a,b,c,d,e,f,g", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_correct').should('be.visible');
+    cy.get(cesc("#\\/set") + " textarea").type("{ctrl+home}{shift+end}{backspace}{{}a,b,c,d,e,f,g", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_correct')).should('be.visible');
 
     cy.log("Enter another letter")
-    cy.get("#\\/element textarea").type("{end}{backspace}g", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_correct').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("{end}{backspace}g", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_correct')).should('be.visible');
 
     cy.log("Enter a number")
-    cy.get("#\\/element textarea").type("{end}{backspace}2", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_incorrect').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("{end}{backspace}2", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_incorrect')).should('be.visible');
 
     cy.log("Change set to mathematical expressions")
-    cy.get("#\\/set textarea").type("{ctrl+home}{shift+end}{backspace}{{}(x+y)/2{rightarrow}, e^(x^2{rightarrow} + y){rightArrow}, (1,2,3)", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_incorrect').should('be.visible');
+    cy.get(cesc("#\\/set") + " textarea").type("{ctrl+home}{shift+end}{backspace}{{}(x+y)/2{rightarrow}, e^(x^2{rightarrow} + y){rightArrow}, (1,2,3)", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_incorrect')).should('be.visible');
 
     cy.log("Enter one of the expressions")
-    cy.get("#\\/element textarea").type("{end}{backspace}(1,2,3)", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_correct').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("{end}{backspace}(1,2,3)", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_correct')).should('be.visible');
 
     cy.log("Enter another of the expressions")
-    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}e^(x^2{rightarrow} + y)", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_correct').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("{ctrl+home}{shift+end}{backspace}e^(x^2{rightarrow} + y)", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_correct')).should('be.visible');
 
     cy.log("Enter third expression")
-    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}x+2y-x/2{rightarrow}-3y/2", { force: true });
-    cy.get('#\\/element_submit').click();
-    cy.get('#\\/element_correct').should('be.visible');
+    cy.get(cesc("#\\/element") + " textarea").type("{ctrl+home}{shift+end}{backspace}x+2y-x/2{rightarrow}-3y/2", { force: true });
+    cy.get(cesc('#\\/element_submit')).click();
+    cy.get(cesc('#\\/element_correct')).should('be.visible');
 
 
   });
@@ -16204,88 +16196,88 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).should('have.text', '')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get("#\\/_mathinput1 textarea").type("2{enter}", { force: true });
-    cy.get(`#\\/cr1 .mjx-mrow`).should("have.text", '2')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should("have.text", '2')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/cr2`).should('have.text', '')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr1 .mjx-mrow`).should("have.text", '2')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should("have.text", '2')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/cr2`).should('have.text', '')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
-    cy.get('#\\/_textinput1_input').clear().type(`hello{enter}`);
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`hello{enter}`);
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
-    cy.get('#\\/a_submit').click();
-    cy.get(`#\\/sr2`).should('have.text', 'hello')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}0{enter}", { force: true });
-    cy.get(`#\\/cr1 .mjx-mrow`).should("have.text", '0')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}0{enter}", { force: true });
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should("have.text", '0')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr2`).should('have.text', 'hello')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
-    cy.get('#\\/a_submit').click();
-    cy.get(`#\\/sr1 .mjx-mrow`).should("have.text", '0')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should("have.text", '0')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/sr2`).should('have.text', 'hello')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
   });
 
@@ -16314,90 +16306,90 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).should('have.text', '')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get("#\\/_mathinput1 textarea").type("2{enter}", { force: true });
-    cy.get(`#\\/cr1 .mjx-mrow`).should("have.text", '2')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should("have.text", '2')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/cr2`).should('have.text', '')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr1 .mjx-mrow`).should("have.text", '2')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should("have.text", '2')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/cr2`).should('have.text', '')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
-    cy.get('#\\/_textinput1_input').clear().type(`hello{enter}`);
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`hello{enter}`);
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr2`).should('have.text', '')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', '')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
-    cy.get('#\\/a_submit').click();
-    cy.get(`#\\/sr2`).should('have.text', 'hello')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}0{enter}", { force: true });
-    cy.get(`#\\/cr1 .mjx-mrow`).should("have.text", '0')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}0{enter}", { force: true });
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should("have.text", '0')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr2`).should('have.text', 'hello')
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
-    cy.get('#\\/a_submit').click();
-    cy.get(`#\\/sr1 .mjx-mrow`).should("have.text", '0')
+    cy.get(cesc('#\\/a_submit')).click();
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should("have.text", '0')
 
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/cr2`).should('have.text', 'hello')
+    cy.get(cesc(`#\\/cr2`)).should('have.text', 'hello')
 
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/sr2`).should('have.text', 'hello')
-    cy.get(`#\\/ca`).should('have.text', '0.5')
+    cy.get(cesc(`#\\/sr2`)).should('have.text', 'hello')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0.5')
 
   });
 
@@ -16425,27 +16417,27 @@ describe('Answer Tag Tests', function () {
  `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr .mjx-mrow`).should("have.text", '0')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should("have.text", '0')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get(`#\\/ca`).should('have.text', '0');
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -16454,43 +16446,43 @@ describe('Answer Tag Tests', function () {
         args: { x: 3, y: -3 }
       })
 
-      cy.get(`#\\/cr .mjx-mrow`).should("have.text", '3')
-      cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should("have.text", '3')
+      cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
-      cy.get(`#\\/ca`).should('have.text', '0')
+      cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-      cy.get('#\\/a_submit').click();
-      cy.get(`#\\/sr .mjx-mrow`).should("have.text", '3')
-      cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/a_submit')).click();
+      cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should("have.text", '3')
+      cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get(`#\\/ca`).should('have.text', '1');
+      cy.get(cesc(`#\\/ca`)).should('have.text', '1');
 
-      cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}4{enter}", { force: true });
+      cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}4{enter}", { force: true });
 
-      cy.get(`#\\/cr .mjx-mrow`).should("have.text", '3')
-      cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should("have.text", '3')
+      cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get(`#\\/ca`).should('have.text', '1')
+      cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
-      cy.get('#\\/a_submit').click();
-      cy.get(`#\\/ca`).should('have.text', '0')
+      cy.get(cesc('#\\/a_submit')).click();
+      cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-      cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
 
@@ -16505,26 +16497,26 @@ describe('Answer Tag Tests', function () {
       })
 
 
-      cy.get(`#\\/cr .mjx-mrow`).should("have.text", '8')
-      cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should("have.text", '8')
+      cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       });
-      cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
-      cy.get(`#\\/ca`).should('have.text', '0')
+      cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-      cy.get('#\\/a_submit').click();
-      cy.get(`#\\/sr .mjx-mrow`).should("have.text", '8')
+      cy.get(cesc('#\\/a_submit')).click();
+      cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should("have.text", '8')
 
 
-      cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       });
-      cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('8')
       });
-      cy.get(`#\\/ca`).should('have.text', '1');
+      cy.get(cesc(`#\\/ca`)).should('have.text', '1');
 
     });
 
@@ -16539,15 +16531,15 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -16597,55 +16589,55 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/a"].stateValues.nResponses).eq(1)
     });
 
-    cy.get("#\\/min textarea").type("2{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/min") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
-    cy.get("#\\/val textarea").type("3{enter}", { force: true });
+    cy.get(cesc("#\\/val") + " textarea").type("3{enter}", { force: true });
 
-    cy.get(`#\\/cr .mjx-mrow`).should("have.text", '3')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should("have.text", '3')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr .mjx-mrow`).should("have.text", '3')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`) + ` .mjx-mrow`).should("have.text", '3')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
   });
 
@@ -16674,101 +16666,101 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/a"].stateValues.nResponses).eq(2)
     });
 
-    cy.get('#\\/P textarea').type("(2,3){enter}", { force: true })
-    cy.get('#\\/Q textarea').type("(3,4){enter}", { force: true })
+    cy.get(cesc('#\\/P') + ' textarea').type("(2,3){enter}", { force: true })
+    cy.get(cesc('#\\/Q') + ' textarea').type("(3,4){enter}", { force: true })
 
-    cy.get(`#\\/cr1 .mjx-mrow`).should("contain.text", '(2,3)')
-    cy.get(`#\\/cr2 .mjx-mrow`).should("contain.text", '(3,4)')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should("contain.text", '(2,3)')
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should("contain.text", '(3,4)')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr1 .mjx-mrow`).should("contain.text", '(2,3)')
-    cy.get(`#\\/sr2 .mjx-mrow`).should("contain.text", '(3,4)')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should("contain.text", '(2,3)')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should("contain.text", '(3,4)')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
 
-    cy.get('#\\/P textarea').type("{home}{rightArrow}{rightArrow}{backspace}5{enter}", { force: true })
-    cy.get('#\\/Q textarea').type("{end}{leftArrow}{backspace}1{enter}", { force: true })
+    cy.get(cesc('#\\/P') + ' textarea').type("{home}{rightArrow}{rightArrow}{backspace}5{enter}", { force: true })
+    cy.get(cesc('#\\/Q') + ' textarea').type("{end}{leftArrow}{backspace}1{enter}", { force: true })
 
-    cy.get(`#\\/cr1 .mjx-mrow`).should("contain.text", '(5,3)')
-    cy.get(`#\\/cr2 .mjx-mrow`).should("contain.text", '(3,1)')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should("contain.text", '(5,3)')
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should("contain.text", '(3,1)')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,3)')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,1)')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,4)')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr1 .mjx-mrow`).should("contain.text", '(5,3)')
-    cy.get(`#\\/sr2 .mjx-mrow`).should("contain.text", '(3,1)')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should("contain.text", '(5,3)')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should("contain.text", '(3,1)')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,3)')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,1)')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,3)')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3,1)')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
   });
 
@@ -16797,40 +16789,40 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/mi textarea').type('x{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_correct').should('be.visible')
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('x{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_correct')).should('be.visible')
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('{end}{backspace}y{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('90% correct')
     })
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('{end}{backspace}z{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
 
   });
@@ -16860,40 +16852,40 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/mi textarea').type('x{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_correct').should('be.visible')
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('x{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_correct')).should('be.visible')
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('{end}{backspace}y{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('90% correct')
     })
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('{end}{backspace}z{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
 
 
@@ -16924,40 +16916,40 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/mi textarea').type('x{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_correct').should('be.visible')
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('x{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_correct')).should('be.visible')
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('{end}{backspace}y{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('90% correct')
     })
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', { force: true });
-    cy.get('#\\/ans_submit').click();
-    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+    cy.get(cesc('#\\/mi') + ' textarea').type('{end}{backspace}z{enter}', { force: true });
+    cy.get(cesc('#\\/ans_submit')).click();
+    cy.get(cesc('#\\/ans_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('z')
     });
-    cy.get('#\\/sr2').should('not.exist')
-    cy.get('#\\/sr3').should('not.exist')
+    cy.get(cesc('#\\/sr2')).should('not.exist')
+    cy.get(cesc('#\\/sr3')).should('not.exist')
 
 
 
@@ -16982,96 +16974,96 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/a"].stateValues.nResponses).eq(2)
     });
 
-    cy.get("#\\/min textarea").type("2{enter}", { force: true });
+    cy.get(cesc("#\\/min") + " textarea").type("2{enter}", { force: true });
 
-    cy.get(`#\\/cr2 .mjx-mrow`).should("have.text", '2')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`) + ` .mjx-mrow`).should("have.text", '2')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr2 .mjx-mrow`).should("have.text", '2')
+    cy.get(cesc(`#\\/sr2`) + ` .mjx-mrow`).should("have.text", '2')
 
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
-    cy.get("#\\/val textarea").type("3{enter}", { force: true });
+    cy.get(cesc("#\\/val") + " textarea").type("3{enter}", { force: true });
 
-    cy.get(`#\\/cr1 .mjx-mrow`).should("have.text", '3')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr1`) + ` .mjx-mrow`).should("have.text", '3')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
-    cy.get(`#\\/sr1 .mjx-mrow`).should("have.text", '3')
-    cy.get(`#\\/cr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`) + ` .mjx-mrow`).should("have.text", '3')
+    cy.get(cesc(`#\\/cr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/cr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/sr1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr2`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
   });
 
@@ -17093,142 +17085,142 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    let submitAnchor = cesc('#/a_submit');
-    let correctAnchor = cesc('#/a_correct');
-    let incorrectAnchor = cesc('#/a_incorrect');
-
-    cy.get(submitAnchor).should('be.visible');
-    cy.get(correctAnchor).should('not.exist');
-    cy.get(incorrectAnchor).should('not.exist');
-
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get(`#\\/ca`).should('have.text', '0')
-
-
-    cy.get("#\\/val textarea").type("3{enter}", { force: true });
+    let submitAnchor = cesc2('#/a_submit');
+    let correctAnchor = cesc2('#/a_correct');
+    let incorrectAnchor = cesc2('#/a_incorrect');
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
 
-    cy.get(`#\\/cr .mjx-mrow`).should("contain.text", '3')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+
+    cy.get(cesc("#\\/val") + " textarea").type("3{enter}", { force: true });
+
+    cy.get(submitAnchor).should('be.visible');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should("contain.text", '3')
+
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
 
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
-    cy.get("#\\/val textarea").type("{end}{backspace}4", { force: true });
+    cy.get(cesc("#\\/val") + " textarea").type("{end}{backspace}4", { force: true });
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get("#\\/val textarea").type("{end}{backspace}3", { force: true });
+    cy.get(cesc("#\\/val") + " textarea").type("{end}{backspace}3", { force: true });
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get("#\\/val textarea").type("{end}{backspace}5", { force: true });
+    cy.get(cesc("#\\/val") + " textarea").type("{end}{backspace}5", { force: true });
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
-    cy.get("#\\/val textarea").blur();
+    cy.get(cesc("#\\/val") + " textarea").blur();
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
 
-    cy.get(`#\\/cr .mjx-mrow`).should('have.text', '5')
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`) + ` .mjx-mrow`).should('have.text', '5')
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     });
-    cy.get(`#\\/ca`).should('have.text', '0')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '0')
 
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('be.visible');
     cy.get(incorrectAnchor).should('not.exist');
 
-    cy.get(`#\\/cr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/cr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get(`#\\/sr`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/sr`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get(`#\\/ca`).should('have.text', '1')
+    cy.get(cesc(`#\\/ca`)).should('have.text', '1')
 
   });
 
@@ -17274,20 +17266,20 @@ describe('Answer Tag Tests', function () {
       });
 
 
-      cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);  // to wait until loaded
 
       for (let ind2 = 1; ind2 <= 4; ind2++) {
 
-        cy.get('#\\/_choiceinput1').contains(options[ind2 - 1]).click({ force: true });
+        cy.get(cesc('#\\/_choiceinput1')).contains(options[ind2 - 1]).click({ force: true });
 
-        cy.get('#\\/_choiceinput1_submit').click();
-        cy.get('#\\/_choiceinput1_submit').should('not.exist');
+        cy.get(cesc('#\\/_choiceinput1_submit')).click();
+        cy.get(cesc('#\\/_choiceinput1_submit')).should('not.exist');
         if (ind2 === ind) {
-          cy.get('#\\/_choiceinput1_correct').should('be.visible');
-          cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+          cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
+          cy.get(cesc('#\\/_choiceinput1_incorrect')).should('not.exist');
         } else {
-          cy.get('#\\/_choiceinput1_correct').should('not.exist');
-          cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+          cy.get(cesc('#\\/_choiceinput1_correct')).should('not.exist');
+          cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
         }
       }
 
@@ -17334,16 +17326,16 @@ describe('Answer Tag Tests', function () {
       });
 
 
-      cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
+      cy.get(cesc('#\\/_text1')).should('have.text', `${ind}`);  // to wait until loaded
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
         let textinputName = stateVariables['/ans'].stateValues.inputChildren[0].componentName
-        let textinputAnchor = cesc('#' + textinputName + '_input');
-        let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
-        let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
-        let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
+        let textinputAnchor = cesc2('#' + textinputName + '_input');
+        let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
+        let textinputCorrectAnchor = cesc2('#' + textinputName + '_correct');
+        let textinputIncorrectAnchor = cesc2('#' + textinputName + '_incorrect');
 
 
         for (let ind2 = 1; ind2 <= 4; ind2++) {
@@ -17393,159 +17385,159 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    let submitAnchor = cesc('#/a_submit');
-    let correctAnchor = cesc('#/a_correct');
-    let incorrectAnchor = cesc('#/a_incorrect');
-    let partialAnchor = cesc('#/a_partial');
+    let submitAnchor = cesc2('#/a_submit');
+    let correctAnchor = cesc2('#/a_correct');
+    let incorrectAnchor = cesc2('#/a_incorrect');
+    let partialAnchor = cesc2('#/a_partial');
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('not.exist')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('not.exist')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('not.exist')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('not.exist')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
 
-    cy.get("#\\/mi2 textarea").type("1{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'At least the second is a number')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'At least the second is a number')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
 
-    cy.get("#\\/mi1 textarea").type("0{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("0{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'At least the first is a number')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'At least the first is a number')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
 
-    cy.get("#\\/nawards textarea").type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/nawards") + " textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'At least the first is a number')
-    cy.get('#\\/fb2').should('have.text', 'At least the second is a number')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'At least the first is a number')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'At least the second is a number')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
 
 
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17554,30 +17546,30 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('have.text', 'At least the first is a number')
-    cy.get('#\\/fb3').should('have.text', 'At least the second is a number')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'At least the first is a number')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'At least the second is a number')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get("#\\/ca").should('have.text', '0.4')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.4')
 
 
-    cy.get("#\\/nawards textarea").type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/nawards") + " textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17586,30 +17578,30 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     });
-    cy.get("#\\/ca").should('have.text', '0.4')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.4')
 
 
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17618,30 +17610,30 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get("#\\/ca").should('have.text', '0.4')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.4')
 
 
 
-    cy.get("#\\/nawards textarea").type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/nawards") + " textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17650,87 +17642,87 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
-    cy.get('#\\/fb3').should('have.text', 'At least the first is a number')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Second is greater than 3')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'At least the first is a number')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get("#\\/ca").should('have.text', '0.8')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.8')
 
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('be.visible');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
-    cy.get('#\\/fb3').should('have.text', 'Distinct and greater than 3')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Second is greater than 3')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Distinct and greater than 3')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get("#\\/ca").should('have.text', '1')
+    cy.get(cesc("#\\/ca")).should('have.text', '1')
 
 
-    cy.get("#\\/nawards textarea").type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/nawards") + " textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('be.visible');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'Distinct and greater than 3')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Distinct and greater than 3')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get("#\\/ca").should('have.text', '1')
+    cy.get(cesc("#\\/ca")).should('have.text', '1')
 
 
-    cy.get("#\\/creditForCombined textarea").type("{end}{backspace}0.2{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/creditForCombined") + " textarea").type("{end}{backspace}0.2{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17739,29 +17731,29 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get("#\\/ca").should('have.text', '0.4')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.4')
 
 
-    cy.get("#\\/nawards textarea").type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/nawards") + " textarea").type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17770,54 +17762,54 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Second is greater than 3')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get("#\\/ca").should('have.text', '0.8')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.8')
 
 
-    cy.get("#\\/nawards textarea").type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/nawards") + " textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('be.visible');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
-    cy.get('#\\/fb3').should('have.text', 'Distinct and greater than 3')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is greater than 3')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Second is greater than 3')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Distinct and greater than 3')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
-    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/cr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     });
-    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/sr2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
     });
-    cy.get("#\\/ca").should('have.text', '1')
+    cy.get(cesc("#\\/ca")).should('have.text', '1')
 
 
 
@@ -17856,89 +17848,89 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    let submitAnchor = cesc('#/a_submit');
-    let correctAnchor = cesc('#/a_correct');
-    let incorrectAnchor = cesc('#/a_incorrect');
-    let partialAnchor = cesc('#/a_partial');
+    let submitAnchor = cesc2('#/a_submit');
+    let correctAnchor = cesc2('#/a_correct');
+    let incorrectAnchor = cesc2('#/a_incorrect');
+    let partialAnchor = cesc2('#/a_partial');
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('not.exist')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('not.exist')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
 
-    cy.get('#\\/a_submit').click();
-
-    cy.get(submitAnchor).should('not.exist');
-    cy.get(correctAnchor).should('not.exist');
-    cy.get(incorrectAnchor).should('be.visible');
-    cy.get(partialAnchor).should('not.exist');
-
-    cy.get('#\\/fb1').should('have.text', 'The first should be a number')
-    cy.get('#\\/fb2').should('have.text', 'The second should be a number')
-    cy.get('#\\/fb3').should('have.text', 'The third should be a number')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0')
-
-
-    cy.get("#\\/mi1 textarea").type("-5{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'The second should be a number')
-    cy.get('#\\/fb2').should('have.text', 'The third should be a number')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'The first should be a number')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'The second should be a number')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'The third should be a number')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
 
-    cy.get("#\\/mi2 textarea").type("-5{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
-
-    cy.get(submitAnchor).should('not.exist');
-    cy.get(correctAnchor).should('not.exist');
-    cy.get(incorrectAnchor).should('be.visible');
-    cy.get(partialAnchor).should('not.exist');
-
-    cy.get('#\\/fb1').should('have.text', 'The third should be a number')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0')
-
-    cy.get("#\\/mi3 textarea").type("-5{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("-5{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('not.exist')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'The second should be a number')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'The third should be a number')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("-5{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get(cesc('#\\/fb1')).should('have.text', 'The third should be a number')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
+
+    cy.get(cesc("#\\/mi3") + " textarea").type("-5{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get(cesc('#\\/fb1')).should('not.exist')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
+
+
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17947,16 +17939,16 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('10% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'Second is larger than third')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.1')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Second is larger than third')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.1')
 
 
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17965,16 +17957,16 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('20% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is larger than third')
-    cy.get('#\\/fb2').should('have.text', 'Second is larger than third')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.2')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is larger than third')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Second is larger than third')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.2')
 
 
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -17983,16 +17975,16 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('30% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is larger than second')
-    cy.get('#\\/fb2').should('have.text', 'First is larger than third')
-    cy.get('#\\/fb3').should('have.text', 'Second is larger than third')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.3')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is larger than second')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'First is larger than third')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Second is larger than third')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.3')
 
 
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -18001,16 +17993,16 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is positive')
-    cy.get('#\\/fb2').should('have.text', 'First is larger than second')
-    cy.get('#\\/fb3').should('have.text', 'First is larger than third')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.4')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is positive')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'First is larger than second')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'First is larger than third')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.4')
 
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}{backspace}-2{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}{backspace}-2{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -18019,16 +18011,16 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('65% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is positive')
-    cy.get('#\\/fb2').should('have.text', 'First is larger than second')
-    cy.get('#\\/fb3').should('have.text', 'Sum of first two is larger than 5!')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.65')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is positive')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'First is larger than second')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Sum of first two is larger than 5!')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.65')
 
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -18037,16 +18029,16 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is positive')
-    cy.get('#\\/fb2').should('have.text', 'Second is positive')
-    cy.get('#\\/fb3').should('have.text', 'Sum of first two is larger than 5!')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.75')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is positive')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Second is positive')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Sum of first two is larger than 5!')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.75')
 
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -18055,60 +18047,60 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('90% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is positive')
-    cy.get('#\\/fb2').should('have.text', 'Sum of first two is larger than 5!')
-    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.9')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'First is positive')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Sum of first two is larger than 5!')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.9')
 
 
-    cy.get("#\\/mi3 textarea").type("{end}{backspace}{backspace}-1{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
-
-    cy.get(submitAnchor).should('not.exist');
-    cy.get(correctAnchor).should('be.visible');
-    cy.get(incorrectAnchor).should('not.exist');
-    cy.get(partialAnchor).should('not.exist');
-
-    cy.get('#\\/fb1').should('have.text', 'Sum of first two is larger than 5!')
-    cy.get('#\\/fb2').should('have.text', 'Sum of first and third is larger than 5!')
-    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '1')
-
-
-    cy.get("#\\/mi3 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi3") + " textarea").type("{end}{backspace}{backspace}-1{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('be.visible');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'Sum of first two is larger than 5!')
-    cy.get('#\\/fb2').should('have.text', 'Sum of first and third is larger than 5!')
-    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '1')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Sum of first two is larger than 5!')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Sum of first and third is larger than 5!')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '1')
 
 
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi3") + " textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('be.visible');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'Sum of first two is larger than 5!')
-    cy.get('#\\/fb2').should('have.text', 'Sum of first and third is larger than 5!')
-    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '1')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Sum of first two is larger than 5!')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Sum of first and third is larger than 5!')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '1')
+
+
+    cy.get(cesc("#\\/mi1") + " textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Sum of first two is larger than 5!')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'Sum of first and third is larger than 5!')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '1')
 
 
   });
@@ -18149,58 +18141,58 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    let submitAnchor = cesc('#/a_submit');
-    let correctAnchor = cesc('#/a_correct');
-    let incorrectAnchor = cesc('#/a_incorrect');
-    let partialAnchor = cesc('#/a_partial');
+    let submitAnchor = cesc2('#/a_submit');
+    let correctAnchor = cesc2('#/a_correct');
+    let incorrectAnchor = cesc2('#/a_incorrect');
+    let partialAnchor = cesc2('#/a_partial');
 
     cy.get(submitAnchor).should('be.visible');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('not.exist')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
+    cy.get(cesc('#\\/fb1')).should('not.exist')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
 
 
-    cy.get('#\\/a_submit').click();
-
-    cy.get(submitAnchor).should('not.exist');
-    cy.get(correctAnchor).should('not.exist');
-    cy.get(incorrectAnchor).should('be.visible');
-    cy.get(partialAnchor).should('not.exist');
-
-    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0')
-
-
-    cy.get("#\\/mi1 textarea").type("z{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
-    cy.get('#\\/fb2').should('have.text', 'z is in the wrong spot')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Nothing is in the right spot')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
 
-    cy.get("#\\/mi2 textarea").type("y{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("z{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Nothing is in the right spot')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'z is in the wrong spot')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
+
+
+    cy.get(cesc("#\\/mi2") + " textarea").type("y{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -18208,32 +18200,15 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/fb1').should('have.text', 'z is in the wrong spot')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.333')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'z is in the wrong spot')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.333')
 
-    cy.get("#\\/mi3 textarea").type("x{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
-
-    cy.get(submitAnchor).should('not.exist');
-    cy.get(correctAnchor).should('not.exist');
-    cy.get(incorrectAnchor).should('not.exist');
-    cy.get(partialAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('33% correct')
-    })
-    cy.get('#\\/fb1').should('have.text', 'x is in the wrong spot')
-    cy.get('#\\/fb2').should('have.text', 'z is in the wrong spot')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.333')
-
-
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi3") + " textarea").type("x{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -18241,32 +18216,49 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
-    cy.get('#\\/fb1').should('have.text', 'x is in the wrong spot')
-    cy.get('#\\/fb2').should('have.text', 'y is in the wrong spot')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.333')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'x is in the wrong spot')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'z is in the wrong spot')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.333')
 
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}z{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('33% correct')
+    })
+    cy.get(cesc('#\\/fb1')).should('have.text', 'x is in the wrong spot')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'y is in the wrong spot')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.333')
+
+
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}z{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
     cy.get(incorrectAnchor).should('be.visible');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
-    cy.get('#\\/fb2').should('have.text', 'x is in the wrong spot')
-    cy.get('#\\/fb3').should('have.text', 'y is in the wrong spot')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'Nothing is in the right spot')
+    cy.get(cesc('#\\/fb2')).should('have.text', 'x is in the wrong spot')
+    cy.get(cesc('#\\/fb3')).should('have.text', 'y is in the wrong spot')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0')
 
-    cy.get("#\\/mi2 textarea").type("{end}{backspace}y{enter}", { force: true });
-    cy.get("#\\/mi3 textarea").type("{end}{backspace}z{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi2") + " textarea").type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc("#\\/mi3") + " textarea").type("{end}{backspace}z{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('not.exist');
@@ -18274,27 +18266,27 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
-    cy.get('#\\/fb1').should('have.text', 'y is in the wrong spot')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '0.667')
+    cy.get(cesc('#\\/fb1')).should('have.text', 'y is in the wrong spot')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '0.667')
 
 
-    cy.get("#\\/mi1 textarea").type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/a_submit').click();
+    cy.get(cesc("#\\/mi1") + " textarea").type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/a_submit')).click();
 
     cy.get(submitAnchor).should('not.exist');
     cy.get(correctAnchor).should('be.visible');
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
-    cy.get('#\\/fb1').should('not.exist')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
-    cy.get('#\\/fb4').should('not.exist')
-    cy.get('#\\/fb5').should('not.exist')
-    cy.get("#\\/ca").should('have.text', '1')
+    cy.get(cesc('#\\/fb1')).should('not.exist')
+    cy.get(cesc('#\\/fb2')).should('not.exist')
+    cy.get(cesc('#\\/fb3')).should('not.exist')
+    cy.get(cesc('#\\/fb4')).should('not.exist')
+    cy.get(cesc('#\\/fb5')).should('not.exist')
+    cy.get(cesc("#\\/ca")).should('have.text', '1')
 
 
 
@@ -18315,11 +18307,11 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/nsubs1').should('have.text', 0);
-    cy.get('#\\/nsubs2').should('have.text', 0);
+    cy.get(cesc('#\\/nsubs1')).should('have.text', 0);
+    cy.get(cesc('#\\/nsubs2')).should('have.text', 0);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -18329,18 +18321,18 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
 
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       let textinputName = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName + "_input");
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputAnchor = cesc2('#' + textinputName + "_input");
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
 
       cy.get(mathinputAnchor).type("x+y{enter}", { force: true });
 
 
-      cy.get('#\\/nsubs1').should('have.text', 1)
-      cy.get('#\\/nsubs2').should('have.text', 0)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 1)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 0)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
@@ -18351,8 +18343,8 @@ describe('Answer Tag Tests', function () {
 
       cy.get(mathinputAnchor).type("{end}{backspace}{backspace}", { force: true });
 
-      cy.get('#\\/nsubs1').should('have.text', 1)
-      cy.get('#\\/nsubs2').should('have.text', 0)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 1)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 0)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
@@ -18362,8 +18354,8 @@ describe('Answer Tag Tests', function () {
       })
 
       cy.get(textinputAnchor).type("h").blur();
-      cy.get('#\\/nsubs1').should('have.text', 1)
-      cy.get('#\\/nsubs2').should('have.text', 0)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 1)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 0)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
@@ -18375,8 +18367,8 @@ describe('Answer Tag Tests', function () {
 
       cy.get(mathinputSubmitAnchor).click()
 
-      cy.get('#\\/nsubs1').should('have.text', 2)
-      cy.get('#\\/nsubs2').should('have.text', 0)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 2)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 0)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
@@ -18387,8 +18379,8 @@ describe('Answer Tag Tests', function () {
 
       cy.get(textinputSubmitAnchor).click()
 
-      cy.get('#\\/nsubs1').should('have.text', 2)
-      cy.get('#\\/nsubs2').should('have.text', 1)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 2)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 1)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -18402,8 +18394,8 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).clear().type("hello").blur();
       cy.get(mathinputAnchor).type("{end}+y", { force: true }).blur();
 
-      cy.get('#\\/nsubs1').should('have.text', 2)
-      cy.get('#\\/nsubs2').should('have.text', 1)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 2)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 1)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
@@ -18414,8 +18406,8 @@ describe('Answer Tag Tests', function () {
 
 
       cy.get(mathinputSubmitAnchor).click()
-      cy.get('#\\/nsubs1').should('have.text', 3)
-      cy.get('#\\/nsubs2').should('have.text', 1)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 3)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 1)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
@@ -18425,8 +18417,8 @@ describe('Answer Tag Tests', function () {
       })
 
       cy.get(textinputSubmitAnchor).click()
-      cy.get('#\\/nsubs1').should('have.text', 3)
-      cy.get('#\\/nsubs2').should('have.text', 2)
+      cy.get(cesc('#\\/nsubs1')).should('have.text', 3)
+      cy.get(cesc('#\\/nsubs2')).should('have.text', 2)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
@@ -18467,30 +18459,30 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log("Select correct answer")
-    cy.get('#\\/choice1').select(`4`);
-    cy.get('#\\/sv').should('have.text', '4');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/choice1')).select(`4`);
+    cy.get(cesc('#\\/sv')).should('have.text', '4');
+    cy.get(cesc('#\\/_answer1_submit')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
-    cy.get('#\\/_answer1_correct').should('not.exist');
-    cy.get('#\\/_answer1_incorrect').should('not.exist');
-    cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.get(cesc('#\\/_answer1_correct')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_incorrect')).should('not.exist');
+    cy.get(cesc('#\\/_answer1_partial')).should('not.exist');
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_correct')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
 
     cy.log("Select incorrect answer and submit")
-    cy.get('#\\/choice1').select(`3`);
-    cy.get('#\\/sv').should('have.text', '3');
-    cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+    cy.get(cesc('#\\/choice1')).select(`3`);
+    cy.get(cesc('#\\/sv')).should('have.text', '3');
+    cy.get(cesc('#\\/_answer1_submit')).click();
+    cy.get(cesc('#\\/_answer1_incorrect')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('incorrect')
     })
   });
@@ -18568,7 +18560,7 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
@@ -18577,133 +18569,133 @@ describe('Answer Tag Tests', function () {
       let inputNames = [...Array(20).keys()].map(n => stateVariables[`/_answer${n + 1}`].stateValues.inputChildren[0].componentName);
 
       cy.log("Submit correct answers")
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('x{enter}', { force: true })
-      cy.get(cesc("#/_answer3_submit")).click();
-      cy.get(cesc("#/_answer4_submit")).click();
-      cy.get(cesc('#' + inputNames[0]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[1]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer3_correct")).should('be.visible');
-      cy.get(cesc("#/_answer4_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[0]) + " textarea").type('x{enter}', { force: true })
+      cy.get(cesc2('#' + inputNames[1]) + " textarea").type('x{enter}', { force: true })
+      cy.get(cesc2('#' + inputNames[2]) + " textarea").type('x{enter}', { force: true })
+      cy.get(cesc2('#' + inputNames[3]) + " textarea").type('x{enter}', { force: true })
+      cy.get(cesc2("#/_answer3_submit")).click();
+      cy.get(cesc2("#/_answer4_submit")).click();
+      cy.get(cesc2('#' + inputNames[0]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[1]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer3_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer4_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").type('hello{enter}')
-      cy.get(cesc('#' + inputNames[5]) + "_input").type('hello{enter}')
-      cy.get(cesc('#' + inputNames[6]) + "_input").type('hello{enter}')
-      cy.get(cesc('#' + inputNames[7]) + "_input").type('hello{enter}')
-      cy.get(cesc("#/_answer7_submit")).click();
-      cy.get(cesc("#/_answer8_submit")).click();
-      cy.get(cesc('#' + inputNames[4]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[5]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer7_correct")).should('be.visible');
-      cy.get(cesc("#/_answer8_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[4]) + "_input").type('hello{enter}')
+      cy.get(cesc2('#' + inputNames[5]) + "_input").type('hello{enter}')
+      cy.get(cesc2('#' + inputNames[6]) + "_input").type('hello{enter}')
+      cy.get(cesc2('#' + inputNames[7]) + "_input").type('hello{enter}')
+      cy.get(cesc2("#/_answer7_submit")).click();
+      cy.get(cesc2("#/_answer8_submit")).click();
+      cy.get(cesc2('#' + inputNames[4]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[5]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer7_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer8_correct")).should('be.visible');
 
-      cy.get(cesc('#/_choiceinput1')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput2')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput3')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput4')).contains("yes").click({ force: true });
-      cy.get(cesc("#/_choiceinput1_submit")).click();
-      cy.get(cesc("#/_choiceinput2_submit")).click();
-      cy.get(cesc("#/_answer11_submit")).click();
-      cy.get(cesc("#/_answer12_submit")).click();
-      cy.get(cesc("#/_choiceinput1_correct")).should('be.visible');
-      cy.get(cesc("#/_choiceinput2_correct")).should('be.visible');
-      cy.get(cesc("#/_answer11_correct")).should('be.visible');
-      cy.get(cesc("#/_answer12_correct")).should('be.visible');
+      cy.get(cesc2('#/_choiceinput1')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput2')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput3')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput4')).contains("yes").click({ force: true });
+      cy.get(cesc2("#/_choiceinput1_submit")).click();
+      cy.get(cesc2("#/_choiceinput2_submit")).click();
+      cy.get(cesc2("#/_answer11_submit")).click();
+      cy.get(cesc2("#/_answer12_submit")).click();
+      cy.get(cesc2("#/_choiceinput1_correct")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput2_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer11_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer12_correct")).should('be.visible');
 
-      cy.get('#\\/_choiceinput5').select(`yes`);
-      cy.get('#\\/_choiceinput6').select(`yes`);
-      cy.get('#\\/_choiceinput7').select(`yes`);
-      cy.get('#\\/_choiceinput8').select(`yes`);
-      cy.get(cesc("#/_choiceinput5_submit")).click();
-      cy.get(cesc("#/_choiceinput6_submit")).click();
-      cy.get(cesc("#/_answer15_submit")).click();
-      cy.get(cesc("#/_answer16_submit")).click();
-      cy.get(cesc("#/_choiceinput5_correct")).should('be.visible');
-      cy.get(cesc("#/_choiceinput6_correct")).should('be.visible');
-      cy.get(cesc("#/_answer15_correct")).should('be.visible');
-      cy.get(cesc("#/_answer16_correct")).should('be.visible');
+      cy.get(cesc('#\\/_choiceinput5')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput6')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput7')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput8')).select(`yes`);
+      cy.get(cesc2("#/_choiceinput5_submit")).click();
+      cy.get(cesc2("#/_choiceinput6_submit")).click();
+      cy.get(cesc2("#/_answer15_submit")).click();
+      cy.get(cesc2("#/_answer16_submit")).click();
+      cy.get(cesc2("#/_choiceinput5_correct")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput6_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer15_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer16_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16])).click();
-      cy.get(cesc('#' + inputNames[17])).click();
-      cy.get(cesc('#' + inputNames[18])).click();
-      cy.get(cesc('#' + inputNames[19])).click();
-      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[17]) + "_submit").click();
-      cy.get(cesc("#/_answer19_submit")).click();
-      cy.get(cesc("#/_answer20_submit")).click();
-      cy.get(cesc('#' + inputNames[16]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[17]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer19_correct")).should('be.visible');
-      cy.get(cesc("#/_answer20_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[16])).click();
+      cy.get(cesc2('#' + inputNames[17])).click();
+      cy.get(cesc2('#' + inputNames[18])).click();
+      cy.get(cesc2('#' + inputNames[19])).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[17]) + "_submit").click();
+      cy.get(cesc2("#/_answer19_submit")).click();
+      cy.get(cesc2("#/_answer20_submit")).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[17]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer19_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer20_correct")).should('be.visible');
 
 
       cy.log('Submit incorrect answers')
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[1]) + "_submit").click();
-      cy.get(cesc("#/_answer3_submit")).click();
-      cy.get(cesc("#/_answer4_submit")).click();
-      cy.get(cesc('#' + inputNames[0]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[1]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer3_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer4_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[0]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[1]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[2]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[3]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[0]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[1]) + "_submit").click();
+      cy.get(cesc2("#/_answer3_submit")).click();
+      cy.get(cesc2("#/_answer4_submit")).click();
+      cy.get(cesc2('#' + inputNames[0]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[1]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer3_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer4_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('bye')
-      cy.get(cesc('#' + inputNames[5]) + "_input").clear().type('bye')
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('bye')
-      cy.get(cesc('#' + inputNames[7]) + "_input").clear().type('bye')
-      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[5]) + "_submit").click();
-      cy.get(cesc("#/_answer7_submit")).click();
-      cy.get(cesc("#/_answer8_submit")).click();
-      cy.get(cesc('#' + inputNames[4]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[5]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer7_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer8_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[4]) + "_input").clear().type('bye')
+      cy.get(cesc2('#' + inputNames[5]) + "_input").clear().type('bye')
+      cy.get(cesc2('#' + inputNames[6]) + "_input").clear().type('bye')
+      cy.get(cesc2('#' + inputNames[7]) + "_input").clear().type('bye')
+      cy.get(cesc2('#' + inputNames[4]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[5]) + "_submit").click();
+      cy.get(cesc2("#/_answer7_submit")).click();
+      cy.get(cesc2("#/_answer8_submit")).click();
+      cy.get(cesc2('#' + inputNames[4]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[5]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer7_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer8_incorrect")).should('be.visible');
 
-      cy.get(cesc('#/_choiceinput1')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput2')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput3')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput4')).contains("no").click({ force: true });
-      cy.get(cesc("#/_choiceinput1_submit")).click();
-      cy.get(cesc("#/_choiceinput2_submit")).click();
-      cy.get(cesc("#/_answer11_submit")).click();
-      cy.get(cesc("#/_answer12_submit")).click();
-      cy.get(cesc("#/_choiceinput1_incorrect")).should('be.visible');
-      cy.get(cesc("#/_choiceinput2_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer11_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer12_incorrect")).should('be.visible');
+      cy.get(cesc2('#/_choiceinput1')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput2')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput3')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput4')).contains("no").click({ force: true });
+      cy.get(cesc2("#/_choiceinput1_submit")).click();
+      cy.get(cesc2("#/_choiceinput2_submit")).click();
+      cy.get(cesc2("#/_answer11_submit")).click();
+      cy.get(cesc2("#/_answer12_submit")).click();
+      cy.get(cesc2("#/_choiceinput1_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput2_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer11_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer12_incorrect")).should('be.visible');
 
-      cy.get('#\\/_choiceinput5').select(`no`);
-      cy.get('#\\/_choiceinput6').select(`no`);
-      cy.get('#\\/_choiceinput7').select(`no`);
-      cy.get('#\\/_choiceinput8').select(`no`);
-      cy.get(cesc("#/_choiceinput5_submit")).click();
-      cy.get(cesc("#/_choiceinput6_submit")).click();
-      cy.get(cesc("#/_answer15_submit")).click();
-      cy.get(cesc("#/_answer16_submit")).click();
-      cy.get(cesc("#/_choiceinput5_incorrect")).should('be.visible');
-      cy.get(cesc("#/_choiceinput6_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer15_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer16_incorrect")).should('be.visible');
+      cy.get(cesc('#\\/_choiceinput5')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput6')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput7')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput8')).select(`no`);
+      cy.get(cesc2("#/_choiceinput5_submit")).click();
+      cy.get(cesc2("#/_choiceinput6_submit")).click();
+      cy.get(cesc2("#/_answer15_submit")).click();
+      cy.get(cesc2("#/_answer16_submit")).click();
+      cy.get(cesc2("#/_choiceinput5_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput6_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer15_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer16_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16])).click();
-      cy.get(cesc('#' + inputNames[17])).click();
-      cy.get(cesc('#' + inputNames[18])).click();
-      cy.get(cesc('#' + inputNames[19])).click();
-      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[17]) + "_submit").click();
-      cy.get(cesc("#/_answer19_submit")).click();
-      cy.get(cesc("#/_answer20_submit")).click();
-      cy.get(cesc('#' + inputNames[16]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[17]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer19_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer20_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[16])).click();
+      cy.get(cesc2('#' + inputNames[17])).click();
+      cy.get(cesc2('#' + inputNames[18])).click();
+      cy.get(cesc2('#' + inputNames[19])).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[17]) + "_submit").click();
+      cy.get(cesc2("#/_answer19_submit")).click();
+      cy.get(cesc2("#/_answer20_submit")).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[17]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer19_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer20_incorrect")).should('be.visible');
 
 
       cy.log('Type to submit correct answers again')
@@ -18711,60 +18703,60 @@ describe('Answer Tag Tests', function () {
       // the 2nd and 4th input should be disabled,
       // but this isn't working yet.
       // For now, best we can do is make sure button still say incorrect
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
-      cy.get(cesc("#/_answer3_submit")).click();
-      cy.get(cesc('#' + inputNames[0]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[1]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer3_correct")).should('be.visible');
-      cy.get(cesc("#/_answer4_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[0]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[1]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[2]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[3]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[0]) + "_submit").click();
+      cy.get(cesc2("#/_answer3_submit")).click();
+      cy.get(cesc2('#' + inputNames[0]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[1]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer3_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer4_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('hello')
-      cy.get(cesc('#' + inputNames[5]) + "_input").should('be.disabled');
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('hello')
-      cy.get(cesc('#' + inputNames[7]) + "_input").should('be.disabled');
-      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
-      cy.get(cesc("#/_answer7_submit")).click();
-      cy.get(cesc('#' + inputNames[4]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[5]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer7_correct")).should('be.visible');
-      cy.get(cesc("#/_answer8_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[4]) + "_input").clear().type('hello')
+      cy.get(cesc2('#' + inputNames[5]) + "_input").should('be.disabled');
+      cy.get(cesc2('#' + inputNames[6]) + "_input").clear().type('hello')
+      cy.get(cesc2('#' + inputNames[7]) + "_input").should('be.disabled');
+      cy.get(cesc2('#' + inputNames[4]) + "_submit").click();
+      cy.get(cesc2("#/_answer7_submit")).click();
+      cy.get(cesc2('#' + inputNames[4]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[5]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer7_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer8_incorrect")).should('be.visible');
 
-      cy.get(cesc('#/_choiceinput1')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput2')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput3')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput4')).contains("yes").click({ force: true });
-      cy.get(cesc("#/_choiceinput1_submit")).click();
-      cy.get(cesc("#/_answer11_submit")).click();
-      cy.get(cesc("#/_choiceinput1_correct")).should('be.visible');
-      cy.get(cesc("#/_choiceinput2_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer11_correct")).should('be.visible');
-      cy.get(cesc("#/_answer12_incorrect")).should('be.visible');
+      cy.get(cesc2('#/_choiceinput1')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput2')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput3')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput4')).contains("yes").click({ force: true });
+      cy.get(cesc2("#/_choiceinput1_submit")).click();
+      cy.get(cesc2("#/_answer11_submit")).click();
+      cy.get(cesc2("#/_choiceinput1_correct")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput2_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer11_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer12_incorrect")).should('be.visible');
 
-      cy.get('#\\/_choiceinput5').select(`yes`);
-      cy.get('#\\/_choiceinput6').should('be.disabled')
-      cy.get('#\\/_choiceinput7').select(`yes`);
-      cy.get('#\\/_choiceinput8').should('be.disabled')
-      cy.get(cesc("#/_choiceinput5_submit")).click();
-      cy.get(cesc("#/_answer15_submit")).click();
-      cy.get(cesc("#/_choiceinput5_correct")).should('be.visible');
-      cy.get(cesc("#/_choiceinput6_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer15_correct")).should('be.visible');
-      cy.get(cesc("#/_answer16_incorrect")).should('be.visible');
+      cy.get(cesc('#\\/_choiceinput5')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput6')).should('be.disabled')
+      cy.get(cesc('#\\/_choiceinput7')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput8')).should('be.disabled')
+      cy.get(cesc2("#/_choiceinput5_submit")).click();
+      cy.get(cesc2("#/_answer15_submit")).click();
+      cy.get(cesc2("#/_choiceinput5_correct")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput6_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer15_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer16_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16])).click();
-      cy.get(cesc('#' + inputNames[17]) + "_input").should('be.disabled')
-      cy.get(cesc('#' + inputNames[18])).click();
-      cy.get(cesc('#' + inputNames[19]) + "_input").should('be.disabled')
-      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
-      cy.get(cesc("#/_answer19_submit")).click();
-      cy.get(cesc('#' + inputNames[16]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[17]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer19_correct")).should('be.visible');
-      cy.get(cesc("#/_answer20_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[16])).click();
+      cy.get(cesc2('#' + inputNames[17]) + "_input").should('be.disabled')
+      cy.get(cesc2('#' + inputNames[18])).click();
+      cy.get(cesc2('#' + inputNames[19]) + "_input").should('be.disabled')
+      cy.get(cesc2('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc2("#/_answer19_submit")).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[17]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer19_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer20_incorrect")).should('be.visible');
 
     })
   });
@@ -18842,7 +18834,7 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
@@ -18851,131 +18843,131 @@ describe('Answer Tag Tests', function () {
       let inputNames = [...Array(20).keys()].map(n => stateVariables[`/_answer${n + 1}`].stateValues.inputChildren[0].componentName);
 
       cy.log('Submit incorrect answers')
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('y{enter}', { force: true })
-      cy.get(cesc("#/_answer3_submit")).click();
-      cy.get(cesc("#/_answer4_submit")).click();
-      cy.get(cesc('#' + inputNames[0]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[1]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer3_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer4_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[0]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc2('#' + inputNames[1]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc2('#' + inputNames[2]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc2('#' + inputNames[3]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc2("#/_answer3_submit")).click();
+      cy.get(cesc2("#/_answer4_submit")).click();
+      cy.get(cesc2('#' + inputNames[0]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[1]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer3_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer4_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").type('bye{enter}')
-      cy.get(cesc('#' + inputNames[5]) + "_input").type('bye{enter}')
-      cy.get(cesc('#' + inputNames[6]) + "_input").type('bye{enter}')
-      cy.get(cesc('#' + inputNames[7]) + "_input").type('bye{enter}')
-      cy.get(cesc("#/_answer7_submit")).click();
-      cy.get(cesc("#/_answer8_submit")).click();
-      cy.get(cesc('#' + inputNames[4]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[5]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer7_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer8_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[4]) + "_input").type('bye{enter}')
+      cy.get(cesc2('#' + inputNames[5]) + "_input").type('bye{enter}')
+      cy.get(cesc2('#' + inputNames[6]) + "_input").type('bye{enter}')
+      cy.get(cesc2('#' + inputNames[7]) + "_input").type('bye{enter}')
+      cy.get(cesc2("#/_answer7_submit")).click();
+      cy.get(cesc2("#/_answer8_submit")).click();
+      cy.get(cesc2('#' + inputNames[4]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[5]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer7_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer8_incorrect")).should('be.visible');
 
-      cy.get(cesc('#/_choiceinput1')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput2')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput3')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput4')).contains("no").click({ force: true });
-      cy.get(cesc("#/_choiceinput1_submit")).click();
-      cy.get(cesc("#/_choiceinput2_submit")).click();
-      cy.get(cesc("#/_answer11_submit")).click();
-      cy.get(cesc("#/_answer12_submit")).click();
-      cy.get(cesc("#/_choiceinput1_incorrect")).should('be.visible');
-      cy.get(cesc("#/_choiceinput2_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer11_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer12_incorrect")).should('be.visible');
+      cy.get(cesc2('#/_choiceinput1')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput2')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput3')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput4')).contains("no").click({ force: true });
+      cy.get(cesc2("#/_choiceinput1_submit")).click();
+      cy.get(cesc2("#/_choiceinput2_submit")).click();
+      cy.get(cesc2("#/_answer11_submit")).click();
+      cy.get(cesc2("#/_answer12_submit")).click();
+      cy.get(cesc2("#/_choiceinput1_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput2_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer11_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer12_incorrect")).should('be.visible');
 
-      cy.get('#\\/_choiceinput5').select(`no`);
-      cy.get('#\\/_choiceinput6').select(`no`);
-      cy.get('#\\/_choiceinput7').select(`no`);
-      cy.get('#\\/_choiceinput8').select(`no`);
-      cy.get(cesc("#/_choiceinput5_submit")).click();
-      cy.get(cesc("#/_choiceinput6_submit")).click();
-      cy.get(cesc("#/_answer15_submit")).click();
-      cy.get(cesc("#/_answer16_submit")).click();
-      cy.get(cesc("#/_choiceinput5_incorrect")).should('be.visible');
-      cy.get(cesc("#/_choiceinput6_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer15_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer16_incorrect")).should('be.visible');
+      cy.get(cesc('#\\/_choiceinput5')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput6')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput7')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput8')).select(`no`);
+      cy.get(cesc2("#/_choiceinput5_submit")).click();
+      cy.get(cesc2("#/_choiceinput6_submit")).click();
+      cy.get(cesc2("#/_answer15_submit")).click();
+      cy.get(cesc2("#/_answer16_submit")).click();
+      cy.get(cesc2("#/_choiceinput5_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput6_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer15_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer16_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[17]) + "_submit").click();
-      cy.get(cesc("#/_answer19_submit")).click();
-      cy.get(cesc("#/_answer20_submit")).click();
-      cy.get(cesc('#' + inputNames[16]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[17]) + "_incorrect").should('be.visible');
-      cy.get(cesc("#/_answer19_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer20_incorrect")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[17]) + "_submit").click();
+      cy.get(cesc2("#/_answer19_submit")).click();
+      cy.get(cesc2("#/_answer20_submit")).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[17]) + "_incorrect").should('be.visible');
+      cy.get(cesc2("#/_answer19_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer20_incorrect")).should('be.visible');
 
 
 
 
       cy.log("Submit correct answers")
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}x', { force: true })
-      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[1]) + "_submit").click();
-      cy.get(cesc("#/_answer3_submit")).click();
-      cy.get(cesc("#/_answer4_submit")).click();
-      cy.get(cesc('#' + inputNames[0]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[1]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer3_correct")).should('be.visible');
-      cy.get(cesc("#/_answer4_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[0]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[1]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[2]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[3]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc2('#' + inputNames[0]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[1]) + "_submit").click();
+      cy.get(cesc2("#/_answer3_submit")).click();
+      cy.get(cesc2("#/_answer4_submit")).click();
+      cy.get(cesc2('#' + inputNames[0]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[1]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer3_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer4_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('hello')
-      cy.get(cesc('#' + inputNames[5]) + "_input").clear().type('hello')
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('hello')
-      cy.get(cesc('#' + inputNames[7]) + "_input").clear().type('hello')
-      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[5]) + "_submit").click();
-      cy.get(cesc("#/_answer7_submit")).click();
-      cy.get(cesc("#/_answer8_submit")).click();
-      cy.get(cesc('#' + inputNames[4]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[5]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer7_correct")).should('be.visible');
-      cy.get(cesc("#/_answer8_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[4]) + "_input").clear().type('hello')
+      cy.get(cesc2('#' + inputNames[5]) + "_input").clear().type('hello')
+      cy.get(cesc2('#' + inputNames[6]) + "_input").clear().type('hello')
+      cy.get(cesc2('#' + inputNames[7]) + "_input").clear().type('hello')
+      cy.get(cesc2('#' + inputNames[4]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[5]) + "_submit").click();
+      cy.get(cesc2("#/_answer7_submit")).click();
+      cy.get(cesc2("#/_answer8_submit")).click();
+      cy.get(cesc2('#' + inputNames[4]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[5]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer7_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer8_correct")).should('be.visible');
 
-      cy.get(cesc('#/_choiceinput1')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput2')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput3')).contains("yes").click({ force: true });
-      cy.get(cesc('#/_choiceinput4')).contains("yes").click({ force: true });
-      cy.get(cesc("#/_choiceinput1_submit")).click();
-      cy.get(cesc("#/_choiceinput2_submit")).click();
-      cy.get(cesc("#/_answer11_submit")).click();
-      cy.get(cesc("#/_answer12_submit")).click();
-      cy.get(cesc("#/_choiceinput1_correct")).should('be.visible');
-      cy.get(cesc("#/_choiceinput2_correct")).should('be.visible');
-      cy.get(cesc("#/_answer11_correct")).should('be.visible');
-      cy.get(cesc("#/_answer12_correct")).should('be.visible');
+      cy.get(cesc2('#/_choiceinput1')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput2')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput3')).contains("yes").click({ force: true });
+      cy.get(cesc2('#/_choiceinput4')).contains("yes").click({ force: true });
+      cy.get(cesc2("#/_choiceinput1_submit")).click();
+      cy.get(cesc2("#/_choiceinput2_submit")).click();
+      cy.get(cesc2("#/_answer11_submit")).click();
+      cy.get(cesc2("#/_answer12_submit")).click();
+      cy.get(cesc2("#/_choiceinput1_correct")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput2_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer11_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer12_correct")).should('be.visible');
 
-      cy.get('#\\/_choiceinput5').select(`yes`);
-      cy.get('#\\/_choiceinput6').select(`yes`);
-      cy.get('#\\/_choiceinput7').select(`yes`);
-      cy.get('#\\/_choiceinput8').select(`yes`);
-      cy.get(cesc("#/_choiceinput5_submit")).click();
-      cy.get(cesc("#/_choiceinput6_submit")).click();
-      cy.get(cesc("#/_answer15_submit")).click();
-      cy.get(cesc("#/_answer16_submit")).click();
-      cy.get(cesc("#/_choiceinput5_correct")).should('be.visible');
-      cy.get(cesc("#/_choiceinput6_correct")).should('be.visible');
-      cy.get(cesc("#/_answer15_correct")).should('be.visible');
-      cy.get(cesc("#/_answer16_correct")).should('be.visible');
+      cy.get(cesc('#\\/_choiceinput5')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput6')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput7')).select(`yes`);
+      cy.get(cesc('#\\/_choiceinput8')).select(`yes`);
+      cy.get(cesc2("#/_choiceinput5_submit")).click();
+      cy.get(cesc2("#/_choiceinput6_submit")).click();
+      cy.get(cesc2("#/_answer15_submit")).click();
+      cy.get(cesc2("#/_answer16_submit")).click();
+      cy.get(cesc2("#/_choiceinput5_correct")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput6_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer15_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer16_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16])).click();
-      cy.get(cesc('#' + inputNames[17])).click();
-      cy.get(cesc('#' + inputNames[18])).click();
-      cy.get(cesc('#' + inputNames[19])).click();
-      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
-      cy.get(cesc('#' + inputNames[17]) + "_submit").click();
-      cy.get(cesc("#/_answer19_submit")).click();
-      cy.get(cesc("#/_answer20_submit")).click();
-      cy.get(cesc('#' + inputNames[16]) + "_correct").should('be.visible');
-      cy.get(cesc('#' + inputNames[17]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer19_correct")).should('be.visible');
-      cy.get(cesc("#/_answer20_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[16])).click();
+      cy.get(cesc2('#' + inputNames[17])).click();
+      cy.get(cesc2('#' + inputNames[18])).click();
+      cy.get(cesc2('#' + inputNames[19])).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc2('#' + inputNames[17]) + "_submit").click();
+      cy.get(cesc2("#/_answer19_submit")).click();
+      cy.get(cesc2("#/_answer20_submit")).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_correct").should('be.visible');
+      cy.get(cesc2('#' + inputNames[17]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer19_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer20_correct")).should('be.visible');
 
 
 
@@ -18984,60 +18976,60 @@ describe('Answer Tag Tests', function () {
       // the 2nd and 4th input should be disabled,
       // but this isn't working yet.
       // For now, best we can do is make sure button still say incorrect
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}y', { force: true })
-      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
-      cy.get(cesc("#/_answer3_submit")).click();
-      cy.get(cesc('#' + inputNames[0]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[1]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer3_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer4_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[0]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[1]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[2]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[3]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc2('#' + inputNames[0]) + "_submit").click();
+      cy.get(cesc2("#/_answer3_submit")).click();
+      cy.get(cesc2('#' + inputNames[0]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[1]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer3_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer4_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('bye')
-      cy.get(cesc('#' + inputNames[5]) + "_input").should('be.disabled');
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('bye')
-      cy.get(cesc('#' + inputNames[7]) + "_input").should('be.disabled');
-      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
-      cy.get(cesc("#/_answer7_submit")).click();
-      cy.get(cesc('#' + inputNames[4]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[5]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer7_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer8_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[4]) + "_input").clear().type('bye')
+      cy.get(cesc2('#' + inputNames[5]) + "_input").should('be.disabled');
+      cy.get(cesc2('#' + inputNames[6]) + "_input").clear().type('bye')
+      cy.get(cesc2('#' + inputNames[7]) + "_input").should('be.disabled');
+      cy.get(cesc2('#' + inputNames[4]) + "_submit").click();
+      cy.get(cesc2("#/_answer7_submit")).click();
+      cy.get(cesc2('#' + inputNames[4]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[5]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer7_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer8_correct")).should('be.visible');
 
-      cy.get(cesc('#/_choiceinput1')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput2')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput3')).contains("no").click({ force: true });
-      cy.get(cesc('#/_choiceinput4')).contains("no").click({ force: true });
-      cy.get(cesc("#/_choiceinput1_submit")).click();
-      cy.get(cesc("#/_answer11_submit")).click();
-      cy.get(cesc("#/_choiceinput1_incorrect")).should('be.visible');
-      cy.get(cesc("#/_choiceinput2_correct")).should('be.visible');
-      cy.get(cesc("#/_answer11_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer12_correct")).should('be.visible');
+      cy.get(cesc2('#/_choiceinput1')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput2')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput3')).contains("no").click({ force: true });
+      cy.get(cesc2('#/_choiceinput4')).contains("no").click({ force: true });
+      cy.get(cesc2("#/_choiceinput1_submit")).click();
+      cy.get(cesc2("#/_answer11_submit")).click();
+      cy.get(cesc2("#/_choiceinput1_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput2_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer11_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer12_correct")).should('be.visible');
 
-      cy.get('#\\/_choiceinput5').select(`no`);
-      cy.get('#\\/_choiceinput6').should('be.disabled')
-      cy.get('#\\/_choiceinput7').select(`no`);
-      cy.get('#\\/_choiceinput8').should('be.disabled')
-      cy.get(cesc("#/_choiceinput5_submit")).click();
-      cy.get(cesc("#/_answer15_submit")).click();
-      cy.get(cesc("#/_choiceinput5_incorrect")).should('be.visible');
-      cy.get(cesc("#/_choiceinput6_correct")).should('be.visible');
-      cy.get(cesc("#/_answer15_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer16_correct")).should('be.visible');
+      cy.get(cesc('#\\/_choiceinput5')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput6')).should('be.disabled')
+      cy.get(cesc('#\\/_choiceinput7')).select(`no`);
+      cy.get(cesc('#\\/_choiceinput8')).should('be.disabled')
+      cy.get(cesc2("#/_choiceinput5_submit")).click();
+      cy.get(cesc2("#/_answer15_submit")).click();
+      cy.get(cesc2("#/_choiceinput5_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_choiceinput6_correct")).should('be.visible');
+      cy.get(cesc2("#/_answer15_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer16_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[16])).click();
-      cy.get(cesc('#' + inputNames[17]) + "_input").should('be.disabled')
-      cy.get(cesc('#' + inputNames[18])).click();
-      cy.get(cesc('#' + inputNames[19]) + "_input").should('be.disabled')
-      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
-      cy.get(cesc("#/_answer19_submit")).click();
-      cy.get(cesc('#' + inputNames[16]) + "_incorrect").should('be.visible');
-      cy.get(cesc('#' + inputNames[17]) + "_correct").should('be.visible');
-      cy.get(cesc("#/_answer19_incorrect")).should('be.visible');
-      cy.get(cesc("#/_answer20_correct")).should('be.visible');
+      cy.get(cesc2('#' + inputNames[16])).click();
+      cy.get(cesc2('#' + inputNames[17]) + "_input").should('be.disabled')
+      cy.get(cesc2('#' + inputNames[18])).click();
+      cy.get(cesc2('#' + inputNames[19]) + "_input").should('be.disabled')
+      cy.get(cesc2('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc2("#/_answer19_submit")).click();
+      cy.get(cesc2('#' + inputNames[16]) + "_incorrect").should('be.visible');
+      cy.get(cesc2('#' + inputNames[17]) + "_correct").should('be.visible');
+      cy.get(cesc2("#/_answer19_incorrect")).should('be.visible');
+      cy.get(cesc2("#/_answer20_correct")).should('be.visible');
 
     })
   });
@@ -19103,13 +19095,13 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.log('Submit incorrect answers')
     for (let i = 1; i <= 8; i++) {
-      cy.get(`#\\/_answer${i}_submit`).click();
-      cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+      cy.get(cesc(`#\\/_answer${i}_submit`)).click();
+      cy.get(cesc(`#\\/_answer${i}_incorrect`)).should('be.visible')
     }
 
     cy.log('submit first correct answers')
@@ -19120,14 +19112,14 @@ describe('Answer Tag Tests', function () {
         args: { x: 3, y: 4 }
       })
     })
-    cy.get('#\\/mi textarea').type("x{enter}", { force: true });
+    cy.get(cesc('#\\/mi') + ' textarea').type("x{enter}", { force: true });
 
     for (let i = 1; i <= 8; i++) {
-      cy.get(`#\\/_answer${i}_submit`).click();
+      cy.get(cesc(`#\\/_answer${i}_submit`)).click();
       if (i % 4 === 1 || i % 4 == 2) {
-        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+        cy.get(cesc(`#\\/_answer${i}_correct`)).should('be.visible')
       } else {
-        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+        cy.get(cesc(`#\\/_answer${i}_incorrect`)).should('be.visible')
       }
     }
 
@@ -19139,16 +19131,16 @@ describe('Answer Tag Tests', function () {
         args: { x: -5, y: 6 }
       })
     })
-    cy.get('#\\/mi textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}{backspace}y{enter}", { force: true });
 
     for (let i = 1; i <= 8; i++) {
       if (i % 4 !== 2) {
-        cy.get(`#\\/_answer${i}_submit`).click();
+        cy.get(cesc(`#\\/_answer${i}_submit`)).click();
       }
       if (i % 4 === 1) {
-        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+        cy.get(cesc(`#\\/_answer${i}_incorrect`)).should('be.visible')
       } else {
-        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+        cy.get(cesc(`#\\/_answer${i}_correct`)).should('be.visible')
       }
     }
 
@@ -19161,14 +19153,14 @@ describe('Answer Tag Tests', function () {
         args: { x: 1, y: -1 }
       })
     })
-    cy.get('#\\/mi textarea').type("{end}{backspace}z{enter}", { force: true });
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}{backspace}z{enter}", { force: true });
 
     for (let i = 1; i <= 8; i++) {
       if (i % 4 === 2 || i % 4 === 0) {
-        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+        cy.get(cesc(`#\\/_answer${i}_correct`)).should('be.visible')
       } else {
-        cy.get(`#\\/_answer${i}_submit`).click();
-        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+        cy.get(cesc(`#\\/_answer${i}_submit`)).click();
+        cy.get(cesc(`#\\/_answer${i}_incorrect`)).should('be.visible')
       }
     }
 
@@ -19191,19 +19183,19 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1').select(`cat`);
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_correct').should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1')).select(`cat`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_correct')).should('be.visible');
 
-    cy.get('#\\/_choiceinput1').select(`dog`);
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1')).select(`dog`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
 
-    cy.get('#\\/_choiceinput1').select(`monkey`);
-    cy.get('#\\/_choiceinput1_submit').click();
-    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+    cy.get(cesc('#\\/_choiceinput1')).select(`monkey`);
+    cy.get(cesc('#\\/_choiceinput1_submit')).click();
+    cy.get(cesc('#\\/_choiceinput1_incorrect')).should('be.visible');
 
   });
 
@@ -19217,21 +19209,21 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinput1Name = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
-      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
-      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
-      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
+      let mathinput1Anchor = cesc2('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc2('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc2('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc2('#' + mathinput1Name + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.get(mathinput1SubmitAnchor).click();
       cy.get(mathinput1IncorrectAnchor).should('be.visible');
@@ -19267,10 +19259,10 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/mi textarea').type("xyz{enter}", { force: true })
-    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get(cesc('#\\/mi') + ' textarea').type("xyz{enter}", { force: true })
+    cy.get(cesc('#\\/mi_correct')).should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19278,12 +19270,12 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
     })
 
-    cy.get('#\\/split').click();
+    cy.get(cesc('#\\/split')).click();
 
     // modify mathinput so that recalculates value
-    cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
-    cy.get('#\\/mi_submit').click();
-    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}a{backspace}", { force: true })
+    cy.get(cesc('#\\/mi_submit')).click();
+    cy.get(cesc('#\\/mi_correct')).should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19292,13 +19284,13 @@ describe('Answer Tag Tests', function () {
     })
 
 
-    cy.get('#\\/split').click();
+    cy.get(cesc('#\\/split')).click();
 
     // modify mathinput so that recalculates value
-    cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })
-    cy.get('#\\/mi_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}b{backspace}", { force: true })
+    cy.get(cesc('#\\/mi_submit')).click();
 
-    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get(cesc('#\\/mi_correct')).should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19318,16 +19310,16 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
       let mathName = stateVariables[stateVariables["/_answer1"].activeChildren[1].componentName].activeChildren[0].componentName;
 
       cy.get(mathinputAnchor).type("xyz{enter}", { force: true })
@@ -19339,7 +19331,7 @@ describe('Answer Tag Tests', function () {
         expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
       })
 
-      cy.get('#\\/split').click();
+      cy.get(cesc('#\\/split')).click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
@@ -19353,7 +19345,7 @@ describe('Answer Tag Tests', function () {
       })
 
 
-      cy.get('#\\/split').click();
+      cy.get(cesc('#\\/split')).click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
@@ -19381,16 +19373,16 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
       let mathName = stateVariables["/_award1"].activeChildren[0].componentName;
 
       cy.get(mathinputAnchor).type("xyz{enter}", { force: true })
@@ -19402,7 +19394,7 @@ describe('Answer Tag Tests', function () {
         expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
       })
 
-      cy.get('#\\/split').click();
+      cy.get(cesc('#\\/split')).click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
@@ -19416,7 +19408,7 @@ describe('Answer Tag Tests', function () {
       })
 
 
-      cy.get('#\\/split').click();
+      cy.get(cesc('#\\/split')).click();
 
       // modify mathinput so that recalculates value
       cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
@@ -19445,10 +19437,10 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/mi textarea').type("xyz{enter}", { force: true })
-    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get(cesc('#\\/mi') + ' textarea').type("xyz{enter}", { force: true })
+    cy.get(cesc('#\\/mi_correct')).should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19456,12 +19448,12 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
     })
 
-    cy.get('#\\/split').click();
+    cy.get(cesc('#\\/split')).click();
 
     // modify mathinput so that recalculates value
-    cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
-    cy.get('#\\/mi_submit').click();
-    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}a{backspace}", { force: true })
+    cy.get(cesc('#\\/mi_submit')).click();
+    cy.get(cesc('#\\/mi_correct')).should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19470,13 +19462,13 @@ describe('Answer Tag Tests', function () {
     })
 
 
-    cy.get('#\\/split').click();
+    cy.get(cesc('#\\/split')).click();
 
     // modify mathinput so that recalculates value
-    cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })
-    cy.get('#\\/mi_submit').click();
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}b{backspace}", { force: true })
+    cy.get(cesc('#\\/mi_submit')).click();
 
-    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get(cesc('#\\/mi_correct')).should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19495,10 +19487,10 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/mi textarea').type("x{enter}", { force: true })
-    cy.get('#\\/mi_incorrect').should('be.visible')
+    cy.get(cesc('#\\/mi') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/mi_incorrect')).should('be.visible')
 
   });
 
@@ -19517,42 +19509,42 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/mi_submit').should('be.visible')
-    cy.get('#\\/mi_correct').should('not.exist')
-    cy.get('#\\/mi_incorrect').should('not.exist')
-    cy.get('#\\/just').should('not.exist')
+    cy.get(cesc('#\\/mi_submit')).should('be.visible')
+    cy.get(cesc('#\\/mi_correct')).should('not.exist')
+    cy.get(cesc('#\\/mi_incorrect')).should('not.exist')
+    cy.get(cesc('#\\/just')).should('not.exist')
 
-    cy.get('#\\/mi textarea').type("x", { force: true })
-    cy.get('#\\/mi_submit').should('be.visible')
-    cy.get('#\\/mi_correct').should('not.exist')
-    cy.get('#\\/mi_incorrect').should('not.exist')
-    cy.get('#\\/just').should('not.exist')
+    cy.get(cesc('#\\/mi') + ' textarea').type("x", { force: true })
+    cy.get(cesc('#\\/mi_submit')).should('be.visible')
+    cy.get(cesc('#\\/mi_correct')).should('not.exist')
+    cy.get(cesc('#\\/mi_incorrect')).should('not.exist')
+    cy.get(cesc('#\\/just')).should('not.exist')
 
-    cy.get('#\\/mi_submit').click();
-    cy.get('#\\/mi_submit').should('not.exist')
-    cy.get('#\\/mi_correct').should('not.exist')
-    cy.get('#\\/mi_incorrect').should('be.visible')
-    cy.get('#\\/just').should('have.text', 'The answer was just submitted.')
+    cy.get(cesc('#\\/mi_submit')).click();
+    cy.get(cesc('#\\/mi_submit')).should('not.exist')
+    cy.get(cesc('#\\/mi_correct')).should('not.exist')
+    cy.get(cesc('#\\/mi_incorrect')).should('be.visible')
+    cy.get(cesc('#\\/just')).should('have.text', 'The answer was just submitted.')
 
-    cy.get('#\\/mi textarea').type("{end}{backspace}1", { force: true })
-    cy.get('#\\/mi_submit').should('be.visible')
-    cy.get('#\\/mi_correct').should('not.exist')
-    cy.get('#\\/mi_incorrect').should('not.exist')
-    cy.get('#\\/just').should('not.exist')
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}{backspace}1", { force: true })
+    cy.get(cesc('#\\/mi_submit')).should('be.visible')
+    cy.get(cesc('#\\/mi_correct')).should('not.exist')
+    cy.get(cesc('#\\/mi_incorrect')).should('not.exist')
+    cy.get(cesc('#\\/just')).should('not.exist')
 
-    cy.get('#\\/mi textarea').type("{enter}", { force: true })
-    cy.get('#\\/mi_submit').should('not.exist')
-    cy.get('#\\/mi_correct').should('be.visible')
-    cy.get('#\\/mi_incorrect').should('not.exist')
-    cy.get('#\\/just').should('have.text', 'The answer was just submitted.')
+    cy.get(cesc('#\\/mi') + ' textarea').type("{enter}", { force: true })
+    cy.get(cesc('#\\/mi_submit')).should('not.exist')
+    cy.get(cesc('#\\/mi_correct')).should('be.visible')
+    cy.get(cesc('#\\/mi_incorrect')).should('not.exist')
+    cy.get(cesc('#\\/just')).should('have.text', 'The answer was just submitted.')
 
-    cy.get('#\\/mi textarea').type("{end}{backspace}1", { force: true })
-    cy.get('#\\/mi_submit').should('be.visible')
-    cy.get('#\\/mi_correct').should('not.exist')
-    cy.get('#\\/mi_incorrect').should('not.exist')
-    cy.get('#\\/just').should('not.exist')
+    cy.get(cesc('#\\/mi') + ' textarea').type("{end}{backspace}1", { force: true })
+    cy.get(cesc('#\\/mi_submit')).should('be.visible')
+    cy.get(cesc('#\\/mi_correct')).should('not.exist')
+    cy.get(cesc('#\\/mi_incorrect')).should('not.exist')
+    cy.get(cesc('#\\/just')).should('not.exist')
 
   });
 
@@ -19592,19 +19584,19 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/ans1_submit').click()
-    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get(cesc('#\\/ans1_submit')).click()
+    cy.get(cesc('#\\/ans1_correct')).should('be.visible')
 
-    cy.get('#\\/ans2_submit').click()
-    cy.get('#\\/ans2_correct').should('be.visible')
+    cy.get(cesc('#\\/ans2_submit')).click()
+    cy.get(cesc('#\\/ans2_correct')).should('be.visible')
 
-    cy.get('#\\/ans3_submit').click()
-    cy.get('#\\/ans3_correct').should('be.visible')
+    cy.get(cesc('#\\/ans3_submit')).click()
+    cy.get(cesc('#\\/ans3_correct')).should('be.visible')
 
-    cy.get('#\\/ans4_submit').click()
-    cy.get('#\\/ans4_correct').should('be.visible')
+    cy.get(cesc('#\\/ans4_submit')).click()
+    cy.get(cesc('#\\/ans4_correct')).should('be.visible')
 
   });
 
@@ -19623,42 +19615,42 @@ describe('Answer Tag Tests', function () {
    `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('\uff3f')
     })
-    cy.get('#\\/sr').should('not.exist');
+    cy.get(cesc('#\\/sr')).should('not.exist');
 
     cy.log('cannot change from mathinputs')
-    cy.get('#\\/micr textarea').type("y{enter}", { force: true })
-    cy.get('#\\/misr textarea').type("z{enter}", { force: true })
+    cy.get(cesc('#\\/micr') + ' textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#\\/misr') + ' textarea').type("z{enter}", { force: true })
 
-    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('\uff3f')
     })
-    cy.get('#\\/sr').should('not.exist');
+    cy.get(cesc('#\\/sr')).should('not.exist');
 
 
     cy.log('submit response')
-    cy.get('#\\/mia textarea').type("x{enter}", { force: true })
-    cy.get('#\\/cr .mjx-mrow').should('have.text', 'x')
-    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/mia') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/cr') + ' .mjx-mrow').should('have.text', 'x')
+    cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('x')
     })
-    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('x')
     })
 
 
     cy.log('cannot change from mathinputs')
-    cy.get('#\\/micr textarea').type("{end}{backspace}y{enter}", { force: true })
-    cy.get('#\\/misr textarea').type("{end}{backspace}z{enter}", { force: true })
+    cy.get(cesc('#\\/micr') + ' textarea').type("{end}{backspace}y{enter}", { force: true })
+    cy.get(cesc('#\\/misr') + ' textarea').type("{end}{backspace}z{enter}", { force: true })
 
-    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('x')
     })
-    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('x')
     })
 
@@ -19690,95 +19682,95 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/nr').should('have.text', '1')
+    cy.get(cesc('#\\/nr')).should('have.text', '1')
 
-    cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
-    cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/an'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
 
 
       cy.get(mathinputAnchor).type("1.1{enter}", { force: true })
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.1')
       })
 
-      cy.get('#\\/pfa1').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa2').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa3').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa4').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa5').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa6').should('have.text', 'First award awarded: true')
-      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: false')
 
       cy.get(mathinputAnchor).type("{end}1", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('be.visible');
       cy.get(mathinputPartialAnchor).should('not.exist');
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.11')
       })
 
-      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
-      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: false')
 
       cy.get(mathinputAnchor).type("{end}{leftArrow}0", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.101')
       })
 
-      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
-      cy.get('#\\/psa1').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa2').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa3').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa4').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa5').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa6').should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: true')
 
     })
   });
@@ -19810,95 +19802,95 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/nr').should('have.text', '1')
+    cy.get(cesc('#\\/nr')).should('have.text', '1')
 
-    cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
-    cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
-    cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
-    cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: false')
+    cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: false')
+    cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/an'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
 
 
       cy.get(mathinputAnchor).type("1.1{enter}", { force: true })
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.1')
       })
 
-      cy.get('#\\/pfa1').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa2').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa3').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa4').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa5').should('have.text', 'First award awarded: true')
-      cy.get('#\\/pfa6').should('have.text', 'First award awarded: true')
-      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: true')
+      cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: false')
 
       cy.get(mathinputAnchor).type("{end}1", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('be.visible');
       cy.get(mathinputPartialAnchor).should('not.exist');
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.11')
       })
 
-      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
-      cy.get('#\\/psa1').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa2').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa3').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa4').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa5').should('have.text', 'Second award awarded: false')
-      cy.get('#\\/psa6').should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: false')
+      cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: false')
 
       cy.get(mathinputAnchor).type("{end}{leftArrow}0", { force: true })
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('1.101')
       })
 
-      cy.get('#\\/pfa1').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa2').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa3').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa4').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa5').should('have.text', 'First award awarded: false')
-      cy.get('#\\/pfa6').should('have.text', 'First award awarded: false')
-      cy.get('#\\/psa1').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa2').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa3').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa4').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa5').should('have.text', 'Second award awarded: true')
-      cy.get('#\\/psa6').should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/pfa1')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa2')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa3')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa4')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa5')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/pfa6')).should('have.text', 'First award awarded: false')
+      cy.get(cesc('#\\/psa1')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa2')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa3')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa4')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa5')).should('have.text', 'Second award awarded: true')
+      cy.get(cesc('#\\/psa6')).should('have.text', 'Second award awarded: true')
 
     })
   });
@@ -19920,35 +19912,35 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/nr').should('have.text', '1')
+    cy.get(cesc('#\\/nr')).should('have.text', '1')
 
 
-    cy.get("#\\/mi textarea").type("1.1{enter}", { force: true })
-    cy.get("#\\/an_submit").click();
-    cy.get("#\\/an_correct").should('be.visible');
-    cy.get("#\\/an_incorrect").should('not.exist');
-    cy.get("#\\/an_partial").should('not.exist');
-    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc("#\\/mi") + " textarea").type("1.1{enter}", { force: true })
+    cy.get(cesc("#\\/an_submit")).click();
+    cy.get(cesc("#\\/an_correct")).should('be.visible');
+    cy.get(cesc("#\\/an_incorrect")).should('not.exist');
+    cy.get(cesc("#\\/an_partial")).should('not.exist');
+    cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('1.1')
     })
 
-    cy.get("#\\/mi textarea").type("{end}1{enter}", { force: true })
-    cy.get("#\\/an_submit").click();
-    cy.get("#\\/an_correct").should('not.exist');
-    cy.get("#\\/an_incorrect").should('be.visible');
-    cy.get("#\\/an_partial").should('not.exist');
-    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc("#\\/mi") + " textarea").type("{end}1{enter}", { force: true })
+    cy.get(cesc("#\\/an_submit")).click();
+    cy.get(cesc("#\\/an_correct")).should('not.exist');
+    cy.get(cesc("#\\/an_incorrect")).should('be.visible');
+    cy.get(cesc("#\\/an_partial")).should('not.exist');
+    cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('1.11')
     })
 
-    cy.get("#\\/mi textarea").type("{end}{leftArrow}0{enter}", { force: true })
-    cy.get("#\\/an_submit").click();
-    cy.get("#\\/an_correct").should('not.exist');
-    cy.get("#\\/an_incorrect").should('not.exist');
-    cy.get("#\\/an_partial").should('have.text', '50% Correct');
-    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc("#\\/mi") + " textarea").type("{end}{leftArrow}0{enter}", { force: true })
+    cy.get(cesc("#\\/an_submit")).click();
+    cy.get(cesc("#\\/an_correct")).should('not.exist');
+    cy.get(cesc("#\\/an_incorrect")).should('not.exist');
+    cy.get(cesc("#\\/an_partial")).should('have.text', '50% Correct');
+    cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('1.101')
     })
 
@@ -19973,42 +19965,42 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
-      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
-      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
-      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
-      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
+      let mathinput1Anchor = cesc2('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc2('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc2('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc2('#' + mathinput1Name + '_incorrect');
 
       let mathinput2Name = stateVariables['/ans2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
 
       cy.get(mathinput1SubmitAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('Type correct answer in first blank')
@@ -20017,24 +20009,24 @@ describe('Answer Tag Tests', function () {
 
       cy.get(mathinput1SubmitAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr2 .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('have.text', 'x+y')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('Click second submit button')
@@ -20044,24 +20036,24 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1CorrectAnchor).should('be.visible')
       cy.get(mathinput2CorrectAnchor).should('be.visible')
 
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/sr2 .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('have.text', 'x+y')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca2').should('have.text', '1')
+      cy.get(cesc('#\\/ca2')).should('have.text', '1')
 
 
       cy.log('type incorrect answer into second blank')
@@ -20071,24 +20063,24 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1SubmitAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/cr2 .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('have.text', 'x')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca2').should('have.text', '1')
+      cy.get(cesc('#\\/ca2')).should('have.text', '1')
 
 
       cy.log('Click first submit button')
@@ -20098,24 +20090,24 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1IncorrectAnchor).should('be.visible')
       cy.get(mathinput2IncorrectAnchor).should('be.visible')
 
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
-      cy.get('#\\/sr2 .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('have.text', 'x')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
     })
@@ -20140,42 +20132,42 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
-      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
-      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
-      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
-      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
+      let mathinput1Anchor = cesc2('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc2('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc2('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc2('#' + mathinput1Name + '_incorrect');
 
       let mathinput2Name = stateVariables['/ans2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
 
       cy.get(mathinput1SubmitAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('Type correct answer in first blank')
@@ -20185,22 +20177,22 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1SubmitAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x+y')
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('Click first submit button')
@@ -20210,23 +20202,23 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1CorrectAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
 
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x+y')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('type correct answer into second blank')
@@ -20236,23 +20228,23 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1CorrectAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr2 .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('have.text', 'x+y')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('Click second submit button')
@@ -20262,23 +20254,23 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1CorrectAnchor).should('be.visible')
       cy.get(mathinput2CorrectAnchor).should('be.visible')
 
-      cy.get('#\\/sr2 .mjx-mrow').should('have.text', 'x+y')
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('have.text', 'x+y')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca2').should('have.text', '1')
+      cy.get(cesc('#\\/ca2')).should('have.text', '1')
 
 
       cy.log('type incorrect answer into second blank')
@@ -20288,23 +20280,23 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1CorrectAnchor).should('be.visible')
       cy.get(mathinput2SubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr2 .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').should('have.text', 'x')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca2').should('have.text', '1')
+      cy.get(cesc('#\\/ca2')).should('have.text', '1')
 
 
 
@@ -20315,23 +20307,23 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1CorrectAnchor).should('be.visible')
       cy.get(mathinput2IncorrectAnchor).should('be.visible')
 
-      cy.get('#\\/sr2 .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').should('have.text', 'x')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('type incorrect answer into first blank')
@@ -20342,23 +20334,23 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1SubmitAnchor).should('be.visible')
       cy.get(mathinput2IncorrectAnchor).should('be.visible')
 
-      cy.get('#\\/cr1 .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').should('have.text', 'x')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x+y')
       })
-      cy.get('#\\/ca1').should('have.text', '1')
+      cy.get(cesc('#\\/ca1')).should('have.text', '1')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
       cy.log('press enter in first blank')
@@ -20368,23 +20360,23 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput1IncorrectAnchor).should('be.visible')
       cy.get(mathinput2IncorrectAnchor).should('be.visible')
 
-      cy.get('#\\/sr1 .mjx-mrow').should('have.text', 'x')
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').should('have.text', 'x')
 
-      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/ca1').should('have.text', '0')
+      cy.get(cesc('#\\/ca1')).should('have.text', '0')
 
-      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x')
       })
-      cy.get('#\\/ca2').should('have.text', '0')
+      cy.get(cesc('#\\/ca2')).should('have.text', '0')
 
 
     })
@@ -20408,27 +20400,27 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinputName = stateVariables['/ans'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
 
       cy.get(mathinputSubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca').should('have.text', '0')
+      cy.get(cesc('#\\/ca')).should('have.text', '0')
 
 
       cy.log('check that have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
@@ -20462,15 +20454,15 @@ describe('Answer Tag Tests', function () {
 
       cy.get(mathinputSubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr .mjx-mrow').should('contain.text', 'x2−2x+3')
+      cy.get(cesc('#\\/cr') + ' .mjx-mrow').should('contain.text', 'x2−2x+3')
 
-      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2−2x+3')
       })
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
-      cy.get('#\\/ca').should('have.text', '0')
+      cy.get(cesc('#\\/ca')).should('have.text', '0')
 
 
       cy.log('check that still have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
@@ -20503,15 +20495,15 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputCorrectAnchor).should('be.visible');
 
 
-      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2−2x+3')
       })
-      cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x2−2x+3')
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').should('contain.text', 'x2−2x+3')
 
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2−2x+3')
       })
-      cy.get('#\\/ca').should('have.text', '1')
+      cy.get(cesc('#\\/ca')).should('have.text', '1')
 
 
 
@@ -20550,15 +20542,15 @@ describe('Answer Tag Tests', function () {
 
       cy.get(mathinputSubmitAnchor).should('be.visible')
 
-      cy.get('#\\/cr .mjx-mrow').should('contain.text', 'x2−2x−3')
+      cy.get(cesc('#\\/cr') + ' .mjx-mrow').should('contain.text', 'x2−2x−3')
 
-      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2−2x−3')
       })
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2−2x+3')
       })
-      cy.get('#\\/ca').should('have.text', '1')
+      cy.get(cesc('#\\/ca')).should('have.text', '1')
 
 
       cy.log('check that still have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
@@ -20591,15 +20583,15 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
 
-      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/cr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2−2x−3')
       })
-      cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x2−2x−3')
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').should('contain.text', 'x2−2x−3')
 
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2−2x−3')
       })
-      cy.get('#\\/ca').should('have.text', '0.5')
+      cy.get(cesc('#\\/ca')).should('have.text', '0.5')
 
 
 
@@ -20647,15 +20639,15 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -20693,15 +20685,15 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let textinputAnchor = cesc('#' + textinputName) + "_input";
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
-      let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
-      let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
+      let textinputAnchor = cesc2('#' + textinputName) + "_input";
+      let textinputSubmitAnchor = cesc2('#' + textinputName + '_submit');
+      let textinputCorrectAnchor = cesc2('#' + textinputName + '_correct');
+      let textinputIncorrectAnchor = cesc2('#' + textinputName + '_incorrect');
 
       cy.get(textinputSubmitAnchor).should('be.visible');
       cy.get(textinputCorrectAnchor).should('not.exist');
@@ -20740,33 +20732,33 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
-      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let mathinput1Anchor = cesc2('#' + mathinput1Name) + " textarea";
 
       let mathinput2Name = stateVariables['/ans2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
 
       let mathinput3Name = stateVariables['/ans3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
 
       let mathinput4Name = stateVariables['/ans4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
 
-      cy.get('#\\/ans1_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans1_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Check Work')
       })
-      cy.get('#\\/ans2_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans2_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Hit it!')
       })
-      cy.get('#\\/ans3_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans3_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Check Work')
       })
-      cy.get('#\\/ans4_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans4_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Hit it!')
       })
 
@@ -20775,36 +20767,36 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput3Anchor).type("x{enter}", { force: true })
       cy.get(mathinput4Anchor).type("x{enter}", { force: true })
 
-      cy.get("#\\/ans1_submit").click();
-      cy.get("#\\/ans2_submit").click();
-      cy.get("#\\/ans3_submit").click();
-      cy.get("#\\/ans4_submit").click();
+      cy.get(cesc("#\\/ans1_submit")).click();
+      cy.get(cesc("#\\/ans2_submit")).click();
+      cy.get(cesc("#\\/ans3_submit")).click();
+      cy.get(cesc("#\\/ans4_submit")).click();
 
-      cy.get("#\\/ans1_correct").should('contain.text', 'Correct')
-      cy.get("#\\/ans2_correct").should('contain.text', 'Correct')
-      cy.get("#\\/ans3_correct").should('contain.text', 'Correct')
-      cy.get("#\\/ans4_correct").should('contain.text', 'Correct')
+      cy.get(cesc("#\\/ans1_correct")).should('contain.text', 'Correct')
+      cy.get(cesc("#\\/ans2_correct")).should('contain.text', 'Correct')
+      cy.get(cesc("#\\/ans3_correct")).should('contain.text', 'Correct')
+      cy.get(cesc("#\\/ans4_correct")).should('contain.text', 'Correct')
 
       cy.get('#testRunner_toggleControls').click();
       cy.get('#testRunner_showCorrectness').click()
       cy.wait(100)
       cy.get('#testRunner_toggleControls').click();
 
-      cy.get("#\\/ans1_submit").should('contain.text', 'Submit Response')
-      cy.get("#\\/ans2_submit").should('contain.text', 'Submit Response')
-      cy.get("#\\/ans3_submit").should('contain.text', 'Guess')
-      cy.get("#\\/ans4_submit").should('contain.text', 'Guess')
+      cy.get(cesc("#\\/ans1_submit")).should('contain.text', 'Submit Response')
+      cy.get(cesc("#\\/ans2_submit")).should('contain.text', 'Submit Response')
+      cy.get(cesc("#\\/ans3_submit")).should('contain.text', 'Guess')
+      cy.get(cesc("#\\/ans4_submit")).should('contain.text', 'Guess')
 
-      cy.get('#\\/ans1_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans1_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Submit Response')
       })
-      cy.get('#\\/ans2_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans2_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Submit Response')
       })
-      cy.get('#\\/ans3_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans3_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Guess')
       })
-      cy.get('#\\/ans4_submit').invoke('text').then((text) => {
+      cy.get(cesc('#\\/ans4_submit')).invoke('text').then((text) => {
         expect(text.trim()).equal('Guess')
       })
 
@@ -20813,15 +20805,15 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinput3Anchor).type("x{enter}", { force: true })
       cy.get(mathinput4Anchor).type("x{enter}", { force: true })
 
-      cy.get("#\\/ans1_submit").click();
-      cy.get("#\\/ans2_submit").click();
-      cy.get("#\\/ans3_submit").click();
-      cy.get("#\\/ans4_submit").click();
+      cy.get(cesc("#\\/ans1_submit")).click();
+      cy.get(cesc("#\\/ans2_submit")).click();
+      cy.get(cesc("#\\/ans3_submit")).click();
+      cy.get(cesc("#\\/ans4_submit")).click();
 
-      cy.get("#\\/ans1_saved").should('contain.text', 'Response Saved')
-      cy.get("#\\/ans2_saved").should('contain.text', 'Response Saved')
-      cy.get("#\\/ans3_saved").should('contain.text', 'Response Saved')
-      cy.get("#\\/ans4_saved").should('contain.text', 'Response Saved')
+      cy.get(cesc("#\\/ans1_saved")).should('contain.text', 'Response Saved')
+      cy.get(cesc("#\\/ans2_saved")).should('contain.text', 'Response Saved')
+      cy.get(cesc("#\\/ans3_saved")).should('contain.text', 'Response Saved')
+      cy.get(cesc("#\\/ans4_saved")).should('contain.text', 'Response Saved')
 
     })
   });
@@ -20858,35 +20850,35 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Check Work')
     })
-    cy.get('#\\/_choiceinput2_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput2_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Hit it!')
     })
-    cy.get('#\\/_choiceinput3_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput3_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Check Work')
     })
-    cy.get('#\\/_choiceinput4_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput4_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Hit it!')
     })
 
-    cy.get('#\\/_choiceinput1').contains(`yes`).click({ force: true });
-    cy.get('#\\/_choiceinput2').contains(`yes`).click({ force: true });
-    cy.get('#\\/_choiceinput3').contains(`yes`).click({ force: true });
-    cy.get('#\\/_choiceinput4').contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput2')).contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput3')).contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput4')).contains(`yes`).click({ force: true });
 
-    cy.get("#\\/_choiceinput1_submit").click();
-    cy.get("#\\/_choiceinput2_submit").click();
-    cy.get("#\\/_choiceinput3_submit").click();
-    cy.get("#\\/_choiceinput4_submit").click();
+    cy.get(cesc("#\\/_choiceinput1_submit")).click();
+    cy.get(cesc("#\\/_choiceinput2_submit")).click();
+    cy.get(cesc("#\\/_choiceinput3_submit")).click();
+    cy.get(cesc("#\\/_choiceinput4_submit")).click();
 
-    cy.get("#\\/_choiceinput1_correct").should('contain.text', 'Correct')
-    cy.get("#\\/_choiceinput2_correct").should('contain.text', 'Correct')
-    cy.get("#\\/_choiceinput3_correct").should('contain.text', 'Correct')
-    cy.get("#\\/_choiceinput4_correct").should('contain.text', 'Correct')
+    cy.get(cesc("#\\/_choiceinput1_correct")).should('contain.text', 'Correct')
+    cy.get(cesc("#\\/_choiceinput2_correct")).should('contain.text', 'Correct')
+    cy.get(cesc("#\\/_choiceinput3_correct")).should('contain.text', 'Correct')
+    cy.get(cesc("#\\/_choiceinput4_correct")).should('contain.text', 'Correct')
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_showCorrectness').click()
@@ -20894,38 +20886,38 @@ describe('Answer Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get("#\\/_choiceinput1_submit").should('contain.text', 'Submit Response')
-    cy.get("#\\/_choiceinput2_submit").should('contain.text', 'Submit Response')
-    cy.get("#\\/_choiceinput3_submit").should('contain.text', 'Guess')
-    cy.get("#\\/_choiceinput4_submit").should('contain.text', 'Guess')
+    cy.get(cesc("#\\/_choiceinput1_submit")).should('contain.text', 'Submit Response')
+    cy.get(cesc("#\\/_choiceinput2_submit")).should('contain.text', 'Submit Response')
+    cy.get(cesc("#\\/_choiceinput3_submit")).should('contain.text', 'Guess')
+    cy.get(cesc("#\\/_choiceinput4_submit")).should('contain.text', 'Guess')
 
-    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput1_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Submit Response')
     })
-    cy.get('#\\/_choiceinput2_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput2_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Submit Response')
     })
-    cy.get('#\\/_choiceinput3_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput3_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Guess')
     })
-    cy.get('#\\/_choiceinput4_submit').invoke('text').then((text) => {
+    cy.get(cesc('#\\/_choiceinput4_submit')).invoke('text').then((text) => {
       expect(text.trim()).equal('Guess')
     })
 
-    cy.get('#\\/_choiceinput1').contains(`yes`).click({ force: true });
-    cy.get('#\\/_choiceinput2').contains(`yes`).click({ force: true });
-    cy.get('#\\/_choiceinput3').contains(`yes`).click({ force: true });
-    cy.get('#\\/_choiceinput4').contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput1')).contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput2')).contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput3')).contains(`yes`).click({ force: true });
+    cy.get(cesc('#\\/_choiceinput4')).contains(`yes`).click({ force: true });
 
-    cy.get("#\\/_choiceinput1_submit").click();
-    cy.get("#\\/_choiceinput2_submit").click();
-    cy.get("#\\/_choiceinput3_submit").click();
-    cy.get("#\\/_choiceinput4_submit").click();
+    cy.get(cesc("#\\/_choiceinput1_submit")).click();
+    cy.get(cesc("#\\/_choiceinput2_submit")).click();
+    cy.get(cesc("#\\/_choiceinput3_submit")).click();
+    cy.get(cesc("#\\/_choiceinput4_submit")).click();
 
-    cy.get("#\\/_choiceinput1_saved").should('contain.text', 'Response Saved')
-    cy.get("#\\/_choiceinput2_saved").should('contain.text', 'Response Saved')
-    cy.get("#\\/_choiceinput3_saved").should('contain.text', 'Response Saved')
-    cy.get("#\\/_choiceinput4_saved").should('contain.text', 'Response Saved')
+    cy.get(cesc("#\\/_choiceinput1_saved")).should('contain.text', 'Response Saved')
+    cy.get(cesc("#\\/_choiceinput2_saved")).should('contain.text', 'Response Saved')
+    cy.get(cesc("#\\/_choiceinput3_saved")).should('contain.text', 'Response Saved')
+    cy.get(cesc("#\\/_choiceinput4_saved")).should('contain.text', 'Response Saved')
 
   });
 
@@ -20947,16 +20939,16 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -20969,10 +20961,10 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
 
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('0')
       })
 
@@ -20991,10 +20983,10 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('2')
       })
 
@@ -21005,10 +20997,10 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('have.text', '40 %');
 
-      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('x2y')
       })
-      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('2')
       })
 
@@ -21028,21 +21020,21 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
 
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('\uff3f')
       })
       cy.log("Correct answer in mathinput")
@@ -21051,7 +21043,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
 
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('2x')
       })
 
@@ -21062,7 +21054,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
-      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sr') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq('2xx2')
       })
 
@@ -21094,32 +21086,32 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputDefSugarName = stateVariables['/defSugar'].stateValues.inputChildren[0].componentName
-      let mathinputDefSugarAnchor = cesc('#' + mathinputDefSugarName) + " textarea";
-      let mathinputDefSugarSubmitAnchor = cesc('#' + mathinputDefSugarName + '_submit');
-      let mathinputDefSugarCorrectAnchor = cesc('#' + mathinputDefSugarName + '_correct');
-      let mathinputDefSugarIncorrectAnchor = cesc('#' + mathinputDefSugarName + '_incorrect');
+      let mathinputDefSugarAnchor = cesc2('#' + mathinputDefSugarName) + " textarea";
+      let mathinputDefSugarSubmitAnchor = cesc2('#' + mathinputDefSugarName + '_submit');
+      let mathinputDefSugarCorrectAnchor = cesc2('#' + mathinputDefSugarName + '_correct');
+      let mathinputDefSugarIncorrectAnchor = cesc2('#' + mathinputDefSugarName + '_incorrect');
       let mathinputInsSugarName = stateVariables['/insSugar'].stateValues.inputChildren[0].componentName
-      let mathinputInsSugarAnchor = cesc('#' + mathinputInsSugarName) + " textarea";
-      let mathinputInsSugarSubmitAnchor = cesc('#' + mathinputInsSugarName + '_submit');
-      let mathinputInsSugarCorrectAnchor = cesc('#' + mathinputInsSugarName + '_correct');
-      let mathinputInsSugarIncorrectAnchor = cesc('#' + mathinputInsSugarName + '_incorrect');
+      let mathinputInsSugarAnchor = cesc2('#' + mathinputInsSugarName) + " textarea";
+      let mathinputInsSugarSubmitAnchor = cesc2('#' + mathinputInsSugarName + '_submit');
+      let mathinputInsSugarCorrectAnchor = cesc2('#' + mathinputInsSugarName + '_correct');
+      let mathinputInsSugarIncorrectAnchor = cesc2('#' + mathinputInsSugarName + '_incorrect');
       let mathinputAwardName = stateVariables['/shortAwards'].stateValues.inputChildren[0].componentName
-      let mathinputAwardAnchor = cesc('#' + mathinputAwardName) + " textarea";
-      let mathinputAwardSubmitAnchor = cesc('#' + mathinputAwardName + '_submit');
-      let mathinputAwardCorrectAnchor = cesc('#' + mathinputAwardName + '_correct');
-      let mathinputAwardIncorrectAnchor = cesc('#' + mathinputAwardName + '_incorrect');
-      let mathinputAwardPartialAnchor = cesc('#' + mathinputAwardName + '_partial');
+      let mathinputAwardAnchor = cesc2('#' + mathinputAwardName) + " textarea";
+      let mathinputAwardSubmitAnchor = cesc2('#' + mathinputAwardName + '_submit');
+      let mathinputAwardCorrectAnchor = cesc2('#' + mathinputAwardName + '_correct');
+      let mathinputAwardIncorrectAnchor = cesc2('#' + mathinputAwardName + '_incorrect');
+      let mathinputAwardPartialAnchor = cesc2('#' + mathinputAwardName + '_partial');
       let mathinputFullName = '/fullmi';
-      let mathinputFullAnchor = cesc('#' + mathinputFullName) + " textarea";
-      let mathinputFullSubmitAnchor = cesc('#' + mathinputFullName + '_submit');
-      let mathinputFullCorrectAnchor = cesc('#' + mathinputFullName + '_correct');
-      let mathinputFullIncorrectAnchor = cesc('#' + mathinputFullName + '_incorrect');
-      let mathinputFullPartialAnchor = cesc('#' + mathinputFullName + '_partial');
+      let mathinputFullAnchor = cesc2('#' + mathinputFullName) + " textarea";
+      let mathinputFullSubmitAnchor = cesc2('#' + mathinputFullName + '_submit');
+      let mathinputFullCorrectAnchor = cesc2('#' + mathinputFullName + '_correct');
+      let mathinputFullIncorrectAnchor = cesc2('#' + mathinputFullName + '_incorrect');
+      let mathinputFullPartialAnchor = cesc2('#' + mathinputFullName + '_partial');
 
       cy.get(mathinputDefSugarSubmitAnchor).should('be.visible');
       cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
@@ -21283,32 +21275,32 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let textinputDefSugarName = stateVariables['/defSugar'].stateValues.inputChildren[0].componentName
-      let textinputDefSugarAnchor = cesc('#' + textinputDefSugarName) + "_input";
-      let textinputDefSugarSubmitAnchor = cesc('#' + textinputDefSugarName + '_submit');
-      let textinputDefSugarCorrectAnchor = cesc('#' + textinputDefSugarName + '_correct');
-      let textinputDefSugarIncorrectAnchor = cesc('#' + textinputDefSugarName + '_incorrect');
+      let textinputDefSugarAnchor = cesc2('#' + textinputDefSugarName) + "_input";
+      let textinputDefSugarSubmitAnchor = cesc2('#' + textinputDefSugarName + '_submit');
+      let textinputDefSugarCorrectAnchor = cesc2('#' + textinputDefSugarName + '_correct');
+      let textinputDefSugarIncorrectAnchor = cesc2('#' + textinputDefSugarName + '_incorrect');
       let textinputInsSugarName = stateVariables['/insSugar'].stateValues.inputChildren[0].componentName
-      let textinputInsSugarAnchor = cesc('#' + textinputInsSugarName) + "_input";
-      let textinputInsSugarSubmitAnchor = cesc('#' + textinputInsSugarName + '_submit');
-      let textinputInsSugarCorrectAnchor = cesc('#' + textinputInsSugarName + '_correct');
-      let textinputInsSugarIncorrectAnchor = cesc('#' + textinputInsSugarName + '_incorrect');
+      let textinputInsSugarAnchor = cesc2('#' + textinputInsSugarName) + "_input";
+      let textinputInsSugarSubmitAnchor = cesc2('#' + textinputInsSugarName + '_submit');
+      let textinputInsSugarCorrectAnchor = cesc2('#' + textinputInsSugarName + '_correct');
+      let textinputInsSugarIncorrectAnchor = cesc2('#' + textinputInsSugarName + '_incorrect');
       let textinputAwardName = stateVariables['/shortAwards'].stateValues.inputChildren[0].componentName
-      let textinputAwardAnchor = cesc('#' + textinputAwardName) + "_input";
-      let textinputAwardSubmitAnchor = cesc('#' + textinputAwardName + '_submit');
-      let textinputAwardCorrectAnchor = cesc('#' + textinputAwardName + '_correct');
-      let textinputAwardIncorrectAnchor = cesc('#' + textinputAwardName + '_incorrect');
-      let textinputAwardPartialAnchor = cesc('#' + textinputAwardName + '_partial');
+      let textinputAwardAnchor = cesc2('#' + textinputAwardName) + "_input";
+      let textinputAwardSubmitAnchor = cesc2('#' + textinputAwardName + '_submit');
+      let textinputAwardCorrectAnchor = cesc2('#' + textinputAwardName + '_correct');
+      let textinputAwardIncorrectAnchor = cesc2('#' + textinputAwardName + '_incorrect');
+      let textinputAwardPartialAnchor = cesc2('#' + textinputAwardName + '_partial');
       let textinputFullName = '/fullmi';
-      let textinputFullAnchor = cesc('#' + textinputFullName) + "_input";
-      let textinputFullSubmitAnchor = cesc('#' + textinputFullName + '_submit');
-      let textinputFullCorrectAnchor = cesc('#' + textinputFullName + '_correct');
-      let textinputFullIncorrectAnchor = cesc('#' + textinputFullName + '_incorrect');
-      let textinputFullPartialAnchor = cesc('#' + textinputFullName + '_partial');
+      let textinputFullAnchor = cesc2('#' + textinputFullName) + "_input";
+      let textinputFullSubmitAnchor = cesc2('#' + textinputFullName + '_submit');
+      let textinputFullCorrectAnchor = cesc2('#' + textinputFullName + '_correct');
+      let textinputFullIncorrectAnchor = cesc2('#' + textinputFullName + '_incorrect');
+      let textinputFullPartialAnchor = cesc2('#' + textinputFullName + '_partial');
 
       cy.get(textinputDefSugarSubmitAnchor).should('be.visible');
       cy.get(textinputDefSugarCorrectAnchor).should('not.exist');
@@ -21477,40 +21469,40 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputDefSugarName = stateVariables['/defSugar'].stateValues.inputChildren[0].componentName
-      let mathinputDefSugarAnchor = cesc('#' + mathinputDefSugarName) + " textarea";
-      let mathinputDefSugarSubmitAnchor = cesc('#' + mathinputDefSugarName + '_submit');
-      let mathinputDefSugarCorrectAnchor = cesc('#' + mathinputDefSugarName + '_correct');
-      let mathinputDefSugarIncorrectAnchor = cesc('#' + mathinputDefSugarName + '_incorrect');
+      let mathinputDefSugarAnchor = cesc2('#' + mathinputDefSugarName) + " textarea";
+      let mathinputDefSugarSubmitAnchor = cesc2('#' + mathinputDefSugarName + '_submit');
+      let mathinputDefSugarCorrectAnchor = cesc2('#' + mathinputDefSugarName + '_correct');
+      let mathinputDefSugarIncorrectAnchor = cesc2('#' + mathinputDefSugarName + '_incorrect');
       let mathinputBlankSugarName = stateVariables['/blankSugar'].stateValues.inputChildren[0].componentName
-      let mathinputBlankSugarAnchor = cesc('#' + mathinputBlankSugarName) + " textarea";
-      let mathinputBlankSugarSubmitAnchor = cesc('#' + mathinputBlankSugarName + '_submit');
-      let mathinputBlankSugarCorrectAnchor = cesc('#' + mathinputBlankSugarName + '_correct');
-      let mathinputBlankSugarIncorrectAnchor = cesc('#' + mathinputBlankSugarName + '_incorrect');
+      let mathinputBlankSugarAnchor = cesc2('#' + mathinputBlankSugarName) + " textarea";
+      let mathinputBlankSugarSubmitAnchor = cesc2('#' + mathinputBlankSugarName + '_submit');
+      let mathinputBlankSugarCorrectAnchor = cesc2('#' + mathinputBlankSugarName + '_correct');
+      let mathinputBlankSugarIncorrectAnchor = cesc2('#' + mathinputBlankSugarName + '_incorrect');
       let mathinputDefShortName = stateVariables['/defShort'].stateValues.inputChildren[0].componentName
-      let mathinputDefShortAnchor = cesc('#' + mathinputDefShortName) + " textarea";
-      let mathinputDefShortSubmitAnchor = cesc('#' + mathinputDefShortName + '_submit');
-      let mathinputDefShortCorrectAnchor = cesc('#' + mathinputDefShortName + '_correct');
-      let mathinputDefShortIncorrectAnchor = cesc('#' + mathinputDefShortName + '_incorrect');
+      let mathinputDefShortAnchor = cesc2('#' + mathinputDefShortName) + " textarea";
+      let mathinputDefShortSubmitAnchor = cesc2('#' + mathinputDefShortName + '_submit');
+      let mathinputDefShortCorrectAnchor = cesc2('#' + mathinputDefShortName + '_correct');
+      let mathinputDefShortIncorrectAnchor = cesc2('#' + mathinputDefShortName + '_incorrect');
       let mathinputBlankShortName = stateVariables['/blankShort'].stateValues.inputChildren[0].componentName
-      let mathinputBlankShortAnchor = cesc('#' + mathinputBlankShortName) + " textarea";
-      let mathinputBlankShortSubmitAnchor = cesc('#' + mathinputBlankShortName + '_submit');
-      let mathinputBlankShortCorrectAnchor = cesc('#' + mathinputBlankShortName + '_correct');
-      let mathinputBlankShortIncorrectAnchor = cesc('#' + mathinputBlankShortName + '_incorrect');
+      let mathinputBlankShortAnchor = cesc2('#' + mathinputBlankShortName) + " textarea";
+      let mathinputBlankShortSubmitAnchor = cesc2('#' + mathinputBlankShortName + '_submit');
+      let mathinputBlankShortCorrectAnchor = cesc2('#' + mathinputBlankShortName + '_correct');
+      let mathinputBlankShortIncorrectAnchor = cesc2('#' + mathinputBlankShortName + '_incorrect');
       let mathinputDefFullName = '/deffullmi';
-      let mathinputDefFullAnchor = cesc('#' + mathinputDefFullName) + " textarea";
-      let mathinputDefFullSubmitAnchor = cesc('#' + mathinputDefFullName + '_submit');
-      let mathinputDefFullCorrectAnchor = cesc('#' + mathinputDefFullName + '_correct');
-      let mathinputDefFullIncorrectAnchor = cesc('#' + mathinputDefFullName + '_incorrect');
+      let mathinputDefFullAnchor = cesc2('#' + mathinputDefFullName) + " textarea";
+      let mathinputDefFullSubmitAnchor = cesc2('#' + mathinputDefFullName + '_submit');
+      let mathinputDefFullCorrectAnchor = cesc2('#' + mathinputDefFullName + '_correct');
+      let mathinputDefFullIncorrectAnchor = cesc2('#' + mathinputDefFullName + '_incorrect');
       let mathinputBlankFullName = '/blankfullmi';
-      let mathinputBlankFullAnchor = cesc('#' + mathinputBlankFullName) + " textarea";
-      let mathinputBlankFullSubmitAnchor = cesc('#' + mathinputBlankFullName + '_submit');
-      let mathinputBlankFullCorrectAnchor = cesc('#' + mathinputBlankFullName + '_correct');
-      let mathinputBlankFullIncorrectAnchor = cesc('#' + mathinputBlankFullName + '_incorrect');
+      let mathinputBlankFullAnchor = cesc2('#' + mathinputBlankFullName) + " textarea";
+      let mathinputBlankFullSubmitAnchor = cesc2('#' + mathinputBlankFullName + '_submit');
+      let mathinputBlankFullCorrectAnchor = cesc2('#' + mathinputBlankFullName + '_correct');
+      let mathinputBlankFullIncorrectAnchor = cesc2('#' + mathinputBlankFullName + '_incorrect');
 
       cy.get(mathinputDefSugarSubmitAnchor).should('be.visible');
       cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
@@ -21632,20 +21624,20 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       let choiceinputName = stateVariables['/correct'].stateValues.inputChildren[0].componentName
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
 
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(cesc('#/firstQuad_submit')).should('be.visible')
+      cy.get(cesc2('#/firstQuad_submit')).should('be.visible')
 
     })
 
@@ -21654,65 +21646,65 @@ describe('Answer Tag Tests', function () {
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
 
       let choiceinputName = stateVariables['/correct'].stateValues.inputChildren[0].componentName
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
+      let choiceinputSubmitAnchor = cesc2('#' + choiceinputName + '_submit');
 
 
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(cesc('#/firstQuad_submit')).should('not.exist')
+      cy.get(cesc2('#/firstQuad_submit')).should('not.exist')
 
     })
 
-    cy.get('#\\/pSubX').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 0');
-    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 0');
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0')
+    cy.get(cesc('#\\/pSubX')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditX')).should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubCorrect')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditCorrect')).should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0')
 
 
-    cy.get('#\\/x textarea').type("y", { force: true });
+    cy.get(cesc('#\\/x') + ' textarea').type("y", { force: true });
 
     cy.wait(1500); // wait for debounce
 
-    cy.get('#\\/pSubX').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 0');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0')
+    cy.get(cesc('#\\/pSubX')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditX')).should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0')
 
-    cy.get('#\\/x textarea').blur();
-    cy.get('#\\/pSubX .mjx-mrow').should('contain.text', 'y');
-    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 0');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0')
+    cy.get(cesc('#\\/x') + ' textarea').blur();
+    cy.get(cesc('#\\/pSubX') + ' .mjx-mrow').should('contain.text', 'y');
+    cy.get(cesc('#\\/pCreditX')).should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0')
 
 
-    cy.get('#\\/x textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/pSubX .mjx-mrow').should('contain.text', 'x');
-    cy.get('#\\/pCreditX').should('have.text', 'Credit for this answer: 1');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.333')
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/pSubX') + ' .mjx-mrow').should('contain.text', 'x');
+    cy.get(cesc('#\\/pCreditX')).should('have.text', 'Credit for this answer: 1');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0.333')
 
-    cy.get('#\\/_choice1').click();
-    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: correct');
-    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 1');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.667')
+    cy.get(cesc('#\\/_choice1')).click();
+    cy.get(cesc('#\\/pSubCorrect')).should('have.text', 'Submitted response: correct');
+    cy.get(cesc('#\\/pCreditCorrect')).should('have.text', 'Credit for this answer: 1');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0.667')
 
-    cy.get('#\\/_choice2').click();
-    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: incorrect');
-    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 0');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.333')
+    cy.get(cesc('#\\/_choice2')).click();
+    cy.get(cesc('#\\/pSubCorrect')).should('have.text', 'Submitted response: incorrect');
+    cy.get(cesc('#\\/pCreditCorrect')).should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0.333')
 
-    cy.get('#\\/_choice1').click();
-    cy.get('#\\/pSubCorrect').should('have.text', 'Submitted response: correct');
-    cy.get('#\\/pCreditCorrect').should('have.text', 'Credit for this answer: 1');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.667')
+    cy.get(cesc('#\\/_choice1')).click();
+    cy.get(cesc('#\\/pSubCorrect')).should('have.text', 'Submitted response: correct');
+    cy.get(cesc('#\\/pCreditCorrect')).should('have.text', 'Credit for this answer: 1');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0.667')
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -21723,8 +21715,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -21735,8 +21727,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
 
     cy.window().then(async (win) => {
@@ -21748,8 +21740,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -21760,8 +21752,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -21772,8 +21764,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -21784,8 +21776,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -21796,8 +21788,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -21808,17 +21800,17 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.wait(200);
-    cy.get('#\\/pSubFirstQuad').should('have.text', 'Submitted response: ');
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pSubFirstQuad')).should('have.text', 'Submitted response: ');
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
 
 
-    cy.get('#\\/pSubFirstQuad .mjx-mrow').should('contain.text', '3');
-    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(0).should('have.text', "3");
-    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(1).should('have.text', "−5");
+    cy.get(cesc('#\\/pSubFirstQuad') + ' .mjx-mrow').should('contain.text', '3');
+    cy.get(cesc('#\\/pSubFirstQuad') + ' .mjx-mrow').eq(0).should('have.text', "3");
+    cy.get(cesc('#\\/pSubFirstQuad') + ' .mjx-mrow').eq(1).should('have.text', "−5");
 
 
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 0');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 0.667')
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 0');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 0.667')
 
 
     cy.window().then(async (win) => {
@@ -21829,12 +21821,12 @@ describe('Answer Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pSubFirstQuad .mjx-mrow').should('contain.text', '9');
-    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(0).should('have.text', "9");
-    cy.get('#\\/pSubFirstQuad .mjx-mrow').eq(1).should('have.text', "8");
+    cy.get(cesc('#\\/pSubFirstQuad') + ' .mjx-mrow').should('contain.text', '9');
+    cy.get(cesc('#\\/pSubFirstQuad') + ' .mjx-mrow').eq(0).should('have.text', "9");
+    cy.get(cesc('#\\/pSubFirstQuad') + ' .mjx-mrow').eq(1).should('have.text', "8");
 
-    cy.get('#\\/pCreditFirstQuad').should('have.text', 'Credit for this answer: 1');
-    cy.get('#\\/pCreditDoc').should('have.text', 'Document credit achieved: 1')
+    cy.get(cesc('#\\/pCreditFirstQuad')).should('have.text', 'Credit for this answer: 1');
+    cy.get(cesc('#\\/pCreditDoc')).should('have.text', 'Document credit achieved: 1')
 
 
   });
@@ -21861,36 +21853,36 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/xsr .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/xcr .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/xsr') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/xcr') + ' .mjx-mrow').should('contain.text', '\uff3f');
 
-    cy.get('#\\/x textarea').type("x", { force: true }).blur();
-    cy.get('#\\/xcr .mjx-mrow').should('contain.text', 'x');
-    cy.get('#\\/xsr .mjx-mrow').should('contain.text', '\uff3f');
-    cy.get('#\\/x textarea').type("{enter}", { force: true })
-    cy.get('#\\/xsr .mjx-mrow').should('contain.text', 'x');
-    cy.get('#\\/xcr .mjx-mrow').should('contain.text', 'x');
+    cy.get(cesc('#\\/x') + ' textarea').type("x", { force: true }).blur();
+    cy.get(cesc('#\\/xcr') + ' .mjx-mrow').should('contain.text', 'x');
+    cy.get(cesc('#\\/xsr') + ' .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/x') + ' textarea').type("{enter}", { force: true })
+    cy.get(cesc('#\\/xsr') + ' .mjx-mrow').should('contain.text', 'x');
+    cy.get(cesc('#\\/xcr') + ' .mjx-mrow').should('contain.text', 'x');
 
-    cy.get('#\\/hellosr').should('have.text', '')
-    cy.get('#\\/hellocr').should('have.text', '')
+    cy.get(cesc('#\\/hellosr')).should('have.text', '')
+    cy.get(cesc('#\\/hellocr')).should('have.text', '')
 
-    cy.get('#\\/hello input').type("hello").blur();
-    cy.get('#\\/hellocr').should('have.text', 'hello')
-    cy.get('#\\/hellosr').should('have.text', '')
-    cy.get('#\\/hello input').type("{enter}");
-    cy.get('#\\/hellosr').should('have.text', 'hello')
-    cy.get('#\\/hellocr').should('have.text', 'hello')
+    cy.get(cesc('#\\/hello') + ' input').type("hello").blur();
+    cy.get(cesc('#\\/hellocr')).should('have.text', 'hello')
+    cy.get(cesc('#\\/hellosr')).should('have.text', '')
+    cy.get(cesc('#\\/hello') + ' input').type("{enter}");
+    cy.get(cesc('#\\/hellosr')).should('have.text', 'hello')
+    cy.get(cesc('#\\/hellocr')).should('have.text', 'hello')
 
-    cy.get('#\\/bsr').should("have.text", "false")
-    cy.get('#\\/bcr').should("have.text", "false")
-    cy.get('#\\/b .checkmark').click();
-    cy.get('#\\/bcr').should("have.text", "true")
-    cy.get('#\\/bsr').should("have.text", "false")
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/bsr').should("have.text", "true")
-    cy.get('#\\/bcr').should("have.text", "true")
+    cy.get(cesc('#\\/bsr')).should("have.text", "false")
+    cy.get(cesc('#\\/bcr')).should("have.text", "false")
+    cy.get(cesc('#\\/b') + ' .checkmark').click();
+    cy.get(cesc('#\\/bcr')).should("have.text", "true")
+    cy.get(cesc('#\\/bsr')).should("have.text", "false")
+    cy.get(cesc('#\\/b_submit')).click();
+    cy.get(cesc('#\\/bsr')).should("have.text", "true")
+    cy.get(cesc('#\\/bcr')).should("have.text", "true")
   });
 
   it('parse scientific notation', () => {
@@ -21914,77 +21906,77 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '\uff3f');
+    cy.get(cesc('#\\/np1a') + ' .mjx-mrow').eq(0).should('have.text', '\uff3f');
 
-    cy.get('#\\/minp1 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/minp1_correct").should('be.visible');
-    cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '4E3');
+    cy.get(cesc('#\\/minp1') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/minp1_correct")).should('be.visible');
+    cy.get(cesc('#\\/np1a') + ' .mjx-mrow').eq(0).should('have.text', '4E3');
 
-    cy.get('#\\/minp2 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/minp2_correct").should('be.visible');
-    cy.get('#\\/np2a .mjx-mrow').eq(0).should('have.text', '4E3');
+    cy.get(cesc('#\\/minp2') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/minp2_correct")).should('be.visible');
+    cy.get(cesc('#\\/np2a') + ' .mjx-mrow').eq(0).should('have.text', '4E3');
 
-    cy.get('#\\/minp3 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/minp3_correct").should('be.visible');
-    cy.get('#\\/np3a .mjx-mrow').eq(0).should('have.text', '4E3');
+    cy.get(cesc('#\\/minp3') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/minp3_correct")).should('be.visible');
+    cy.get(cesc('#\\/np3a') + ' .mjx-mrow').eq(0).should('have.text', '4E3');
 
-    cy.get('#\\/minp4 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/minp4_correct").should('be.visible');
-    cy.get('#\\/np4a .mjx-mrow').eq(0).should('have.text', '4E3');
-
-
-    cy.get('#\\/mip1 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/mip1_correct").should('be.visible');
-    cy.get('#\\/p1a .mjx-mrow').eq(0).should('have.text', '4000');
-
-    cy.get('#\\/mip2 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/mip2_correct").should('be.visible');
-    cy.get('#\\/p2a .mjx-mrow').eq(0).should('have.text', '4000');
-
-    cy.get('#\\/mip3 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/mip3_correct").should('be.visible');
-    cy.get('#\\/p3a .mjx-mrow').eq(0).should('have.text', '4000');
-
-    cy.get('#\\/mip4 textarea').type("4E3{enter}", { force: true })
-    cy.get("#\\/mip4_correct").should('be.visible');
-    cy.get('#\\/p4a .mjx-mrow').eq(0).should('have.text', '4000');
+    cy.get(cesc('#\\/minp4') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/minp4_correct")).should('be.visible');
+    cy.get(cesc('#\\/np4a') + ' .mjx-mrow').eq(0).should('have.text', '4E3');
 
 
+    cy.get(cesc('#\\/mip1') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/mip1_correct")).should('be.visible');
+    cy.get(cesc('#\\/p1a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
 
-    cy.get('#\\/minp1 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/minp1_incorrect").should('be.visible');
-    cy.get('#\\/np1a .mjx-mrow').eq(0).should('have.text', '4000');
+    cy.get(cesc('#\\/mip2') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/mip2_correct")).should('be.visible');
+    cy.get(cesc('#\\/p2a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
 
-    cy.get('#\\/minp2 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/minp2_incorrect").should('be.visible');
-    cy.get('#\\/np2a .mjx-mrow').eq(0).should('have.text', '4000');
+    cy.get(cesc('#\\/mip3') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/mip3_correct")).should('be.visible');
+    cy.get(cesc('#\\/p3a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
 
-    cy.get('#\\/minp3 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/minp3_incorrect").should('be.visible');
-    cy.get('#\\/np3a .mjx-mrow').eq(0).should('have.text', '4000');
-
-    cy.get('#\\/minp4 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/minp4_incorrect").should('be.visible');
-    cy.get('#\\/np4a .mjx-mrow').eq(0).should('have.text', '4000');
+    cy.get(cesc('#\\/mip4') + ' textarea').type("4E3{enter}", { force: true })
+    cy.get(cesc("#\\/mip4_correct")).should('be.visible');
+    cy.get(cesc('#\\/p4a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
 
 
-    cy.get('#\\/mip1 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/mip1_correct").should('be.visible');
-    cy.get('#\\/p1a .mjx-mrow').eq(0).should('have.text', '4000');
 
-    cy.get('#\\/mip2 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/mip2_correct").should('be.visible');
-    cy.get('#\\/p2a .mjx-mrow').eq(0).should('have.text', '4000');
+    cy.get(cesc('#\\/minp1') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/minp1_incorrect")).should('be.visible');
+    cy.get(cesc('#\\/np1a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
 
-    cy.get('#\\/mip3 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/mip3_correct").should('be.visible');
-    cy.get('#\\/p3a .mjx-mrow').eq(0).should('have.text', '4000');
+    cy.get(cesc('#\\/minp2') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/minp2_incorrect")).should('be.visible');
+    cy.get(cesc('#\\/np2a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
 
-    cy.get('#\\/mip4 textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
-    cy.get("#\\/mip4_correct").should('be.visible');
-    cy.get('#\\/p4a .mjx-mrow').eq(0).should('have.text', '4000');
+    cy.get(cesc('#\\/minp3') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/minp3_incorrect")).should('be.visible');
+    cy.get(cesc('#\\/np3a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get(cesc('#\\/minp4') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/minp4_incorrect")).should('be.visible');
+    cy.get(cesc('#\\/np4a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
+
+
+    cy.get(cesc('#\\/mip1') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/mip1_correct")).should('be.visible');
+    cy.get(cesc('#\\/p1a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get(cesc('#\\/mip2') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/mip2_correct")).should('be.visible');
+    cy.get(cesc('#\\/p2a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get(cesc('#\\/mip3') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/mip3_correct")).should('be.visible');
+    cy.get(cesc('#\\/p3a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
+
+    cy.get(cesc('#\\/mip4') + ' textarea').type("{end}{backspace}{backspace}{backspace}4000{enter}", { force: true })
+    cy.get(cesc("#\\/mip4_correct")).should('be.visible');
+    cy.get(cesc('#\\/p4a') + ' .mjx-mrow').eq(0).should('have.text', '4000');
 
   });
 
@@ -22005,49 +21997,49 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[＿＿＿＿]');
-    cy.get('#\\/pSubmitted .mjx-mrow').should('not.exist');
-
-
-    cy.get('#\\/mi_component_0_0 textarea').type("x{enter}", { force: true })
-
-    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[x＿＿＿]');
-    cy.get('#\\/pSubmitted .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/pCurrent') + ' .mjx-mrow').eq(0).should('have.text', '[＿＿＿＿]');
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').should('not.exist');
 
 
-    cy.get('#\\/mi_component_0_1 textarea').type("y{enter}", { force: true })
-    cy.get('#\\/mi_component_1_0 textarea').type("z{enter}", { force: true })
-    cy.get('#\\/mi_component_1_1 textarea').type("0{enter}", { force: true })
+    cy.get(cesc('#\\/mi_component_0_0') + ' textarea').type("x{enter}", { force: true })
 
-    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[xyz0]');
-    cy.get('#\\/pSubmitted .mjx-mrow').should('not.exist');
-
-    cy.get("#\\/mi_submit").click();
-    cy.get('#\\/mi_incorrect').should('be.visible');
-
-    cy.get('#\\/pSubmitted .mjx-mrow').should('contain.text', '[xyz0]');
-    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[xyz0]');
-    cy.get('#\\/pSubmitted .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+    cy.get(cesc('#\\/pCurrent') + ' .mjx-mrow').eq(0).should('have.text', '[x＿＿＿]');
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').should('not.exist');
 
 
-    cy.get('#\\/mi_component_0_0 textarea').type("{end}{backspace}a{enter}", { force: true })
-    cy.get('#\\/mi_component_0_1 textarea').type("{end}{backspace}b{enter}", { force: true })
-    cy.get('#\\/mi_component_1_0 textarea').type("{end}{backspace}c{enter}", { force: true })
-    cy.get('#\\/mi_component_1_1 textarea').type("{end}{backspace}d{enter}", { force: true })
+    cy.get(cesc('#\\/mi_component_0_1') + ' textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#\\/mi_component_1_0') + ' textarea').type("z{enter}", { force: true })
+    cy.get(cesc('#\\/mi_component_1_1') + ' textarea').type("0{enter}", { force: true })
 
-    cy.get('#\\/pCurrent .mjx-mrow').should('contain.text', '[abcd]');
-    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[abcd]');
-    cy.get('#\\/pSubmitted .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+    cy.get(cesc('#\\/pCurrent') + ' .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').should('not.exist');
+
+    cy.get(cesc("#\\/mi_submit")).click();
+    cy.get(cesc('#\\/mi_incorrect')).should('be.visible');
+
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').should('contain.text', '[xyz0]');
+    cy.get(cesc('#\\/pCurrent') + ' .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').eq(0).should('have.text', '[xyz0]');
 
 
-    cy.get("#\\/mi_submit").click();
-    cy.get('#\\/mi_correct').should('be.visible');
+    cy.get(cesc('#\\/mi_component_0_0') + ' textarea').type("{end}{backspace}a{enter}", { force: true })
+    cy.get(cesc('#\\/mi_component_0_1') + ' textarea').type("{end}{backspace}b{enter}", { force: true })
+    cy.get(cesc('#\\/mi_component_1_0') + ' textarea').type("{end}{backspace}c{enter}", { force: true })
+    cy.get(cesc('#\\/mi_component_1_1') + ' textarea').type("{end}{backspace}d{enter}", { force: true })
 
-    cy.get('#\\/pSubmitted .mjx-mrow').should('contain.text', '[abcd]');
-    cy.get('#\\/pCurrent .mjx-mrow').eq(0).should('have.text', '[abcd]');
-    cy.get('#\\/pSubmitted .mjx-mrow').eq(0).should('have.text', '[abcd]');
+    cy.get(cesc('#\\/pCurrent') + ' .mjx-mrow').should('contain.text', '[abcd]');
+    cy.get(cesc('#\\/pCurrent') + ' .mjx-mrow').eq(0).should('have.text', '[abcd]');
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').eq(0).should('have.text', '[xyz0]');
+
+
+    cy.get(cesc("#\\/mi_submit")).click();
+    cy.get(cesc('#\\/mi_correct')).should('be.visible');
+
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').should('contain.text', '[abcd]');
+    cy.get(cesc('#\\/pCurrent') + ' .mjx-mrow').eq(0).should('have.text', '[abcd]');
+    cy.get(cesc('#\\/pSubmitted') + ' .mjx-mrow').eq(0).should('have.text', '[abcd]');
 
   });
 
@@ -22073,7 +22065,7 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/n textarea').type("1", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("1", { force: true });
 
     cy.wait(1500);  // wait for debounce
 
@@ -22086,8 +22078,8 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/n_submit').click();
-    cy.get('#\\/n_correct').should('be.visible');
+    cy.get(cesc('#\\/n_submit')).click();
+    cy.get(cesc('#\\/n_correct')).should('be.visible');
 
 
   });
@@ -22114,7 +22106,7 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/ti_input').type("hello", { force: true });
+    cy.get(cesc('#\\/ti_input')).type("hello", { force: true });
 
     cy.wait(1500);  // wait for debounce
 
@@ -22127,8 +22119,8 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get('#\\/ti_submit').click();
-    cy.get('#\\/ti_correct').should('be.visible');
+    cy.get(cesc('#\\/ti_submit')).click();
+    cy.get(cesc('#\\/ti_correct')).should('be.visible');
 
 
   });
@@ -22153,26 +22145,26 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get("#\\/_p1").should("contain.text", "Type the function");
+    cy.get(cesc("#\\/_p1")).should("contain.text", "Type the function");
 
 
-    cy.get("#\\/userFormula textarea").type("x^2{enter}", { force: true });
+    cy.get(cesc("#\\/userFormula") + " textarea").type("x^2{enter}", { force: true });
 
-    cy.get("#\\/_answer1_submit").click();
+    cy.get(cesc("#\\/_answer1_submit")).click();
 
-    cy.get("#\\/_answer1_correct").should("be.visible");
+    cy.get(cesc("#\\/_answer1_correct")).should("be.visible");
 
-    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "x2");
-    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
+    cy.get(cesc("#\\/sr1") + " .mjx-mrow").eq(0).should("have.text", "x2");
+    cy.get(cesc("#\\/sr2") + " .mjx-mrow").eq(0).should("have.text", "x2");
 
-    cy.get("#\\/userFormula textarea").type("{home}3{enter}", { force: true });
+    cy.get(cesc("#\\/userFormula") + " textarea").type("{home}3{enter}", { force: true });
 
-    cy.get("#\\/_answer1_submit").click();
+    cy.get(cesc("#\\/_answer1_submit")).click();
 
-    cy.get("#\\/_answer1_incorrect").should("be.visible");
+    cy.get(cesc("#\\/_answer1_incorrect")).should("be.visible");
 
-    cy.get("#\\/sr1 .mjx-mrow").eq(0).should("have.text", "3x2");
-    cy.get("#\\/sr2 .mjx-mrow").eq(0).should("have.text", "x2");
+    cy.get(cesc("#\\/sr1") + " .mjx-mrow").eq(0).should("have.text", "3x2");
+    cy.get(cesc("#\\/sr2") + " .mjx-mrow").eq(0).should("have.text", "x2");
 
 
   });
@@ -22269,190 +22261,190 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.get("#\\/_text1").should("have.text", "a");
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    cy.get('#\\/m1 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/m2 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/m3 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/m4 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/m5 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/m6 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/m7 textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/m1') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/m2') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/m3') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/m4') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/m5') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/m6') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/m7') + ' textarea').type("x{enter}", { force: true })
 
-    cy.get('#\\/t1 input').type("hello{enter}")
-    cy.get('#\\/t2 input').type("hello{enter}")
-    cy.get('#\\/t3 input').type("hello{enter}")
-    cy.get('#\\/t4 input').type("hello{enter}")
+    cy.get(cesc('#\\/t1') + ' input').type("hello{enter}")
+    cy.get(cesc('#\\/t2') + ' input').type("hello{enter}")
+    cy.get(cesc('#\\/t3') + ' input').type("hello{enter}")
+    cy.get(cesc('#\\/t4') + ' input').type("hello{enter}")
 
-    cy.get('#\\/mi1 textarea').eq(0).type("x{enter}", { force: true })
-    cy.get('#\\/mi1 textarea').eq(1).type("y{enter}", { force: true })
-    cy.get('#\\/mi1_submit').click();
-    cy.get('#\\/mi2 input').eq(0).type("hello{enter}")
-    cy.get('#\\/mi2 input').eq(1).type("bye{enter}")
-    cy.get('#\\/mi2_submit').click();
-    cy.get('#\\/mi3 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/mi3 input').type("bye{enter}")
-    cy.get('#\\/mi3_submit').click();
-
-
-    cy.get('#\\/oi1i1 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/oi1i2 textarea').type("y{enter}", { force: true })
-    cy.get('#\\/oi1_submit').click();
-    cy.get('#\\/oi2i1 input').type("hello{enter}")
-    cy.get('#\\/oi2i2 input').type("bye{enter}")
-    cy.get('#\\/oi2_submit').click();
-    cy.get('#\\/oi3i1 textarea').type("x{enter}", { force: true })
-    cy.get('#\\/oi3i2 input').type("bye{enter}")
-    cy.get('#\\/oi3_submit').click();
+    cy.get(cesc('#\\/mi1') + ' textarea').eq(0).type("x{enter}", { force: true })
+    cy.get(cesc('#\\/mi1') + ' textarea').eq(1).type("y{enter}", { force: true })
+    cy.get(cesc('#\\/mi1_submit')).click();
+    cy.get(cesc('#\\/mi2') + ' input').eq(0).type("hello{enter}")
+    cy.get(cesc('#\\/mi2') + ' input').eq(1).type("bye{enter}")
+    cy.get(cesc('#\\/mi2_submit')).click();
+    cy.get(cesc('#\\/mi3') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' input').type("bye{enter}")
+    cy.get(cesc('#\\/mi3_submit')).click();
 
 
-    cy.get('#\\/oi3sr2').should('have.text', 'bye')
-
-    cy.get('#\\/m1sr .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/m2sr .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/m3sr .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/m4sr .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/m5sr .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/m6sr .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/m7sr .mjx-mrow').eq(0).should('have.text', "x")
-
-    cy.get('#\\/t1sr').should('have.text', "hello")
-    cy.get('#\\/t2sr').should('have.text', "hello")
-    cy.get('#\\/t3sr').should('have.text', "hello")
-    cy.get('#\\/t4sr').should('have.text', "hello")
-
-    cy.get('#\\/mi1sr1 .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/mi1sr2 .mjx-mrow').eq(0).should('have.text', "y")
-    cy.get('#\\/mi2sr1').should('have.text', "hello")
-    cy.get('#\\/mi2sr2').should('have.text', "bye")
-    cy.get('#\\/mi3sr1 .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/mi3sr2').should('have.text', "bye")
-
-    cy.get('#\\/oi1sr1 .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/oi1sr2 .mjx-mrow').eq(0).should('have.text', "y")
-    cy.get('#\\/oi2sr1').should('have.text', "hello")
-    cy.get('#\\/oi2sr2').should('have.text', "bye")
-    cy.get('#\\/oi3sr1 .mjx-mrow').eq(0).should('have.text', "x")
-    cy.get('#\\/oi3sr2').should('have.text', "bye")
+    cy.get(cesc('#\\/oi1i1') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/oi1i2') + ' textarea').type("y{enter}", { force: true })
+    cy.get(cesc('#\\/oi1_submit')).click();
+    cy.get(cesc('#\\/oi2i1') + ' input').type("hello{enter}")
+    cy.get(cesc('#\\/oi2i2') + ' input').type("bye{enter}")
+    cy.get(cesc('#\\/oi2_submit')).click();
+    cy.get(cesc('#\\/oi3i1') + ' textarea').type("x{enter}", { force: true })
+    cy.get(cesc('#\\/oi3i2') + ' input').type("bye{enter}")
+    cy.get(cesc('#\\/oi3_submit')).click();
 
 
-    cy.get('#\\/m1ca').should('have.text', '0')
-    cy.get('#\\/m2ca').should('have.text', '0')
-    cy.get('#\\/m3ca').should('have.text', '0')
-    cy.get('#\\/m4ca').should('have.text', '0')
-    cy.get('#\\/m5ca').should('have.text', '0')
-    cy.get('#\\/m6ca').should('have.text', '0')
-    cy.get('#\\/m7ca').should('have.text', '0')
+    cy.get(cesc('#\\/oi3sr2')).should('have.text', 'bye')
 
-    cy.get('#\\/t1ca').should('have.text', '0')
-    cy.get('#\\/t2ca').should('have.text', '0')
-    cy.get('#\\/t3ca').should('have.text', '0')
-    cy.get('#\\/t4ca').should('have.text', '0')
+    cy.get(cesc('#\\/m1sr') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/m2sr') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/m3sr') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/m4sr') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/m5sr') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/m6sr') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/m7sr') + ' .mjx-mrow').eq(0).should('have.text', "x")
 
-    cy.get('#\\/mi1ca').should('have.text', '0')
-    cy.get('#\\/mi2ca').should('have.text', '0')
-    cy.get('#\\/mi3ca').should('have.text', '0')
+    cy.get(cesc('#\\/t1sr')).should('have.text', "hello")
+    cy.get(cesc('#\\/t2sr')).should('have.text', "hello")
+    cy.get(cesc('#\\/t3sr')).should('have.text', "hello")
+    cy.get(cesc('#\\/t4sr')).should('have.text', "hello")
 
-    cy.get('#\\/oi1ca').should('have.text', '0')
-    cy.get('#\\/oi2ca').should('have.text', '0')
-    cy.get('#\\/oi3ca').should('have.text', '0')
+    cy.get(cesc('#\\/mi1sr1') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/mi1sr2') + ' .mjx-mrow').eq(0).should('have.text', "y")
+    cy.get(cesc('#\\/mi2sr1')).should('have.text', "hello")
+    cy.get(cesc('#\\/mi2sr2')).should('have.text', "bye")
+    cy.get(cesc('#\\/mi3sr1') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/mi3sr2')).should('have.text', "bye")
+
+    cy.get(cesc('#\\/oi1sr1') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/oi1sr2') + ' .mjx-mrow').eq(0).should('have.text', "y")
+    cy.get(cesc('#\\/oi2sr1')).should('have.text', "hello")
+    cy.get(cesc('#\\/oi2sr2')).should('have.text', "bye")
+    cy.get(cesc('#\\/oi3sr1') + ' .mjx-mrow').eq(0).should('have.text', "x")
+    cy.get(cesc('#\\/oi3sr2')).should('have.text', "bye")
+
+
+    cy.get(cesc('#\\/m1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m3ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m4ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m5ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m6ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m7ca')).should('have.text', '0')
+
+    cy.get(cesc('#\\/t1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/t2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/t3ca')).should('have.text', '0')
+    cy.get(cesc('#\\/t4ca')).should('have.text', '0')
+
+    cy.get(cesc('#\\/mi1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/mi2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/mi3ca')).should('have.text', '0')
+
+    cy.get(cesc('#\\/oi1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/oi2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/oi3ca')).should('have.text', '0')
 
 
     cy.log("revise answers and submit")
 
-    cy.get('#\\/m1 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/m2 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/m3 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/m4 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/m5 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/m6 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/m7 textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/m1') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/m2') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/m3') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/m4') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/m5') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/m6') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/m7') + ' textarea').type("{end}y{enter}", { force: true })
 
-    cy.get('#\\/t1 input').type(" there{enter}")
-    cy.get('#\\/t2 input').type(" there{enter}")
-    cy.get('#\\/t3 input').type(" there{enter}")
-    cy.get('#\\/t4 input').type(" there{enter}")
-
-
-    cy.get('#\\/mi1 textarea').eq(0).type("{end}z{enter}", { force: true })
-    cy.get('#\\/mi1_submit').click();
-    cy.get('#\\/mi1 textarea').eq(1).type("{end}z{enter}", { force: true })
-    cy.get('#\\/mi1_submit').click();
-    cy.get('#\\/mi2 input').eq(0).type(" there{enter}")
-    cy.get('#\\/mi2_submit').click();
-    cy.get('#\\/mi2 input').eq(1).type(" now{enter}")
-    cy.get('#\\/mi2_submit').click();
-    cy.get('#\\/mi3 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/mi3_submit').click();
-    cy.get('#\\/mi3 input').type(" now{enter}")
-    cy.get('#\\/mi3_submit').click();
+    cy.get(cesc('#\\/t1') + ' input').type(" there{enter}")
+    cy.get(cesc('#\\/t2') + ' input').type(" there{enter}")
+    cy.get(cesc('#\\/t3') + ' input').type(" there{enter}")
+    cy.get(cesc('#\\/t4') + ' input').type(" there{enter}")
 
 
-
-    cy.get('#\\/oi1i1 textarea').type("{end}z{enter}", { force: true })
-    cy.get('#\\/oi1_submit').click();
-    cy.get('#\\/oi1i2 textarea').type("{end}z{enter}", { force: true })
-    cy.get('#\\/oi1_submit').click();
-    cy.get('#\\/oi2i1 input').type(" there{enter}")
-    cy.get('#\\/oi2_submit').click();
-    cy.get('#\\/oi2i2 input').type(" now{enter}")
-    cy.get('#\\/oi2_submit').click();
-    cy.get('#\\/oi3i1 textarea').type("{end}y{enter}", { force: true })
-    cy.get('#\\/oi3_submit').click();
-    cy.get('#\\/oi3i2 input').type(" now{enter}")
-    cy.get('#\\/oi3_submit').click();
-
-
-    cy.get('#\\/oi3sr2').should('have.text', 'bye now')
-
-    cy.get('#\\/m1sr .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/m2sr .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/m3sr .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/m4sr .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/m5sr .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/m6sr .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/m7sr .mjx-mrow').eq(0).should('have.text', "xy")
-
-    cy.get('#\\/t1sr').should('have.text', "hello there")
-    cy.get('#\\/t2sr').should('have.text', "hello there")
-    cy.get('#\\/t3sr').should('have.text', "hello there")
-    cy.get('#\\/t4sr').should('have.text', "hello there")
-
-    cy.get('#\\/mi1sr1 .mjx-mrow').eq(0).should('have.text', "xz")
-    cy.get('#\\/mi1sr2 .mjx-mrow').eq(0).should('have.text', "yz")
-    cy.get('#\\/mi2sr1').should('have.text', "hello there")
-    cy.get('#\\/mi2sr2').should('have.text', "bye now")
-    cy.get('#\\/mi3sr1 .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/mi3sr2').should('have.text', "bye now")
-
-    cy.get('#\\/oi1sr1 .mjx-mrow').eq(0).should('have.text', "xz")
-    cy.get('#\\/oi1sr2 .mjx-mrow').eq(0).should('have.text', "yz")
-    cy.get('#\\/oi2sr1').should('have.text', "hello there")
-    cy.get('#\\/oi2sr2').should('have.text', "bye now")
-    cy.get('#\\/oi3sr1 .mjx-mrow').eq(0).should('have.text', "xy")
-    cy.get('#\\/oi3sr2').should('have.text', "bye now")
+    cy.get(cesc('#\\/mi1') + ' textarea').eq(0).type("{end}z{enter}", { force: true })
+    cy.get(cesc('#\\/mi1_submit')).click();
+    cy.get(cesc('#\\/mi1') + ' textarea').eq(1).type("{end}z{enter}", { force: true })
+    cy.get(cesc('#\\/mi1_submit')).click();
+    cy.get(cesc('#\\/mi2') + ' input').eq(0).type(" there{enter}")
+    cy.get(cesc('#\\/mi2_submit')).click();
+    cy.get(cesc('#\\/mi2') + ' input').eq(1).type(" now{enter}")
+    cy.get(cesc('#\\/mi2_submit')).click();
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/mi3_submit')).click();
+    cy.get(cesc('#\\/mi3') + ' input').type(" now{enter}")
+    cy.get(cesc('#\\/mi3_submit')).click();
 
 
-    cy.get('#\\/m1ca').should('have.text', '0')
-    cy.get('#\\/m2ca').should('have.text', '0')
-    cy.get('#\\/m3ca').should('have.text', '0')
-    cy.get('#\\/m4ca').should('have.text', '0')
-    cy.get('#\\/m5ca').should('have.text', '0')
-    cy.get('#\\/m6ca').should('have.text', '0')
-    cy.get('#\\/m7ca').should('have.text', '0')
 
-    cy.get('#\\/t1ca').should('have.text', '0')
-    cy.get('#\\/t2ca').should('have.text', '0')
-    cy.get('#\\/t3ca').should('have.text', '0')
-    cy.get('#\\/t4ca').should('have.text', '0')
+    cy.get(cesc('#\\/oi1i1') + ' textarea').type("{end}z{enter}", { force: true })
+    cy.get(cesc('#\\/oi1_submit')).click();
+    cy.get(cesc('#\\/oi1i2') + ' textarea').type("{end}z{enter}", { force: true })
+    cy.get(cesc('#\\/oi1_submit')).click();
+    cy.get(cesc('#\\/oi2i1') + ' input').type(" there{enter}")
+    cy.get(cesc('#\\/oi2_submit')).click();
+    cy.get(cesc('#\\/oi2i2') + ' input').type(" now{enter}")
+    cy.get(cesc('#\\/oi2_submit')).click();
+    cy.get(cesc('#\\/oi3i1') + ' textarea').type("{end}y{enter}", { force: true })
+    cy.get(cesc('#\\/oi3_submit')).click();
+    cy.get(cesc('#\\/oi3i2') + ' input').type(" now{enter}")
+    cy.get(cesc('#\\/oi3_submit')).click();
 
-    cy.get('#\\/mi1ca').should('have.text', '0')
-    cy.get('#\\/mi2ca').should('have.text', '0')
-    cy.get('#\\/mi3ca').should('have.text', '0')
 
-    cy.get('#\\/oi1ca').should('have.text', '0')
-    cy.get('#\\/oi2ca').should('have.text', '0')
-    cy.get('#\\/oi3ca').should('have.text', '0')
+    cy.get(cesc('#\\/oi3sr2')).should('have.text', 'bye now')
+
+    cy.get(cesc('#\\/m1sr') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/m2sr') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/m3sr') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/m4sr') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/m5sr') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/m6sr') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/m7sr') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+
+    cy.get(cesc('#\\/t1sr')).should('have.text', "hello there")
+    cy.get(cesc('#\\/t2sr')).should('have.text', "hello there")
+    cy.get(cesc('#\\/t3sr')).should('have.text', "hello there")
+    cy.get(cesc('#\\/t4sr')).should('have.text', "hello there")
+
+    cy.get(cesc('#\\/mi1sr1') + ' .mjx-mrow').eq(0).should('have.text', "xz")
+    cy.get(cesc('#\\/mi1sr2') + ' .mjx-mrow').eq(0).should('have.text', "yz")
+    cy.get(cesc('#\\/mi2sr1')).should('have.text', "hello there")
+    cy.get(cesc('#\\/mi2sr2')).should('have.text', "bye now")
+    cy.get(cesc('#\\/mi3sr1') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/mi3sr2')).should('have.text', "bye now")
+
+    cy.get(cesc('#\\/oi1sr1') + ' .mjx-mrow').eq(0).should('have.text', "xz")
+    cy.get(cesc('#\\/oi1sr2') + ' .mjx-mrow').eq(0).should('have.text', "yz")
+    cy.get(cesc('#\\/oi2sr1')).should('have.text', "hello there")
+    cy.get(cesc('#\\/oi2sr2')).should('have.text', "bye now")
+    cy.get(cesc('#\\/oi3sr1') + ' .mjx-mrow').eq(0).should('have.text', "xy")
+    cy.get(cesc('#\\/oi3sr2')).should('have.text', "bye now")
+
+
+    cy.get(cesc('#\\/m1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m3ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m4ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m5ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m6ca')).should('have.text', '0')
+    cy.get(cesc('#\\/m7ca')).should('have.text', '0')
+
+    cy.get(cesc('#\\/t1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/t2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/t3ca')).should('have.text', '0')
+    cy.get(cesc('#\\/t4ca')).should('have.text', '0')
+
+    cy.get(cesc('#\\/mi1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/mi2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/mi3ca')).should('have.text', '0')
+
+    cy.get(cesc('#\\/oi1ca')).should('have.text', '0')
+    cy.get(cesc('#\\/oi2ca')).should('have.text', '0')
+    cy.get(cesc('#\\/oi3ca')).should('have.text', '0')
   });
 
 })

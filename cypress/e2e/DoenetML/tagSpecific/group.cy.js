@@ -1,3 +1,6 @@
+import { cesc } from '../../../../src/_utils/url';
+
+
 describe('Group Tag Tests', function () {
 
   beforeEach(() => {
@@ -31,55 +34,55 @@ describe('Group Tag Tests', function () {
 
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let animal = "fox";
     let plant = "tree";
     let animalSentence = "The animal is a " + animal + ".";
     let plantSentence = "The plant is a " + plant + ".";
-    cy.get('#\\/animalp').should('have.text', animalSentence)
-    cy.get('#\\/plantp').should('have.text', plantSentence)
-    cy.get('#\\/animalp2').should('have.text', animalSentence)
-    cy.get('#\\/plantp2').should('have.text', plantSentence)
-    cy.get('#\\/plantp3').should('have.text', plantSentence)
-    cy.get('#\\/plantp4').should('have.text', plantSentence)
-    cy.get('#\\/animalp3').should('have.text', animalSentence)
-    cy.get('#\\/plantp5').should('have.text', plantSentence)
-    cy.get('#\\/plantp6').should('have.text', plantSentence)
-    cy.get('#\\/animalp4').should('have.text', animalSentence)
-    cy.get('#\\/plantp7').should('have.text', plantSentence)
-    cy.get('#\\/animalp5').should('have.text', animalSentence)
-    cy.get('#\\/plantp8').should('have.text', plantSentence)
-    cy.get('#\\/plantp9').should('have.text', plantSentence)
-    cy.get('#\\/plantp10').should('have.text', plantSentence)
-    cy.get('#\\/animalp6').should('have.text', animalSentence)
-    cy.get('#\\/plantp11').should('have.text', plantSentence)
-    cy.get('#\\/plantp12').should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp2')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp2')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp3')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp4')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp3')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp5')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp6')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp4')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp7')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp5')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp8')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp9')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp10')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp6')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp11')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp12')).should('have.text', plantSentence)
 
-    cy.get('#\\/animal_input').clear().type('beetle{enter}');
-    cy.get('#\\/plant_input').clear().type('dandelion{enter}');
+    cy.get(cesc('#\\/animal_input')).clear().type('beetle{enter}');
+    cy.get(cesc('#\\/plant_input')).clear().type('dandelion{enter}');
     let animal2 = "beetle";
     let plant2 = "dandelion";
     let animalSentence2 = "The animal is a " + animal2 + ".";
     let plantSentence2 = "The plant is a " + plant2 + ".";
-    cy.get('#\\/animalp').should('have.text', animalSentence2)
-    cy.get('#\\/plantp').should('have.text', plantSentence2)
-    cy.get('#\\/animalp2').should('have.text', animalSentence2)
-    cy.get('#\\/plantp2').should('have.text', plantSentence2)
-    cy.get('#\\/plantp3').should('have.text', plantSentence2)
-    cy.get('#\\/plantp4').should('have.text', plantSentence2)
-    cy.get('#\\/animalp3').should('have.text', animalSentence2)
-    cy.get('#\\/plantp5').should('have.text', plantSentence2)
-    cy.get('#\\/plantp6').should('have.text', plantSentence2)
-    cy.get('#\\/animalp4').should('have.text', animalSentence2)
-    cy.get('#\\/plantp7').should('have.text', plantSentence2)
-    cy.get('#\\/animalp5').should('have.text', animalSentence2)
-    cy.get('#\\/plantp8').should('have.text', plantSentence2)
-    cy.get('#\\/plantp9').should('have.text', plantSentence2)
-    cy.get('#\\/plantp10').should('have.text', plantSentence2)
-    cy.get('#\\/animalp6').should('have.text', animalSentence2)
-    cy.get('#\\/plantp11').should('have.text', plantSentence2)
-    cy.get('#\\/plantp12').should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp2')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp2')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp3')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp4')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp3')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp5')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp6')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp4')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp7')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp5')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp8')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp9')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp10')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp6')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp11')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp12')).should('have.text', plantSentence2)
 
 
   })
@@ -127,49 +130,49 @@ describe('Group Tag Tests', function () {
     let plant = "tree";
     let animalSentence = "The animal is a " + animal + ".";
     let plantSentence = "The plant is a " + plant + ".";
-    cy.get('#\\/animalp').should('have.text', animalSentence)
-    cy.get('#\\/plantp').should('have.text', plantSentence)
-    cy.get('#\\/animalp2').should('have.text', animalSentence)
-    cy.get('#\\/plantp2').should('have.text', plantSentence)
-    cy.get('#\\/plantp3').should('have.text', plantSentence)
-    cy.get('#\\/plantp4').should('have.text', plantSentence)
-    cy.get('#\\/animalp3').should('have.text', animalSentence)
-    cy.get('#\\/plantp5').should('have.text', plantSentence)
-    cy.get('#\\/plantp6').should('have.text', plantSentence)
-    cy.get('#\\/animalp4').should('have.text', animalSentence)
-    cy.get('#\\/plantp7').should('have.text', plantSentence)
-    cy.get('#\\/animalp5').should('have.text', animalSentence)
-    cy.get('#\\/plantp8').should('have.text', plantSentence)
-    cy.get('#\\/plantp9').should('have.text', plantSentence)
-    cy.get('#\\/plantp10').should('have.text', plantSentence)
-    cy.get('#\\/animalp6').should('have.text', animalSentence)
-    cy.get('#\\/plantp11').should('have.text', plantSentence)
-    cy.get('#\\/plantp12').should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp2')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp2')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp3')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp4')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp3')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp5')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp6')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp4')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp7')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp5')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp8')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp9')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp10')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/animalp6')).should('have.text', animalSentence)
+    cy.get(cesc('#\\/plantp11')).should('have.text', plantSentence)
+    cy.get(cesc('#\\/plantp12')).should('have.text', plantSentence)
 
-    cy.get('#\\/animal_input').clear().type('beetle{enter}');
-    cy.get('#\\/plant_input').clear().type('dandelion{enter}');
+    cy.get(cesc('#\\/animal_input')).clear().type('beetle{enter}');
+    cy.get(cesc('#\\/plant_input')).clear().type('dandelion{enter}');
     let animal2 = "beetle";
     let plant2 = "dandelion";
     let animalSentence2 = "The animal is a " + animal2 + ".";
     let plantSentence2 = "The plant is a " + plant2 + ".";
-    cy.get('#\\/animalp').should('have.text', animalSentence2)
-    cy.get('#\\/plantp').should('have.text', plantSentence2)
-    cy.get('#\\/animalp2').should('have.text', animalSentence2)
-    cy.get('#\\/plantp2').should('have.text', plantSentence2)
-    cy.get('#\\/plantp3').should('have.text', plantSentence2)
-    cy.get('#\\/plantp4').should('have.text', plantSentence2)
-    cy.get('#\\/animalp3').should('have.text', animalSentence2)
-    cy.get('#\\/plantp5').should('have.text', plantSentence2)
-    cy.get('#\\/plantp6').should('have.text', plantSentence2)
-    cy.get('#\\/animalp4').should('have.text', animalSentence2)
-    cy.get('#\\/plantp7').should('have.text', plantSentence2)
-    cy.get('#\\/animalp5').should('have.text', animalSentence2)
-    cy.get('#\\/plantp8').should('have.text', plantSentence2)
-    cy.get('#\\/plantp9').should('have.text', plantSentence2)
-    cy.get('#\\/plantp10').should('have.text', plantSentence2)
-    cy.get('#\\/animalp6').should('have.text', animalSentence2)
-    cy.get('#\\/plantp11').should('have.text', plantSentence2)
-    cy.get('#\\/plantp12').should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp2')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp2')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp3')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp4')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp3')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp5')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp6')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp4')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp7')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp5')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp8')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp9')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp10')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/animalp6')).should('have.text', animalSentence2)
+    cy.get(cesc('#\\/plantp11')).should('have.text', plantSentence2)
+    cy.get(cesc('#\\/plantp12')).should('have.text', plantSentence2)
 
   })
 
@@ -204,87 +207,87 @@ describe('Group Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('At beginning, nothing shown')
     for (let i = 1; i <= 6; i++) {
-      cy.get(`#\\/p${i}`).should('have.text', '')
+      cy.get(cesc(`#\\/p${i}`)).should('have.text', '')
     }
 
     cy.log('make sequence length 1');
-    cy.get('#\\/count textarea').type('{end}{backspace}1{enter}', { force: true });
-    cy.get('#\\/count2').should('contain.text', '1');
+    cy.get(cesc('#\\/count') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#\\/count2')).should('contain.text', '1');
 
     for (let i = 1; i <= 6; i++) {
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(1).should('not.exist')
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(1).should('not.exist')
     }
 
 
     cy.log('make sequence length 0 again');
-    cy.get('#\\/count textarea').type('{end}{backspace}0{enter}', { force: true });
-    cy.get('#\\/count2').should('contain.text', '0');
+    cy.get(cesc('#\\/count') + ' textarea').type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#\\/count2')).should('contain.text', '0');
     for (let i = 1; i <= 6; i++) {
-      cy.get(`#\\/p${i}`).should('have.text', '')
+      cy.get(cesc(`#\\/p${i}`)).should('have.text', '')
     }
 
 
     cy.log('make sequence length 2');
-    cy.get('#\\/count textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get('#\\/count2').should('contain.text', '2');
+    cy.get(cesc('#\\/count') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/count2')).should('contain.text', '2');
 
     for (let i = 1; i <= 6; i++) {
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('4');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(2).should('not.exist')
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(2).should('not.exist')
     }
 
 
     cy.log('change limits');
-    cy.get('#\\/from textarea').type('{end}{backspace}3{enter}', { force: true });
-    cy.get('#\\/to textarea').type('{end}{backspace}5{enter}', { force: true });
-    cy.get('#\\/to2').should('contain.text', '5');
+    cy.get(cesc('#\\/from') + ' textarea').type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#\\/to') + ' textarea').type('{end}{backspace}5{enter}', { force: true });
+    cy.get(cesc('#\\/to2')).should('contain.text', '5');
 
     for (let i = 1; i <= 6; i++) {
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('25');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(2).should('not.exist')
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(2).should('not.exist')
     }
 
 
     cy.log('make sequence length 0 once again');
-    cy.get('#\\/count textarea').type('{end}{backspace}0{enter}', { force: true });
-    cy.get('#\\/count2').should('contain.text', '0');
+    cy.get(cesc('#\\/count') + ' textarea').type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#\\/count2')).should('contain.text', '0');
     for (let i = 1; i <= 6; i++) {
-      cy.get(`#\\/p${i}`).should('have.text', '')
+      cy.get(cesc(`#\\/p${i}`)).should('have.text', '')
     }
 
     cy.log('make sequence length 3');
-    cy.get('#\\/count textarea').type('{end}{backspace}3{enter}', { force: true });
-    cy.get('#\\/count2').should('contain.text', '3');
+    cy.get(cesc('#\\/count') + ' textarea').type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#\\/count2')).should('contain.text', '3');
 
 
     for (let i = 1; i <= 6; i++) {
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('16');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('25');
       });
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(3).should('not.exist')
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(3).should('not.exist')
     }
 
   });
@@ -320,29 +323,29 @@ describe('Group Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     for (let i = 1; i <= 9; i++) {
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       })
 
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       })
     }
 
     cy.log('change variables');
-    cy.get('#\\/var1 textarea').type('{end}{backspace}u{enter}', { force: true });
-    cy.get('#\\/var2 textarea').type('{end}{backspace}v{enter}', { force: true });
-    cy.get('#\\/var2b').should('contain.text', 'v')
+    cy.get(cesc('#\\/var1') + ' textarea').type('{end}{backspace}u{enter}', { force: true });
+    cy.get(cesc('#\\/var2') + ' textarea').type('{end}{backspace}v{enter}', { force: true });
+    cy.get(cesc('#\\/var2b')).should('contain.text', 'v')
 
     for (let i = 1; i <= 9; i++) {
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('u+v')
       })
 
-      cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+      cy.get(cesc(`#\\/p${i}`)).find('.mjx-mrow').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('u+v')
       })
     }
@@ -375,7 +378,7 @@ describe('Group Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Initial values')
     cy.window().then(async (win) => {
@@ -476,14 +479,14 @@ describe('Group Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Initial values')
 
-    cy.get('#\\/g\\/ti_input').should('not.be.disabled')
-    cy.get('#\\/g2\\/ti_input').should('be.disabled')
-    cy.get('#\\/g3\\/ti_input').should('not.be.disabled')
-    cy.get('#\\/g4\\/ti_input').should('not.be.disabled')
+    cy.get(cesc('#\\/g\\/ti_input')).should('not.be.disabled')
+    cy.get(cesc('#\\/g2\\/ti_input')).should('be.disabled')
+    cy.get(cesc('#\\/g3\\/ti_input')).should('not.be.disabled')
+    cy.get(cesc('#\\/g4\\/ti_input')).should('not.be.disabled')
 
 
     cy.window().then(async (win) => {
@@ -503,8 +506,8 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log('type in first textinput')
-    cy.get('#\\/g\\/ti_input').clear().type("bye{enter}")
-    cy.get('#\\/g\\/t').should('contain.text', 'bye')
+    cy.get(cesc('#\\/g\\/ti_input')).clear().type("bye{enter}")
+    cy.get(cesc('#\\/g\\/t')).should('contain.text', 'bye')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -515,8 +518,8 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log('type in third textinput')
-    cy.get('#\\/g3\\/ti_input').clear().type("this{enter}")
-    cy.get('#\\/g3\\/t').should('contain.text', 'this')
+    cy.get(cesc('#\\/g3\\/ti_input')).clear().type("this{enter}")
+    cy.get(cesc('#\\/g3\\/t')).should('contain.text', 'this')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g/ti'].stateValues.value).eq("this")
@@ -527,8 +530,8 @@ describe('Group Tag Tests', function () {
 
 
     cy.log('type in fourth textinput')
-    cy.get('#\\/g4\\/ti_input').clear().type("that{enter}")
-    cy.get('#\\/g4\\/t').should('contain.text', 'that')
+    cy.get(cesc('#\\/g4\\/ti_input')).clear().type("that{enter}")
+    cy.get(cesc('#\\/g4\\/t')).should('contain.text', 'that')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g/ti'].stateValues.value).eq("this")

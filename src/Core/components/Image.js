@@ -11,6 +11,8 @@ export default class Image extends BlockComponent {
     Object.assign(this.actions, {
       moveImage: this.moveImage.bind(this),
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
+      imageClicked: this.imageClicked.bind(this),
+      imageFocused: this.imageFocused.bind(this),
     });
 
   }
@@ -443,6 +445,34 @@ export default class Image extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
+  }
+
+  async imageClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async imageFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
   }
 
 }

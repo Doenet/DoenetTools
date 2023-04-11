@@ -103,29 +103,29 @@ describe('visibility events test', function () {
     cy.wait(1000);
     cy.tick(1000);
 
-    cy.get("#\\/_title1").should('be.visible');
+    cy.get(cesc("#\\/_title1")).should('be.visible');
 
 
     cy.log("scroll to section 2 after 10 seconds")
     cy.wait(1000);
     cy.tick(10 * 1000);
-    cy.get("#\\/section2").scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/section2")).scrollIntoView().should('be.visible');
 
     cy.log('scroll to graph after 60 seconds')
     cy.wait(1000);
     cy.tick(60 * 1000);
-    cy.get("#\\/g").scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/g")).scrollIntoView().should('be.visible');
 
 
     cy.log('scroll to subsection 12 after 10 minutes')
     cy.wait(1000);
     cy.tick(10 * 60 * 1000);
-    cy.get("#\\/g").scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/g")).scrollIntoView().should('be.visible');
 
     cy.log('scroll to bottom after 30 seconds')
     cy.wait(1000);
     cy.tick(30 * 1000);
-    cy.get("#\\/pend").scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/pend")).scrollIntoView().should('be.visible');
 
     cy.log('wait 5 minutes')
     cy.wait(1000);

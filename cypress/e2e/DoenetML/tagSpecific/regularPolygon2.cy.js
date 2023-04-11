@@ -1,3 +1,4 @@
+import { cesc } from '../../../../src/_utils/url';
 
 describe('Regular Polygon Tag Tests', function () {
 
@@ -402,10 +403,10 @@ describe('Regular Polygon Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'false')
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -427,14 +428,14 @@ describe('Regular Polygon Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -458,14 +459,14 @@ describe('Regular Polygon Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'false')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
 
     cy.window().then(async (win) => {
@@ -477,8 +478,8 @@ describe('Regular Polygon Tag Tests', function () {
 
     cy.log('only vertices draggable')
 
-    cy.get('#\\/verticesDraggable').click()
-    cy.get('#\\/vd2').should('have.text', 'true')
+    cy.get(cesc('#\\/verticesDraggable')).click()
+    cy.get(cesc('#\\/vd2')).should('have.text', 'true')
 
 
     cy.log('can move single vertex')
@@ -494,12 +495,12 @@ describe('Regular Polygon Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(4,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(4,7)')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(4,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -523,14 +524,14 @@ describe('Regular Polygon Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(4,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -543,8 +544,8 @@ describe('Regular Polygon Tag Tests', function () {
 
     cy.log('vertices and polygon draggable')
 
-    cy.get('#\\/draggable').click()
-    cy.get('#\\/d2').should('have.text', 'true')
+    cy.get(cesc('#\\/draggable')).click()
+    cy.get(cesc('#\\/d2')).should('have.text', 'true')
 
 
     cy.log('can move single vertex')
@@ -560,12 +561,12 @@ describe('Regular Polygon Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(−3,2)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(−3,2)')
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(−3,2)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(−3,2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -588,15 +589,15 @@ describe('Regular Polygon Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(3,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(3,8)')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(3,8)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,8)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -607,8 +608,8 @@ describe('Regular Polygon Tag Tests', function () {
 
     cy.log('polygon but not vertices draggable')
 
-    cy.get('#\\/verticesDraggable').click()
-    cy.get('#\\/vd2').should('have.text', 'false')
+    cy.get(cesc('#\\/verticesDraggable')).click()
+    cy.get(cesc('#\\/vd2')).should('have.text', 'false')
 
 
     cy.log('cannot move single vertex')
@@ -624,15 +625,15 @@ describe('Regular Polygon Tag Tests', function () {
     })
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'false')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(3,8)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,8)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -655,15 +656,15 @@ describe('Regular Polygon Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(−4,1)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(−4,1)')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(−4,1)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(−4,5)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(−4,1)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(−4,5)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -722,7 +723,7 @@ function setupScene({ attributes }) {
 }
 
 function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "radius", abbreviated = false }) {
-  cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+  cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
@@ -1073,8 +1074,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
       let circumradius = 1;
 
-      cy.get("#\\/micr textarea").type(`{home}{shift+end}{backspace}${circumradius}{enter}`, { force: true })
-      cy.get("#\\/cr").should('have.text', `${circumradius}`)
+      cy.get(cesc("#\\/micr") + " textarea").type(`{home}{shift+end}{backspace}${circumradius}{enter}`, { force: true })
+      cy.get(cesc("#\\/cr")).should('have.text', `${circumradius}`)
 
       vertex1 = [
         (vertex1[0] - center[0]) * circumradius / oldCr + center[0],
@@ -1107,8 +1108,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
         let radius = 3;
 
-        cy.get("#\\/mir textarea").type(`{home}{shift+end}{backspace}${radius}{enter}`, { force: true })
-        cy.get("#\\/r").should('have.text', `${radius}`)
+        cy.get(cesc("#\\/mir") + " textarea").type(`{home}{shift+end}{backspace}${radius}{enter}`, { force: true })
+        cy.get(cesc("#\\/r")).should('have.text', `${radius}`)
 
         vertex1 = [
           (vertex1[0] - center[0]) * radius / oldR + center[0],
@@ -1139,8 +1140,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
         let inradius = 5;
 
-        cy.get("#\\/miir textarea").type(`{home}{shift+end}{backspace}${inradius}{enter}`, { force: true })
-        cy.get("#\\/ir").should('have.text', `${inradius}`)
+        cy.get(cesc("#\\/miir") + " textarea").type(`{home}{shift+end}{backspace}${inradius}{enter}`, { force: true })
+        cy.get(cesc("#\\/ir")).should('have.text', `${inradius}`)
 
         vertex1 = [
           (vertex1[0] - center[0]) * inradius / oldIr + center[0],
@@ -1171,8 +1172,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
         let apothem = 4;
 
-        cy.get("#\\/miap textarea").type(`{home}{shift+end}{backspace}${apothem}{enter}`, { force: true })
-        cy.get("#\\/ap").should('have.text', `${apothem}`)
+        cy.get(cesc("#\\/miap") + " textarea").type(`{home}{shift+end}{backspace}${apothem}{enter}`, { force: true })
+        cy.get(cesc("#\\/ap")).should('have.text', `${apothem}`)
 
         vertex1 = [
           (vertex1[0] - center[0]) * apothem / oldAp + center[0],
@@ -1203,8 +1204,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
         let sideLength = 2;
 
-        cy.get("#\\/misl textarea").type(`{home}{shift+end}{backspace}${sideLength}{enter}`, { force: true })
-        cy.get("#\\/sl").should('have.text', `${sideLength}`)
+        cy.get(cesc("#\\/misl") + " textarea").type(`{home}{shift+end}{backspace}${sideLength}{enter}`, { force: true })
+        cy.get(cesc("#\\/sl")).should('have.text', `${sideLength}`)
 
         vertex1 = [
           (vertex1[0] - center[0]) * sideLength / oldSl + center[0],
@@ -1235,8 +1236,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
         let perimeter = 9;
 
-        cy.get("#\\/mip textarea").type(`{home}{shift+end}{backspace}${perimeter}{enter}`, { force: true })
-        cy.get("#\\/p").should('have.text', `${perimeter}`)
+        cy.get(cesc("#\\/mip") + " textarea").type(`{home}{shift+end}{backspace}${perimeter}{enter}`, { force: true })
+        cy.get(cesc("#\\/p")).should('have.text', `${perimeter}`)
 
         vertex1 = [
           (vertex1[0] - center[0]) * perimeter / oldSl + center[0],
@@ -1267,8 +1268,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
         let area = 13;
 
-        cy.get("#\\/miar textarea").type(`{home}{shift+end}{backspace}${area}{enter}`, { force: true })
-        cy.get("#\\/ar").should('have.text', `${area}`)
+        cy.get(cesc("#\\/miar") + " textarea").type(`{home}{shift+end}{backspace}${area}{enter}`, { force: true })
+        cy.get(cesc("#\\/ar")).should('have.text', `${area}`)
 
         vertex1 = [
           (vertex1[0] - center[0]) * Math.sqrt(area / oldAr) + center[0],
@@ -1305,8 +1306,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
       nVertices += 2;
 
-      cy.get("#\\/minv textarea").type(`{end}+2{enter}`, { force: true })
-      cy.get("#\\/nv").should('have.text', `${nVertices}`)
+      cy.get(cesc("#\\/minv") + " textarea").type(`{end}+2{enter}`, { force: true })
+      cy.get(cesc("#\\/nv")).should('have.text', `${nVertices}`)
 
 
       inputs.vertexNames = allVertexNames.slice(0, nVertices);
@@ -1341,8 +1342,8 @@ function runTests({ center, vertex1, nVertices, conservedWhenChangeNvertices = "
 
         nVertices -= 1;
 
-        cy.get("#\\/minv textarea").type(`{end}-1{enter}`, { force: true })
-        cy.get("#\\/nv").should('have.text', `${nVertices}`)
+        cy.get(cesc("#\\/minv") + " textarea").type(`{end}-1{enter}`, { force: true })
+        cy.get(cesc("#\\/nv")).should('have.text', `${nVertices}`)
 
 
         inputs.vertexNames = allVertexNames.slice(0, nVertices);

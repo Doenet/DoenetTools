@@ -11,7 +11,7 @@ export default class Vector extends GraphicalComponent {
     Object.assign(this.actions, {
       moveVector: this.moveVector.bind(this),
       vectorClicked: this.vectorClicked.bind(this),
-      mouseDownOnVector: this.mouseDownOnVector.bind(this),
+      vectorFocused: this.vectorFocused.bind(this),
     });
 
   }
@@ -2194,11 +2194,11 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async vectorClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+  async vectorClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -2208,11 +2208,11 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async mouseDownOnVector({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+  async vectorFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

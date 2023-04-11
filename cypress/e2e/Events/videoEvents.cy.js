@@ -66,47 +66,47 @@ describe('video events test', function () {
 
     //Interact with content
 
-    cy.get('#\\/state').contains("stopped")
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/state')).contains("stopped")
+    cy.get(cesc('#\\/play')).click();
 
-    cy.get('#\\/time').contains("5");
-    cy.get('#\\/pause').click();
+    cy.get(cesc('#\\/time')).contains("5");
+    cy.get(cesc('#\\/pause')).click();
 
     cy.log('skip forward while paused')
-    cy.get("#\\/mi textarea").type("{home}{shift+end}{backspace}105{enter}", { force: true });
-    cy.get('#\\/time').contains("105");
+    cy.get(cesc("#\\/mi") + " textarea").type("{home}{shift+end}{backspace}105{enter}", { force: true });
+    cy.get(cesc('#\\/time')).contains("105");
 
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/play')).click();
 
     cy.log('skip forward without pausing')
-    cy.get('#\\/time').contains("107");
-    cy.get('#\\/skip1').click();
+    cy.get(cesc('#\\/time')).contains("107");
+    cy.get(cesc('#\\/skip1')).click();
 
-    cy.get('#\\/time').contains('160');
-    cy.get('#\\/pause').click();
-    cy.get('#\\/state').contains("stopped")
+    cy.get(cesc('#\\/time')).contains('160');
+    cy.get(cesc('#\\/pause')).click();
+    cy.get(cesc('#\\/state')).contains("stopped")
 
     cy.log('skip backward while paused')
-    cy.get("#\\/mi textarea").type("{home}{shift+end}{backspace}141{enter}", { force: true });
-    cy.get('#\\/time').contains("141");
+    cy.get(cesc("#\\/mi") + " textarea").type("{home}{shift+end}{backspace}141{enter}", { force: true });
+    cy.get(cesc('#\\/time')).contains("141");
 
-    cy.get('#\\/play').click();
+    cy.get(cesc('#\\/play')).click();
 
     cy.log('skip backward without pausing')
-    cy.get('#\\/time').contains("143");
-    cy.get('#\\/skip2').click();
+    cy.get(cesc('#\\/time')).contains("143");
+    cy.get(cesc('#\\/skip2')).click();
 
-    cy.get('#\\/time').contains('58');
-    cy.get('#\\/pause').click();
-    cy.get('#\\/state').contains("stopped")
+    cy.get(cesc('#\\/time')).contains('58');
+    cy.get(cesc('#\\/pause')).click();
+    cy.get(cesc('#\\/state')).contains("stopped")
 
     cy.log('play last seconds')
-    cy.get("#\\/mi textarea").type("{home}{shift+end}{backspace}297{enter}", { force: true });
-    cy.get('#\\/time').contains("297");
+    cy.get(cesc("#\\/mi") + " textarea").type("{home}{shift+end}{backspace}297{enter}", { force: true });
+    cy.get(cesc('#\\/time')).contains("297");
 
-    cy.get('#\\/play').click();
-    cy.get('#\\/time').contains("298");
-    cy.get('#\\/state').contains("stopped")
+    cy.get(cesc('#\\/play')).click();
+    cy.get(cesc('#\\/time')).contains("298");
+    cy.get(cesc('#\\/state')).contains("stopped")
 
     cy.wait(1000); //TODO: time travel instead of wait?
     //Test if interactions were recorded

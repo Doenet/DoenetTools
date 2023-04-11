@@ -1,14 +1,6 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
 import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 function nInDOM(n) {
   if (n < 0) {
@@ -69,12 +61,12 @@ describe('Piecewise Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(x)={1if\u00a0x>00otherwise')
-    cy.get('#\\/mef2 .mjx-mrow').eq(0).should('have.text', 'f2(x)={0if\u00a0x≤01otherwise')
-    cy.get('#\\/meg .mjx-mrow').eq(0).should('have.text', 'g(x)={1if\u00a0x≥00otherwise')
-    cy.get('#\\/meg2 .mjx-mrow').eq(0).should('have.text', 'g2(x)={0if\u00a0x<01otherwise')
-    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x=01if\u00a0x>00otherwise')
-    cy.get('#\\/meh2 .mjx-mrow').eq(0).should('have.text', 'h2(x)=⎧⎪⎨⎪⎩1if\u00a0x>00if\u00a0x<012otherwise')
+    cy.get(cesc('#\\/mef') + ' .mjx-mrow').eq(0).should('have.text', 'f(x)={1if\u00a0x>00otherwise')
+    cy.get(cesc('#\\/mef2') + ' .mjx-mrow').eq(0).should('have.text', 'f2(x)={0if\u00a0x≤01otherwise')
+    cy.get(cesc('#\\/meg') + ' .mjx-mrow').eq(0).should('have.text', 'g(x)={1if\u00a0x≥00otherwise')
+    cy.get(cesc('#\\/meg2') + ' .mjx-mrow').eq(0).should('have.text', 'g2(x)={0if\u00a0x<01otherwise')
+    cy.get(cesc('#\\/meh') + ' .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x=01if\u00a0x>00otherwise')
+    cy.get(cesc('#\\/meh2') + ' .mjx-mrow').eq(0).should('have.text', 'h2(x)=⎧⎪⎨⎪⎩1if\u00a0x>00if\u00a0x<012otherwise')
 
     let fs = ["f", "f2"];
     let gs = ["g", "g2"];
@@ -170,12 +162,12 @@ describe('Piecewise Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(x)={1if\u00a0x>00otherwise')
-    cy.get('#\\/mef2 .mjx-mrow').eq(0).should('have.text', 'f2(x)={0if\u00a0x≤01otherwise')
-    cy.get('#\\/meg .mjx-mrow').eq(0).should('have.text', 'g(x)={1if\u00a0x≥00otherwise')
-    cy.get('#\\/meg2 .mjx-mrow').eq(0).should('have.text', 'g2(x)={0if\u00a0x<01otherwise')
-    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x=01if\u00a0x>00otherwise')
-    cy.get('#\\/meh2 .mjx-mrow').eq(0).should('have.text', 'h2(x)=⎧⎪⎨⎪⎩1if\u00a0x>00if\u00a0x<012otherwise')
+    cy.get(cesc('#\\/mef') + ' .mjx-mrow').eq(0).should('have.text', 'f(x)={1if\u00a0x>00otherwise')
+    cy.get(cesc('#\\/mef2') + ' .mjx-mrow').eq(0).should('have.text', 'f2(x)={0if\u00a0x≤01otherwise')
+    cy.get(cesc('#\\/meg') + ' .mjx-mrow').eq(0).should('have.text', 'g(x)={1if\u00a0x≥00otherwise')
+    cy.get(cesc('#\\/meg2') + ' .mjx-mrow').eq(0).should('have.text', 'g2(x)={0if\u00a0x<01otherwise')
+    cy.get(cesc('#\\/meh') + ' .mjx-mrow').eq(0).should('have.text', 'h(x)=⎧⎪⎨⎪⎩12if\u00a0x=01if\u00a0x>00otherwise')
+    cy.get(cesc('#\\/meh2') + ' .mjx-mrow').eq(0).should('have.text', 'h2(x)=⎧⎪⎨⎪⎩1if\u00a0x>00if\u00a0x<012otherwise')
 
     let fs = ["f", "f2"];
     let gs = ["g", "g2"];
@@ -251,10 +243,10 @@ describe('Piecewise Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(t)={tif\u00a0t>02−tif\u00a0t≤0')
-    cy.get('#\\/meg .mjx-mrow').eq(0).should('have.text', 'g(q)={qif\u00a0q>02−qif\u00a0q<0')
-    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(s)={sif\u00a00≤s<102−sif\u00a0−10≤s<0')
-    cy.get('#\\/mek .mjx-mrow').eq(0).should('have.text', 'k(s)={uif\u00a0u>02−uif\u00a0u<0')
+    cy.get(cesc('#\\/mef') + ' .mjx-mrow').eq(0).should('have.text', 'f(t)={tif\u00a0t>02−tif\u00a0t≤0')
+    cy.get(cesc('#\\/meg') + ' .mjx-mrow').eq(0).should('have.text', 'g(q)={qif\u00a0q>02−qif\u00a0q<0')
+    cy.get(cesc('#\\/meh') + ' .mjx-mrow').eq(0).should('have.text', 'h(s)={sif\u00a00≤s<102−sif\u00a0−10≤s<0')
+    cy.get(cesc('#\\/mek') + ' .mjx-mrow').eq(0).should('have.text', 'k(s)={uif\u00a0u>02−uif\u00a0u<0')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -385,12 +377,12 @@ describe('Piecewise Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(x)={x2if\u00a0x>0−x2otherwise')
-    cy.get('#\\/mef2 .mjx-mrow').eq(0).should('have.text', 'f2(x)={x2if\u00a0x≥0−x2otherwise')
-    cy.get('#\\/pfmin .mjx-mrow').should('not.exist')
-    cy.get('#\\/pfmax .mjx-mrow').should('not.exist')
-    cy.get('#\\/pf2min .mjx-mrow').should('not.exist')
-    cy.get('#\\/pf2max .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/mef') + ' .mjx-mrow').eq(0).should('have.text', 'f(x)={x2if\u00a0x>0−x2otherwise')
+    cy.get(cesc('#\\/mef2') + ' .mjx-mrow').eq(0).should('have.text', 'f2(x)={x2if\u00a0x≥0−x2otherwise')
+    cy.get(cesc('#\\/pfmin') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/pfmax') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/pf2min') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/pf2max') + ' .mjx-mrow').should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -402,15 +394,15 @@ describe('Piecewise Function Tag Tests', function () {
 
     })
 
-    cy.get('#\\/meg .mjx-mrow').eq(0).should('have.text', 'g(x)={x2if\u00a0x>0.1−x2otherwise')
-    cy.get('#\\/meg2 .mjx-mrow').eq(0).should('have.text', 'g2(x)={x2if\u00a0x≥0.1−x2otherwise')
-    cy.get('#\\/pgmin .mjx-mrow').eq(0).should('have.text', '(0.1,−0.01)')
-    cy.get('#\\/pgmin .mjx-mrow').eq(2).should('not.exist')
-    cy.get('#\\/pgmax .mjx-mrow').eq(0).should('have.text', '(0,0)')
-    cy.get('#\\/pgmax .mjx-mrow').eq(2).should('not.exist')
-    cy.get('#\\/pg2min .mjx-mrow').should('not.exist')
-    cy.get('#\\/pg2max .mjx-mrow').eq(0).should('have.text', '(0,0)')
-    cy.get('#\\/pg2max .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/meg') + ' .mjx-mrow').eq(0).should('have.text', 'g(x)={x2if\u00a0x>0.1−x2otherwise')
+    cy.get(cesc('#\\/meg2') + ' .mjx-mrow').eq(0).should('have.text', 'g2(x)={x2if\u00a0x≥0.1−x2otherwise')
+    cy.get(cesc('#\\/pgmin') + ' .mjx-mrow').eq(0).should('have.text', '(0.1,−0.01)')
+    cy.get(cesc('#\\/pgmin') + ' .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/pgmax') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pgmax') + ' .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/pg2min') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/pg2max') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pg2max') + ' .mjx-mrow').eq(2).should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -428,15 +420,15 @@ describe('Piecewise Function Tag Tests', function () {
 
     })
 
-    cy.get('#\\/meh .mjx-mrow').eq(0).should('have.text', 'h(x)={x2if\u00a0x>−0.1−x2otherwise')
-    cy.get('#\\/meh2 .mjx-mrow').eq(0).should('have.text', 'h2(x)={x2if\u00a0x≥−0.1−x2otherwise')
-    cy.get('#\\/phmin .mjx-mrow').eq(0).should('have.text', '(0,0)')
-    cy.get('#\\/phmin .mjx-mrow').eq(2).should('not.exist')
-    cy.get('#\\/phmax .mjx-mrow').should('not.exist')
-    cy.get('#\\/ph2min .mjx-mrow').eq(0).should('have.text', '(0,0)')
-    cy.get('#\\/ph2min .mjx-mrow').eq(2).should('not.exist')
-    cy.get('#\\/ph2max .mjx-mrow').eq(0).should('have.text', '(−0.1,0.01)')
-    cy.get('#\\/ph2max .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/meh') + ' .mjx-mrow').eq(0).should('have.text', 'h(x)={x2if\u00a0x>−0.1−x2otherwise')
+    cy.get(cesc('#\\/meh2') + ' .mjx-mrow').eq(0).should('have.text', 'h2(x)={x2if\u00a0x≥−0.1−x2otherwise')
+    cy.get(cesc('#\\/phmin') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/phmin') + ' .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/phmax') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/ph2min') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/ph2min') + ' .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/ph2max') + ' .mjx-mrow').eq(0).should('have.text', '(−0.1,0.01)')
+    cy.get(cesc('#\\/ph2max') + ' .mjx-mrow').eq(2).should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -455,22 +447,22 @@ describe('Piecewise Function Tag Tests', function () {
     })
 
 
-    cy.get('#\\/mek .mjx-mrow').eq(0).should('have.text', 'k(x)=⎧⎪\n⎪⎨⎪\n⎪⎩(x−2)2if\u00a0x>1(x+2)2if\u00a0x<−1cos(πx2)otherwise')
-    cy.get('#\\/mek2 .mjx-mrow').eq(0).should('have.text', 'k2(x)=⎧⎪\n⎪⎨⎪\n⎪⎩(x−2)2if\u00a0x≥1(x+2)2if\u00a0x≤−1cos(πx2)otherwise')
-    cy.get('#\\/pkmin .mjx-mrow').eq(0).should('have.text', '(−2,0)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(2).should('have.text', '(−1,0)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(4).should('have.text', '(1,0)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(6).should('have.text', '(2,0)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(8).should('not.exist')
-    cy.get('#\\/pkmax .mjx-mrow').eq(0).should('have.text', '(0,1)')
-    cy.get('#\\/pkmax .mjx-mrow').eq(2).should('not.exist')
-    cy.get('#\\/pk2min .mjx-mrow').eq(0).should('have.text', '(−2,0)')
-    cy.get('#\\/pk2min .mjx-mrow').eq(2).should('have.text', '(2,0)')
-    cy.get('#\\/pk2min .mjx-mrow').eq(4).should('not.exist')
-    cy.get('#\\/pk2max .mjx-mrow').eq(0).should('have.text', '(−1,1)')
-    cy.get('#\\/pk2max .mjx-mrow').eq(2).should('have.text', '(0,1)')
-    cy.get('#\\/pk2max .mjx-mrow').eq(4).should('have.text', '(1,1)')
-    cy.get('#\\/pk2max .mjx-mrow').eq(6).should('not.exist')
+    cy.get(cesc('#\\/mek') + ' .mjx-mrow').eq(0).should('have.text', 'k(x)=⎧⎪\n⎪⎨⎪\n⎪⎩(x−2)2if\u00a0x>1(x+2)2if\u00a0x<−1cos(πx2)otherwise')
+    cy.get(cesc('#\\/mek2') + ' .mjx-mrow').eq(0).should('have.text', 'k2(x)=⎧⎪\n⎪⎨⎪\n⎪⎩(x−2)2if\u00a0x≥1(x+2)2if\u00a0x≤−1cos(πx2)otherwise')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(0).should('have.text', '(−2,0)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(2).should('have.text', '(−1,0)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(4).should('have.text', '(1,0)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(6).should('have.text', '(2,0)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(8).should('not.exist')
+    cy.get(cesc('#\\/pkmax') + ' .mjx-mrow').eq(0).should('have.text', '(0,1)')
+    cy.get(cesc('#\\/pkmax') + ' .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/pk2min') + ' .mjx-mrow').eq(0).should('have.text', '(−2,0)')
+    cy.get(cesc('#\\/pk2min') + ' .mjx-mrow').eq(2).should('have.text', '(2,0)')
+    cy.get(cesc('#\\/pk2min') + ' .mjx-mrow').eq(4).should('not.exist')
+    cy.get(cesc('#\\/pk2max') + ' .mjx-mrow').eq(0).should('have.text', '(−1,1)')
+    cy.get(cesc('#\\/pk2max') + ' .mjx-mrow').eq(2).should('have.text', '(0,1)')
+    cy.get(cesc('#\\/pk2max') + ' .mjx-mrow').eq(4).should('have.text', '(1,1)')
+    cy.get(cesc('#\\/pk2max') + ' .mjx-mrow').eq(6).should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -592,12 +584,12 @@ describe('Piecewise Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/pfmin .mjx-mrow').eq(0).should('have.text', '(0,0)')
-    cy.get('#\\/pfmin .mjx-mrow').eq(2).should('not.exist')
-    cy.get('#\\/pfmax .mjx-mrow').should('not.exist')
-    cy.get('#\\/pf2min .mjx-mrow').eq(0).should('have.text', '(0,0)')
-    cy.get('#\\/pf2min .mjx-mrow').eq(2).should('not.exist')
-    cy.get('#\\/pf2max .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/pfmin') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pfmin') + ' .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/pfmax') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/pf2min') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pf2min') + ' .mjx-mrow').eq(2).should('not.exist')
+    cy.get(cesc('#\\/pf2max') + ' .mjx-mrow').should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -609,18 +601,18 @@ describe('Piecewise Function Tag Tests', function () {
 
     })
 
-    cy.get('#\\/pgmin .mjx-mrow').eq(0).should('have.text', '(−2,1)')
-    cy.get('#\\/pgmin .mjx-mrow').eq(2).should('have.text', '(0,0)')
-    cy.get('#\\/pgmin .mjx-mrow').eq(4).should('have.text', '(2,1)')
-    cy.get('#\\/pgmin .mjx-mrow').eq(6).should('not.exist')
-    cy.get('#\\/pgmax .mjx-mrow').eq(0).should('have.text', '(−1,2)')
-    cy.get('#\\/pgmax .mjx-mrow').eq(2).should('have.text', '(1,2)')
-    cy.get('#\\/pgmax .mjx-mrow').eq(4).should('not.exist')
-    cy.get('#\\/pg2min .mjx-mrow').eq(0).should('have.text', '(−2,1)')
-    cy.get('#\\/pg2min .mjx-mrow').eq(2).should('have.text', '(0,0)')
-    cy.get('#\\/pg2min .mjx-mrow').eq(4).should('have.text', '(2,1)')
-    cy.get('#\\/pg2min .mjx-mrow').eq(6).should('not.exist')
-    cy.get('#\\/pg2max .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/pgmin') + ' .mjx-mrow').eq(0).should('have.text', '(−2,1)')
+    cy.get(cesc('#\\/pgmin') + ' .mjx-mrow').eq(2).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pgmin') + ' .mjx-mrow').eq(4).should('have.text', '(2,1)')
+    cy.get(cesc('#\\/pgmin') + ' .mjx-mrow').eq(6).should('not.exist')
+    cy.get(cesc('#\\/pgmax') + ' .mjx-mrow').eq(0).should('have.text', '(−1,2)')
+    cy.get(cesc('#\\/pgmax') + ' .mjx-mrow').eq(2).should('have.text', '(1,2)')
+    cy.get(cesc('#\\/pgmax') + ' .mjx-mrow').eq(4).should('not.exist')
+    cy.get(cesc('#\\/pg2min') + ' .mjx-mrow').eq(0).should('have.text', '(−2,1)')
+    cy.get(cesc('#\\/pg2min') + ' .mjx-mrow').eq(2).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pg2min') + ' .mjx-mrow').eq(4).should('have.text', '(2,1)')
+    cy.get(cesc('#\\/pg2min') + ' .mjx-mrow').eq(6).should('not.exist')
+    cy.get(cesc('#\\/pg2max') + ' .mjx-mrow').should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -648,18 +640,18 @@ describe('Piecewise Function Tag Tests', function () {
 
     })
 
-    cy.get('#\\/phmin .mjx-mrow').eq(0).should('have.text', '(−2,−4)')
-    cy.get('#\\/phmin .mjx-mrow').eq(2).should('have.text', '(0,0)')
-    cy.get('#\\/phmin .mjx-mrow').eq(4).should('have.text', '(2,−4)')
-    cy.get('#\\/phmin .mjx-mrow').eq(6).should('not.exist')
-    cy.get('#\\/phmax .mjx-mrow').should('not.exist')
-    cy.get('#\\/ph2min .mjx-mrow').eq(0).should('have.text', '(−2,−4)')
-    cy.get('#\\/ph2min .mjx-mrow').eq(2).should('have.text', '(0,0)')
-    cy.get('#\\/ph2min .mjx-mrow').eq(4).should('have.text', '(2,−4)')
-    cy.get('#\\/ph2min .mjx-mrow').eq(6).should('not.exist')
-    cy.get('#\\/ph2max .mjx-mrow').eq(0).should('have.text', '(−1,1)')
-    cy.get('#\\/ph2max .mjx-mrow').eq(2).should('have.text', '(1,1)')
-    cy.get('#\\/ph2max .mjx-mrow').eq(4).should('not.exist')
+    cy.get(cesc('#\\/phmin') + ' .mjx-mrow').eq(0).should('have.text', '(−2,−4)')
+    cy.get(cesc('#\\/phmin') + ' .mjx-mrow').eq(2).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/phmin') + ' .mjx-mrow').eq(4).should('have.text', '(2,−4)')
+    cy.get(cesc('#\\/phmin') + ' .mjx-mrow').eq(6).should('not.exist')
+    cy.get(cesc('#\\/phmax') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/ph2min') + ' .mjx-mrow').eq(0).should('have.text', '(−2,−4)')
+    cy.get(cesc('#\\/ph2min') + ' .mjx-mrow').eq(2).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/ph2min') + ' .mjx-mrow').eq(4).should('have.text', '(2,−4)')
+    cy.get(cesc('#\\/ph2min') + ' .mjx-mrow').eq(6).should('not.exist')
+    cy.get(cesc('#\\/ph2max') + ' .mjx-mrow').eq(0).should('have.text', '(−1,1)')
+    cy.get(cesc('#\\/ph2max') + ' .mjx-mrow').eq(2).should('have.text', '(1,1)')
+    cy.get(cesc('#\\/ph2max') + ' .mjx-mrow').eq(4).should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -687,22 +679,22 @@ describe('Piecewise Function Tag Tests', function () {
 
     })
 
-    cy.get('#\\/pkmin .mjx-mrow').eq(0).should('have.text', '(−3,3)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(2).should('have.text', '(−2,0)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(4).should('have.text', '(0,0)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(6).should('have.text', '(2,0)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(8).should('have.text', '(3,3)')
-    cy.get('#\\/pkmin .mjx-mrow').eq(10).should('not.exist')
-    cy.get('#\\/pkmax .mjx-mrow').eq(0).should('have.text', '(−1,2.25)')
-    cy.get('#\\/pkmax .mjx-mrow').eq(2).should('have.text', '(1,2.25)')
-    cy.get('#\\/pkmax .mjx-mrow').eq(4).should('not.exist')
-    cy.get('#\\/pk2min .mjx-mrow').eq(0).should('have.text', '(−2,0)')
-    cy.get('#\\/pk2min .mjx-mrow').eq(2).should('have.text', '(0,0)')
-    cy.get('#\\/pk2min .mjx-mrow').eq(4).should('have.text', '(2,0)')
-    cy.get('#\\/pk2min .mjx-mrow').eq(6).should('not.exist')
-    cy.get('#\\/pk2max .mjx-mrow').eq(0).should('have.text', '(−3,6.25)')
-    cy.get('#\\/pk2max .mjx-mrow').eq(2).should('have.text', '(3,6.25)')
-    cy.get('#\\/pk2max .mjx-mrow').eq(4).should('not.exist')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(0).should('have.text', '(−3,3)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(2).should('have.text', '(−2,0)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(4).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(6).should('have.text', '(2,0)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(8).should('have.text', '(3,3)')
+    cy.get(cesc('#\\/pkmin') + ' .mjx-mrow').eq(10).should('not.exist')
+    cy.get(cesc('#\\/pkmax') + ' .mjx-mrow').eq(0).should('have.text', '(−1,2.25)')
+    cy.get(cesc('#\\/pkmax') + ' .mjx-mrow').eq(2).should('have.text', '(1,2.25)')
+    cy.get(cesc('#\\/pkmax') + ' .mjx-mrow').eq(4).should('not.exist')
+    cy.get(cesc('#\\/pk2min') + ' .mjx-mrow').eq(0).should('have.text', '(−2,0)')
+    cy.get(cesc('#\\/pk2min') + ' .mjx-mrow').eq(2).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pk2min') + ' .mjx-mrow').eq(4).should('have.text', '(2,0)')
+    cy.get(cesc('#\\/pk2min') + ' .mjx-mrow').eq(6).should('not.exist')
+    cy.get(cesc('#\\/pk2max') + ' .mjx-mrow').eq(0).should('have.text', '(−3,6.25)')
+    cy.get(cesc('#\\/pk2max') + ' .mjx-mrow').eq(2).should('have.text', '(3,6.25)')
+    cy.get(cesc('#\\/pk2max') + ' .mjx-mrow').eq(4).should('not.exist')
 
 
     cy.window().then(async (win) => {
@@ -763,13 +755,13 @@ describe('Piecewise Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(x)=⎧⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎨⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎩xif\u00a0s<x<tx210if\u00a01≤x<qx3100if\u00a0z<x<5x41000if\u00a08≤x≤10x510000if\u00a020<x<−10')
+    cy.get(cesc('#\\/mef') + ' .mjx-mrow').eq(0).should('have.text', 'f(x)=⎧⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎨⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎩xif\u00a0s<x<tx210if\u00a01≤x<qx3100if\u00a0z<x<5x41000if\u00a08≤x≤10x510000if\u00a020<x<−10')
 
-    cy.get('#\\/p7 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/p8 .mjx-mrow').eq(0).should('have.text', '4.096')
-    cy.get('#\\/p9 .mjx-mrow').eq(0).should('have.text', '6.561')
-    cy.get('#\\/p10 .mjx-mrow').eq(0).should('have.text', '10')
-    cy.get('#\\/p11 .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/p7') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
+    cy.get(cesc('#\\/p8') + ' .mjx-mrow').eq(0).should('have.text', '4.096')
+    cy.get(cesc('#\\/p9') + ' .mjx-mrow').eq(0).should('have.text', '6.561')
+    cy.get(cesc('#\\/p10') + ' .mjx-mrow').eq(0).should('have.text', '10')
+    cy.get(cesc('#\\/p11') + ' .mjx-mrow').eq(0).should('have.text', 'NaN')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -803,7 +795,7 @@ describe('Piecewise Function Tag Tests', function () {
     });
 
 
-    cy.get('#\\/mef .mjx-mrow').eq(0).should('have.text', 'f(x)=⎧⎪\n⎪⎨⎪\n⎪⎩xif\u00a0x=1x210if\u00a0x=2x3100if\u00a01<x<3')
+    cy.get(cesc('#\\/mef') + ' .mjx-mrow').eq(0).should('have.text', 'f(x)=⎧⎪\n⎪⎨⎪\n⎪⎩xif\u00a0x=1x210if\u00a0x=2x3100if\u00a01<x<3')
 
 
     cy.window().then(async (win) => {

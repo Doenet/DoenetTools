@@ -83,7 +83,7 @@ describe('Gradebook tests', function () {
     let pageOrder = [];
     let ns = [];
 
-    cy.get("#page1\\/_title1").invoke("text").then((text) => {
+    cy.get(cesc("#page1\\/_title1")).invoke("text").then((text) => {
       pageOrder.push(parseInt(text.slice(7)))
     })
 
@@ -91,16 +91,16 @@ describe('Gradebook tests', function () {
       ns.push(parseInt(text));
     })
 
-    cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc('#page1\\/ans2') + ' .mjx-mrow').should('contain.text', '\uff3f')
 
-    cy.get('#page1\\/ans textarea').type("wrong{enter}", { force: true })
+    cy.get(cesc('#page1\\/ans') + ' textarea').type("wrong{enter}", { force: true })
 
-    cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', "wrong");
+    cy.get(cesc('#page1\\/ans2') + ' .mjx-mrow').should('contain.text', "wrong");
 
 
     cy.get('[data-test=next').click();
 
-    cy.get("#page2\\/_title1").invoke("text").then((text) => {
+    cy.get(cesc("#page2\\/_title1")).invoke("text").then((text) => {
       pageOrder.push(parseInt(text.slice(7)))
     })
     cy.get('#page2\\/n').invoke("text").then((text) => {
@@ -111,7 +111,7 @@ describe('Gradebook tests', function () {
 
     cy.get('[data-test=next').click();
 
-    cy.get("#page3\\/_title1").invoke("text").then((text) => {
+    cy.get(cesc("#page3\\/_title1")).invoke("text").then((text) => {
       pageOrder.push(parseInt(text.slice(7)))
       console.log('pageOrder', [...pageOrder])
     })
@@ -119,11 +119,11 @@ describe('Gradebook tests', function () {
       ns.push(parseInt(text));
       console.log('ns', [...ns])
 
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', '\uff3f')
+      cy.get(cesc('#page3\\/ans2') + ' .mjx-mrow').should('contain.text', '\uff3f')
 
-      cy.get('#page3\\/ans textarea').type(`${text}{enter}`, { force: true })
+      cy.get(cesc('#page3\\/ans') + ' textarea').type(`${text}{enter}`, { force: true })
 
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', text);
+      cy.get(cesc('#page3\\/ans2') + ' .mjx-mrow').should('contain.text', text);
 
 
     })
@@ -141,17 +141,17 @@ describe('Gradebook tests', function () {
       // put inside a "then" just so that pageOrder and ns have their new values
 
       cy.get('#page3\\/_title1').should('have.text', `Option ${pageOrder[2]}`)
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', `${ns[2]}`)
+      cy.get(cesc('#page3\\/ans2') + ' .mjx-mrow').should('contain.text', `${ns[2]}`)
 
       cy.get('[data-test=previous').click();
 
       cy.get('#page2\\/_title1').should('have.text', `Option ${pageOrder[1]}`)
-      cy.get('#page2\\/ans2 .mjx-mrow').should('contain.text', "\uff3f")
+      cy.get(cesc('#page2\\/ans2') + ' .mjx-mrow').should('contain.text', "\uff3f")
 
       cy.get('[data-test=previous').click();
 
       cy.get('#page1\\/_title1').should('have.text', `Option ${pageOrder[0]}`)
-      cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', "wrong")
+      cy.get(cesc('#page1\\/ans2') + ' .mjx-mrow').should('contain.text', "wrong")
 
 
       cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
@@ -169,17 +169,17 @@ describe('Gradebook tests', function () {
       // put inside a "then" just so that pageOrder and ns have their new values
 
       cy.get('#page3\\/_title1').should('have.text', `Option ${pageOrder[2]}`)
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', `${ns[2]}`)
+      cy.get(cesc('#page3\\/ans2') + ' .mjx-mrow').should('contain.text', `${ns[2]}`)
 
       cy.get('[data-test=previous').click();
 
       cy.get('#page2\\/_title1').should('have.text', `Option ${pageOrder[1]}`)
-      cy.get('#page2\\/ans2 .mjx-mrow').should('contain.text', "\uff3f")
+      cy.get(cesc('#page2\\/ans2') + ' .mjx-mrow').should('contain.text', "\uff3f")
 
       cy.get('[data-test=previous').click();
 
       cy.get('#page1\\/_title1').should('have.text', `Option ${pageOrder[0]}`)
-      cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', "wrong")
+      cy.get(cesc('#page1\\/ans2') + ' .mjx-mrow').should('contain.text', "wrong")
 
 
       cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')

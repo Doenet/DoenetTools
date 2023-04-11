@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 describe('Code Editor Tag Tests', function () {
 
   beforeEach(() => {
@@ -27,10 +19,10 @@ describe('Code Editor Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'a')
 
-    cy.get('#\\/_p1').should('have.text', '')
-    cy.get('#\\/_p2').should('have.text', '')
+    cy.get(cesc('#\\/_p1')).should('have.text', '')
+    cy.get(cesc('#\\/_p2')).should('have.text', '')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -39,10 +31,10 @@ describe('Code Editor Tag Tests', function () {
     });
 
     cy.log('type text in editor')
-    cy.get("#\\/_codeeditor1 .cm-content").type("Hello!")
+    cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("Hello!")
 
-    cy.get('#\\/_p1').should('have.text', 'Hello!')
-    cy.get('#\\/_p2').should('have.text', '')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hello!')
+    cy.get(cesc('#\\/_p2')).should('have.text', '')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -52,8 +44,8 @@ describe('Code Editor Tag Tests', function () {
 
     cy.log('wait for debounce to update value')
     cy.wait(1500)
-    cy.get('#\\/_p1').should('have.text', 'Hello!')
-    cy.get('#\\/_p2').should('have.text', 'Hello!')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hello!')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'Hello!')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -62,10 +54,10 @@ describe('Code Editor Tag Tests', function () {
     });
 
     cy.log('type more in editor')
-    cy.get("#\\/_codeeditor1 .cm-content").type("{enter}More here.")
+    cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{enter}More here.")
 
-    cy.get('#\\/_p1').should('have.text', 'Hello!\nMore here.')
-    cy.get('#\\/_p2').should('have.text', 'Hello!')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hello!\nMore here.')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'Hello!')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -74,10 +66,10 @@ describe('Code Editor Tag Tests', function () {
     });
 
     cy.log('blur to update value')
-    cy.get("#\\/_codeeditor1 .cm-content").blur();
+    cy.get(cesc("#\\/_codeeditor1") + " .cm-content").blur();
 
-    cy.get('#\\/_p1').should('have.text', 'Hello!\nMore here.')
-    cy.get('#\\/_p2').should('have.text', 'Hello!\nMore here.')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hello!\nMore here.')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'Hello!\nMore here.')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -99,18 +91,18 @@ describe('Code Editor Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName = stateVariables["/_codeeditor1"].stateValues.viewerChild[0].componentName;
-      let updateAnchor = '#' + cesc(viewerName) + "_updateButton";
-      let contentAnchor = '#' + cesc(viewerName) + "_content";
+      let updateAnchor = '#' + cesc2(viewerName) + "_updateButton";
+      let contentAnchor = '#' + cesc2(viewerName) + "_content";
 
 
-      cy.get('#\\/_p1').should('have.text', '')
-      cy.get('#\\/_p2').should('have.text', '')
+      cy.get(cesc('#\\/_p1')).should('have.text', '')
+      cy.get(cesc('#\\/_p2')).should('have.text', '')
       cy.get(contentAnchor).should('have.text', '')
 
       cy.window().then(async (win) => {
@@ -121,10 +113,10 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('type text in editor')
-      cy.get("#\\/_codeeditor1 .cm-content").type("<p>Hello!</p>")
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>")
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p2').should('have.text', '')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '')
       cy.get(contentAnchor).should('have.text', '')
 
       cy.window().then(async (win) => {
@@ -135,10 +127,10 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('blur updates value but not content')
-      cy.get("#\\/_codeeditor1 .cm-content").blur();
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").blur();
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>')
       cy.get(contentAnchor).should('have.text', '')
 
       cy.window().then(async (win) => {
@@ -151,8 +143,8 @@ describe('Code Editor Tag Tests', function () {
       cy.log("click to update content")
       cy.get(updateAnchor).click();
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>')
       cy.get(contentAnchor).should('have.text', 'Hello!')
 
 
@@ -168,10 +160,10 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('type more content')
-      cy.get("#\\/_codeeditor1 .cm-content").type("{ctrl+end}{enter}<p><math simplify>1+1</math></p>")
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{ctrl+end}{enter}<p><math simplify>1+1</math></p>")
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>')
       cy.get(contentAnchor).should('have.text', 'Hello!')
 
 
@@ -187,8 +179,8 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('Wait for value to be updated')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
       cy.get(contentAnchor).should('have.text', 'Hello!')
 
 
@@ -206,8 +198,8 @@ describe('Code Editor Tag Tests', function () {
       cy.log("click to update content")
       cy.get(updateAnchor).click();
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
       cy.get(contentAnchor).should('contain.text', 'Hello!\n2')
       cy.get(contentAnchor + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("2");
@@ -250,21 +242,21 @@ describe('Code Editor Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName = stateVariables["/_codeeditor1"].stateValues.viewerChild[0].componentName;
-      let updateAnchor = '#' + cesc(viewerName) + "_updateButton";
-      let contentAnchor = '#' + cesc(viewerName) + "_content";
+      let updateAnchor = '#' + cesc2(viewerName) + "_updateButton";
+      let contentAnchor = '#' + cesc2(viewerName) + "_content";
 
 
-      cy.get('#\\/_p1').should('have.text', '')
-      cy.get('#\\/_p2').should('have.text', '')
-      cy.get('#\\/_p3').should('have.text', 'The value of the entered math is ')
+      cy.get(cesc('#\\/_p1')).should('have.text', '')
+      cy.get(cesc('#\\/_p2')).should('have.text', '')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'The value of the entered math is ')
       cy.get(contentAnchor).should('have.text', '')
-      cy.get('#\\/m1').should('not.exist')
+      cy.get(cesc('#\\/m1')).should('not.exist')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -277,13 +269,13 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('type text in editor')
-      cy.get("#\\/_codeeditor1 .cm-content").type("<p>Hello!</p>")
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>")
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p2').should('have.text', '')
-      cy.get('#\\/_p3').should('have.text', 'The value of the entered math is ')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'The value of the entered math is ')
       cy.get(contentAnchor).should('have.text', '')
-      cy.get('#\\/m1').should('not.exist')
+      cy.get(cesc('#\\/m1')).should('not.exist')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -296,13 +288,13 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('blur updates value but not content')
-      cy.get("#\\/_codeeditor1 .cm-content").blur();
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").blur();
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p3').should('have.text', 'The value of the entered math is ')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'The value of the entered math is ')
       cy.get(contentAnchor).should('have.text', '')
-      cy.get('#\\/m1').should('not.exist')
+      cy.get(cesc('#\\/m1')).should('not.exist')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -317,11 +309,11 @@ describe('Code Editor Tag Tests', function () {
       cy.log("click to update content")
       cy.get(updateAnchor).click();
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p3').should('have.text', 'The value of the entered math is ')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'The value of the entered math is ')
       cy.get(contentAnchor).should('have.text', 'Hello!')
-      cy.get('#\\/m1').should('not.exist')
+      cy.get(cesc('#\\/m1')).should('not.exist')
 
 
       cy.window().then(async (win) => {
@@ -337,13 +329,13 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('type more content')
-      cy.get("#\\/_codeeditor1 .cm-content").type("{ctrl+end}{enter}<p><math simplify>1+1</math></p>")
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{ctrl+end}{enter}<p><math simplify>1+1</math></p>")
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>')
-      cy.get('#\\/_p3').should('have.text', 'The value of the entered math is ')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'The value of the entered math is ')
       cy.get(contentAnchor).should('have.text', 'Hello!')
-      cy.get('#\\/m1').should('not.exist')
+      cy.get(cesc('#\\/m1')).should('not.exist')
 
 
       cy.window().then(async (win) => {
@@ -359,11 +351,11 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('Wait for value to be updated')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p3').should('have.text', 'The value of the entered math is ')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'The value of the entered math is ')
       cy.get(contentAnchor).should('have.text', 'Hello!')
-      cy.get('#\\/m1').should('not.exist')
+      cy.get(cesc('#\\/m1')).should('not.exist')
 
 
       cy.window().then(async (win) => {
@@ -381,14 +373,14 @@ describe('Code Editor Tag Tests', function () {
       cy.log("click to update content")
       cy.get(updateAnchor).click();
 
-      cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get('#\\/_p3').should('contain.text', 'The value of the entered math is 2')
+      cy.get(cesc('#\\/_p1')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p2')).should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
+      cy.get(cesc('#\\/_p3')).should('contain.text', 'The value of the entered math is 2')
       cy.get(contentAnchor).should('contain.text', 'Hello!\n2')
       cy.get(contentAnchor + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("2");
       })
-      cy.get('#\\/m1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/m1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("2");
       })
 
@@ -427,19 +419,19 @@ describe('Code Editor Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName = stateVariables["/_codeeditor1"].stateValues.viewerChild[0].componentName;
-      let updateAnchor = '#' + cesc(viewerName) + "_updateButton";
+      let updateAnchor = '#' + cesc2(viewerName) + "_updateButton";
 
 
-      cy.get('#\\/px').should('have.text', 'The value of the dynamic math is ')
-      cy.get('#\\/psx').should('have.text', 'The value of the static math is ')
-      cy.get('#\\/pP').should('have.text', 'The coords of the dynamic point are ')
-      cy.get('#\\/psP').should('have.text', 'The coords of the static point are ')
+      cy.get(cesc('#\\/px')).should('have.text', 'The value of the dynamic math is ')
+      cy.get(cesc('#\\/psx')).should('have.text', 'The value of the static math is ')
+      cy.get(cesc('#\\/pP')).should('have.text', 'The coords of the dynamic point are ')
+      cy.get(cesc('#\\/psP')).should('have.text', 'The coords of the static point are ')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -459,13 +451,13 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('type text in editor')
-      cy.get("#\\/_codeeditor1 .cm-content").type("<p>Enter value <mathinput name='mi' prefill='y' /></p>{enter}")
-      cy.get("#\\/_codeeditor1 .cm-content").type("<p>The value is <copy prop='value' target='mi' assignNames='x' /></p>{enter}")
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Enter value <mathinput name='mi' prefill='y' /></p>{enter}")
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>The value is <copy prop='value' target='mi' assignNames='x' /></p>{enter}")
 
-      cy.get('#\\/px').should('have.text', 'The value of the dynamic math is ')
-      cy.get('#\\/psx').should('have.text', 'The value of the static math is ')
-      cy.get('#\\/pP').should('have.text', 'The coords of the dynamic point are ')
-      cy.get('#\\/psP').should('have.text', 'The coords of the static point are ')
+      cy.get(cesc('#\\/px')).should('have.text', 'The value of the dynamic math is ')
+      cy.get(cesc('#\\/psx')).should('have.text', 'The value of the static math is ')
+      cy.get(cesc('#\\/pP')).should('have.text', 'The coords of the dynamic point are ')
+      cy.get(cesc('#\\/psP')).should('have.text', 'The coords of the static point are ')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -486,14 +478,14 @@ describe('Code Editor Tag Tests', function () {
 
 
       cy.log('blur updates static but not dynamic')
-      cy.get("#\\/_codeeditor1 .cm-content").blur()
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").blur()
 
-      cy.get('#\\/psx').should('contain.text', 'The value of the static math is y')
-      cy.get('#\\/px').should('have.text', 'The value of the dynamic math is ')
-      cy.get('#\\/pP').should('have.text', 'The coords of the dynamic point are ')
-      cy.get('#\\/psP').should('have.text', 'The coords of the static point are ')
+      cy.get(cesc('#\\/psx')).should('contain.text', 'The value of the static math is y')
+      cy.get(cesc('#\\/px')).should('have.text', 'The value of the dynamic math is ')
+      cy.get(cesc('#\\/pP')).should('have.text', 'The coords of the dynamic point are ')
+      cy.get(cesc('#\\/psP')).should('have.text', 'The coords of the static point are ')
 
-      cy.get('#\\/sx .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sx') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
 
@@ -528,15 +520,15 @@ describe('Code Editor Tag Tests', function () {
       cy.log("click to update dynamic content")
       cy.get(updateAnchor).click();
 
-      cy.get('#\\/px').should('contain.text', 'The value of the dynamic math is y')
-      cy.get('#\\/psx').should('contain.text', 'The value of the static math is y')
-      cy.get('#\\/pP').should('have.text', 'The coords of the dynamic point are ')
-      cy.get('#\\/psP').should('have.text', 'The coords of the static point are ')
+      cy.get(cesc('#\\/px')).should('contain.text', 'The value of the dynamic math is y')
+      cy.get(cesc('#\\/psx')).should('contain.text', 'The value of the static math is y')
+      cy.get(cesc('#\\/pP')).should('have.text', 'The coords of the dynamic point are ')
+      cy.get(cesc('#\\/psP')).should('have.text', 'The coords of the static point are ')
 
-      cy.get('#\\/x .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
-      cy.get('#\\/sx .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sx') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
 
@@ -575,17 +567,17 @@ describe('Code Editor Tag Tests', function () {
       });
 
       cy.log('Enter new value in dynamic results')
-      cy.get('#\\/result\\/mi textarea').type("{end}{backspace}x{enter}", { force: true });
+      cy.get(cesc('#\\/result\\/mi') + ' textarea').type("{end}{backspace}x{enter}", { force: true });
 
-      cy.get('#\\/px').should('contain.text', 'The value of the dynamic math is x')
-      cy.get('#\\/psx').should('contain.text', 'The value of the static math is y')
-      cy.get('#\\/pP').should('have.text', 'The coords of the dynamic point are ')
-      cy.get('#\\/psP').should('have.text', 'The coords of the static point are ')
+      cy.get(cesc('#\\/px')).should('contain.text', 'The value of the dynamic math is x')
+      cy.get(cesc('#\\/psx')).should('contain.text', 'The value of the static math is y')
+      cy.get(cesc('#\\/pP')).should('have.text', 'The coords of the dynamic point are ')
+      cy.get(cesc('#\\/psP')).should('have.text', 'The coords of the static point are ')
 
-      cy.get('#\\/x .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("x");
       })
-      cy.get('#\\/sx .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sx') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
 
@@ -625,20 +617,20 @@ describe('Code Editor Tag Tests', function () {
 
 
       cy.log('type text in editor')
-      cy.get("#\\/_codeeditor1 .cm-content").type("{ctrl+end}<graph><point name='P'>(3,4)</point></graph>{enter}").blur();
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{ctrl+end}<graph><point name='P'>(3,4)</point></graph>{enter}").blur();
 
-      cy.get('#\\/psP').should('contain.text', 'The coords of the static point are (3,4)')
-      cy.get('#\\/px').should('contain.text', 'The value of the dynamic math is x')
-      cy.get('#\\/psx').should('contain.text', 'The value of the static math is y')
-      cy.get('#\\/pP').should('have.text', 'The coords of the dynamic point are ')
+      cy.get(cesc('#\\/psP')).should('contain.text', 'The coords of the static point are (3,4)')
+      cy.get(cesc('#\\/px')).should('contain.text', 'The value of the dynamic math is x')
+      cy.get(cesc('#\\/psx')).should('contain.text', 'The value of the static math is y')
+      cy.get(cesc('#\\/pP')).should('have.text', 'The coords of the dynamic point are ')
 
-      cy.get('#\\/x .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("x");
       })
-      cy.get('#\\/sx .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sx') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
-      cy.get('#\\/sP .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sP') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("(3,4)");
       })
 
@@ -683,21 +675,21 @@ describe('Code Editor Tag Tests', function () {
       cy.log("click to update dynamic content")
       cy.get(updateAnchor).click();
 
-      cy.get('#\\/pP').should('contain.text', 'The coords of the dynamic point are (3,4)')
-      cy.get('#\\/px').should('contain.text', 'The value of the dynamic math is y')
-      cy.get('#\\/psx').should('contain.text', 'The value of the static math is y')
-      cy.get('#\\/psP').should('contain.text', 'The coords of the static point are (3,4)')
+      cy.get(cesc('#\\/pP')).should('contain.text', 'The coords of the dynamic point are (3,4)')
+      cy.get(cesc('#\\/px')).should('contain.text', 'The value of the dynamic math is y')
+      cy.get(cesc('#\\/psx')).should('contain.text', 'The value of the static math is y')
+      cy.get(cesc('#\\/psP')).should('contain.text', 'The coords of the static point are (3,4)')
 
-      cy.get('#\\/x .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
-      cy.get('#\\/sx .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sx') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
-      cy.get('#\\/P .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/P') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("(3,4)");
       })
-      cy.get('#\\/sP .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sP') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("(3,4)");
       })
 
@@ -752,21 +744,21 @@ describe('Code Editor Tag Tests', function () {
         })
       })
 
-      cy.get('#\\/pP').should('contain.text', 'The coords of the dynamic point are (5,7)')
-      cy.get('#\\/px').should('contain.text', 'The value of the dynamic math is y')
-      cy.get('#\\/psx').should('contain.text', 'The value of the static math is y')
-      cy.get('#\\/psP').should('contain.text', 'The coords of the static point are (3,4)')
+      cy.get(cesc('#\\/pP')).should('contain.text', 'The coords of the dynamic point are (5,7)')
+      cy.get(cesc('#\\/px')).should('contain.text', 'The value of the dynamic math is y')
+      cy.get(cesc('#\\/psx')).should('contain.text', 'The value of the static math is y')
+      cy.get(cesc('#\\/psP')).should('contain.text', 'The coords of the static point are (3,4)')
 
-      cy.get('#\\/x .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/x') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
-      cy.get('#\\/sx .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sx') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("y");
       })
-      cy.get('#\\/P .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/P') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("(5,7)");
       })
-      cy.get('#\\/sP .mjx-mrow').eq(0).invoke('text').then(text => {
+      cy.get(cesc('#\\/sP') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("(3,4)");
       })
 
@@ -824,13 +816,13 @@ describe('Code Editor Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('contain.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('contain.text', 'a')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName = stateVariables["/_codeeditor1"].stateValues.viewerChild[0].componentName;
-      let contentAnchor = '#' + cesc(viewerName) + "_content";
+      let contentAnchor = '#' + cesc2(viewerName) + "_content";
 
       cy.get(contentAnchor).should('have.text', 'hello there')
     })
@@ -858,10 +850,10 @@ describe('Code Editor Tag Tests', function () {
     });
 
 
-    cy.get("#\\/ce .cm-content").type("hello")
+    cy.get(cesc("#\\/ce") + " .cm-content").type("hello")
 
-    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
-    cy.get('#\\/pv').should('have.text', 'value: ')
+    cy.get(cesc('#\\/piv')).should('have.text', 'immediate value: hello')
+    cy.get(cesc('#\\/pv')).should('have.text', 'value: ')
 
     cy.wait(1500);  // wait for debounce
 
@@ -876,8 +868,8 @@ describe('Code Editor Tag Tests', function () {
 
 
 
-    cy.get('#\\/pv').should('have.text', 'value: hello')
-    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
+    cy.get(cesc('#\\/pv')).should('have.text', 'value: hello')
+    cy.get(cesc('#\\/piv')).should('have.text', 'immediate value: hello')
 
   });
 

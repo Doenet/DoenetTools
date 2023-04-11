@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 function nInDOM(n) {
   if (n < 0) {
     return `−${Math.abs(n)}`
@@ -35,7 +37,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -66,7 +68,7 @@ describe('Circle Tag Tests', function () {
       });
     });
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(2,3)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(2,3)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -98,7 +100,7 @@ describe('Circle Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/radiusNumber').should('contain.text', '5')
+    cy.get(cesc('#\\/radiusNumber')).should('contain.text', '5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -129,7 +131,7 @@ describe('Circle Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(−6,−2)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(−6,−2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -159,7 +161,7 @@ describe('Circle Tag Tests', function () {
       });
     });
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(−7,9)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(−7,9)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -190,7 +192,7 @@ describe('Circle Tag Tests', function () {
       });
     });
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(6,−8)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(6,−8)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -237,7 +239,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -270,7 +272,7 @@ describe('Circle Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(2,4)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(2,4)')
 
 
     cy.window().then(async (win) => {
@@ -306,7 +308,7 @@ describe('Circle Tag Tests', function () {
 
     })
 
-    cy.get('#\\/radiusNumber').should('contain.text', '5')
+    cy.get(cesc('#\\/radiusNumber')).should('contain.text', '5')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -339,7 +341,7 @@ describe('Circle Tag Tests', function () {
 
     })
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(−6,−2)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(−6,−2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -373,7 +375,7 @@ describe('Circle Tag Tests', function () {
 
     })
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(−7,8)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(−7,8)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -405,7 +407,7 @@ describe('Circle Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(9,−10)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(9,−10)')
 
 
     cy.window().then(async (win) => {
@@ -438,7 +440,7 @@ describe('Circle Tag Tests', function () {
       });
     })
 
-    cy.get('#\\/centerPoint2').should('contain.text', '(−3,−4)')
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(−3,−4)')
 
 
     cy.window().then(async (win) => {
@@ -487,7 +489,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -511,8 +513,8 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).eq(y);
       expect(stateVariables["/radiusNumber"].stateValues.value).eq(r);
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
     })
 
     cy.log("move circle")
@@ -525,8 +527,8 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -559,8 +561,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: r, y: 0 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -593,8 +595,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: r, y: 0 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -627,8 +629,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/centerPoint",
         args: { x: x, y: y }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -660,8 +662,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph3/circle",
         args: { center: [x, y] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -693,8 +695,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph4/circle",
         args: { center: [x, y] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -743,7 +745,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -770,8 +772,8 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_point2'].stateValues.xs[0]).eq(r);
       expect(stateVariables['/_point2'].stateValues.xs[1]).eq(0);
       expect(stateVariables["/radiusNumber"].stateValues.value).eq(r);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
     })
 
     cy.log("move circle")
@@ -784,8 +786,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -821,8 +823,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: tx, y: ty }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -858,8 +860,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -895,8 +897,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: r, y: 0 }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -933,8 +935,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: rtry, y: 0 }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -970,8 +972,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: r, y: 0 }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1008,8 +1010,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1046,8 +1048,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1100,7 +1102,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1133,8 +1135,8 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -1148,8 +1150,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1192,8 +1194,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1236,8 +1238,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1280,8 +1282,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1324,8 +1326,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1368,8 +1370,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point3",
         args: { x: r, y: 0 }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1419,8 +1421,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1470,8 +1472,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1529,7 +1531,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1562,8 +1564,8 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -1577,8 +1579,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1621,8 +1623,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1665,8 +1667,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1709,8 +1711,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1753,8 +1755,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1797,8 +1799,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point3",
         args: { x: r, y: 0 }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1849,8 +1851,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1902,8 +1904,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1963,7 +1965,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
@@ -2005,9 +2007,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
       expect(stateVariables["/diam"].stateValues.value).closeTo(2 * r, 1E-12);
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle up and to the right')
@@ -2033,9 +2035,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2080,8 +2082,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
-      cy.get('#\\/radiusNumber').should('contain.text', '＿')
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(＿,＿)`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', '＿')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2129,7 +2131,7 @@ describe('Circle Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(−1.5`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(−1.5`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2140,9 +2142,9 @@ describe('Circle Tag Tests', function () {
         let r = stateVariables['/_circle1'].stateValues.numericalRadius;
 
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
@@ -2187,7 +2189,7 @@ describe('Circle Tag Tests', function () {
       })
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(−0.7`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(−0.7`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2197,9 +2199,9 @@ describe('Circle Tag Tests', function () {
         let cny = stateVariables['/_circle1'].stateValues.numericalCenter[1];
         let r = stateVariables['/_circle1'].stateValues.numericalRadius;
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
@@ -2253,9 +2255,9 @@ describe('Circle Tag Tests', function () {
       let cny = t1y;
       let r = 0;
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2308,9 +2310,9 @@ describe('Circle Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2363,9 +2365,9 @@ describe('Circle Tag Tests', function () {
       })
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2423,9 +2425,9 @@ describe('Circle Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2479,7 +2481,7 @@ describe('Circle Tag Tests', function () {
         args: { x: t3x, y: t3y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(−3.6`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(−3.6`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2489,9 +2491,9 @@ describe('Circle Tag Tests', function () {
         let cny = stateVariables['/_circle1'].stateValues.numericalCenter[1];
         let r = stateVariables['/_circle1'].stateValues.numericalRadius;
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
         expect(stateVariables['/_circle1'].stateValues.center[1]).closeTo(cny, 1E-12);
@@ -2547,9 +2549,9 @@ describe('Circle Tag Tests', function () {
         args: { x: cnx, y: cny }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2609,9 +2611,9 @@ describe('Circle Tag Tests', function () {
         args: { x: r, y: 0 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2672,9 +2674,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2734,9 +2736,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2801,7 +2803,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
@@ -2842,9 +2844,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
       expect(stateVariables["/diam"].stateValues.value).closeTo(2 * r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle up and to the right')
@@ -2870,9 +2872,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2917,8 +2919,8 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
-      cy.get('#\\/radiusNumber').should('contain.text', '＿')
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(＿,＿)`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', '＿')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2966,7 +2968,7 @@ describe('Circle Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(−1.5`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(−1.5`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2977,9 +2979,9 @@ describe('Circle Tag Tests', function () {
         let r = stateVariables['/_circle1'].stateValues.numericalRadius;
 
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
@@ -3024,7 +3026,7 @@ describe('Circle Tag Tests', function () {
       })
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(−0.7`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(−0.7`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3034,9 +3036,9 @@ describe('Circle Tag Tests', function () {
         let cny = stateVariables['/_circle1'].stateValues.numericalCenter[1];
         let r = stateVariables['/_circle1'].stateValues.numericalRadius;
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
@@ -3090,9 +3092,9 @@ describe('Circle Tag Tests', function () {
       let cny = t1y;
       let r = 0;
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3145,9 +3147,9 @@ describe('Circle Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3200,9 +3202,9 @@ describe('Circle Tag Tests', function () {
       })
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3260,9 +3262,9 @@ describe('Circle Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3316,7 +3318,7 @@ describe('Circle Tag Tests', function () {
         args: { x: t3x, y: t3y }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(−3.6`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(−3.6`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3326,9 +3328,9 @@ describe('Circle Tag Tests', function () {
         let cny = stateVariables['/_circle1'].stateValues.numericalCenter[1];
         let r = stateVariables['/_circle1'].stateValues.numericalRadius;
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
         expect(stateVariables['/_circle1'].stateValues.center[1]).closeTo(cny, 1E-12);
@@ -3384,9 +3386,9 @@ describe('Circle Tag Tests', function () {
         args: { x: cnx, y: cny }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3446,9 +3448,9 @@ describe('Circle Tag Tests', function () {
         args: { x: r, y: 0 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3509,9 +3511,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3571,9 +3573,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3639,7 +3641,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3672,9 +3674,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -3687,9 +3689,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3731,9 +3733,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: tx, y: ty }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3775,9 +3777,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: r, y: 0 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3819,9 +3821,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point3",
         args: { x: r, y: 0 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3863,9 +3865,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3908,9 +3910,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3970,7 +3972,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4007,9 +4009,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
     })
 
@@ -4037,9 +4039,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4085,7 +4087,7 @@ describe('Circle Tag Tests', function () {
         args: { x: t1x, y: t1y }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(＿,＿)`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4131,7 +4133,7 @@ describe('Circle Tag Tests', function () {
         args: { x: r, y: 0 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(−1.7`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(−1.7`)
 
 
       cy.window().then(async (win) => {
@@ -4141,9 +4143,9 @@ describe('Circle Tag Tests', function () {
         let cnx = stateVariables['/_circle1'].stateValues.numericalCenter[0];
         let cny = stateVariables['/_circle1'].stateValues.numericalCenter[1];
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
         expect(stateVariables['/_circle1'].stateValues.center[1]).closeTo(cny, 1E-12);
@@ -4192,7 +4194,7 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(＿,＿)`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4231,9 +4233,9 @@ describe('Circle Tag Tests', function () {
           args: { x: r, y: 0 }
         });
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       })
 
@@ -4277,7 +4279,7 @@ describe('Circle Tag Tests', function () {
       })
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(＿,＿)`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4332,9 +4334,9 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4388,7 +4390,7 @@ describe('Circle Tag Tests', function () {
         args: { x: t2x, y: t2y }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', '(−1.8')
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', '(−1.8')
 
 
       cy.window().then(async (win) => {
@@ -4397,9 +4399,9 @@ describe('Circle Tag Tests', function () {
         let cnx = stateVariables['/_circle1'].stateValues.numericalCenter[0];
         let cny = stateVariables['/_circle1'].stateValues.numericalCenter[1];
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
         expect(stateVariables['/_circle1'].stateValues.center[0]).closeTo(cnx, 1E-12);
         expect(stateVariables['/_circle1'].stateValues.center[1]).closeTo(cny, 1E-12);
@@ -4456,9 +4458,9 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4521,9 +4523,9 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4584,9 +4586,9 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4650,7 +4652,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4683,9 +4685,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -4705,9 +4707,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
       })
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4755,9 +4757,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: cnx, y: cny }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4801,9 +4803,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4849,9 +4851,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point2",
         args: { x: tx, y: ty }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4902,9 +4904,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point3",
         args: { x: r, y: 0 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4961,9 +4963,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5022,9 +5024,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5084,7 +5086,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5116,8 +5118,8 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
     })
 
     cy.log('make defined radius negative')
@@ -5130,9 +5132,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_point1",
         args: { x: r, y: 0 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', '0')
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5181,9 +5183,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/radiusPoint",
         args: { x: -5, y: 0 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5245,7 +5247,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -5279,9 +5281,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -5295,9 +5297,9 @@ describe('Circle Tag Tests', function () {
         args: { x: cnx, y: cny }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5342,9 +5344,9 @@ describe('Circle Tag Tests', function () {
         args: { x: r, y: 0 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5389,9 +5391,9 @@ describe('Circle Tag Tests', function () {
         args: { x: -9, y: 8 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5437,9 +5439,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5485,9 +5487,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 11, y: -21 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5548,7 +5550,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -5577,9 +5579,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables["/circle2"].stateValues.numericalCenter[1]).closeTo(cny, 1E-12);
       expect((await stateVariables["/circle2"].stateValues.radius)).closeTo(r, 1E-12);
       expect(stateVariables["/circle2"].stateValues.numericalRadius).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
     })
 
@@ -5601,9 +5603,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5651,9 +5653,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5698,9 +5700,9 @@ describe('Circle Tag Tests', function () {
         args: { x: cnx, y: cny }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5743,9 +5745,9 @@ describe('Circle Tag Tests', function () {
         args: { x: cnx, y: cny }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5788,9 +5790,9 @@ describe('Circle Tag Tests', function () {
         args: { x: tx, y: ty }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5845,9 +5847,9 @@ describe('Circle Tag Tests', function () {
         args: { x: cny, y: rSpecified }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(rActual * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(rActual * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5888,9 +5890,9 @@ describe('Circle Tag Tests', function () {
         });
 
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(rActual * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(rActual * 100) / 100))
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
@@ -5954,7 +5956,7 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     let t1x = 1, t1y = 2, t2x = 3, t2y = 5, t3x = -5, t3y = 2;
     let circy, circx, r;
@@ -5984,9 +5986,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.xs[0]).closeTo(circx, 1E-12);
       expect(stateVariables['/y'].stateValues.xs[1]).closeTo(circy, 1E-12);
       expect(stateVariables['/r'].stateValues.xs[0]).closeTo(r, 1E-12);
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
     })
 
@@ -6004,7 +6006,7 @@ describe('Circle Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(0.8`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(0.8`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6013,9 +6015,9 @@ describe('Circle Tag Tests', function () {
         circy = stateVariables['/c'].stateValues.numericalCenter[1];
         r = stateVariables['/c'].stateValues.numericalRadius;
 
-        cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-        cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-        cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+        cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+        cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
         // verify triangle vertices are on circle
         expect(Math.sqrt((t1x - circx) ** 2 + (t1y - circy) ** 2)).closeTo(r, 1E-12);
@@ -6056,9 +6058,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [circx, circy] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6098,9 +6100,9 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6141,9 +6143,9 @@ describe('Circle Tag Tests', function () {
       });
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6186,9 +6188,9 @@ describe('Circle Tag Tests', function () {
         args: { x: r }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6221,9 +6223,9 @@ describe('Circle Tag Tests', function () {
       }); // overshoot
 
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', '0')
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', '0')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6266,9 +6268,9 @@ describe('Circle Tag Tests', function () {
         args: { x: r }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6313,14 +6315,14 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6331,9 +6333,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, 5] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(5)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(5))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(5)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(5))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6351,9 +6353,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: 7 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(7)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(7))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(7)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(7))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6370,9 +6372,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [3, -2] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(-2)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(0))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(-2)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(0))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6390,9 +6392,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: 4 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(4)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(4))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(4)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(4))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6420,14 +6422,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6438,9 +6440,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, 5] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(5)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(5))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(5)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(5))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6457,9 +6459,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/centerPoint",
         args: { x: 8, y: 7 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(7)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(7))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(7)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(7))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6476,9 +6478,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/_circle1",
         args: { center: [3, -2] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(0)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(0))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(0)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(0))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6495,9 +6497,9 @@ describe('Circle Tag Tests', function () {
         componentName: "/centerPoint",
         args: { x: 1, y: 4 }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(4)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(4))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(4)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(4))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6525,7 +6527,7 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6533,7 +6535,7 @@ describe('Circle Tag Tests', function () {
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/_circle1'].stateValues.diameter).eq(4);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 4])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6544,9 +6546,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, 6] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(6)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(3))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(6)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(3))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6566,9 +6568,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: 4 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(4)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(4)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(2))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6588,9 +6590,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [3, -2] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(0)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(0))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(0)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(0))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6610,9 +6612,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: 8 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(8)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(4))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(8)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(4))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6641,14 +6643,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 1]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(1);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 1])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(1))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(1))
     })
 
     cy.log("move circle");
@@ -6659,9 +6661,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, 5] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(5)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(5))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(5)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(5))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6679,9 +6681,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: 7 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(7)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(7))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(7)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(7))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6699,9 +6701,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [3, -2] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(0)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(0))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(0)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(0))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6719,9 +6721,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: 4 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(4)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(4))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(4)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(4))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6749,14 +6751,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6771,9 +6773,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6794,9 +6796,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6814,9 +6816,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [4, -6] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(4)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(0)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(0))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(4)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(0)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(0))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6836,9 +6838,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6866,14 +6868,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 1]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(1);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 1])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(1))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(1))
     })
 
     cy.log("move circle");
@@ -6888,9 +6890,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6911,9 +6913,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6931,9 +6933,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [4, -6] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(4)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(0)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(0))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(4)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(0)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(0))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6953,9 +6955,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -6984,14 +6986,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -7006,9 +7008,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7029,9 +7031,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7053,9 +7055,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [4, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(4)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(0))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(4)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(0))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7075,9 +7077,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7105,14 +7107,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -7127,9 +7129,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7150,9 +7152,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7172,9 +7174,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [4, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(4)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(-actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(4)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(-actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7195,9 +7197,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7225,14 +7227,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -7247,9 +7249,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7270,9 +7272,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7292,9 +7294,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [4, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(4)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(-actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(4)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(-actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7314,9 +7316,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(actualHeight))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(actualHeight))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7344,14 +7346,14 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(1);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(1))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(1))
     })
 
     cy.log("move circle");
@@ -7364,9 +7366,9 @@ describe('Circle Tag Tests', function () {
         args: { center: [-3, desiredHeight] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-3)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(1))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-3)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(1))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7387,9 +7389,9 @@ describe('Circle Tag Tests', function () {
         args: { x: 8, y: desiredHeight }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(8)}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(actualHeight)}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(1))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(8)}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(actualHeight)}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(1))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7423,7 +7425,7 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 1, t1y = 2;
@@ -7437,7 +7439,7 @@ describe('Circle Tag Tests', function () {
       expect((stateVariables['/_circle1'].stateValues.throughPoints)[1]).eqls([t2x, t2y])
       expect((await stateVariables["/TP1"].stateValues.coords)).eqls(["vector", t1x, t1y])
       expect((await stateVariables["/TP2"].stateValues.coords)).eqls(["vector", t2x, t2y])
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(r))
 
     })
 
@@ -7461,9 +7463,9 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.abs(t1x - t2x);
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(newCenter[0])}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(newCenter[1])}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(newCenter[0])}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(newCenter[1])}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7506,9 +7508,9 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.abs(t1x - t2x);
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(newCenter[0])}`)
-      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(newCenter[1])}`)
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(newCenter[0])}`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `${nInDOM(newCenter[1])}`)
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7543,7 +7545,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.abs(t1x - t2x);
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7577,7 +7579,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.abs(t1x - t2x);
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7613,7 +7615,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.abs(t1x - t2x);
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7659,7 +7661,7 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 1, t1y = 2;
@@ -7675,7 +7677,7 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/TP1"].stateValues.coords)).eqls(["vector", t1x, t1y])
       expect((await stateVariables["/TP2"].stateValues.coords)).eqls(["vector", t2x, t2y])
 
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(r))
     })
 
     cy.log("move circle");
@@ -7698,7 +7700,7 @@ describe('Circle Tag Tests', function () {
 
       let r = t1x;
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7740,7 +7742,7 @@ describe('Circle Tag Tests', function () {
 
       let r = t1x
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7776,7 +7778,7 @@ describe('Circle Tag Tests', function () {
       let r = t1x;
       t2x = t1x + 1;
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7810,7 +7812,7 @@ describe('Circle Tag Tests', function () {
       let r = t1x;
 
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7848,7 +7850,7 @@ describe('Circle Tag Tests', function () {
       let r = t1x;
 
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(r))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7891,7 +7893,7 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 1, t1y = 2;
@@ -7914,7 +7916,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.numericalCenter[0]).closeTo(cnx, 1E-12)
       expect(stateVariables['/_circle1'].stateValues.numericalCenter[1]).closeTo(cny, 1E-12)
 
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log("move circle");
@@ -7940,7 +7942,7 @@ describe('Circle Tag Tests', function () {
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
 
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -7984,7 +7986,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8023,7 +8025,7 @@ describe('Circle Tag Tests', function () {
       let cnx = (t1x + t2x) / 2;
       let cny = (t1y + t2y) / 2;
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8064,7 +8066,7 @@ describe('Circle Tag Tests', function () {
       let cnx = (t1x + t2x) / 2;
       let cny = (t1y + t2y) / 2;
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8108,7 +8110,7 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = 3;
@@ -8132,7 +8134,7 @@ describe('Circle Tag Tests', function () {
 
       let r = stateVariables['/_circle1'].stateValues.radius;
 
-      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber') + ' .mjx-mrow').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
     })
 
@@ -8162,7 +8164,7 @@ describe('Circle Tag Tests', function () {
         args: { center: [cnx, cny] }
       });
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8215,7 +8217,7 @@ describe('Circle Tag Tests', function () {
         args: { x: cnx, y: cny }
       });
 
-      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+      cy.get(cesc('#\\/radiusNumber')).should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8257,7 +8259,7 @@ describe('Circle Tag Tests', function () {
       t2x = t1x - 1;
 
 
-      cy.get('#\\/TP1').should('contain.text', `(${nInDOM(Math.trunc(t1x * 100) / 100)}`)
+      cy.get(cesc('#\\/TP1')).should('contain.text', `(${nInDOM(Math.trunc(t1x * 100) / 100)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8300,7 +8302,7 @@ describe('Circle Tag Tests', function () {
       t3x = t1x + 1;
 
 
-      cy.get('#\\/TP1').should('contain.text', `(${nInDOM(Math.trunc(t1x * 100) / 100)}`)
+      cy.get(cesc('#\\/TP1')).should('contain.text', `(${nInDOM(Math.trunc(t1x * 100) / 100)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8343,7 +8345,7 @@ describe('Circle Tag Tests', function () {
       t2x = t1x - 1;
 
 
-      cy.get('#\\/TP1').should('contain.text', `(${nInDOM(Math.trunc(t1x * 100) / 100)}`)
+      cy.get(cesc('#\\/TP1')).should('contain.text', `(${nInDOM(Math.trunc(t1x * 100) / 100)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8393,7 +8395,7 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -8403,7 +8405,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.numericalCenter).eqls([0, 0]);
       expect(stateVariables["/centerPoint"].stateValues.coords).eqls(["vector", 0, 0])
       expect(stateVariables["/_point1"].stateValues.coords).eqls(["vector", 0, 0])
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(0)},${nInDOM(0)})`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(0)},${nInDOM(0)})`)
 
     })
 
@@ -8416,7 +8418,7 @@ describe('Circle Tag Tests', function () {
         args: { center: [-7, 2] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-7)},${nInDOM(2)})`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-7)},${nInDOM(2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8435,7 +8437,7 @@ describe('Circle Tag Tests', function () {
         args: { x: -3, y: -5 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-5)},${nInDOM(-3)})`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-5)},${nInDOM(-3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8454,7 +8456,7 @@ describe('Circle Tag Tests', function () {
         args: { x: 1, y: -4 }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(1)},${nInDOM(-4)})`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(1)},${nInDOM(-4)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8486,7 +8488,7 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -8495,13 +8497,13 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/circ'].stateValues.numericalRadius).eq(1);
       expect(stateVariables['/circ2'].stateValues.numericalCenter).eqls([NaN, NaN]);
       expect(stateVariables['/circ2'].stateValues.numericalRadius).eq(1);
-      cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(＿,＿)`)
     });
 
     cy.log("enter point for center");
-    cy.get('#\\/c textarea').type("(2,1){enter}", { force: true })
+    cy.get(cesc('#\\/c') + ' textarea').type("(2,1){enter}", { force: true })
 
-    cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(2)},${nInDOM(1)})`)
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(2)},${nInDOM(1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8519,7 +8521,7 @@ describe('Circle Tag Tests', function () {
         componentName: "/circ",
         args: { center: [-7, 2] }
       });
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-7)},${nInDOM(2)})`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-7)},${nInDOM(2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8531,9 +8533,9 @@ describe('Circle Tag Tests', function () {
     })
 
     cy.log("change point for center");
-    cy.get('#\\/c textarea').type("{end}{leftArrow}{backspace}-4{enter}", { force: true })
+    cy.get(cesc('#\\/c') + ' textarea').type("{end}{leftArrow}{backspace}-4{enter}", { force: true })
 
-    cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(-7)},${nInDOM(-4)})`)
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(-7)},${nInDOM(-4)})`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/circ'].stateValues.numericalCenter).eqls([-7, -4]);
@@ -8550,7 +8552,7 @@ describe('Circle Tag Tests', function () {
         args: { center: [6, 9] }
       });
 
-      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(6)},${nInDOM(9)})`)
+      cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(6)},${nInDOM(9)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/circ'].stateValues.numericalCenter).eqls([6, 9]);
@@ -8561,9 +8563,9 @@ describe('Circle Tag Tests', function () {
     })
 
     cy.log("center undefined again");
-    cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/c') + ' textarea').type("{ctrl+home}{shift+end}{backspace}{enter}", { force: true })
 
-    cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(＿,＿)`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/circ'].stateValues.numericalCenter).eqls([NaN, NaN]);
@@ -8573,9 +8575,9 @@ describe('Circle Tag Tests', function () {
     })
 
     cy.log("enter new point for center");
-    cy.get('#\\/c textarea').type("(5,4){enter}", { force: true })
+    cy.get(cesc('#\\/c') + ' textarea').type("(5,4){enter}", { force: true })
 
-    cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
+    cy.get(cesc('#\\/centerPoint2')).should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8626,17 +8628,17 @@ describe('Circle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '1')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(0,0)')
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '1')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(0,0)')
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '1')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(0,0)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '1')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '5')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(0,0)')
 
 
     cy.log('move original circle')
@@ -8648,15 +8650,15 @@ describe('Circle Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '1')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(−1,2)')
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '1')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(−1,2)')
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '1')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(−1,2)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '1')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '5')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(−1,2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8665,20 +8667,20 @@ describe('Circle Tag Tests', function () {
     });
 
     cy.log('enter non-numeric radius and center for original circle');
-    cy.get('#\\/rc textarea').type("{end}+x{enter}", { force: true })
-    cy.get('#\\/cc textarea').type("{end}{leftArrow}{backspace}y{enter}", { force: true })
+    cy.get(cesc('#\\/rc') + ' textarea').type("{end}+x{enter}", { force: true })
+    cy.get(cesc('#\\/cc') + ' textarea').type("{end}{leftArrow}{backspace}y{enter}", { force: true })
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '1+x')
-    cy.get('#\\/cc .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '1+x')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(−1,y)')
     })
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '1+x')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(−1,y)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '1+x')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '5')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(−1,y)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8687,18 +8689,18 @@ describe('Circle Tag Tests', function () {
     });
 
     cy.log('set radius and center for original circle back to number using other components');
-    cy.get('#\\/rc1 textarea').type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true })
-    cy.get('#\\/cc3 textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}4,5{enter}", { force: true })
+    cy.get(cesc('#\\/rc1') + ' textarea').type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/cc3') + ' textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}4,5{enter}", { force: true })
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '2')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '2')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '2')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '2')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '5')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(3,4)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(4,5)')
     })
 
@@ -8718,19 +8720,19 @@ describe('Circle Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/rc1 textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get(cesc('#\\/rc1') + ' textarea').type("{end}{backspace}4{enter}", { force: true })
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
-    cy.get('#\\/rc1 .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
     })
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(−5,2)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '13')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(−5,2)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '13')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(4,5)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8748,17 +8750,17 @@ describe('Circle Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
-    cy.get('#\\/rc1 .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
     })
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(−5,2)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(−5,2)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '10')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(4,5)')
 
 
     cy.window().then(async (win) => {
@@ -8769,19 +8771,19 @@ describe('Circle Tag Tests', function () {
 
     cy.log('set radius of third circle')
 
-    cy.get('#\\/rc2 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true })
+    cy.get(cesc('#\\/rc2') + ' textarea').type("{end}{backspace}{backspace}5{enter}", { force: true })
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(−5,2)')
-    cy.get('#\\/rc2 .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(−5,2)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(4,5)')
 
 
     cy.window().then(async (win) => {
@@ -8793,19 +8795,19 @@ describe('Circle Tag Tests', function () {
 
     cy.log('set center of third circle')
 
-    cy.get('#\\/cc2 textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}5,-3{enter}", { force: true })
+    cy.get(cesc('#\\/cc2') + ' textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}5,-3{enter}", { force: true })
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(5,−3)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
-    cy.get('#\\/cc2 .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '10')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(5,−3)')
     })
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '3')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(4,5)')
 
 
     cy.window().then(async (win) => {
@@ -8817,19 +8819,19 @@ describe('Circle Tag Tests', function () {
 
     cy.log('set radius of fourth circle')
 
-    cy.get('#\\/src3 textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get(cesc('#\\/src3') + ' textarea').type("{end}{backspace}9{enter}", { force: true })
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(5,−3)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(5,−3)')
-    cy.get('#\\/src3 .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '10')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
     })
-    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '9')
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').should('have.text', '9')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(4,5)')
 
 
     cy.window().then(async (win) => {
@@ -8850,19 +8852,19 @@ describe('Circle Tag Tests', function () {
       })
     });
 
-    cy.get('#\\/rc3 textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get(cesc('#\\/rc3') + ' textarea').type("{end}{backspace}9{enter}", { force: true })
 
-    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc .mq-editable-field').should('have.text', '(3,8)')
-    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
-    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(5,−3)')
-    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
-    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(5,−3)')
-    cy.get('#\\/src3 .mq-editable-field').should('have.text', '9')
-    cy.get('#\\/rc3 .mq-editable-field').invoke('text').then((text) => {
+    cy.get(cesc('#\\/rc') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc') + ' .mq-editable-field').should('have.text', '(3,8)')
+    cy.get(cesc('#\\/rc1') + ' .mq-editable-field').should('have.text', '4')
+    cy.get(cesc('#\\/cc1') + ' .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get(cesc('#\\/rc2') + ' .mq-editable-field').should('have.text', '10')
+    cy.get(cesc('#\\/cc2') + ' .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get(cesc('#\\/src3') + ' .mq-editable-field').should('have.text', '9')
+    cy.get(cesc('#\\/rc3') + ' .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
     })
-    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(3,8)')
+    cy.get(cesc('#\\/cc3') + ' .mq-editable-field').should('have.text', '(3,8)')
 
 
     cy.window().then(async (win) => {
@@ -8896,14 +8898,14 @@ describe('Circle Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/circ'].stateValues.numericalCenter).eqls([0, 0]);
       expect(stateVariables['/circ'].stateValues.numericalRadius).eq(1);
-      cy.get(`#\\/r2 .mjx-mrow`).should('contain.text', "1");
+      cy.get(cesc(`#\\/r2`) + ` .mjx-mrow`).should('contain.text', "1");
     });
 
     cy.log(`move circle`)
@@ -8914,8 +8916,8 @@ describe('Circle Tag Tests', function () {
         args: { center: [-7, 2] }
       });
 
-      cy.get(`#\\/r2 .mjx-mrow`).should('contain.text', "1");
-      cy.get(`#\\/c .mjx-mrow`).should('contain.text', `(${nInDOM(-7)},${nInDOM(2)})`)
+      cy.get(cesc(`#\\/r2`) + ` .mjx-mrow`).should('contain.text', "1");
+      cy.get(cesc(`#\\/c`) + ` .mjx-mrow`).should('contain.text', `(${nInDOM(-7)},${nInDOM(2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -8925,9 +8927,9 @@ describe('Circle Tag Tests', function () {
     })
 
     cy.log("change radius");
-    cy.get('#\\/r textarea').type("{end}{backspace}3{enter}", { force: true })
-    cy.get(`#\\/r .mq-editable-field`).should('contain.text', "3");
-    cy.get(`#\\/r2 .mjx-mrow`).should('contain.text', "3");
+    cy.get(cesc('#\\/r') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc(`#\\/r`) + ` .mq-editable-field`).should('contain.text', "3");
+    cy.get(cesc(`#\\/r2`) + ` .mjx-mrow`).should('contain.text', "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8945,7 +8947,7 @@ describe('Circle Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -8978,41 +8980,41 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
     let t3x = -3, t3y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -9034,41 +9036,41 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
     let t3x = -3, t3y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -9131,48 +9133,48 @@ describe('Circle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
-    cy.get('#\\/st1').should('have.text', 'blue')
-    cy.get('#\\/stn1').should('have.text', 'blue circle')
-    cy.get('#\\/bst1').should('have.text', 'blue')
-    cy.get('#\\/fst1').should('have.text', 'unfilled')
+    cy.get(cesc('#\\/st1')).should('have.text', 'blue')
+    cy.get(cesc('#\\/stn1')).should('have.text', 'blue circle')
+    cy.get(cesc('#\\/bst1')).should('have.text', 'blue')
+    cy.get(cesc('#\\/fst1')).should('have.text', 'unfilled')
 
-    cy.get('#\\/st2').should('have.text', 'filled blue')
-    cy.get('#\\/stn2').should('have.text', 'filled blue circle')
-    cy.get('#\\/bst2').should('have.text', 'blue')
-    cy.get('#\\/fst2').should('have.text', 'blue')
+    cy.get(cesc('#\\/st2')).should('have.text', 'filled blue')
+    cy.get(cesc('#\\/stn2')).should('have.text', 'filled blue circle')
+    cy.get(cesc('#\\/bst2')).should('have.text', 'blue')
+    cy.get(cesc('#\\/fst2')).should('have.text', 'blue')
 
-    cy.get('#\\/st3').should('have.text', 'red')
-    cy.get('#\\/stn3').should('have.text', 'red circle')
-    cy.get('#\\/bst3').should('have.text', 'red')
-    cy.get('#\\/fst3').should('have.text', 'unfilled')
+    cy.get(cesc('#\\/st3')).should('have.text', 'red')
+    cy.get(cesc('#\\/stn3')).should('have.text', 'red circle')
+    cy.get(cesc('#\\/bst3')).should('have.text', 'red')
+    cy.get(cesc('#\\/fst3')).should('have.text', 'unfilled')
 
-    cy.get('#\\/st4').should('have.text', 'filled green with red border')
-    cy.get('#\\/stn4').should('have.text', 'filled green circle with a red border')
-    cy.get('#\\/bst4').should('have.text', 'red')
-    cy.get('#\\/fst4').should('have.text', 'green')
+    cy.get(cesc('#\\/st4')).should('have.text', 'filled green with red border')
+    cy.get(cesc('#\\/stn4')).should('have.text', 'filled green circle with a red border')
+    cy.get(cesc('#\\/bst4')).should('have.text', 'red')
+    cy.get(cesc('#\\/fst4')).should('have.text', 'green')
 
-    cy.get('#\\/st5').should('have.text', 'thick blue')
-    cy.get('#\\/stn5').should('have.text', 'thick blue circle')
-    cy.get('#\\/bst5').should('have.text', 'thick blue')
-    cy.get('#\\/fst5').should('have.text', 'unfilled')
+    cy.get(cesc('#\\/st5')).should('have.text', 'thick blue')
+    cy.get(cesc('#\\/stn5')).should('have.text', 'thick blue circle')
+    cy.get(cesc('#\\/bst5')).should('have.text', 'thick blue')
+    cy.get(cesc('#\\/fst5')).should('have.text', 'unfilled')
 
-    cy.get('#\\/st6').should('have.text', 'filled blue with thick border')
-    cy.get('#\\/stn6').should('have.text', 'filled blue circle with a thick border')
-    cy.get('#\\/bst6').should('have.text', 'thick blue')
-    cy.get('#\\/fst6').should('have.text', 'blue')
+    cy.get(cesc('#\\/st6')).should('have.text', 'filled blue with thick border')
+    cy.get(cesc('#\\/stn6')).should('have.text', 'filled blue circle with a thick border')
+    cy.get(cesc('#\\/bst6')).should('have.text', 'thick blue')
+    cy.get(cesc('#\\/fst6')).should('have.text', 'blue')
 
-    cy.get('#\\/st7').should('have.text', 'thin dotted red')
-    cy.get('#\\/stn7').should('have.text', 'thin dotted red circle')
-    cy.get('#\\/bst7').should('have.text', 'thin dotted red')
-    cy.get('#\\/fst7').should('have.text', 'unfilled')
+    cy.get(cesc('#\\/st7')).should('have.text', 'thin dotted red')
+    cy.get(cesc('#\\/stn7')).should('have.text', 'thin dotted red circle')
+    cy.get(cesc('#\\/bst7')).should('have.text', 'thin dotted red')
+    cy.get(cesc('#\\/fst7')).should('have.text', 'unfilled')
 
-    cy.get('#\\/st8').should('have.text', 'filled green with thin dotted red border')
-    cy.get('#\\/stn8').should('have.text', 'filled green circle with a thin dotted red border')
-    cy.get('#\\/bst8').should('have.text', 'thin dotted red')
-    cy.get('#\\/fst8').should('have.text', 'green')
+    cy.get(cesc('#\\/st8')).should('have.text', 'filled green with thin dotted red border')
+    cy.get(cesc('#\\/stn8')).should('have.text', 'filled green circle with a thin dotted red border')
+    cy.get(cesc('#\\/bst8')).should('have.text', 'thin dotted red')
+    cy.get(cesc('#\\/fst8')).should('have.text', 'green')
 
 
   });
@@ -9205,15 +9207,15 @@ describe('Circle Tag Tests', function () {
     });
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Circle A is filled brown with thick border.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a filled dark red circle.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a filled black circle with a thin border.');
-    cy.get('#\\/Aborderdescrip').should('have.text', 'A has a thick brown border.');
-    cy.get('#\\/Bborderdescrip').should('have.text', 'B has a dark red border.');
-    cy.get('#\\/Cborderdescrip').should('have.text', 'C has a thin black border.');
-    cy.get('#\\/Afilldescrip').should('have.text', 'A has a brown fill.');
-    cy.get('#\\/Bfilldescrip').should('have.text', 'B has a dark red fill.');
-    cy.get('#\\/Cfilldescrip').should('have.text', 'C has a black fill.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Circle A is filled brown with thick border.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a filled dark red circle.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a filled black circle with a thin border.');
+    cy.get(cesc('#\\/Aborderdescrip')).should('have.text', 'A has a thick brown border.');
+    cy.get(cesc('#\\/Bborderdescrip')).should('have.text', 'B has a dark red border.');
+    cy.get(cesc('#\\/Cborderdescrip')).should('have.text', 'C has a thin black border.');
+    cy.get(cesc('#\\/Afilldescrip')).should('have.text', 'A has a brown fill.');
+    cy.get(cesc('#\\/Bfilldescrip')).should('have.text', 'B has a dark red fill.');
+    cy.get(cesc('#\\/Cfilldescrip')).should('have.text', 'C has a black fill.');
 
     cy.log('set dark mode')
     cy.get('#testRunner_toggleControls').click();
@@ -9222,15 +9224,15 @@ describe('Circle Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Circle A is filled yellow with thick border.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a filled light red circle.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a filled white circle with a thin border.');
-    cy.get('#\\/Aborderdescrip').should('have.text', 'A has a thick yellow border.');
-    cy.get('#\\/Bborderdescrip').should('have.text', 'B has a light red border.');
-    cy.get('#\\/Cborderdescrip').should('have.text', 'C has a thin white border.');
-    cy.get('#\\/Afilldescrip').should('have.text', 'A has a yellow fill.');
-    cy.get('#\\/Bfilldescrip').should('have.text', 'B has a light red fill.');
-    cy.get('#\\/Cfilldescrip').should('have.text', 'C has a white fill.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Circle A is filled yellow with thick border.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a filled light red circle.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a filled white circle with a thin border.');
+    cy.get(cesc('#\\/Aborderdescrip')).should('have.text', 'A has a thick yellow border.');
+    cy.get(cesc('#\\/Bborderdescrip')).should('have.text', 'B has a light red border.');
+    cy.get(cesc('#\\/Cborderdescrip')).should('have.text', 'C has a thin white border.');
+    cy.get(cesc('#\\/Afilldescrip')).should('have.text', 'A has a yellow fill.');
+    cy.get(cesc('#\\/Bfilldescrip')).should('have.text', 'B has a light red fill.');
+    cy.get(cesc('#\\/Cfilldescrip')).should('have.text', 'C has a white fill.');
 
 
   });
