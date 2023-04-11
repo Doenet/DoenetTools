@@ -158,7 +158,8 @@ export default React.memo(function Vector(props) {
         });
       } else if (!pointerMovedSinceDown.current) {
         callAction({
-          action: actions.vectorClicked
+          action: actions.vectorClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       downOnPoint.current = null;
@@ -172,7 +173,8 @@ export default React.memo(function Vector(props) {
         });
       } else if (!pointerMovedSinceDown.current) {
         callAction({
-          action: actions.vectorClicked
+          action: actions.vectorClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       downOnPoint.current = null;
@@ -190,7 +192,8 @@ export default React.memo(function Vector(props) {
       } else if (!pointerMovedSinceDown.current && downOnPoint.current === null) {
         // Note: counting on fact that up on vector will trigger before up on points
         callAction({
-          action: actions.vectorClicked
+          action: actions.vectorClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       pointerIsDown.current = false;
@@ -239,7 +242,8 @@ export default React.memo(function Vector(props) {
       pointerMovedSinceDown.current = false;
       if (tailDraggable.current) {
         callAction({
-          action: actions.vectorFocused
+          action: actions.vectorFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -248,7 +252,8 @@ export default React.memo(function Vector(props) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
       callAction({
-        action: actions.vectorFocused
+        action: actions.vectorFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -261,7 +266,8 @@ export default React.memo(function Vector(props) {
       pointerMovedSinceDown.current = false;
       if (headDraggable.current) {
         callAction({
-          action: actions.vectorFocused
+          action: actions.vectorFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -270,7 +276,8 @@ export default React.memo(function Vector(props) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
       callAction({
-        action: actions.vectorFocused
+        action: actions.vectorFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -288,7 +295,8 @@ export default React.memo(function Vector(props) {
       pointerMovedSinceDown.current = false;
       if (!fixed.current) {
         callAction({
-          action: actions.vectorFocused
+          action: actions.vectorFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -297,7 +305,8 @@ export default React.memo(function Vector(props) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
       callAction({
-        action: actions.vectorFocused
+        action: actions.vectorFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -312,7 +321,8 @@ export default React.memo(function Vector(props) {
         headBeingDragged.current = false;
         tailBeingDragged.current = false;
         callAction({
-          action: actions.vectorClicked
+          action: actions.vectorClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -327,7 +337,8 @@ export default React.memo(function Vector(props) {
         headBeingDragged.current = false;
         tailBeingDragged.current = false;
         callAction({
-          action: actions.vectorClicked
+          action: actions.vectorClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -345,7 +356,8 @@ export default React.memo(function Vector(props) {
         headBeingDragged.current = false;
         tailBeingDragged.current = false;
         callAction({
-          action: actions.vectorClicked
+          action: actions.vectorClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });

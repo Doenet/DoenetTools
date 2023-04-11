@@ -1029,6 +1029,7 @@ describe('CallAction Tag Tests', function () {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
       cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
@@ -1074,6 +1075,7 @@ describe('CallAction Tag Tests', function () {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
       cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
@@ -1188,6 +1190,7 @@ describe('CallAction Tag Tests', function () {
           await win.callAction1({
             actionName: "pointClicked",
             componentName: PName,
+            args: { name: PName }
           });
 
           cy.waitUntil(() => cy.get(numsAnchor).invoke('text').then(text => {
@@ -1233,6 +1236,7 @@ describe('CallAction Tag Tests', function () {
           await win.callAction1({
             actionName: "pointClicked",
             componentName: PName,
+            args: { name: PName }
           });
 
           cy.waitUntil(() => cy.get(numsAnchor).invoke('text').then(text => {
@@ -1335,6 +1339,7 @@ describe('CallAction Tag Tests', function () {
       await win.callAction1({
         actionName: "pointFocused",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
       cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {
@@ -1380,6 +1385,7 @@ describe('CallAction Tag Tests', function () {
       await win.callAction1({
         actionName: "pointFocused",
         componentName: "/P",
+        args: { name: "/P" }
       });
 
       cy.waitUntil(() => cy.get(cesc('#\\/nums')).invoke('text').then(text => {

@@ -206,7 +206,8 @@ export default React.memo(function Point(props) {
 
       if (!fixed.current) {
         callAction({
-          action: actions.pointFocused
+          action: actions.pointFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -214,7 +215,8 @@ export default React.memo(function Point(props) {
     newShadowPointJXG.on('hit', function (e) {
       dragged.current = false;
       callAction({
-        action: actions.pointFocused
+        action: actions.pointFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -234,11 +236,13 @@ export default React.memo(function Point(props) {
             action: actions.switchPoint
           });
           callAction({
-            action: actions.pointClicked
+            action: actions.pointClicked,
+            args: { name }   // send name so get original name if adapted
           });
         } else {
           callAction({
-            action: actions.pointClicked
+            action: actions.pointClicked,
+            args: { name }   // send name so get original name if adapted
           });
         }
       }
@@ -345,11 +349,13 @@ export default React.memo(function Point(props) {
             action: actions.switchPoint
           });
           callAction({
-            action: actions.pointClicked
+            action: actions.pointClicked,
+            args: { name }   // send name so get original name if adapted
           });
         } else {
           callAction({
-            action: actions.pointClicked
+            action: actions.pointClicked,
+            args: { name }   // send name so get original name if adapted
           });
         }
       }
@@ -460,7 +466,7 @@ export default React.memo(function Point(props) {
         shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
-      if (fixed) {
+      if (fixed.current) {
         pointJXG.current.visProp.showinfobox = false;
       } else {
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;

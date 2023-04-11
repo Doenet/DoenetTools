@@ -180,7 +180,8 @@ export default React.memo(function Circle(props) {
         })
       } else if (!pointerMovedSinceDown.current) {
         callAction({
-          action: actions.circleClicked
+          action: actions.circleClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -212,7 +213,8 @@ export default React.memo(function Circle(props) {
       pointerMovedSinceDown.current = false;
       if (!fixed.current) {
         callAction({
-          action: actions.circleFocused
+          action: actions.circleFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -224,7 +226,8 @@ export default React.memo(function Circle(props) {
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
       callAction({
-        action: actions.circleFocused
+        action: actions.circleFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -243,7 +246,8 @@ export default React.memo(function Circle(props) {
           dragged.current = false;
         }
         callAction({
-          action: actions.circleClicked
+          action: actions.circleClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     })

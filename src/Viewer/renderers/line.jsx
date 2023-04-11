@@ -213,11 +213,13 @@ export default React.memo(function Line(props) {
             action: actions.switchLine,
           })
           callAction({
-            action: actions.lineClicked
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
           });
         } else {
           callAction({
-            action: actions.lineClicked
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
           });
         }
       }
@@ -248,7 +250,8 @@ export default React.memo(function Line(props) {
       pointerMovedSinceDown.current = false;
       if (!fixed.current) {
         callAction({
-          action: actions.lineFocused
+          action: actions.lineFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
 
@@ -261,7 +264,8 @@ export default React.memo(function Line(props) {
         [...newLineJXG.point2.coords.scrCoords]
       ]
       callAction({
-        action: actions.lineFocused
+        action: actions.lineFocused,
+        args: { name }   // send name so get original name if adapted
       });
 
     })
@@ -285,11 +289,13 @@ export default React.memo(function Line(props) {
             action: actions.switchLine,
           })
           callAction({
-            action: actions.lineClicked
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
           });
         } else {
           callAction({
-            action: actions.lineClicked
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
           });
         }
       }

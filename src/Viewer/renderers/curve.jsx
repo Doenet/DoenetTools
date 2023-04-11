@@ -88,12 +88,11 @@ export default React.memo(function Curve(props) {
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
 
-    //things to be passed to JSXGraph as attributes
     var curveAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      fixed: true,
+      fixed: false,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -210,6 +209,8 @@ export default React.memo(function Curve(props) {
     draggedControlPoint.current = null;
     draggedThroughPoint.current = null;
 
+    newCurveJXG.isDraggable = false;
+
     newCurveJXG.on('up', function (e) {
       if (!pointerMovedSinceDown.current) {
         if (switchable.current) {
@@ -251,6 +252,21 @@ export default React.memo(function Curve(props) {
         pointerMovedSinceDown.current = false;
         downOther();
 
+        callAction({
+          action: actions.curveFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+
+      });
+
+
+      newCurveJXG.on('hit', function (e) {
+        downOther();
+
+        callAction({
+          action: actions.curveFocused,
+          args: { name }   // send name so get original name if adapted
+        });
       });
 
       segmentAttributes.current = {
@@ -321,9 +337,23 @@ export default React.memo(function Curve(props) {
         pointerAtDown.current = [e.x, e.y];
         pointerIsDown.current = true;
         pointerMovedSinceDown.current = false;
-        updateSinceDown.current = false;
+
+        callAction({
+          action: actions.curveFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+
       });
+
+      newCurveJXG.on('hit', function (e) {
+        callAction({
+          action: actions.curveFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      });
+
     }
+
     return newCurveJXG;
   }
 
@@ -431,11 +461,6 @@ export default React.memo(function Curve(props) {
     makeThroughPointsAlwaysVisible();
     makeVectorControlVisible(i);
     board.updateRenderer();
-
-    callAction({
-      action: actions.curveFocused,
-      args: { name }   // send name so get original name if adapted
-    });
   }
 
   function dragThroughPoint(i) {

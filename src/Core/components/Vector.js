@@ -2194,11 +2194,11 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async vectorClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+  async vectorClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -2208,11 +2208,11 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async vectorFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+  async vectorFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

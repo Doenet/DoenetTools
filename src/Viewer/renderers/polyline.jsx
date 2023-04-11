@@ -277,14 +277,16 @@ export default React.memo(function Polyline(props) {
       if (downOnPoint.current === null && !fixed.current) {
         // Note: counting on fact that down on polyline itself will trigger after down on points
         callAction({
-          action: actions.polylineFocused
+          action: actions.polylineFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
       pointsAtDown.current = polylineJXG.current.points.map(x => [...x.scrCoords])
     } else {
       if (!verticesFixed.current) {
         callAction({
-          action: actions.polylineFocused
+          action: actions.polylineFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
       downOnPoint.current = i;
@@ -298,7 +300,8 @@ export default React.memo(function Polyline(props) {
   function hitHandler() {
     draggedPoint.current = null
     callAction({
-      action: actions.polylineFocused
+      action: actions.polylineFocused,
+      args: { name }   // send name so get original name if adapted
     });
   }
 
@@ -323,7 +326,8 @@ export default React.memo(function Polyline(props) {
     } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1)) {
       // Note: counting on fact that up on polyline itself (i===-1) will trigger before up on points
       callAction({
-        action: actions.polylineClicked
+        action: actions.polylineClicked,
+        args: { name }   // send name so get original name if adapted
       });
     }
 
@@ -383,7 +387,8 @@ export default React.memo(function Polyline(props) {
       }
       draggedPoint.current = null
       callAction({
-        action: actions.polylineClicked
+        action: actions.polylineClicked,
+        args: { name }   // send name so get original name if adapted
       });
 
     }

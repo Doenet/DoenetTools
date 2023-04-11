@@ -10,6 +10,8 @@ export class M extends InlineComponent {
 
     Object.assign(this.actions, {
       moveMath: this.moveMath.bind(this),
+      mathClicked: this.mathClicked.bind(this),
+      mathFocused: this.mathFocused.bind(this),
     });
 
   }
@@ -270,6 +272,34 @@ export class M extends InlineComponent {
       componentType: this.componentType,
       coreFunctions: this.coreFunctions
     })
+
+  }
+
+  async mathClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async mathFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

@@ -721,12 +721,11 @@ export default class LineSegment extends GraphicalComponent {
 
   }
 
-
-  async lineSegmentClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineSegmentClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -736,11 +735,11 @@ export default class LineSegment extends GraphicalComponent {
 
   }
 
-  async lineSegmentFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineSegmentFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

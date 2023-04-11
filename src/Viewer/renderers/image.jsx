@@ -10,6 +10,7 @@ export default React.memo(function Image(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
   let [url, setUrl] = useState(null)
 
+  Image.ignoreActionsWithoutCore = () => true;
 
   let imageJXG = useRef(null);
   let anchorPointJXG = useRef(null);
@@ -72,7 +73,7 @@ export default React.memo(function Image(props) {
     //On unmount
     return () => {
       // if line is defined
-      if (Object.keys(imageJXG.current).length !== 0) {
+      if (imageJXG.current !== null) {
         deleteImageJXG();
       }
 
@@ -200,7 +201,8 @@ export default React.memo(function Image(props) {
       pointerMovedSinceDown.current = false;
       if (!fixed.current) {
         callAction({
-          action: actions.imageFocused
+          action: actions.imageFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -209,7 +211,8 @@ export default React.memo(function Image(props) {
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
       callAction({
-        action: actions.imageFocused
+        action: actions.imageFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -225,7 +228,8 @@ export default React.memo(function Image(props) {
         dragged.current = false;
       } else if (!pointerMovedSinceDown.current) {
         callAction({
-          action: actions.imageClicked
+          action: actions.imageClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       pointerIsDown.current = false;
@@ -323,7 +327,8 @@ export default React.memo(function Image(props) {
           dragged.current = false;
         }
         callAction({
-          action: actions.imageClicked
+          action: actions.imageClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     })
@@ -358,7 +363,7 @@ export default React.memo(function Image(props) {
     imageJXG.current.off('keyfocusout');
     imageJXG.current.off('keydown');
     board.removeObject(imageJXG.current);
-    imageJXG.current = {};
+    imageJXG.current = null;
   }
 
   if (board) {

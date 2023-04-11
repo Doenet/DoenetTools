@@ -285,14 +285,16 @@ export default React.memo(function Polygon(props) {
       if (downOnPoint.current === null && !fixed.current) {
         // Note: counting on fact that down on polygon itself will trigger after down on points
         callAction({
-          action: actions.polygonFocused
+          action: actions.polygonFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
       pointsAtDown.current = polygonJXG.current.vertices.map(x => [...x.coords.scrCoords])
     } else {
       if (!verticesFixed.current) {
         callAction({
-          action: actions.polygonFocused
+          action: actions.polygonFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
       downOnPoint.current = i;
@@ -306,7 +308,8 @@ export default React.memo(function Polygon(props) {
   function hitHandler() {
     draggedPoint.current = null
     callAction({
-      action: actions.polygonFocused
+      action: actions.polygonFocused,
+      args: { name }   // send name so get original name if adapted
     })
   }
 
@@ -332,7 +335,8 @@ export default React.memo(function Polygon(props) {
     } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1)) {
       // Note: counting on fact that up on polygon itself (i===-1) will trigger before up on points
       callAction({
-        action: actions.polygonClicked
+        action: actions.polygonClicked,
+        args: { name }   // send name so get original name if adapted
       });
     }
 
@@ -392,7 +396,8 @@ export default React.memo(function Polygon(props) {
       }
       draggedPoint.current = null
       callAction({
-        action: actions.polygonClicked
+        action: actions.polygonClicked,
+        args: { name }   // send name so get original name if adapted
       });
 
     }

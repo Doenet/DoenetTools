@@ -785,6 +785,7 @@ describe('UpdateValue Tag Tests', function () {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
+        args: { name: "/P" }
       });
       cy.get(cesc('#\\/x')).should('contain.text', '3x')
       cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -807,6 +808,7 @@ describe('UpdateValue Tag Tests', function () {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
+        args: { name: "/P" }
       });
       cy.get(cesc('#\\/x')).should('contain.text', '9x')
       cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -865,6 +867,7 @@ describe('UpdateValue Tag Tests', function () {
       await win.callAction1({
         actionName: "pointFocused",
         componentName: "/P",
+        args: { name: "/P" }
       });
       cy.get(cesc('#\\/x')).should('contain.text', '3x')
       cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -887,6 +890,7 @@ describe('UpdateValue Tag Tests', function () {
       await win.callAction1({
         actionName: "pointFocused",
         componentName: "/P",
+        args: { name: "/P" }
       });
       cy.get(cesc('#\\/x')).should('contain.text', '9x')
       cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

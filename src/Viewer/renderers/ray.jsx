@@ -171,7 +171,8 @@ export default React.memo(function Ray(props) {
         })
       } else if (!pointerMovedSinceDown.current) {
         callAction({
-          action: actions.rayClicked
+          action: actions.rayClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       pointerIsDown.current = false;
@@ -202,7 +203,8 @@ export default React.memo(function Ray(props) {
       pointerMovedSinceDown.current = false;
       if (!fixed.current) {
         callAction({
-          action: actions.rayFocused
+          action: actions.rayFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
 
@@ -211,7 +213,8 @@ export default React.memo(function Ray(props) {
     newRayJXG.on('hit', function (e) {
       dragged.current = false;
       callAction({
-        action: actions.rayFocused
+        action: actions.rayFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -230,7 +233,8 @@ export default React.memo(function Ray(props) {
         }
 
         callAction({
-          action: actions.rayClicked
+          action: actions.rayClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     })

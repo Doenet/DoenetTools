@@ -66,17 +66,15 @@ export default React.memo(function BooleanInput(props) {
   let lastPositionFromCore = useRef(null);
   let previousPositionFromAnchor = useRef(null);
 
+  let fixed = useRef(false);
+  fixed.current = !SVs.draggable || SVs.fixed;
+
 
   useEffect(() => {
     //On unmount
     return () => {
       if (inputJXG.current !== null) {
-        inputJXG.current.rendNodeCheckbox.removeEventListener("change", onChangeHandler);
-        inputJXG.current.off('drag');
-        inputJXG.current.off('down');
-        inputJXG.current.off('up');
-        board?.removeObject(inputJXG.current);
-        inputJXG.current = null;
+        deleteInputJXG();
       }
 
     }
@@ -116,17 +114,15 @@ export default React.memo(function BooleanInput(props) {
 
   function createInputJXG() {
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
     let jsxInputAttributes = {
       visible: !SVs.hidden,
-      fixed,
+      fixed: fixed.current,
       disabled: SVs.disabled,
       checked: rendererValue,
       useMathJax: SVs.labelHasLatex,
       strokeColor: "var(--canvastext)",
       highlightStrokeColor: "var(--canvastext)",
-      highlight: !fixed,
+      highlight: !fixed.current,
       parse: false,
     };
 
@@ -179,6 +175,10 @@ export default React.memo(function BooleanInput(props) {
 
     });
 
+    newInputJXG.on('hit', function (e) {
+      dragged.current = false;
+    });
+
     newInputJXG.on('up', function (e) {
       if (dragged.current) {
         callAction({
@@ -188,22 +188,36 @@ export default React.memo(function BooleanInput(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
       }
-      dragged.current = false;
 
     });
 
+    newInputJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveInput,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newInputJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
+
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newInputJXG.size[0] / board.unitX;
@@ -230,13 +244,32 @@ export default React.memo(function BooleanInput(props) {
       let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
       let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
+        var o = board.origin.scrCoords;
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+
+        calculatedX.current = newAnchorPointJXG.X() + newInputJXG.relativeCoords.usrCoords[1];
+        calculatedY.current = newAnchorPointJXG.Y() + newInputJXG.relativeCoords.usrCoords[2];
+
+      }
+
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
@@ -252,13 +285,23 @@ export default React.memo(function BooleanInput(props) {
       newInputJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
-
     });
+
+    newInputJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveInput,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          })
+          dragged.current = false;
+        }
+      }
+    })
 
 
     inputJXG.current = newInputJXG;
@@ -280,6 +323,18 @@ export default React.memo(function BooleanInput(props) {
 
       }, 1000)
     }
+  }
+
+  function deleteInputJXG() {
+    inputJXG.current.rendNodeCheckbox.removeEventListener("change", onChangeHandler);
+    inputJXG.current.off('drag');
+    inputJXG.current.off('down');
+    inputJXG.current.off('hit');
+    inputJXG.current.off('up');
+    inputJXG.current.off('keyfocusout');
+    inputJXG.current.off('keydown');
+    board.removeObject(inputJXG.current);
+    inputJXG.current = null;
   }
 
   if (board) {
@@ -332,10 +387,8 @@ export default React.memo(function BooleanInput(props) {
         inputJXG.current.setAttribute({ disabled: SVs.disabled })
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      inputJXG.current.visProp.highlight = !fixed;
-      inputJXG.current.visProp.fixed = fixed;
+      inputJXG.current.visProp.highlight = !fixed.current;
+      inputJXG.current.visProp.fixed = fixed.current;
 
       inputJXG.current.needsUpdate = true;
 

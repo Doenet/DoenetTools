@@ -1255,11 +1255,11 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  async pointClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async pointClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -1269,12 +1269,11 @@ export default class Point extends GraphicalComponent {
 
   }
 
-
-  async pointFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async pointFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

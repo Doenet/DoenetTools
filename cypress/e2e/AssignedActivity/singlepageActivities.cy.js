@@ -1,4 +1,5 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
+import { cesc } from "../../../src/_utils/url";
 
 
 describe('Single page activity tests', function () {

@@ -1685,11 +1685,11 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  async lineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "click",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -1699,11 +1699,11 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  async lineFocused({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
     await this.coreFunctions.triggerChainedActions({
       triggeringAction: "focus",
-      componentName: this.componentName,
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
       actionId,
       sourceInformation,
       skipRendererUpdate,

@@ -182,7 +182,8 @@ export default React.memo(function LineSegment(props) {
         })
       } else if (!pointerMovedSinceDown.current) {
         callAction({
-          action: actions.lineSegmentClicked
+          action: actions.lineSegmentClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       downOnPoint.current = null;
@@ -198,7 +199,8 @@ export default React.memo(function LineSegment(props) {
         })
       } else if (!pointerMovedSinceDown.current) {
         callAction({
-          action: actions.lineSegmentClicked
+          action: actions.lineSegmentClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       downOnPoint.current = null;
@@ -216,7 +218,8 @@ export default React.memo(function LineSegment(props) {
       } else if (!pointerMovedSinceDown.current && downOnPoint.current === null) {
         // Note: counting on fact that up on line segment will trigger before up on points
         callAction({
-          action: actions.lineSegmentClicked
+          action: actions.lineSegmentClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
       pointerIsDown.current = false;
@@ -267,14 +270,16 @@ export default React.memo(function LineSegment(props) {
       pointerMovedSinceDown.current = false;
       if (!endpointsFixed.current) {
         callAction({
-          action: actions.lineSegmentFocused
+          action: actions.lineSegmentFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
     point1JXG.current.on('hit', (e) => {
       draggedPoint.current = null;
       callAction({
-        action: actions.lineSegmentFocused
+        action: actions.lineSegmentFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
     point2JXG.current.on('down', (e) => {
@@ -285,14 +290,16 @@ export default React.memo(function LineSegment(props) {
       pointerMovedSinceDown.current = false;
       if (!endpointsFixed.current) {
         callAction({
-          action: actions.lineSegmentFocused
+          action: actions.lineSegmentFocused,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
     point2JXG.current.on('hit', (e) => {
       draggedPoint.current = null;
       callAction({
-        action: actions.lineSegmentFocused
+        action: actions.lineSegmentFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
     lineSegmentJXG.current.on('down', function (e) {
@@ -308,14 +315,16 @@ export default React.memo(function LineSegment(props) {
       if (downOnPoint.current === null && !fixed.current) {
         // Note: counting on fact that down on line segment itself will trigger after down on points
         callAction({
-          action: actions.lineSegmentFocused
+          action: actions.lineSegmentFocused,
+          args: { name }   // send name so get original name if adapted
         })
       }
     });
     lineSegmentJXG.current.on('hit', (e) => {
       draggedPoint.current = null;
       callAction({
-        action: actions.lineSegmentFocused
+        action: actions.lineSegmentFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
 
@@ -333,7 +342,8 @@ export default React.memo(function LineSegment(props) {
         }
         draggedPoint.current = null;
         callAction({
-          action: actions.lineSegmentClicked
+          action: actions.lineSegmentClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     })
@@ -352,7 +362,8 @@ export default React.memo(function LineSegment(props) {
         }
         draggedPoint.current = null;
         callAction({
-          action: actions.lineSegmentClicked
+          action: actions.lineSegmentClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     })
@@ -371,7 +382,8 @@ export default React.memo(function LineSegment(props) {
         }
         draggedPoint.current = null;
         callAction({
-          action: actions.lineSegmentClicked
+          action: actions.lineSegmentClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });

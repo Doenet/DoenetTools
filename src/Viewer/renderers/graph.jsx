@@ -13,6 +13,10 @@ export default React.memo(function Graph(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
   // console.log({ name, id, SVs, children, actions })
 
+  // TODO: remove this if jsxgraph can fully support escaped "/",
+  // as this replacement introduces a possibility of non-unique id's
+  // if someone, for example, creates graphs named "/g/g" and "/g_g".
+  id = id.replaceAll("\\/", "_")
 
   const [board, setBoard] = useState(null);
 
@@ -142,7 +146,7 @@ export default React.memo(function Graph(props) {
 
       let el_id = id_node.replace(id + '_', '');
       let el = newBoard.select(el_id);
-      el.triggerEventHandlers(['keyfocusout'], [evt]);
+      el.triggerEventHandlers?.(['keyfocusout'], [evt]);
     }
 
     newBoard.containerObj.addEventListener("focusout", keyFocusOutListener)
@@ -158,7 +162,7 @@ export default React.memo(function Graph(props) {
 
       let el_id = id_node.replace(id + '_', '');
       let el = newBoard.select(el_id);
-      el.triggerEventHandlers(['keydown'], [evt]);
+      el.triggerEventHandlers?.(['keydown'], [evt]);
     }
 
     newBoard.containerObj.addEventListener("keydown", keyDownListener)

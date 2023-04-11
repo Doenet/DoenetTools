@@ -166,49 +166,49 @@ describe('Graph Tag Tests', function () {
 
     checkLimits(xmin, xmax, ymin, ymax)
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(6)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(6)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin += increment;
       ymax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(6)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(6)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin += increment;
       ymax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(5)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(5)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin -= increment;
       ymax -= increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(4)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(4)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin -= increment;
       xmax -= increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(7)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(7)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin += increment;
       xmax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(7)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(7)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin += increment;
       xmax += increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(3)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(3)').click().then((_) => {
       let meanx = (xmax + xmin) / 2;
       xmin = meanx + 0.8 * (xmin - meanx);
       xmax = meanx + 0.8 * (xmax - meanx);
@@ -218,7 +218,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(3)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(3)').click().then((_) => {
       let meanx = (xmax + xmin) / 2;
       xmin = meanx + 0.8 * (xmin - meanx);
       xmax = meanx + 0.8 * (xmax - meanx);
@@ -228,7 +228,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(1)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(1)').click().then((_) => {
       let meanx = (xmax + xmin) / 2;
       xmin = meanx + (xmin - meanx) / 0.8;
       xmax = meanx + (xmax - meanx) / 0.8;
@@ -258,14 +258,14 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(5)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(5)').click().then((_) => {
       let increment = 0.1 * (ymax - ymin);
       ymin -= increment;
       ymax -= increment;
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-    cy.get(cesc('#\\/_graph1_navigationbar') + ' > :nth-child(4)').click().then((_) => {
+    cy.get(cesc('#__graph1_navigationbar') + ' > :nth-child(4)').click().then((_) => {
       let increment = 0.1 * (xmax - xmin);
       xmin -= increment;
       xmax -= increment;
@@ -424,9 +424,9 @@ describe('Graph Tag Tests', function () {
     let xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
     checkLimits(xmin, xmax, ymin, ymax)
-    cy.get(cesc('#\\/g')).invoke('css', 'width')
+    cy.get(cesc('#_g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get(cesc('#\\/g')).invoke('css', 'height')
+    cy.get(cesc('#_g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     cy.log('set aspect ratio to 2')
@@ -434,9 +434,9 @@ describe('Graph Tag Tests', function () {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -446,9 +446,9 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -480,9 +480,9 @@ describe('Graph Tag Tests', function () {
       ymin = -10;
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -492,9 +492,9 @@ describe('Graph Tag Tests', function () {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -504,9 +504,9 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -538,9 +538,9 @@ describe('Graph Tag Tests', function () {
       ymin = -10;
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -550,9 +550,9 @@ describe('Graph Tag Tests', function () {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -562,9 +562,9 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -595,9 +595,9 @@ describe('Graph Tag Tests', function () {
       ymin = -5;
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -606,9 +606,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -617,9 +617,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymax = 35;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -650,9 +650,9 @@ describe('Graph Tag Tests', function () {
       ymin = -15;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -661,9 +661,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -672,9 +672,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -35;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -705,9 +705,9 @@ describe('Graph Tag Tests', function () {
       ymin = -30;
       ymax = 30;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -717,9 +717,9 @@ describe('Graph Tag Tests', function () {
       ymin = -15;
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -729,9 +729,9 @@ describe('Graph Tag Tests', function () {
       ymin = -60;
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -762,9 +762,9 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -774,9 +774,9 @@ describe('Graph Tag Tests', function () {
       xmin = -60;
       xmax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -786,9 +786,9 @@ describe('Graph Tag Tests', function () {
       xmin = -15;
       xmax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -820,9 +820,9 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -832,9 +832,9 @@ describe('Graph Tag Tests', function () {
       xmax = 70;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -844,9 +844,9 @@ describe('Graph Tag Tests', function () {
       xmax = 30;
       ymax = 140;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -877,9 +877,9 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -888,9 +888,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmin = -90;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -899,9 +899,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -932,9 +932,9 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -943,9 +943,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmax = 90;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -954,9 +954,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -987,9 +987,9 @@ describe('Graph Tag Tests', function () {
       ymin = -40;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -998,9 +998,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -1009,9 +1009,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -120;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -1042,9 +1042,9 @@ describe('Graph Tag Tests', function () {
       ymin = -40;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
@@ -1053,9 +1053,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
@@ -1064,9 +1064,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc('#\\/aspectRatio') + ' textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymax = 120;
       checkLimits(xmin, xmax, ymin, ymax)
-      cy.get(cesc('#\\/g')).invoke('css', 'width')
+      cy.get(cesc('#_g')).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-      cy.get(cesc('#\\/g')).invoke('css', 'height')
+      cy.get(cesc('#_g')).invoke('css', 'height')
         .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
@@ -1114,9 +1114,9 @@ describe('Graph Tag Tests', function () {
     }
 
 
-    cy.get(cesc('#\\/g')).invoke('css', 'width')
+    cy.get(cesc('#_g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get(cesc('#\\/g')).invoke('css', 'height')
+    cy.get(cesc('#_g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
 
@@ -1127,9 +1127,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc("#\\/xminInput") + " textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}-5{enter}", { force: true });
 
     cy.get(cesc('#\\/xmin')).should('have.text', '-5');
-    cy.get(cesc('#\\/g')).invoke('css', 'width')
+    cy.get(cesc('#_g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get(cesc('#\\/g')).invoke('css', 'height')
+    cy.get(cesc('#_g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 566).and('be.lte', 567)
 
     checkLimits(-5, 10, -10, 10)
@@ -1138,9 +1138,9 @@ describe('Graph Tag Tests', function () {
     cy.get(cesc("#\\/ymaxInput") + " textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}0{enter}", { force: true });
 
     cy.get(cesc('#\\/ymax')).should('have.text', '0');
-    cy.get(cesc('#\\/g')).invoke('css', 'width')
+    cy.get(cesc('#_g')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get(cesc('#\\/g')).invoke('css', 'height')
+    cy.get(cesc('#_g')).invoke('css', 'height')
       .then(height => parseInt(height)).should('be.gte', 283).and('be.lte', 284)
 
     checkLimits(-5, 10, -10, 0)
@@ -1515,7 +1515,7 @@ describe('Graph Tag Tests', function () {
     });
 
     for (let name in expectedSizes) {
-      cy.get(cesc2("#/" + name)).invoke('css', 'width')
+      cy.get(cesc2("#_" + name)).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', widthsBySize[expectedSizes[name]] - 4).and('be.lte', widthsBySize[expectedSizes[name]] + 1)
     }
 
@@ -1614,166 +1614,166 @@ describe('Graph Tag Tests', function () {
     // Note: these are brittle tests and could start failing if internals of jsxgraph changes
 
 
-    cy.get(cesc('#\\/none')).should('not.contain.text', 'π')
-    cy.get(cesc('#\\/none')).should('not.contain.text', 'e')
-    cy.get(cesc('#\\/none')).should('contain.text', '68')
-    cy.get(cesc('#\\/none')).should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#_none')).should('not.contain.text', 'π')
+    cy.get(cesc('#_none')).should('not.contain.text', 'e')
+    cy.get(cesc('#_none')).should('contain.text', '68')
+    cy.get(cesc('#_none')).should('contain.text', '−2−4−6−8')
 
-    cy.get(cesc('#\\/xpi')).should('contain.text', 'π2π3π')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '−π−2π−3π')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '24')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '68')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#_xpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#_xpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#_xpi')).should('contain.text', '24')
+    cy.get(cesc('#_xpi')).should('contain.text', '68')
+    cy.get(cesc('#_xpi')).should('contain.text', '−2−4−6−8')
 
-    cy.get(cesc('#\\/ypi')).should('contain.text', 'π2π3π')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '−π−2π−3π')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '24')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '68')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#_ypi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#_ypi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#_ypi')).should('contain.text', '24')
+    cy.get(cesc('#_ypi')).should('contain.text', '68')
+    cy.get(cesc('#_ypi')).should('contain.text', '−2−4−6−8')
 
-    cy.get(cesc('#\\/bothpi')).should('contain.text', 'π2π3π')
-    cy.get(cesc('#\\/bothpi')).should('contain.text', '−π−2π−3π')
-    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '24')
-    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '68')
-    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '−2−4−6−8')
+    cy.get(cesc('#_bothpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#_bothpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#_bothpi')).should('not.contain.text', '24')
+    cy.get(cesc('#_bothpi')).should('not.contain.text', '68')
+    cy.get(cesc('#_bothpi')).should('not.contain.text', '−2−4−6−8')
 
-    cy.get(cesc('#\\/xe')).should('contain.text', 'e2e3e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−e−2e−3e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '24')
-    cy.get(cesc('#\\/xe')).should('contain.text', '68')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#_xe')).should('contain.text', 'e2e3e')
+    cy.get(cesc('#_xe')).should('contain.text', '−e−2e−3e')
+    cy.get(cesc('#_xe')).should('contain.text', '24')
+    cy.get(cesc('#_xe')).should('contain.text', '68')
+    cy.get(cesc('#_xe')).should('contain.text', '−2−4−6−8')
 
-    cy.get(cesc('#\\/ye')).should('contain.text', 'e2e3e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−e−2e−3e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '24')
-    cy.get(cesc('#\\/ye')).should('contain.text', '68')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#_ye')).should('contain.text', 'e2e3e')
+    cy.get(cesc('#_ye')).should('contain.text', '−e−2e−3e')
+    cy.get(cesc('#_ye')).should('contain.text', '24')
+    cy.get(cesc('#_ye')).should('contain.text', '68')
+    cy.get(cesc('#_ye')).should('contain.text', '−2−4−6−8')
 
-    cy.get(cesc('#\\/bothe')).should('contain.text', 'e2e3e')
-    cy.get(cesc('#\\/bothe')).should('contain.text', '−e−2e−3e')
-    cy.get(cesc('#\\/bothe')).should('not.contain.text', '24')
-    cy.get(cesc('#\\/bothe')).should('not.contain.text', '68')
-    cy.get(cesc('#\\/bothe')).should('not.contain.text', '−2−4−6−8')
+    cy.get(cesc('#_bothe')).should('contain.text', 'e2e3e')
+    cy.get(cesc('#_bothe')).should('contain.text', '−e−2e−3e')
+    cy.get(cesc('#_bothe')).should('not.contain.text', '24')
+    cy.get(cesc('#_bothe')).should('not.contain.text', '68')
+    cy.get(cesc('#_bothe')).should('not.contain.text', '−2−4−6−8')
 
-    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'π')
-    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'e')
-    cy.get(cesc('#\\/ignorebad')).should('contain.text', '68')
-    cy.get(cesc('#\\/ignorebad')).should('contain.text', '−2−4−6−8')
+    cy.get(cesc('#_ignorebad')).should('not.contain.text', 'π')
+    cy.get(cesc('#_ignorebad')).should('not.contain.text', 'e')
+    cy.get(cesc('#_ignorebad')).should('contain.text', '68')
+    cy.get(cesc('#_ignorebad')).should('contain.text', '−2−4−6−8')
 
 
-    cy.get(cesc('#\\/none_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/xpi_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/ypi_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/bothpi_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/xe_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/ye_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/bothe_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/ignorebad_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_none_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_xpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_ypi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_bothpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_xe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_ye_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_bothe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_ignorebad_navigationbar') + ' > :nth-child(1)').click();
 
     cy.get(cesc('#\\/xmax')).should('have.text', '12.5')
 
-    cy.get(cesc('#\\/none')).should('not.contain.text', 'π')
-    cy.get(cesc('#\\/none')).should('not.contain.text', 'e')
-    cy.get(cesc('#\\/none')).should('contain.text', '10')
-    cy.get(cesc('#\\/none')).should('contain.text', '−10')
+    cy.get(cesc('#_none')).should('not.contain.text', 'π')
+    cy.get(cesc('#_none')).should('not.contain.text', 'e')
+    cy.get(cesc('#_none')).should('contain.text', '10')
+    cy.get(cesc('#_none')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/xpi')).should('contain.text', 'π2π3π')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '−π−2π−3π')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '10')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '−10')
+    cy.get(cesc('#_xpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#_xpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#_xpi')).should('contain.text', '10')
+    cy.get(cesc('#_xpi')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/ypi')).should('contain.text', 'π2π3π')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '−π−2π−3π')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '10')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '−10')
+    cy.get(cesc('#_ypi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#_ypi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#_ypi')).should('contain.text', '10')
+    cy.get(cesc('#_ypi')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/bothpi')).should('contain.text', 'π2π3π')
-    cy.get(cesc('#\\/bothpi')).should('contain.text', '−π−2π−3π')
-    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '10')
-    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '−10')
+    cy.get(cesc('#_bothpi')).should('contain.text', 'π2π3π')
+    cy.get(cesc('#_bothpi')).should('contain.text', '−π−2π−3π')
+    cy.get(cesc('#_bothpi')).should('not.contain.text', '10')
+    cy.get(cesc('#_bothpi')).should('not.contain.text', '−10')
 
-    cy.get(cesc('#\\/xe')).should('contain.text', 'e2e3e4e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−e−2e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−3e−4e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '10')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−10')
+    cy.get(cesc('#_xe')).should('contain.text', 'e2e3e4e')
+    cy.get(cesc('#_xe')).should('contain.text', '−e−2e')
+    cy.get(cesc('#_xe')).should('contain.text', '−3e−4e')
+    cy.get(cesc('#_xe')).should('contain.text', '10')
+    cy.get(cesc('#_xe')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/ye')).should('contain.text', 'e2e3e4e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−e−2e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−3e−4e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '10')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−10')
+    cy.get(cesc('#_ye')).should('contain.text', 'e2e3e4e')
+    cy.get(cesc('#_ye')).should('contain.text', '−e−2e')
+    cy.get(cesc('#_ye')).should('contain.text', '−3e−4e')
+    cy.get(cesc('#_ye')).should('contain.text', '10')
+    cy.get(cesc('#_ye')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/bothe')).should('contain.text', 'e2e3e4e')
-    cy.get(cesc('#\\/bothe')).should('contain.text', '−e−2e')
-    cy.get(cesc('#\\/bothe')).should('contain.text', '−3e−4e')
-    cy.get(cesc('#\\/bothe')).should('not.contain.text', '10')
-    cy.get(cesc('#\\/bothe')).should('not.contain.text', '−10')
+    cy.get(cesc('#_bothe')).should('contain.text', 'e2e3e4e')
+    cy.get(cesc('#_bothe')).should('contain.text', '−e−2e')
+    cy.get(cesc('#_bothe')).should('contain.text', '−3e−4e')
+    cy.get(cesc('#_bothe')).should('not.contain.text', '10')
+    cy.get(cesc('#_bothe')).should('not.contain.text', '−10')
 
-    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'π')
-    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'e')
-    cy.get(cesc('#\\/ignorebad')).should('contain.text', '10')
-    cy.get(cesc('#\\/ignorebad')).should('contain.text', '−10')
+    cy.get(cesc('#_ignorebad')).should('not.contain.text', 'π')
+    cy.get(cesc('#_ignorebad')).should('not.contain.text', 'e')
+    cy.get(cesc('#_ignorebad')).should('contain.text', '10')
+    cy.get(cesc('#_ignorebad')).should('contain.text', '−10')
 
 
-    cy.get(cesc('#\\/none_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/xpi_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/ypi_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/bothpi_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/xe_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/ye_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/bothe_navigationbar') + ' > :nth-child(1)').click();
-    cy.get(cesc('#\\/ignorebad_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_none_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_xpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_ypi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_bothpi_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_xe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_ye_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_bothe_navigationbar') + ' > :nth-child(1)').click();
+    cy.get(cesc('#_ignorebad_navigationbar') + ' > :nth-child(1)').click();
 
     cy.get(cesc('#\\/xmax')).should('have.text', '15.625')
 
-    cy.get(cesc('#\\/none')).should('not.contain.text', 'π')
-    cy.get(cesc('#\\/none')).should('not.contain.text', 'e')
-    cy.get(cesc('#\\/none')).should('contain.text', '10')
-    cy.get(cesc('#\\/none')).should('contain.text', '−10')
+    cy.get(cesc('#_none')).should('not.contain.text', 'π')
+    cy.get(cesc('#_none')).should('not.contain.text', 'e')
+    cy.get(cesc('#_none')).should('contain.text', '10')
+    cy.get(cesc('#_none')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/xpi')).should('contain.text', 'π2π3π4π')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '−π−2π')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '−3π−4π')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '10')
-    cy.get(cesc('#\\/xpi')).should('contain.text', '−10')
+    cy.get(cesc('#_xpi')).should('contain.text', 'π2π3π4π')
+    cy.get(cesc('#_xpi')).should('contain.text', '−π−2π')
+    cy.get(cesc('#_xpi')).should('contain.text', '−3π−4π')
+    cy.get(cesc('#_xpi')).should('contain.text', '10')
+    cy.get(cesc('#_xpi')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/ypi')).should('contain.text', 'π2π3π4π')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '−π−2π')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '−3π−4π')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '10')
-    cy.get(cesc('#\\/ypi')).should('contain.text', '−10')
+    cy.get(cesc('#_ypi')).should('contain.text', 'π2π3π4π')
+    cy.get(cesc('#_ypi')).should('contain.text', '−π−2π')
+    cy.get(cesc('#_ypi')).should('contain.text', '−3π−4π')
+    cy.get(cesc('#_ypi')).should('contain.text', '10')
+    cy.get(cesc('#_ypi')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/bothpi')).should('contain.text', 'π2π3π4π')
-    cy.get(cesc('#\\/bothpi')).should('contain.text', '−π−2π')
-    cy.get(cesc('#\\/bothpi')).should('contain.text', '−3π−4π')
-    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '10')
-    cy.get(cesc('#\\/bothpi')).should('not.contain.text', '−10')
+    cy.get(cesc('#_bothpi')).should('contain.text', 'π2π3π4π')
+    cy.get(cesc('#_bothpi')).should('contain.text', '−π−2π')
+    cy.get(cesc('#_bothpi')).should('contain.text', '−3π−4π')
+    cy.get(cesc('#_bothpi')).should('not.contain.text', '10')
+    cy.get(cesc('#_bothpi')).should('not.contain.text', '−10')
 
-    cy.get(cesc('#\\/xe')).should('contain.text', 'e2e3e4e5e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−2e−3e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−4e−5e')
-    cy.get(cesc('#\\/xe')).should('contain.text', '10')
-    cy.get(cesc('#\\/xe')).should('contain.text', '−10')
+    cy.get(cesc('#_xe')).should('contain.text', 'e2e3e4e5e')
+    cy.get(cesc('#_xe')).should('contain.text', '−e')
+    cy.get(cesc('#_xe')).should('contain.text', '−2e−3e')
+    cy.get(cesc('#_xe')).should('contain.text', '−4e−5e')
+    cy.get(cesc('#_xe')).should('contain.text', '10')
+    cy.get(cesc('#_xe')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/ye')).should('contain.text', 'e2e3e4e5e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−2e−3e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−4e−5e')
-    cy.get(cesc('#\\/ye')).should('contain.text', '10')
-    cy.get(cesc('#\\/ye')).should('contain.text', '−10')
+    cy.get(cesc('#_ye')).should('contain.text', 'e2e3e4e5e')
+    cy.get(cesc('#_ye')).should('contain.text', '−e')
+    cy.get(cesc('#_ye')).should('contain.text', '−2e−3e')
+    cy.get(cesc('#_ye')).should('contain.text', '−4e−5e')
+    cy.get(cesc('#_ye')).should('contain.text', '10')
+    cy.get(cesc('#_ye')).should('contain.text', '−10')
 
-    cy.get(cesc('#\\/bothe')).should('contain.text', 'e2e3e4e5e')
-    cy.get(cesc('#\\/bothe')).should('contain.text', '−e−2e')
-    cy.get(cesc('#\\/bothe')).should('contain.text', '−3e−4e−5e')
-    cy.get(cesc('#\\/bothe')).should('not.contain.text', '10')
-    cy.get(cesc('#\\/bothe')).should('not.contain.text', '−10')
+    cy.get(cesc('#_bothe')).should('contain.text', 'e2e3e4e5e')
+    cy.get(cesc('#_bothe')).should('contain.text', '−e−2e')
+    cy.get(cesc('#_bothe')).should('contain.text', '−3e−4e−5e')
+    cy.get(cesc('#_bothe')).should('not.contain.text', '10')
+    cy.get(cesc('#_bothe')).should('not.contain.text', '−10')
 
-    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'π')
-    cy.get(cesc('#\\/ignorebad')).should('not.contain.text', 'e')
-    cy.get(cesc('#\\/ignorebad')).should('contain.text', '10')
-    cy.get(cesc('#\\/ignorebad')).should('contain.text', '−10')
+    cy.get(cesc('#_ignorebad')).should('not.contain.text', 'π')
+    cy.get(cesc('#_ignorebad')).should('not.contain.text', 'e')
+    cy.get(cesc('#_ignorebad')).should('contain.text', '10')
+    cy.get(cesc('#_ignorebad')).should('contain.text', '−10')
 
 
   });

@@ -11,6 +11,8 @@ export default class NumberComponent extends InlineComponent {
 
     Object.assign(this.actions, {
       moveNumber: this.moveNumber.bind(this),
+      numberClicked: this.numberClicked.bind(this),
+      numberFocused: this.numberFocused.bind(this),
     });
 
   }
@@ -1329,6 +1331,34 @@ export default class NumberComponent extends InlineComponent {
       componentType: this.componentType,
       coreFunctions: this.coreFunctions
     })
+
+  }
+
+  async numberClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async numberFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "focus",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 
