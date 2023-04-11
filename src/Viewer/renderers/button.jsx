@@ -71,15 +71,11 @@ export default React.memo(function ButtonComponent(props) {
         jsxButtonAttributes['visible'] = false;
       }
 
-      if (!jsxButtonAttributes.visible) {
-        // currently, creating an invisible button crashes jsxgraph
-        return;
-      }
-
       newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
 
     } catch (e) {
-      // currently, creating an invisible button crashes jsxgraph
+      jsxButtonAttributes['visible'] = false;
+      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
       return;
     }
 

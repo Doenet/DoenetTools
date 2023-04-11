@@ -243,15 +243,11 @@ export default function TextInput(props) {
         jsxInputAttributes['visible'] = false;
       }
 
-      if (!jsxInputAttributes.visible) {
-        // currently, creating an invisible input crashes jsxgraph
-        return;
-      }
-
       newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
 
     } catch (e) {
-      // currently, creating an invisible input crashes jsxgraph
+      jsxInputAttributes['visible'] = false;
+      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
       return;
     }
 

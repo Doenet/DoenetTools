@@ -13,11 +13,6 @@ export default React.memo(function Graph(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
   // console.log({ name, id, SVs, children, actions })
 
-  // TODO: remove this if jsxgraph can fully support escaped "/",
-  // as this replacement introduces a possibility of non-unique id's
-  // if someone, for example, creates graphs named "/g/g" and "/g_g".
-  id = id.replaceAll("\\/", "_")
-
   const [board, setBoard] = useState(null);
 
   const previousDimensions = useRef(null);
