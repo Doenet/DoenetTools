@@ -40,8 +40,6 @@ const ToolContainer = styled(animated.div)`
   color: var(--canvastext);
 `;
 
-
-
 export const profileAtom = atom({
   key: 'profileAtom',
   default: selector({
@@ -107,7 +105,9 @@ export default function ToolRoot() {
     NotFound: lazy(() => import('./ToolPanels/NotFound')),
     AccountSettings: lazy(() => import('./ToolPanels/AccountSettings')),
     HomePanel: lazy(() => import('./ToolPanels/HomePanel')),
-    PublicActivityViewer: lazy(() => import('./ToolPanels/PublicActivityViewer')),
+    PublicActivityViewer: lazy(() =>
+      import('./ToolPanels/PublicActivityViewer'),
+    ),
     CourseCards: lazy(() => import('./ToolPanels/CourseCards')),
     SignIn: lazy(() => import('./ToolPanels/SignIn')),
     SignOut: lazy(() => import('./ToolPanels/SignOut')),
@@ -122,7 +122,9 @@ export default function ToolRoot() {
     GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer: lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer: lazy(() => import('./ToolPanels/AssignmentViewer')),
-    DraftAssignmentViewer: lazy(() => import('./ToolPanels/DraftAssignmentViewer')),
+    DraftAssignmentViewer: lazy(() =>
+      import('./ToolPanels/DraftAssignmentViewer'),
+    ),
     DataPanel: lazy(() => import('./ToolPanels/DataPanel')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
@@ -130,10 +132,14 @@ export default function ToolRoot() {
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     SignInRedirector: lazy(() => import('./ToolPanels/SignInRedirector')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
-    EndPlacementExamPanel: lazy(() => import('./ToolPanels/EndPlacementExamPanel')),
-    WelcomePlacementExam: lazy(() => import('./ToolPanels/WelcomePlacementExam')),
-    GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
-    GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
+    EndPlacementExamPanel: lazy(() =>
+      import('./ToolPanels/EndPlacementExamPanel'),
+    ),
+    WelcomePlacementExam: lazy(() =>
+      import('./ToolPanels/WelcomePlacementExam'),
+    ),
+    GuestDoenetMLEditor: lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
+    GuestEditorViewer: lazy(() => import('./ToolPanels/GuestEditorViewer')),
     RolesEditor: lazy(() => import('./ToolPanels/RoleEditor')),
   }).current;
 
@@ -149,12 +155,13 @@ export default function ToolRoot() {
     DashboardBreadCrumb: lazy(() =>
       import('./HeaderControls/DashboardBreadCrumb'),
     ),
-    PeopleBreadCrumb: lazy(() =>
-      import('./HeaderControls/PeopleBreadCrumb'),
-    ),
+    PeopleBreadCrumb: lazy(() => import('./HeaderControls/PeopleBreadCrumb')),
     DataBreadCrumb: lazy(() => import('./HeaderControls/DataBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
-    PortfolioBreadCrumb: lazy(() => import('./HeaderControls/PortfolioBreadCrumb')),
+    PortfolioBreadCrumb: lazy(() =>
+      import('./HeaderControls/PortfolioBreadCrumb'),
+    ),
+    PublicNavigation: lazy(() => import('./HeaderControls/PublicNavigation')),
     GradebookBreadCrumb: lazy(() =>
       import('./HeaderControls/GradebookBreadCrumb'),
     ),
@@ -164,9 +171,9 @@ export default function ToolRoot() {
     AssignmentNewAttempt: lazy(() =>
       import('./HeaderControls/AssignmentNewAttempt'),
     ),
-    ActivityNavigationButtons: lazy(() => 
-      import('./HeaderControls/ActivityNavigationButtons')
-    )
+    ActivityNavigationButtons: lazy(() =>
+      import('./HeaderControls/ActivityNavigationButtons'),
+    ),
   }).current;
 
   const LazyFooterObj = useRef({
@@ -182,59 +189,23 @@ export default function ToolRoot() {
         <LoadingFallback>
           <Svg viewBox="0 0 130 140">
             <DonutG1>
-              <Circle
-                id="donut" 
-                fill="var(--donutBody)" 
-                r="60" 
-              />
-              <Circle
-                id="donut-topping"
-                fill="var(--donutTopping)"
-                r="48"
-              />
-              <Circle 
-                id="donut-hole"  
-                fill="var(--canvas)"
-                r="19"
-              />
+              <Circle id="donut" fill="var(--donutBody)" r="60" />
+              <Circle id="donut-topping" fill="var(--donutTopping)" r="48" />
+              <Circle id="donut-hole" fill="var(--canvas)" r="19" />
             </DonutG1>
           </Svg>
           <Svg viewBox="0 0 130 140">
             <DonutG2>
-              <Circle
-                id="donut" 
-                fill="var(--donutBody)" 
-                r="60" 
-              />
-              <Circle
-                id="donut-topping"
-                fill="var(--donutTopping)"
-                r="48"
-              />
-              <Circle 
-                id="donut-hole"  
-                fill="var(--canvas)"
-                r="19"
-              />
+              <Circle id="donut" fill="var(--donutBody)" r="60" />
+              <Circle id="donut-topping" fill="var(--donutTopping)" r="48" />
+              <Circle id="donut-hole" fill="var(--canvas)" r="19" />
             </DonutG2>
           </Svg>
           <Svg viewBox="0 0 130 140">
             <DonutG3>
-              <Circle
-                id="donut" 
-                fill="var(--donutBody)" 
-                r="60" 
-              />
-              <Circle
-                id="donut-topping"
-                fill="var(--donutTopping)"
-                r="48"
-              />
-              <Circle 
-                id="donut-hole"  
-                fill="var(--canvas)"
-                r="19"
-              />
+              <Circle id="donut" fill="var(--donutBody)" r="60" />
+              <Circle id="donut-topping" fill="var(--donutTopping)" r="48" />
+              <Circle id="donut-hole" fill="var(--canvas)" r="19" />
             </DonutG3>
           </Svg>
         </LoadingFallback>
@@ -273,36 +244,31 @@ export default function ToolRoot() {
               <Table>
                 <TBody>
                   <Tr>
-                    <Td className="Td2">
-                    </Td>
+                    <Td className="Td2"></Td>
                     <Td className="Td3">
                       <Td3Span></Td3Span>
                     </Td>
                   </Tr>
                   <Tr>
-                    <Td className="Td2">
-                    </Td>
+                    <Td className="Td2"></Td>
                     <Td className="Td3">
                       <Td3Span></Td3Span>
                     </Td>
                   </Tr>
                   <Tr>
-                    <Td className="Td2">
-                    </Td>
+                    <Td className="Td2"></Td>
                     <Td className="Td3">
                       <Td3Span></Td3Span>
                     </Td>
                   </Tr>
                   <Tr>
-                    <Td className="Td2">
-                    </Td>
+                    <Td className="Td2"></Td>
                     <Td className="Td3">
                       <Td3Span></Td3Span>
                     </Td>
                   </Tr>
                   <Tr>
-                    <Td className="Td2">
-                    </Td>
+                    <Td className="Td2"></Td>
                     <Td className="Td3">
                       <Td3Span></Td3Span>
                     </Td>
@@ -333,7 +299,7 @@ export default function ToolRoot() {
             fallback={
               <LoadingFallback>
                 <BreadcrumbContainer>
-                  <BreadcrumbOutline/>
+                  <BreadcrumbOutline />
                 </BreadcrumbContainer>
               </LoadingFallback>
             }
@@ -396,7 +362,6 @@ export default function ToolRoot() {
   }
 
   // <p>insert keyboard here</p></FooterPanel>
-
 
   return (
     <>
@@ -483,15 +448,15 @@ let navigationObj = {
     },
   },
   umn: {
-    default:{
+    default: {
       defaultTool: 'signIn',
     },
-    signIn:{
+    signIn: {
       pageName: 'signIn',
       currentMainPanel: 'SignInRedirector',
       displaySettings: false,
       hasNoMenuPanel: true,
-    }
+    },
   },
   portfolioeditor: {
     editor: {
@@ -560,7 +525,11 @@ let navigationObj = {
       currentMenus: ['CreditAchieved', 'TimerMenu', 'ActivityDates'],
       menusTitles: ['Credit Achieved', 'Time Remaining', 'Details'],
       menusInitOpen: [true, true, false],
-      headerControls: ['AssignmentBreadCrumb', 'AssignmentNewAttempt','ActivityNavigationButtons'],
+      headerControls: [
+        'AssignmentBreadCrumb',
+        'AssignmentNewAttempt',
+        'ActivityNavigationButtons',
+      ],
       waitForMenuSuppression: true,
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
@@ -669,9 +638,9 @@ let navigationObj = {
       menuPanelCap: 'DriveInfoCap',
       // currentMenus: ['AddDriveItems','CutCopyPasteMenu'],
       // menusTitles: ['Add Items','Cut, Copy and Paste'],
-      currentMenus: ['CutCopyPasteMenu','AddDriveItems'],
-      menusTitles: ['Cut, Copy and Paste','Add Items'],
-      menusInitOpen: [true,true],
+      currentMenus: ['CutCopyPasteMenu', 'AddDriveItems'],
+      menusTitles: ['Cut, Copy and Paste', 'Add Items'],
+      menusInitOpen: [true, true],
       headerControls: ['NavigationBreadCrumb'],
       onLeave: 'NavigationLeave',
       waitForMenuSuppression: true,
@@ -720,10 +689,9 @@ let navigationObj = {
     data: {
       pageName: 'data',
       menuPanelCap: 'DataCap',
-      currentMainPanel: 'DataPanel', 
+      currentMainPanel: 'DataPanel',
       headerControls: ['DataBreadCrumb'],
     },
-  
   },
   home: {
     default: {
@@ -750,33 +718,30 @@ let navigationObj = {
       hasNoMenuPanel: true,
     },
   },
-  public:{
-    default:{
-      pageName:"PublicActivityViewer",
-      currentMenus:[],
-      menusTitles:[],
-      menusInitOpen:[],
-      currentMainPanel:"PublicActivityViewer",
-      supportPanelOptions:[],
-      supportPanelTitles:[],
-      supportPanelIndex:0,
+  public: {
+    default: {
+      pageName: 'PublicActivityViewer',
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      currentMainPanel: 'PublicActivityViewer',
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
       hasNoMenuPanel: true,
     },
     editor: {
       //singleFile
       pageName: 'GuestEditor',
+      menuPanelCap: 'PublicEditorInfoCap',
       currentMainPanel: 'GuestEditorViewer',
-      currentMenus: [
-        'PageVariant',
-      ],
-      menusTitles: [
-        'Page Variant',
-      ],
+      currentMenus: ['PageVariant'],
+      menusTitles: ['Page Variant'],
       menusInitOpen: [false],
       supportPanelOptions: ['GuestDoenetMLEditor'],
       supportPanelTitles: ['DoenetML Editor'],
       supportPanelIndex: 0,
-      headerControls: ['ViewerUpdateButton'],
+      headerControls: ['PublicNavigation', 'ViewerUpdateButton'],
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
   },
@@ -900,7 +865,6 @@ function RootController(props) {
   const [suppressMenus, setSuppressMenus] = useRecoilState(suppressMenusAtom);
   const setPanelsInfoAtom = useSetRecoilState(panelsInfoAtom);
 
-
   let lastPageToolView = useRef({ page: 'init', tool: '', view: '' });
   let backPageToolView = useRef({ page: 'init', tool: '', view: '' });
   let backParams = useRef({});
@@ -936,17 +900,21 @@ function RootController(props) {
   // console.log("\n>>>===RootController")
 
   //initialProportion
-  let initialProportion = navigationObj[recoilPageToolView.page]?.[recoilPageToolView.tool]?.initialProportion
+  let initialProportion =
+    navigationObj[recoilPageToolView.page]?.[recoilPageToolView.tool]
+      ?.initialProportion;
 
-  useEffect(()=>{
+  useEffect(() => {
     let nextInitialProportion = initialProportion;
-    if (!nextInitialProportion){ nextInitialProportion = 0.5}
-      setPanelsInfoAtom((prev)=>{
-        let next = {...prev}
-        next.proportion = nextInitialProportion;
-        return next;
-      })
-  },[initialProportion])
+    if (!nextInitialProportion) {
+      nextInitialProportion = 0.5;
+    }
+    setPanelsInfoAtom((prev) => {
+      let next = { ...prev };
+      next.proportion = nextInitialProportion;
+      return next;
+    });
+  }, [initialProportion]);
 
   //Suppress Menu change test
   let isSuppressMenuChange = !arraysEqual(
@@ -962,13 +930,16 @@ function RootController(props) {
     };
     // console.log("navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus",navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus)
     nextMenusAndPanels.currentMenus = [
-      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus,
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]
+        .currentMenus,
     ];
     nextMenusAndPanels.menusTitles = [
-      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusTitles,
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]
+        .menusTitles,
     ];
     nextMenusAndPanels.menusInitOpen = [
-      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusInitOpen,
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]
+        .menusInitOpen,
     ];
 
     if (suppressMenus.length > 0) {
@@ -1179,11 +1150,10 @@ function RootController(props) {
   return null;
 }
 
-
 const LoadingFallback = styled.div`
   background-color: var(--canvas);
   border-radius: 4px;
-  display: ${props => props.display ? props.display : "flex"};
+  display: ${(props) => (props.display ? props.display : 'flex')};
   justify-content: center;
   align-items: center;
   font-size: 2em;
@@ -1191,7 +1161,7 @@ const LoadingFallback = styled.div`
   height: 100%;
 `;
 
-const bouncingDonut = keyframes `
+const bouncingDonut = keyframes`
   from { transform: translate3d(0, 0px, 0);}
   to { transform: translate3d(0, 20px, 0);}
 `;
@@ -1247,7 +1217,7 @@ const BreadcrumbContainer = styled.ul`
   background-color: var(--canvas);
 `;
 
-const shimmerAnimation = keyframes `
+const shimmerAnimation = keyframes`
   from {
     background-position: -468px 0
   }
@@ -1270,37 +1240,46 @@ const BreadcrumbOutline = styled.li`
   animation-name: ${shimmerAnimation};
   animation-timing-function: linear;
   background: var(--canvas);
-  background: linear-gradient(to right, var(--mainGray) 8%, var(--mainGray) 18%, var(--mainGray) 33%);
+  background: linear-gradient(
+    to right,
+    var(--mainGray) 8%,
+    var(--mainGray) 18%,
+    var(--mainGray) 33%
+  );
   background-size: 1000px 640px;
   position: relative;
 `;
 
-const movingGradient = keyframes `
+const movingGradient = keyframes`
   0% { background-position: -250px 0; }
   100% { background-position: 250px 0; }
 `;
 
-const Table = styled.table `
+const Table = styled.table`
   border-radius: 5px;
   margin: 8px;
 `;
-const Tr = styled.tr `
+const Tr = styled.tr`
   /* border-bottom: 2px solid var(--canvastext); */
 `;
-const Td = styled.td `
+const Td = styled.td`
   height: 40px;
 
   &.Td3 {
     width: 100%;
   }
-
 `;
-const TBody = styled.tbody ``;
-const Td3Span = styled.span `
+const TBody = styled.tbody``;
+const Td3Span = styled.span`
   display: block;
   height: 14px;
   border-radius: 5px;
-  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
+  background: linear-gradient(
+    to right,
+    var(--mainGray) 20%,
+    var(--mainGray) 50%,
+    var(--mainGray) 80%
+  );
   background-size: 500px 100px;
   animation-name: ${movingGradient};
   animation-duration: 1s;

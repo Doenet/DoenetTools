@@ -88,14 +88,6 @@ if ($success) {
     // WHERE doenetId='$doenetId'
     // AND courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
     // ";
-    $sql = "
-    SELECT imagePath,
-    label,
-    userCanViewSource,
-    isPublic
-    FROM course_content
-    WHERE doenetId='$doenetId'
-    ";
     // $sql = "
     // SELECT imagePath,
     // label,
@@ -103,12 +95,27 @@ if ($success) {
     // isPublic
     // FROM course_content
     // WHERE doenetId='$doenetId'
-    // AND courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
     // ";
+    $sql = "
+    SELECT cc.imagePath,
+    cc.label,
+    cc.userCanViewSource,
+    cc.isPublic,
+    c.portfolioCourseForUserId
+    FROM course_content AS cc
+    LEFT JOIN course AS c
+      ON c.courseId = cc.courseId
+    WHERE doenetId='$doenetId'
+    ";
+
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+        $isPortfolioCourse = '0';
+        if ($row['portfolioCourseForUserId'] != ""){
+            $isPortfolioCourse = '1'; 
+        }
         $activityData = [
             'doenetId' => $doenetId,
             'imagePath' => $row['imagePath'],
@@ -119,6 +126,8 @@ if ($success) {
             'isNew' => false,
             'pageDoenetId' => $pageDoenetId,
             'courseId' => $courseId,
+            'isPortfolioCourse' => $isPortfolioCourse,
+           
         ];
     } else {
         $success = false;
