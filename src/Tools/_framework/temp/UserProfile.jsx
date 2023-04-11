@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 import './header.css';
-import doenetImage from './Doenet_Logo_cloud_only.png';
+import doenetImage from '/Doenet_Logo_cloud_only.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTh,

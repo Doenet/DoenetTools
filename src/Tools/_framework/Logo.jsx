@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router';
 import { useRecoilCallback, atom, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 
 import styled from 'styled-components';
@@ -6,7 +7,7 @@ import { pageToolViewAtom } from './NewToolRoot';
 
 const LogoButton = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('./Doenet_Logo_cloud_only.png');
+    url('/Doenet_Logo_cloud_only.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: 50px 25px;
@@ -36,7 +37,7 @@ export const profileToolViewStashAtom = atom({
 
  
 export default function Logo({hasLink=true}){
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const navigate = useNavigate();
 
   // if (profile.state === "loading"){ return null;}
   //   if (profile.state === "hasError"){ 
@@ -50,7 +51,7 @@ return <LogoButton
 hasLink={hasLink}
 onClick={()=>{
   if (hasLink){
-    setPageToolView({page:'home',tool:'',view:''})
+    navigate('/')
   }
 }
 }/>

@@ -29,7 +29,7 @@ const DriveCardFocus = styled.div`
 `;
 
 export default function CourseCards(props) {
-  console.log('>>>===CourseCards');
+  // console.log('>>>===CourseCards');
 
   const courses = useRecoilValue(coursePermissionsAndSettings);
 
