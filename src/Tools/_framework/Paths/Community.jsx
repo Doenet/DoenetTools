@@ -13,7 +13,7 @@ import {
   Text,
   Wrap,
 } from '@chakra-ui/react';
-import { useLoaderData, useOutletContext } from 'react-router';
+import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 import Searchbar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
@@ -171,13 +171,13 @@ const SearchBarContainer = styled.div`
 const SearchBarSection = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px 10px 10px 10px;
-  margin: 0px;
+  padding: 10px;
+  margin-top: 2rem;
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: var(--lightBlue);
-  height: 60px;
+  /* background: var(--lightBlue); */
+  /* height: 60px; */
 `;
 const CarouselSection = styled.div`
   display: flex;
