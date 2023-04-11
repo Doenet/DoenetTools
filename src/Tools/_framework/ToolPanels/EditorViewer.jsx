@@ -11,7 +11,7 @@ import { profileAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToo
 import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 import { editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
 import axios from 'axios';
-import { useLocation } from 'react-router';
+import { useLoaderData, useLocation } from 'react-router';
 import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
 
 export const useUpdateViewer = () => {
@@ -35,6 +35,10 @@ export default function EditorViewer() {
   // let refreshCount = useRef(1);
   // console.log(">>>>===EditorViewer",refreshCount.current)
   // refreshCount.current++;
+  let data = useLoaderData();
+  const dataCourseId = data?.courseId;
+  const loaderDoenetId = data?.doenetId;
+  const loaderPageId = data?.pageDoenetId;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const paramlinkPageId = useRecoilValue(searchParamAtomFamily('linkPageId'))
@@ -45,14 +49,18 @@ export default function EditorViewer() {
     effectivePageId = paramlinkPageId;
     effectiveDoenetId = paramlinkPageId;
   }
-  const courseId = useRecoilValue(courseIdAtom)
+  if (loaderDoenetId){
+    effectivePageId = loaderPageId;
+    effectiveDoenetId = loaderDoenetId;
+  }
+  const [courseId,setCourseId] = useRecoilState(courseIdAtom)
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  const pageObj = useRecoilValue(itemByDoenetId(effectivePageId))
+  const [pageObj,setPageObj] = useRecoilState(itemByDoenetId(effectivePageId))
   const activityObj = useRecoilValue(itemByDoenetId(doenetId))
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const { canUpload } = useRecoilValue(profileAtom);
@@ -103,7 +111,6 @@ export default function EditorViewer() {
     //   response = response.data;
     // }
     // const doenetML = response;
-    // console.log("initDoenetML doenetML",doenetML)
 
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML)
@@ -127,11 +134,20 @@ export default function EditorViewer() {
   useEffect(() => {
     if (effectivePageId !== '' && pageInitiated) {
       initDoenetML(effectivePageId)
+    }else if(loaderPageId){
+      //Add Activity from Portfolio so init pageObj
+      setCourseId(dataCourseId);
+      setPageObj({containingDoenetId : loaderDoenetId,
+      doenetId : loaderPageId,
+      isSelected : false,
+      label : "Untitled",
+      parentDoenetId : loaderDoenetId,
+      type : "page"});
     }
     return () => {
       setEditorInit("");
     }
-  }, [effectivePageId, pageInitiated]);
+  }, [dataCourseId,setCourseId,initDoenetML,setEditorInit,loaderPageId,effectivePageId, pageInitiated]);
 
   useEventListener("keydown", e => {
     if ((e.keyCode === 83 && e.metaKey) || (e.keyCode === 83 && e.ctrlKey)) {
