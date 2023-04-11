@@ -9,6 +9,7 @@ import {
   MenuList,
   Icon,
   Text,
+  Flex,
 } from '@chakra-ui/react';
 import React from 'react';
 import {
@@ -28,6 +29,7 @@ import {
 } from '../../../_reactComponents/Course/CourseActions';
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
+import { RiEmotionSadLine } from 'react-icons/ri';
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -356,7 +358,19 @@ export function Portfolio() {
           </Text>
           <CardsContainer>
             {data.publicActivities.length < 1 ? (
-              <div>No Public Activities</div>
+              <Flex
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                alignContent="center"
+                minHeight={200}
+                background="doenet.canvas"
+                padding={20}
+                width="100%"
+              >
+                <Icon fontSize="48pt" as={RiEmotionSadLine} />
+                <Text fontSize="36pt">No Public Activities</Text>
+              </Flex>
             ) : (
               <>
                 {data.publicActivities.map((activity) => {
@@ -381,7 +395,19 @@ export function Portfolio() {
           </Text>
           <CardsContainer>
             {data.privateActivities.length < 1 ? (
-              <div>No Private Activities</div>
+              <Flex
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                alignContent="center"
+                minHeight={200}
+                background="doenet.canvas"
+                padding={20}
+                width="100%"
+              >
+                <Icon fontSize="48pt" as={RiEmotionSadLine} />
+                <Text fontSize="36pt">No Private Activities</Text>
+              </Flex>
             ) : (
               <>
                 {data.privateActivities.map((activity) => {
