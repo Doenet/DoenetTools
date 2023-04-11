@@ -1,0 +1,1 @@
+import{j as t,B as r}from"./index-7074710c.js";import{u as o}from"./EditorViewer-d9b9074f.js";import"./EditorViewerRecoil-fb47fc9d.js";function d(e){const a=o();return t("div",{style:e.style,children:t(r,{"data-test":"Viewer Update Button",value:"Update",onClick:a})})}export{d as default};

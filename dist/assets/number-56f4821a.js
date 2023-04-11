@@ -1,0 +1,1 @@
+import{av as s,bp as i,a as d,F as m,j as a,b9 as u}from"./index-7074710c.js";const o=s.memo(function(r){let{name:c,id:n,SVs:e}=i(r);if(e.hidden)return null;let t=e.text;return e.renderAsMath&&(t="\\("+t+"\\)"),d(m,{children:[a("a",{name:n}),a("span",{id:n,children:a(u.MathJax,{hideUntilTypeset:"first",inline:!0,dynamic:!0,children:t})})]})});export{o as default};
