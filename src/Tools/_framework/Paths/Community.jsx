@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Avatar,
   Badge,
@@ -12,6 +12,7 @@ import {
   Tabs,
   Text,
   Wrap,
+  Flex,
 } from '@chakra-ui/react';
 import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
@@ -164,21 +165,6 @@ function Heading(props) {
   );
 }
 
-const SearchBarContainer = styled.div`
-  max-width: 400px;
-  min-width: 200px;
-`;
-const SearchBarSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  margin-top: 2rem;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  /* background: var(--lightBlue); */
-  /* height: 60px; */
-`;
 const CarouselSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -191,30 +177,51 @@ const CarouselSection = styled.div`
 `;
 
 export function Community() {
-  // let context = useOutletContext();
   const { carouselData, q, searchResults } = useLoaderData();
-  // console.log({carouselData, q, searchResults})
+  const [currentTab, setCurrentTab] = useState(0);
 
   if (q) {
     let allMatches = [...searchResults?.activities, ...searchResults?.users];
+    const tabs = [
+      {
+        label: 'All Matches',
+        count: allMatches.length,
+      },
+      {
+        label: 'Activities',
+        count: searchResults?.activities?.length,
+      },
+      {
+        label: 'Authors',
+        count: searchResults?.users?.length,
+      },
+    ];
+
     return (
       <>
-        <SearchBarSection>
-          <SearchBarContainer>
-            <Box width="400px">
+        <Flex
+          flexDirection="column"
+          p={10}
+          mt="2rem"
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+        >
+          <Box maxW={400} minW={200}>
+            <Box w="400px">
               <Form>
                 <Searchbar defaultValue={q} />
               </Form>
             </Box>
-          </SearchBarContainer>
-        </SearchBarSection>
+          </Box>
+        </Flex>
         <Box
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
           height="100px"
-          background="var(--canvas)"
+          background="doenet.canvas"
         >
           <Text fontSize="24px">
             Results for
@@ -226,60 +233,58 @@ export function Community() {
         </Box>
         <Tabs
           orientation="vertical"
-          display="grid"
-          gridTemplateColumns="240px auto"
           minHeight="calc(100vh - 200px)"
+          variant="line"
         >
-          <TabList
-            gridColumn="1/2"
-            // background= "var(--mainGray)"
-            background="var(--canvas)"
-            width="400px"
-          >
-            <Tab background="var(--canvas)" fontWeight="700">
-              All Matches
-              <Badge
-                ml="1"
-                mr="8"
-                fontSize="0.8em"
-                // colorScheme='var(--mainBlue)'
-                background="var(--lightBlue)"
-                borderRadius="full"
-              >
-                {allMatches.length}
-              </Badge>
-            </Tab>
-            <Tab background="var(--canvas)" fontWeight="700">
-              Activities
-              <Badge
-                ml="1"
-                mr="4"
-                fontSize="0.8em"
-                // colorScheme='var(--mainBlue)'
-                background="var(--lightBlue)"
-                borderRadius="full"
-              >
-                {searchResults?.activities?.length}
-              </Badge>
-            </Tab>
-            <Tab fontWeight="700" background="var(--canvas)">
-              Authors
-              <Badge
-                ml="1"
-                mr="2"
-                fontSize="0.8em"
-                background="var(--lightBlue)"
-                // colorScheme='blue'
-                borderRadius="full"
-              >
-                {searchResults?.users?.length}
-              </Badge>
-            </Tab>
+          <TabList background="doenet.canvas" w={240}>
+            {tabs.map((tab, index) => (
+              <Flex w="100%" position="relative" key={`tab-${index}`}>
+                <Tab
+                  key={`tab-${index}`}
+                  background="doenet.canvas"
+                  fontWeight="700"
+                  borderLeft="none"
+                  px={3}
+                  w="100%"
+                  onClick={() => setCurrentTab(index)}
+                >
+                  <Flex w="100%" alignItems="center" justifyContent="right">
+                    {tab.label}
+                    <Badge
+                      ml={2}
+                      w={5}
+                      h={5}
+                      fontSize="0.8em"
+                      background="doenet.lightBlue"
+                      borderRadius="full"
+                    >
+                      {tab.count}
+                    </Badge>
+                  </Flex>
+                </Tab>
+                <Box
+                  display={currentTab !== index && 'none'}
+                  position="absolute"
+                  right={0}
+                  top={0}
+                  bottom={0}
+                  w={1}
+                  borderRadius={5}
+                  bg="doenet.mainBlue"
+                />
+              </Flex>
+            ))}
           </TabList>
 
-          <TabPanels gridColumn="2/3" background="var(--mainGray)">
+          <TabPanels background="doenet.mainGray">
             <TabPanel>
-              <Wrap padding="10px 10px 10px 10px" margin="0px">
+              <Wrap
+                p={10}
+                m={0}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == 'activity') {
                     const { doenetId, imagePath, label, fullName } = itemObj;
@@ -305,25 +310,30 @@ export function Community() {
                   }
                 })}
                 {allMatches.length == 0 ? (
-                  <Box
-                    display="flex"
+                  <Flex
                     flexDirection="column"
                     justifyContent="center"
                     alignItems="center"
                     alignContent="center"
-                    minHeight="200px"
-                    background="var(--canvas)"
-                    padding="20px"
+                    minHeight={200}
+                    background="doenet.canvas"
+                    padding={20}
                     // border="1px solid var(--canvastext)"
                   >
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matches Found!</Text>
-                  </Box>
+                  </Flex>
                 ) : null}
               </Wrap>
             </TabPanel>
             <TabPanel>
-              <Wrap padding="10px 10px 10px 10px" margin="0px">
+              <Wrap
+                p={10}
+                m={0}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
                 {searchResults?.activities.map((activityObj) => {
                   const { doenetId, imagePath, label, fullName } = activityObj;
                   //{ activityLink, doenetId, imagePath, label, fullName }
@@ -338,26 +348,31 @@ export function Community() {
                   );
                 })}
                 {searchResults?.activities?.length == 0 ? (
-                  <Box
-                    display="flex"
+                  <Flex
                     flexDirection="column"
                     justifyContent="center"
                     alignItems="center"
                     alignContent="center"
-                    minHeight="200px"
-                    background="var(--canvas)"
-                    padding="20px"
+                    minHeight={200}
+                    background="doenet.canvas"
+                    padding={20}
                     // border="1px solid var(--canvastext)"
                   >
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matching Activities Found!</Text>
-                  </Box>
+                  </Flex>
                 ) : null}
                 {/* </Box> */}
               </Wrap>
             </TabPanel>
             <TabPanel>
-              <Wrap padding="10px 10px 10px 10px" margin="0px">
+              <Flex
+                p={10}
+                m={0}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
                 {searchResults?.users.map((authorObj) => {
                   const { courseId, firstName, lastName } = authorObj;
                   // console.log("authorObj",authorObj)
@@ -371,22 +386,21 @@ export function Community() {
                   );
                 })}
                 {searchResults?.users?.length == 0 ? (
-                  <Box
-                    display="flex"
+                  <Flex
                     flexDirection="column"
                     justifyContent="center"
                     alignItems="center"
                     alignContent="center"
-                    minHeight="200px"
-                    background="var(--canvas)"
-                    padding="20px"
+                    minHeight={200}
+                    background="doenet.canvas"
+                    padding={20}
                     // border="1px solid var(--canvastext)"
                   >
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matching Authors Found!</Text>
-                  </Box>
+                  </Flex>
                 ) : null}
-              </Wrap>
+              </Flex>
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -396,16 +410,23 @@ export function Community() {
 
   return (
     <>
-      <SearchBarSection>
-        <SearchBarContainer>
+      <Flex
+        flexDirection="column"
+        p={10}
+        mt="2rem"
+        justifyContent="center"
+        alignItems="center"
+        textAlign="center"
+      >
+        <Box maxW={400} minW={200}>
           <Box width="400px">
             <Form>
               <Searchbar defaultValue={q} />
             </Form>
           </Box>
           {/* <input type='text' width="400px" /> */}
-        </SearchBarContainer>
-      </SearchBarSection>
+        </Box>
+      </Flex>
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
