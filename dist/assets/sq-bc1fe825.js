@@ -1,1 +1,0 @@
-import{av as r,bn as t,a as d,F as i,j as m}from"./index-c4368a4c.js";const c=r.memo(function(e){let{name:l,id:n,SVs:a,children:s}=t(e);return a.hidden?null:d(i,{children:[m("a",{name:n}),"‘",s,"’"]})});export{c as default};
