@@ -3,7 +3,7 @@ import PageViewer from '../../Viewer/PageViewer.jsx';
 import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
 import { useRecoilState } from 'recoil';
 import { darkModeAtom } from '../_framework/DarkmodeController.jsx';
-// import {plainText as testCodeDoenetML } from './testCode.doenet';
+// import testCodeDoenetML from './testCode.doenet?raw';
 
 function Test() {
   // console.log("===Test")

@@ -4,28 +4,27 @@ import useDoenetRender from '../useDoenetRenderer';
 // import Plotly from 'plotly.js-dist-min';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
-
 export const BoardContext = createContext();
 
 export default React.memo(function Chart(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
   // console.log({ name, SVs })
 
-  let onChangeVisibility = isVisible => {
+  let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
-      args: { isVisible }
-    })
-  }
+      args: { isVisible },
+    });
+  };
 
   useEffect(() => {
     return () => {
       callAction({
         action: actions.recordVisibilityChange,
-        args: { isVisible: false }
-      })
-    }
-  }, [])
+        args: { isVisible: false },
+      });
+    };
+  }, []);
 
   //Draw chart after mounting component
   // useEffect(() => {
@@ -40,7 +39,6 @@ export default React.memo(function Chart(props) {
   //         .map((v, i) => v === "number" ? i : null)
   //         .filter(x => x !== null);
   //     }
-
 
   //     let data = [];
 
@@ -67,14 +65,15 @@ export default React.memo(function Chart(props) {
 
   // }, []);
 
-
-  return <>
-    <a name={id} />
-    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={id} /></VisibilitySensor>
-  </>;
-
-})
-
+  return (
+    <>
+      <a name={id} />
+      <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+        <div id={id} />
+      </VisibilitySensor>
+    </>
+  );
+});
 
 function extractColumn(data, colInd) {
   let dataColumn = [];

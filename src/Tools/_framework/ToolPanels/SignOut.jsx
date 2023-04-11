@@ -47,7 +47,7 @@ export default function SignOut() {
         >
           <img
             style={{ width: '250px', height: '250px' }}
-            src={'/media/Doenet_Logo_Frontpage.png'}
+            src={'/Doenet_Logo_Frontpage.png'}
             alt={
               'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
             }
@@ -78,7 +78,7 @@ export default function SignOut() {
         >
           <img
             style={{ width: '250px', height: '250px' }}
-            src={'/media/Doenet_Logo_Frontpage.png'}
+            src={'/Doenet_Logo_Frontpage.png'}
             alt={
               'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
             }
@@ -110,7 +110,7 @@ export default function SignOut() {
       >
         <img
           style={{ width: '250px', height: '250px' }}
-          src={'/media/Doenet_Logo_Frontpage.png'}
+          src={'/Doenet_Logo_Frontpage.png'}
           alt={
             'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
           }
