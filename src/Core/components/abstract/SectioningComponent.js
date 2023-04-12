@@ -1156,9 +1156,9 @@ export class SectioningComponentNumberWithSiblings extends SectioningComponent {
 
 }
 
-export class UnnumberedSectioningComponentNumber extends SectioningComponent {
+export class UnnumberedSectioningComponent extends SectioningComponent {
 
-  static componentType = "_unnumberedSectioningComponentNumber";
+  static componentType = "_unnumberedSectioningComponent";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

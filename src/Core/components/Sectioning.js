@@ -1,4 +1,4 @@
-import { SectioningComponent, SectioningComponentNumberWithSiblings, UnnumberedSectioningComponentNumber } from './abstract/SectioningComponent';
+import { SectioningComponent, SectioningComponentNumberWithSiblings, UnnumberedSectioningComponent } from './abstract/SectioningComponent';
 
 export class Section extends SectioningComponentNumberWithSiblings {
   static componentType = "section";
@@ -214,7 +214,7 @@ export class Theorem extends Example {
   static componentType = "theorem";
 }
 
-export class Proof extends UnnumberedSectioningComponentNumber {
+export class Proof extends UnnumberedSectioningComponent {
   static componentType = "proof";
   static rendererType = "section";
 

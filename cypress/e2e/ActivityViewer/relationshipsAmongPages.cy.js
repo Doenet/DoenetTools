@@ -467,7 +467,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page1\\/b')).should('have.text', 'true');
 
     cy.get(cesc('#page1\\/toAbove')).click();
-    cy.url().should('match', /#page1\/pAbove$/)
+    cy.url().should('match', /#page1\\\/pAbove$/)
 
     cy.get(cesc('#page1\\/pAbove')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -496,7 +496,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page1\\/_section1_title')).should('have.text', 'Section 1')
     cy.get(cesc('#page2\\/_section1_title')).should('not.exist')
 
-    cy.url().should('match', /#page1\/aside$/)
+    cy.url().should('match', /#page1\\\/aside$/)
 
     cy.get(cesc('#page1\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -513,7 +513,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page2\\/asideTitle')).should('have.text', 'The aside');
     cy.get(cesc('#page2\\/insideAside')).should('not.exist');
 
-    cy.url().should('match', /#page2\/pAbove$/)
+    cy.url().should('match', /#page2\\\/pAbove$/)
 
     cy.get(cesc('#page2\\/pAbove')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -565,7 +565,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page2\\/asideTitle')).should('have.text', 'The aside');
     cy.get(cesc('#page2\\/insideAside')).should('have.text', 'Content in aside');
 
-    cy.url().should('match', /#page2\/aside$/)
+    cy.url().should('match', /#page2\\\/aside$/)
 
     cy.get(cesc('#page2\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -585,7 +585,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page2\\/asideTitle')).should('have.text', 'The aside');
     cy.get(cesc('#page2\\/insideAside')).should('have.text', 'Content in aside');
 
-    cy.url().should('match', /#page2\/aside$/)
+    cy.url().should('match', /#page2\\\/aside$/)
 
     cy.get(cesc('#page2\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -597,7 +597,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page1\\/asideTitle')).should('have.text', 'The aside');
     cy.get(cesc('#page1\\/insideAside')).should('not.exist');
 
-    cy.url().should('match', /#page1\/pAbove$/)
+    cy.url().should('match', /#page1\\\/pAbove$/)
 
     cy.get(cesc('#page1\\/pAbove')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -621,7 +621,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page1\\/asideTitle')).should('have.text', 'The aside');
     cy.get(cesc('#page1\\/insideAside')).should('not.exist');
 
-    cy.url().should('match', /#page1\/pAbove$/)
+    cy.url().should('match', /#page1\\\/pAbove$/)
 
     cy.get(cesc('#page1\\/pAbove')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -634,7 +634,7 @@ describe('Relationships among pages tests', function () {
 
     cy.get(cesc('#page1\\/toAbove2')).click();
 
-    cy.url().should('match', /#page2\/pAbove$/)
+    cy.url().should('match', /#page2\\\/pAbove$/)
 
     cy.waitUntil(() => cy.get(cesc('#page2\\/pAbove')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -643,7 +643,7 @@ describe('Relationships among pages tests', function () {
 
     cy.get(cesc('#page2\\/toAside1')).click();
 
-    cy.url().should('match', /#page1\/aside$/)
+    cy.url().should('match', /#page1\\\/aside$/)
 
     cy.waitUntil(() => cy.get(cesc('#page1\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
