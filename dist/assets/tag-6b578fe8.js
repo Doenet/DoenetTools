@@ -1,0 +1,1 @@
+import{av as l,bp as o,a as d,j as i}from"./index-64d70d3a.js";const u=l.memo(function(s){let{name:m,id:e,SVs:a,children:r}=o(s);if(a.hidden)return null;let t="<",n=">";return a.selfClosed&&(n="/>"),d("code",{id:e,style:{color:"var(--mainGreen)"},children:[i("a",{name:e}),t,r,n]})});export{u as default};
