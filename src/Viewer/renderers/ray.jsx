@@ -26,10 +26,12 @@ export default React.memo(function Ray(props) {
   let lastEndpointFromCore = useRef(null);
   let lastThroughpointFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
 
   lastEndpointFromCore.current = SVs.numericalEndpoint;
   lastThroughpointFromCore.current = SVs.numericalThroughpoint;
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -83,7 +85,7 @@ export default React.memo(function Ray(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       straightFirst: false,
     };
 
@@ -107,6 +109,7 @@ export default React.memo(function Ray(props) {
     ];
 
     let newRayJXG = board.create('line', through, jsxRayAttributes);
+    newRayJXG.isDraggable = !fixLocation.current;
 
     newRayJXG.on('drag', function (e) {
 
@@ -169,7 +172,7 @@ export default React.memo(function Ray(props) {
             throughcoords: pointCoords.current[1],
           }
         })
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.rayClicked,
           args: { name }   // send name so get original name if adapted
@@ -313,7 +316,8 @@ export default React.memo(function Ray(props) {
       }
 
       rayJXG.current.visProp.fixed = fixed.current;
-      rayJXG.current.visProp.highlight = !fixed.current;
+      rayJXG.current.visProp.highlight = !fixLocation.current;
+      rayJXG.current.isDraggable = !fixLocation.current;
 
       let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = rayJXG.current.visProp.layer !== layer;

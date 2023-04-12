@@ -34,7 +34,10 @@ export default React.memo(function MathComponent(props) {
   let previousPositionFromAnchor = useRef(null);
 
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -82,7 +85,7 @@ export default React.memo(function MathComponent(props) {
       strokeOpacity: 1,
       highlightStrokeColor: textColor,
       highlightStrokeOpacity: 0.5,
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       useMathJax: true,
       parse: false,
     };
@@ -142,6 +145,7 @@ export default React.memo(function MathComponent(props) {
     }
 
     let newMathJXG = board.create('text', [0, 0, beginDelim + SVs.latex + endDelim], jsxMathAttributes);
+    newMathJXG.isDraggable = !fixLocation.current;
 
     newMathJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -177,7 +181,7 @@ export default React.memo(function MathComponent(props) {
           }
         });
         dragged.current = false;
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.mathClicked,
           args: { name }   // send name so get original name if adapted
@@ -432,8 +436,9 @@ export default React.memo(function MathComponent(props) {
       }
 
 
-      mathJXG.current.visProp.highlight = !fixed.current;
+      mathJXG.current.visProp.highlight = !fixLocation.current;
       mathJXG.current.visProp.fixed = fixed.current;
+      mathJXG.current.isDraggable = !fixLocation.current;
 
       mathJXG.current.needsUpdate = true;
 

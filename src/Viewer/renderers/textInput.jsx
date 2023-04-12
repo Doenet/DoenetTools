@@ -96,7 +96,10 @@ export default function TextInput(props) {
   let previousPositionFromAnchor = useRef(null);
 
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
 
   useEffect(() => {
@@ -220,7 +223,7 @@ export default function TextInput(props) {
       useMathJax: SVs.labelHasLatex,
       strokeColor: "var(--canvastext)",
       highlightStrokeColor: "var(--canvastext)",
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       parse: false,
     };
 
@@ -260,6 +263,7 @@ export default function TextInput(props) {
 
 
     let newInputJXG = board.create('input', [0, 0, rendererValue, SVs.label], jsxInputAttributes);
+    newInputJXG.isDraggable = !fixLocation.current;
 
     newInputJXG.rendNodeInput.addEventListener("input", onChangeHandler);
     newInputJXG.rendNodeInput.addEventListener("keypress", handleKeyPress);
@@ -500,8 +504,9 @@ export default function TextInput(props) {
         inputJXG.current.setAttribute({ disabled: SVs.disabled })
       }
 
-      inputJXG.current.visProp.highlight = !fixed.current;
+      inputJXG.current.visProp.highlight = !fixLocation.current;
       inputJXG.current.visProp.fixed = fixed.current;
+      inputJXG.current.isDraggable = !fixLocation.current;
 
       inputJXG.current.needsUpdate = true;
 

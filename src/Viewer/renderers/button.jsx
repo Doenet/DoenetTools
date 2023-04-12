@@ -28,7 +28,10 @@ export default React.memo(function ButtonComponent(props) {
   let previousPositionFromAnchor = useRef(null);
 
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   let label = SVs.label ? SVs.label : "Button";
 
@@ -89,6 +92,8 @@ export default React.memo(function ButtonComponent(props) {
 
 
     let newButtonJXG = board.create('button', [0, 0, label, () => callAction({ action: actions[SVs.clickAction] })], jsxButtonAttributes);
+
+    newButtonJXG.isDraggable = !fixLocation.current;
 
     newButtonJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -304,8 +309,8 @@ export default React.memo(function ButtonComponent(props) {
         buttonJXG.current.setAttribute({ disabled: SVs.disabled })
       }
 
-      buttonJXG.current.visProp.highlight = !fixed.current;
       buttonJXG.current.visProp.fixed = fixed.current;
+      buttonJXG.current.isDraggable = !fixLocation.current;
 
       buttonJXG.current.needsUpdate = true;
 

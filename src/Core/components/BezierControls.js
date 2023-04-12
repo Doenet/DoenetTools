@@ -124,6 +124,7 @@ export default class BezierControls extends InlineComponent {
       isArray: true,
       entryPrefixes: ["direction"],
       hasEssential: true,
+      isLocation: true,
       defaultValueByArrayKey: () => "none",
       stateVariablesDeterminingDependencies: ["pointIndMap"],
       returnArraySizeDependencies: () => ({
@@ -349,6 +350,7 @@ export default class BezierControls extends InlineComponent {
       entryPrefixes: ["essentialSymmetricControl"],
       nDimensions: 2,
       hasEssential: true,
+      isLocation: true,
       defaultValueByArrayKey: () => me.fromAst(1),
       returnArraySizeDependencies: () => ({
         nControls: {
@@ -411,6 +413,7 @@ export default class BezierControls extends InlineComponent {
       nDimensions: 3,
       hasEssential: true,
       shadowVariable: true,
+      isLocation: true,
       defaultValueByArrayKey: () => me.fromAst(1),
       stateVariablesDeterminingDependencies: ["pointIndMap", "directions"],
       returnArraySizeDependencies: () => ({

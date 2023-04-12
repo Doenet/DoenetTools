@@ -32,7 +32,10 @@ export default React.memo(function Label(props) {
   let previousPositionFromAnchor = useRef(null);
 
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -80,7 +83,7 @@ export default React.memo(function Label(props) {
       strokeOpacity: 1,
       highlightStrokeColor: textColor,
       highlightStrokeOpacity: 0.5,
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       useMathJax: SVs.hasLatex,
       parse: false,
     };
@@ -121,6 +124,7 @@ export default React.memo(function Label(props) {
 
 
     let newLabelJXG = board.create('text', [0, 0, SVs.value], jsxLabelAttributes);
+    newLabelJXG.isDraggable = !fixLocation.current;
 
     newLabelJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -155,7 +159,7 @@ export default React.memo(function Label(props) {
           }
         });
         dragged.current = false;
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.labelClicked,
           args: { name }   // send name so get original name if adapted
@@ -389,8 +393,9 @@ export default React.memo(function Label(props) {
       }
 
 
-      labelJXG.current.visProp.highlight = !fixed.current;
+      labelJXG.current.visProp.highlight = !fixLocation.current;
       labelJXG.current.visProp.fixed = fixed.current;
+      labelJXG.current.isDraggable = !fixLocation.current;
 
       labelJXG.current.needsUpdate = true;
 

@@ -32,13 +32,15 @@ export default React.memo(function Vector(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
   let headDraggable = useRef(true);
   let tailDraggable = useRef(true);
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
   fixed.current = !SVs.draggable || SVs.fixed;
-  tailDraggable.current = SVs.tailDraggable && !SVs.fixed;
-  headDraggable.current = SVs.headDraggable && !SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
+  tailDraggable.current = SVs.tailDraggable && !SVs.fixed && !SVs.fixLocation;
+  headDraggable.current = SVs.headDraggable && !SVs.fixed && !SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -97,7 +99,7 @@ export default React.memo(function Vector(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       lastArrow: { type: 1, size: 3, highlightSize: 3 },
     };
 
@@ -145,6 +147,7 @@ export default React.memo(function Vector(props) {
     }
 
     let newVectorJXG = board.create('arrow', [newPoint1JXG, newPoint2JXG], jsxVectorAttributes);
+    newVectorJXG.isDraggable = !fixLocation.current;
 
     newPoint1JXG.on('drag', e => onDragHandler(e, 0));
     newPoint2JXG.on('drag', e => onDragHandler(e, 1));
@@ -156,7 +159,7 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: { tailcoords: tailcoords.current }
         });
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.vectorClicked,
           args: { name }   // send name so get original name if adapted
@@ -171,7 +174,7 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: { headcoords: headcoords.current }
         });
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.vectorClicked,
           args: { name }   // send name so get original name if adapted
@@ -189,7 +192,7 @@ export default React.memo(function Vector(props) {
             tailcoords: tailcoords.current
           }
         });
-      } else if (!pointerMovedSinceDown.current && downOnPoint.current === null) {
+      } else if (!pointerMovedSinceDown.current && downOnPoint.current === null && !fixed.current) {
         // Note: counting on fact that up on vector will trigger before up on points
         callAction({
           action: actions.vectorClicked,
@@ -530,7 +533,8 @@ export default React.memo(function Vector(props) {
       let headVisible = headDraggable.current && visible;
 
       vectorJXG.current.visProp.fixed = fixed.current;
-      vectorJXG.current.visProp.highlight = !fixed.current;
+      vectorJXG.current.visProp.highlight = !fixLocation.current;
+      vectorJXG.current.isDraggable = !fixLocation.current;
 
       vectorJXG.current.visProp["visible"] = visible;
       vectorJXG.current.visPropCalc["visible"] = visible;

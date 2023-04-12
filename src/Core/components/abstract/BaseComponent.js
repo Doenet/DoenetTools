@@ -282,6 +282,11 @@ export default class BaseComponent {
         defaultValue: false,
         ignoreFixed: true,
       },
+      fixLocation: {
+        createComponentOfType: "boolean",
+        createStateVariable: "fixLocationPreliminary",
+        defaultValue: false,
+      },
       modifyIndirectly: {
         createComponentOfType: "boolean",
         createStateVariable: "modifyIndirectly",
@@ -519,6 +524,12 @@ export default class BaseComponent {
       }
     }
 
+    // If fixed is set to true, then the inverseDefinitioin
+    // of any state variable, except those marked with ignoreFixed, will fail.
+    // Note that fixed does not influence the forward definition,
+    // so that if state variables of a fixed component are based other state variables,
+    // and those state variables change, the fixed component's state variable
+    // will change to reflect those new values.
     stateVariableDefinitions.fixed = {
       public: true,
       shadowingInstructions: {
@@ -609,6 +620,103 @@ export default class BaseComponent {
       }
     }
 
+    // If fixLocation is set to true, then the inverseDefinition
+    // of any state variable marked with isLocation will fail.
+    // The intent is that any variables specifying the location of a graphical object
+    // will be marked with isLocation so that authors can set the fixLocation attribute
+    // on components that should stay in the same location but should be modifiable
+    // in other respects.
+    // Note that fixLocation does not influence the forward definition,
+    // so that if an component with fixedLocation set has a location state variable
+    // that is based on other state variables,
+    // and those state variables change, the location state variable
+    // will change to reflect those new values.
+    stateVariableDefinitions.fixLocation = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      forRenderer: true,
+      defaultValue: false,
+      hasEssential: true,
+      doNotShadowEssential: true,
+      returnDependencies: () => ({
+        fixLocationPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "fixLocationPreliminary",
+          variablesOptional: true,
+        },
+        parentFixLocation: {
+          dependencyType: "parentStateVariable",
+          variableName: "fixLocation"
+        },
+        sourceCompositeFixLocation: {
+          dependencyType: "sourceCompositeStateVariable",
+          variableName: "fixLocation"
+        },
+        adapterSourceFixLocation: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "fixLocation"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (!usedDefault.fixLocationPreliminary) {
+          return {
+            setValue: {
+              fixLocation: dependencyValues.fixLocationPreliminary
+            }
+          }
+        }
+
+        let fixLocation = false;
+        let useEssential = true;
+
+        if (dependencyValues.parentFixLocation !== null && !usedDefault.parentFixLocation) {
+          fixLocation = fixLocation || dependencyValues.parentFixLocation;
+          useEssential = false;
+        }
+        if (dependencyValues.sourceCompositeFixLocation !== null && !usedDefault.sourceCompositeFixLocation) {
+          fixLocation = fixLocation || dependencyValues.sourceCompositeFixLocation;
+          useEssential = false;
+        }
+        if (dependencyValues.adapterSourceFixLocation !== null && !usedDefault.adapterSourceFixLocation) {
+          fixLocation = fixLocation || dependencyValues.adapterSourceFixLocation;
+          useEssential = false;
+        }
+
+        if (useEssential) {
+          return {
+            useEssentialOrDefaultValue: {
+              fixLocation: true
+            }
+          }
+        }
+        else {
+          return { setValue: { fixLocation } }
+        }
+      },
+      inverseDefinition({ dependencyValues, desiredStateVariableValues }) {
+        if (dependencyValues.fixLocationPreliminary !== null) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "fixLocationPreliminary",
+              desiredValue: desiredStateVariableValues.fixLocation,
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "fixLocation",
+              value: desiredStateVariableValues.fixLocation
+            }]
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.isInactiveCompositeReplacement = {
       defaultValue: false,
       hasEssential: true,
@@ -692,6 +800,7 @@ export default class BaseComponent {
       "createWorkspace", "workspace",
       "provideEssentialValuesInDefinition",
       "providePreviousValuesInDefinition",
+      "isLocation",
     ];
 
     let stateVariableDefinitions = {};

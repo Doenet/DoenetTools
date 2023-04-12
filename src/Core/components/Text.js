@@ -278,13 +278,15 @@ export default class Text extends InlineComponent {
 
   async textClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
@@ -292,13 +294,15 @@ export default class Text extends InlineComponent {
 
   async textFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "focus",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

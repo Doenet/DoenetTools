@@ -149,7 +149,7 @@ describe('Text Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph >
-      <text anchor="$anchorCoords1" name="text1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1">$content1</text>
+      <text anchor="$anchorCoords1" name="text1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1" fixed="$fixed1" fixLocation="$fixLocation1">$content1</text>
       <text name="text2">bye</text>
     </graph>
 
@@ -193,6 +193,14 @@ describe('Text Tag Tests', function () {
     <p name="pContent2">Content 2: $text2</p>
     <p>Content 1 <textinput name="content1" prefill="hello" /></p>
     <p>Content 2 <textinput name="content2" bindValueTo="$text2" /></p>
+    <p name="pFixed1">Fixed 1: $fixed1</p>
+    <p name="pFixed2">Fixed 2: $fixed2</p>
+    <p>Change fixed 1 <booleanInput name="fixed1" prefill="false" /></p>
+    <p>Change fixed 2 <booleanInput name="fixed2" bindValueTo="$text2.fixed" /></p>
+    <p name="pFixLocation1">FixLocation 1: $fixLocation1</p>
+    <p name="pFixLocation2">FixLocation 2: $fixLocation2</p>
+    <p>Change fixLocation 1 <booleanInput name="fixLocation1" prefill="false" /></p>
+    <p>Change fixLocation 2 <booleanInput name="fixLocation2" bindValueTo="$text2.fixLocation" /></p>
     <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
 
     ` }, "*");
@@ -290,6 +298,116 @@ describe('Text Tag Tests', function () {
 
     cy.get(cesc("#\\/pContent1")).should('have.text', 'Content 1: hello there')
     cy.get(cesc("#\\/pContent2")).should('have.text', 'Content 2: bye now')
+
+    cy.log('make draggable again')
+
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveText",
+        componentName: "/text1",
+        args: { x: -10, y: -9 }
+      })
+      win.callAction1({
+        actionName: "moveText",
+        componentName: "/text2",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(−8,−7)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−10,−9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+
+    cy.log('fix location')
+
+    cy.get(cesc('#\\/fixLocation1')).click();
+    cy.get(cesc('#\\/fixLocation2')).click();
+    cy.get(cesc("#\\/pFixLocation1")).should('have.text', 'FixLocation 1: true')
+    cy.get(cesc("#\\/pFixLocation2")).should('have.text', 'FixLocation 2: true')
+
+
+    cy.log('can change coordinates entering coordinates only for text 1')
+
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(3,4){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(1,2){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(1,2)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('cannot move texts by dragging')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveText",
+        componentName: "/text1",
+        args: { x: 4, y: 6 }
+      })
+      win.callAction1({
+        actionName: "moveText",
+        componentName: "/text2",
+        args: { x: 7, y: 8 }
+      })
+    })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'false');
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('can change position from anchor only for text 1');
+    cy.get(cesc('#\\/positionFromAnchor2')).select("bottom")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("top")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: top')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+
+
+    cy.log('make completely fixed')
+    cy.get(cesc('#\\/fixed1')).click();
+    cy.get(cesc('#\\/fixed2')).click();
+    cy.get(cesc("#\\/pFixed1")).should('have.text', 'Fixed 1: true')
+    cy.get(cesc("#\\/pFixed2")).should('have.text', 'Fixed 2: true')
+
+
+    cy.log('can change coordinates entering coordinates only for text 1')
+
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(7,8){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(5,6){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(5,6)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('can change position from anchor only for text 1');
+    cy.get(cesc('#\\/positionFromAnchor2')).select("left")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("right")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: right')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+
+    cy.log("can change content only for text 1")
+    cy.get(cesc('#\\/content2')).type("{end} too{enter}");
+    cy.get(cesc('#\\/content1')).type("{end} again{enter}");
+    cy.get(cesc("#\\/pContent1")).should('have.text', 'Content 1: hello there again')
+    cy.get(cesc("#\\/pContent2")).should('have.text', 'Content 2: bye now')
+
 
   })
 

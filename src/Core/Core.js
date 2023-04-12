@@ -2848,6 +2848,7 @@ export default class Core {
         "propagateToProps",
         "triggerActionOnChange",
         "ignoreFixed",
+        "isLocation",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -2960,6 +2961,7 @@ export default class Core {
         "defaultValue",
         "propagateToProps",
         "ignoreFixed",
+        "isLocation",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -3241,6 +3243,7 @@ export default class Core {
         "defaultValue",
         "propagateToProps",
         "ignoreFixed",
+        "isLocation",
       ]
 
       for (let attrName2 of attributesToCopy) {
@@ -3874,6 +3877,8 @@ export default class Core {
     // - markStale: function from array state variable
     // - freshnessInfo: object from array state variable
     // - getValueFromArrayValues: function used to get this entry's value
+    // - isLocation: array entries are locations if the array state variable is
+    //   (See expanation of location in fixLocation state variable of BaseComponent.js)
 
     stateVarObj.isArrayEntry = true;
 
@@ -3886,6 +3891,7 @@ export default class Core {
     stateVarObj.getPreviousDependencyValuesForMarkStale = arrayStateVarObj.getPreviousDependencyValuesForMarkStale;
     stateVarObj.provideEssentialValuesInDefinition = arrayStateVarObj.provideEssentialValuesInDefinition;
     stateVarObj.providePreviousValuesInDefinition = arrayStateVarObj.providePreviousValuesInDefinition;
+    stateVarObj.isLocation = arrayStateVarObj.isLocation;
 
     stateVarObj.nDimensions = arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
     stateVarObj.entryPrefix = arrayEntryPrefix;
@@ -9376,6 +9382,11 @@ export default class Core {
       return;
     }
 
+    if (!instruction.overrideFixed && stateVarObj.isLocation && await component.stateValues.fixLocation) {
+      console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because fixLocation is true.`);
+      return;
+    }
+
     if (!(initialChange || await component.stateValues.modifyIndirectly !== false)) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because modifyIndirectly is false.`);
       return;
@@ -9585,6 +9596,11 @@ export default class Core {
               return;
             }
 
+            // if any of the shadow sources of a locatoin are fixLocation, reject this change
+            if (!instruction.overrideFixed && !stateVarObj.isLocation && await baseComponent.stateValues.fixLocation) {
+              console.log(`Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixLocation is true.`);
+              return;
+            }
           }
 
           this.calculateEssentialVariableChanges({

@@ -34,7 +34,10 @@ export default React.memo(function NumberComponent(props) {
   let previousPositionFromAnchor = useRef(null);
 
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -82,7 +85,7 @@ export default React.memo(function NumberComponent(props) {
       strokeOpacity: 1,
       highlightStrokeColor: textColor,
       highlightStrokeOpacity: 0.5,
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       parse: false,
     };
 
@@ -118,6 +121,7 @@ export default React.memo(function NumberComponent(props) {
     anchorRel.current = [anchorx, anchory];
 
     let newNumberJXG = board.create('text', [0, 0, SVs.text], jsxNumberAttributes);
+    newNumberJXG.isDraggable = !fixLocation.current;
 
     newNumberJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -152,7 +156,7 @@ export default React.memo(function NumberComponent(props) {
           }
         });
         dragged.current = false;
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.numberClicked,
           args: { name }   // send name so get original name if adapted
@@ -375,8 +379,9 @@ export default React.memo(function NumberComponent(props) {
         numberJXG.current.visProp.highlightcssstyle = cssStyle;
       }
 
-      numberJXG.current.visProp.highlight = !fixed.current;
+      numberJXG.current.visProp.highlight = !fixLocation.current;
       numberJXG.current.visProp.fixed = fixed.current;
+      numberJXG.current.isDraggable = !fixLocation.current;
 
       numberJXG.current.needsUpdate = true;
 

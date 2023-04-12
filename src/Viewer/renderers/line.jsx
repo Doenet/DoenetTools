@@ -28,10 +28,12 @@ export default React.memo(function Line(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
   let switchable = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalPoints;
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
   switchable.current = SVs.switchable && !SVs.fixed;
 
   const darkMode = useRecoilValue(darkModeAtom);
@@ -88,7 +90,7 @@ export default React.memo(function Line(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
     };
 
     if (withlabel) {
@@ -145,6 +147,8 @@ export default React.memo(function Line(props) {
     ];
 
     let newLineJXG = board.create('line', through, jsxLineAttributes);
+
+    newLineJXG.isDraggable = !fixLocation.current;
 
     newLineJXG.on('drag', function (e) {
 
@@ -206,7 +210,7 @@ export default React.memo(function Line(props) {
             point2coords: pointCoords.current[1],
           }
         })
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
 
         if (switchable.current) {
           callAction({
@@ -379,7 +383,8 @@ export default React.memo(function Line(props) {
       }
 
       lineJXG.current.visProp.fixed = fixed.current;
-      lineJXG.current.visProp.highlight = !fixed.current;
+      lineJXG.current.visProp.highlight = !fixLocation.current;
+      lineJXG.current.isDraggable = !fixLocation.current;
 
       let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = lineJXG.current.visProp.layer !== layer;

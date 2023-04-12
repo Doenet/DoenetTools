@@ -67,7 +67,10 @@ export default React.memo(function BooleanInput(props) {
   let previousPositionFromAnchor = useRef(null);
 
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
 
   useEffect(() => {
@@ -122,7 +125,7 @@ export default React.memo(function BooleanInput(props) {
       useMathJax: SVs.labelHasLatex,
       strokeColor: "var(--canvastext)",
       highlightStrokeColor: "var(--canvastext)",
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       parse: false,
     };
 
@@ -163,6 +166,8 @@ export default React.memo(function BooleanInput(props) {
 
     let newInputJXG = board.create('checkbox', [0, 0, SVs.label], jsxInputAttributes);
     newInputJXG.rendNodeCheckbox.addEventListener("change", onChangeHandler);
+
+    newInputJXG.isDraggable = !fixLocation.current;
 
     newInputJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -383,8 +388,9 @@ export default React.memo(function BooleanInput(props) {
         inputJXG.current.setAttribute({ disabled: SVs.disabled })
       }
 
-      inputJXG.current.visProp.highlight = !fixed.current;
+      inputJXG.current.visProp.highlight = !fixLocation.current;
       inputJXG.current.visProp.fixed = fixed.current;
+      inputJXG.current.isDraggable = !fixLocation.current;
 
       inputJXG.current.needsUpdate = true;
 

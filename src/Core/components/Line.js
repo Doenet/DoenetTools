@@ -469,6 +469,7 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.essentialPoints = {
       isArray: true,
       nDimensions: "2",
+      isLocation: true,
       hasEssential: true,
       entryPrefixes: ["essentialPointX", "essentialPoint"],
       set: convertValueToMathExpression,
@@ -559,6 +560,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.points = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1065,6 +1067,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.equation = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1390,6 +1393,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.slope = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1416,6 +1420,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.xintercept = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1444,6 +1449,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.yintercept = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1687,13 +1693,15 @@ export default class Line extends GraphicalComponent {
 
   async lineClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
@@ -1701,13 +1709,15 @@ export default class Line extends GraphicalComponent {
 
   async lineFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "focus",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

@@ -26,11 +26,13 @@ export default React.memo(function Polygon(props) {
 
   let lastPositionsFromCore = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
   let verticesFixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalVertices;
   fixed.current = !SVs.draggable || SVs.fixed;
-  verticesFixed.current = !SVs.verticesDraggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
+  verticesFixed.current = !SVs.verticesDraggable || SVs.fixed || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -110,7 +112,7 @@ export default React.memo(function Polygon(props) {
       fillOpacity: SVs.selectedStyle.fillOpacity,
       highlightFillColor: fillColor,
       highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
       vertices: jsxPointAttributes.current,
       borders: jsxBorderAttributes,
     };
@@ -145,6 +147,7 @@ export default React.memo(function Polygon(props) {
 
 
     let newPolygonJXG = board.create('polygon', pts, jsxPolygonAttributes);
+    newPolygonJXG.isDraggable = !fixLocation.current;
 
     initializePoints(newPolygonJXG);
 
@@ -332,7 +335,7 @@ export default React.memo(function Polygon(props) {
         })
 
       }
-    } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1)) {
+    } else if (!pointerMovedSinceDown.current && (downOnPoint.current === null || i !== -1) && !fixed.current) {
       // Note: counting on fact that up on polygon itself (i===-1) will trigger before up on points
       callAction({
         action: actions.polygonClicked,
@@ -474,7 +477,8 @@ export default React.memo(function Polygon(props) {
       }
 
       polygonJXG.current.visProp.fixed = fixed.current;
-      polygonJXG.current.visProp.highlight = !fixed.current;
+      polygonJXG.current.visProp.highlight = !fixLocation.current;
+      polygonJXG.current.isDraggable = !fixLocation.current;
 
       polygonJXG.current.visProp["visible"] = visibleNow;
       polygonJXG.current.visPropCalc["visible"] = visibleNow;

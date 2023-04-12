@@ -36,12 +36,14 @@ export default React.memo(function Curve(props) {
   let vectorControlDirections = useRef(null);
   let previousVectorControlDirections = useRef(null);
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
   let switchable = useRef(false);
 
   let tpCoords = useRef([]);
   let cvCoords = useRef([]);
 
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
   switchable.current = SVs.switchable && !SVs.fixed;
 
   vectorControlDirections.current = SVs.vectorControlDirections;
@@ -92,7 +94,7 @@ export default React.memo(function Curve(props) {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      fixed: false,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -212,7 +214,7 @@ export default React.memo(function Curve(props) {
     newCurveJXG.isDraggable = false;
 
     newCurveJXG.on('up', function (e) {
-      if (!pointerMovedSinceDown.current) {
+      if (!pointerMovedSinceDown.current && !fixed.current) {
         if (switchable.current) {
           callAction({
             action: actions.switchCurve
@@ -246,16 +248,19 @@ export default React.memo(function Curve(props) {
     if (SVs.curveType === "bezier") {
 
       board.on('up', upBoard);
+
       newCurveJXG.on('down', (e) => {
         pointerAtDown.current = [e.x, e.y];
         pointerIsDown.current = true;
         pointerMovedSinceDown.current = false;
         downOther();
 
-        callAction({
-          action: actions.curveFocused,
-          args: { name }   // send name so get original name if adapted
-        });
+        if (!fixed.current) {
+          callAction({
+            action: actions.curveFocused,
+            args: { name }   // send name so get original name if adapted
+          });
+        }
 
       });
 
@@ -315,7 +320,7 @@ export default React.memo(function Curve(props) {
         size: 2,
       };
 
-      if (!fixed.current) {
+      if (!fixLocation.current) {
 
 
         createControls();
@@ -338,10 +343,12 @@ export default React.memo(function Curve(props) {
         pointerIsDown.current = true;
         pointerMovedSinceDown.current = false;
 
-        callAction({
-          action: actions.curveFocused,
-          args: { name }   // send name so get original name if adapted
-        });
+        if (!fixed.current) {
+          callAction({
+            action: actions.curveFocused,
+            args: { name }   // send name so get original name if adapted
+          });
+        }
 
       });
 
@@ -447,7 +454,7 @@ export default React.memo(function Curve(props) {
     // console.log(`down through point: ${i}`)
 
     // also called when navigate to point using keyboard
-    if (fixed.current) {
+    if (fixLocation.current) {
       return;
     }
 
@@ -596,7 +603,7 @@ export default React.memo(function Curve(props) {
   }
 
   function upBoard() {
-    if (fixed.current) {
+    if (fixLocation.current) {
       return;
     }
     if (hitObject.current !== true && !SVs.bezierControlsAlwaysVisible) {
@@ -640,7 +647,7 @@ export default React.memo(function Curve(props) {
   }
 
   function downOther() {
-    if (fixed.current) {
+    if (fixLocation.current) {
       return;
     }
 
@@ -767,6 +774,8 @@ export default React.memo(function Curve(props) {
         }
       }
 
+      curveJXG.current.visProp.fixed = fixed.current;
+
       curveJXG.current.needsUpdate = true;
       curveJXG.current.updateCurve();
       if (curveJXG.current.hasLabel) {
@@ -781,13 +790,14 @@ export default React.memo(function Curve(props) {
       }
 
 
+
       if (SVs.curveType !== "bezier") {
         board.updateRenderer();
         return <><a name={id} /></>
       }
 
 
-      if (fixed.current) {
+      if (fixLocation.current) {
         if (segmentsJXG.current.length > 0) {
           deleteControls();
         }

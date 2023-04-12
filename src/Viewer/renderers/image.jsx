@@ -36,7 +36,10 @@ export default React.memo(function Image(props) {
   let lastRotate = useRef(SVs.rotate);
 
   let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
   fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const urlOrSource = (SVs.cid ? url : SVs.source) || "";
 
@@ -98,7 +101,7 @@ export default React.memo(function Image(props) {
       visible: !SVs.hidden,
       fixed: fixed.current,
       layer: 10 * SVs.layer + IMAGE_LAYER_OFFSET,
-      highlight: !fixed.current,
+      highlight: !fixLocation.current,
     };
 
 
@@ -165,6 +168,8 @@ export default React.memo(function Image(props) {
 
     let newImageJXG = board.create('image', [urlOrSource, offset, [width, height]], jsxImageAttributes);
 
+    newImageJXG.isDraggable = !fixLocation.current;
+
     // tranformation code copied from jsxgraph documentation:
     // https://jsxgraph.uni-bayreuth.de/wiki/index.php?title=Images#The_JavaScript_code_5
     var tOff = board.create('transform', [
@@ -226,7 +231,7 @@ export default React.memo(function Image(props) {
           }
         });
         dragged.current = false;
-      } else if (!pointerMovedSinceDown.current) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.imageClicked,
           args: { name }   // send name so get original name if adapted
@@ -418,8 +423,9 @@ export default React.memo(function Image(props) {
       }
 
 
-      imageJXG.current.visProp.highlight = !fixed.current;
+      imageJXG.current.visProp.highlight = !fixLocation.current;
       imageJXG.current.visProp.fixed = fixed.current;
+      imageJXG.current.isDraggable = !fixLocation.current;
 
       imageJXG.current.needsUpdate = true;
 

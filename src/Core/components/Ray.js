@@ -110,6 +110,7 @@ export default class Ray extends GraphicalComponent {
     // from serialized state with direction value
     stateVariableDefinitions.directionShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "direction",
       set: convertValueToMathExpression,
@@ -135,6 +136,7 @@ export default class Ray extends GraphicalComponent {
     // from serialized state with through value
     stateVariableDefinitions.throughShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "through",
       set: convertValueToMathExpression,
@@ -159,6 +161,7 @@ export default class Ray extends GraphicalComponent {
     // from serialized state with endpoint value
     stateVariableDefinitions.endpointShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "endpoint",
       set: convertValueToMathExpression,
@@ -620,6 +623,7 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.direction = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -821,6 +825,7 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.through = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -1004,6 +1009,7 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.endpoint = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -1496,13 +1502,15 @@ export default class Ray extends GraphicalComponent {
 
   async rayClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
@@ -1510,13 +1518,15 @@ export default class Ray extends GraphicalComponent {
 
   async rayFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "focus",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
