@@ -1422,7 +1422,7 @@ export default function ActivityViewer(props) {
       finishAssessmentPrompt = <div style={{ marginLeft: "1px", marginRight: "5px", marginBottom: "5px", marginTop: "80px" }}>
         <div data-test="centerone" style={{ display: "flex", justifyContent: "center" }}>
           <div style={{ width: "240px" }}>
-            <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} data-test="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
+            <ActionButton onClick={() => setFinishAssessmentMessageOpen(true)} dataTest="FinishAssessmentPrompt" value="Finish assessment"></ActionButton>
           </div>
         </div>
       </div>

@@ -1192,7 +1192,9 @@ export function getURLFromRef({
     if (page) {
       url += `#page${page}`;
     } else {
-      url += "#";
+      let firstSlash = id.indexOf("\\/");
+      let prefix = id.substring(0, firstSlash);
+      url += "#" + prefix;
     }
     url += cesc(targetName);
     targetForATag = null;

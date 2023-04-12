@@ -485,7 +485,7 @@ describe('Relationships among pages tests', function () {
     cy.get(cesc('#page2\\/insideAside')).should('not.exist');
 
     cy.window().then(async (win) => {
-      expect(win.scrollY).eq(0);
+      expect(win.scrollY).lt(100);
     })
 
     cy.get(cesc('#page2\\/bi')).click();
