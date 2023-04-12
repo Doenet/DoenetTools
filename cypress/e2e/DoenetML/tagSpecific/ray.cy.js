@@ -1,13 +1,5 @@
-import cssesc from 'cssesc';
 import me from 'math-expressions';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 function nInDOM(n) {
   if (n < 0) {
@@ -34,9 +26,9 @@ describe('Ray Tag Tests', function () {
     let directionx = throughx - endpointx;
     let directiony = throughy - endpointy;
 
-    cy.get(`#${cesc(endpointInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(endpointx)},${nInDOM(endpointy)})`)
-    cy.get(`#${cesc(throughInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(throughx)},${nInDOM(throughy)})`)
-    cy.get(`#${cesc(directionInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
+    cy.get(`#${cesc2(endpointInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(endpointx)},${nInDOM(endpointy)})`)
+    cy.get(`#${cesc2(throughInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(throughx)},${nInDOM(throughy)})`)
+    cy.get(`#${cesc2(directionInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -74,7 +66,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let endpointx = 0;
@@ -213,7 +205,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let endpointx = 0;
     let endpointy = 0;
@@ -352,7 +344,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let endpointx = 4;
@@ -491,7 +483,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let endpointx = 4;
@@ -629,7 +621,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let endpointx = 0;
@@ -762,7 +754,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let endpointx = 4;
@@ -895,7 +887,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let endpointx = 3;
@@ -1040,7 +1032,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let ray1s = ['/g1/ray1', '/g2/ray1', '/g3/ray1'];
     let ray2s = ['/g1/ray2', '/g2/ray2', '/g3/ray2'];
@@ -1077,7 +1069,7 @@ describe('Ray Tag Tests', function () {
         expect(stateVariables[name].stateValues.through).eqls([v3hx, v3hy]);
       }
 
-      cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
     })
 
@@ -1107,7 +1099,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1153,7 +1145,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -1197,7 +1189,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+      cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1243,7 +1235,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/dir2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
+      cy.get(cesc('#\\/dir2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1289,7 +1281,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/dir2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
+      cy.get(cesc('#\\/dir2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1336,7 +1328,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -3;
       let v3hy = 6;
 
-      cy.get('#\\/dir2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
+      cy.get(cesc('#\\/dir2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1382,7 +1374,7 @@ describe('Ray Tag Tests', function () {
       let v2hx = 5;
       let v2hy = -9;
 
-      cy.get('#\\/dir3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
+      cy.get(cesc('#\\/dir3') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1428,7 +1420,7 @@ describe('Ray Tag Tests', function () {
       let v2hx = 5;
       let v2hy = -9;
 
-      cy.get('#\\/dir3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
+      cy.get(cesc('#\\/dir3') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1475,7 +1467,7 @@ describe('Ray Tag Tests', function () {
       let v2hy = -9;
 
 
-      cy.get('#\\/dir3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
+      cy.get(cesc('#\\/dir3') + ' .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1525,7 +1517,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
 
     let rays = ['/ray1', '/ray2'];
@@ -1557,7 +1549,7 @@ describe('Ray Tag Tests', function () {
         expect(stateVariables[name].stateValues.displacement).eqls([direction_x, direction_y]);
       }
 
-      cy.get('#\\/dir1a .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
+      cy.get(cesc('#\\/dir1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
 
     })
 
@@ -1592,7 +1584,7 @@ describe('Ray Tag Tests', function () {
           let dthrough_xs = dendpoint_xs.map(x => x + direction_x);
           let dthrough_ys = dendpoint_ys.map(y => y + direction_y);
 
-          cy.get('#\\/dir1a .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
+          cy.get(cesc('#\\/dir1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
 
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
@@ -1649,7 +1641,7 @@ describe('Ray Tag Tests', function () {
           })
 
 
-          cy.get('#\\/dir1a .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
+          cy.get(cesc('#\\/dir1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
 
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
@@ -1693,11 +1685,11 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log('check initial values')
 
-    cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
+    cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1719,7 +1711,7 @@ describe('Ray Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
+    cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
 
 
     cy.window().then(async (win) => {
@@ -1761,7 +1753,7 @@ describe('Ray Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1788,7 +1780,7 @@ describe('Ray Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1817,7 +1809,7 @@ describe('Ray Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1852,11 +1844,11 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log('check initial values')
 
-    cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
+    cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1878,7 +1870,7 @@ describe('Ray Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
+    cy.get(cesc('#\\/dir1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1907,7 +1899,7 @@ describe('Ray Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1936,7 +1928,7 @@ describe('Ray Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 100) / 100)},${nInDOM(Math.round(p5y * 100) / 100)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 100) / 100)},${nInDOM(Math.round(p5y * 100) / 100)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1964,7 +1956,7 @@ describe('Ray Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 10) / 10)},${nInDOM(Math.round(p5y * 10) / 10)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 10) / 10)},${nInDOM(Math.round(p5y * 10) / 10)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1993,7 +1985,7 @@ describe('Ray Tag Tests', function () {
       let p5y = -temp;
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2015,7 +2007,7 @@ describe('Ray Tag Tests', function () {
         args: { x: xorig, y: yorig }
       })
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(-4.4)},${nInDOM(4.5)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-4.4)},${nInDOM(4.5)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2046,11 +2038,11 @@ describe('Ray Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`point on ray, close to origin`);
 
-    cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.001`)
+    cy.get(cesc('#\\/Pa') + ' .mjx-mrow').should('contain.text', `0.001`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2072,7 +2064,7 @@ describe('Ray Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.04`)
+    cy.get(cesc('#\\/Pa') + ' .mjx-mrow').should('contain.text', `0.04`)
 
     cy.window().then(async (win) => {
 
@@ -2093,7 +2085,7 @@ describe('Ray Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.05`)
+    cy.get(cesc('#\\/Pa') + ' .mjx-mrow').should('contain.text', `0.05`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2124,11 +2116,11 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log('check initial values')
 
-    cy.get('#\\/o2 .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(3)})`)
+    cy.get(cesc('#\\/o2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2149,7 +2141,7 @@ describe('Ray Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/o2 .mjx-mrow').should('contain.text', `(${nInDOM(-5)},${nInDOM(1)})`)
+    cy.get(cesc('#\\/o2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-5)},${nInDOM(1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2170,7 +2162,7 @@ describe('Ray Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(6)},${nInDOM(-8)})`)
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(6)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2181,9 +2173,9 @@ describe('Ray Tag Tests', function () {
     });
 
     cy.log("Change factor");
-    cy.get('#\\/a textarea').type(`{end}{backspace}-3{enter}`, { force: true });
+    cy.get(cesc('#\\/a') + ' textarea').type(`{end}{backspace}-3{enter}`, { force: true });
 
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-9)},${nInDOM(12)})`)
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-9)},${nInDOM(12)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2204,7 +2196,7 @@ describe('Ray Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-6)},${nInDOM(-3)})`)
+    cy.get(cesc('#\\/m2') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2233,13 +2225,13 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let tx = 1, ty = 2, hx = -2, hy = 3;
 
     cy.log("initial positions")
 
-    cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+    cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2267,7 +2259,7 @@ describe('Ray Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2294,7 +2286,7 @@ describe('Ray Tag Tests', function () {
         args: { x: hx, y: hy }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2322,7 +2314,7 @@ describe('Ray Tag Tests', function () {
         args: { x: tx, y: ty }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2350,7 +2342,7 @@ describe('Ray Tag Tests', function () {
         args: { x: hx, y: ty }
       })
 
-      cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+      cy.get(cesc('#\\/va') + ' .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2475,7 +2467,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')
 
 
     let tvt = [1, 2];
@@ -2657,7 +2649,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: tvhd }
       })
 
-      cy.get('#\\/vhd_tdom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
+      cy.get(cesc('#\\/vhd_tdom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
       // since moved endpoints directly, throughs stay fixed and direction changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -2822,7 +2814,7 @@ describe('Ray Tag Tests', function () {
       })
 
 
-      cy.get('#\\/vhd_hdom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/vhd_hdom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // since moved throughs directly, endpoints stay fixed and direction changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -2968,7 +2960,7 @@ describe('Ray Tag Tests', function () {
         args: { x: tvtd[0], y: tvtd[1] }
       })
 
-      cy.get('#\\/tvtd_dom').should('contain.text', `(${nInDOM(tvtd[0])},${nInDOM(tvtd[1])})`)
+      cy.get(cesc('#\\/tvtd_dom')).should('contain.text', `(${nInDOM(tvtd[0])},${nInDOM(tvtd[1])})`)
 
       // defined by endpoint/through, through stays fixed and direction changes
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
@@ -3057,7 +3049,7 @@ describe('Ray Tag Tests', function () {
         args: { x: hvhd[0], y: hvhd[1] }
       })
 
-      cy.get('#\\/hvhd_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/hvhd_dom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // defined by through only or endpoint/through, endpoint stays fixed and direction changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
@@ -3146,7 +3138,7 @@ describe('Ray Tag Tests', function () {
         args: { x: dvhd[0], y: dvhd[1] }
       })
 
-      cy.get('#\\/dvhd_dom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
+      cy.get(cesc('#\\/dvhd_dom')).should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
 
       // defined by direction only or endpoint/direction, endpoint stays fixed and through changes
@@ -3257,7 +3249,7 @@ describe('Ray Tag Tests', function () {
       })
 
 
-      cy.get('#\\/tfvhd_dom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
+      cy.get(cesc('#\\/tfvhd_dom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
 
       // if defined by through, through stays fixed and direction changes
@@ -3424,7 +3416,7 @@ describe('Ray Tag Tests', function () {
         args: { x: hvhd[0], y: hvhd[1] }
       })
 
-      cy.get('#\\/hfvhd_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/hfvhd_dom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
 
       // for most rays, endpoints stay fixed and direction changes
@@ -3589,7 +3581,7 @@ describe('Ray Tag Tests', function () {
         args: { headcoords: dvhd }
       })
 
-      cy.get('#\\/dfvhd_hdom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
+      cy.get(cesc('#\\/dfvhd_hdom')).should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
       // for most rays, endpoints stay fixed and through changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -3755,7 +3747,7 @@ describe('Ray Tag Tests', function () {
       })
 
 
-      cy.get('#\\/vhd2_tdom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
+      cy.get(cesc('#\\/vhd2_tdom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
       // since moved endpoints directly, throughs stay fixed and direction changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -3919,7 +3911,7 @@ describe('Ray Tag Tests', function () {
       })
 
 
-      cy.get('#\\/vhd2_hdom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/vhd2_hdom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // since moved throughs directly, endpoints stay fixed and direction changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -4083,7 +4075,7 @@ describe('Ray Tag Tests', function () {
       })
 
 
-      cy.get('#\\/tfvhd2_dom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])}`)
+      cy.get(cesc('#\\/tfvhd2_dom')).should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])}`)
 
 
       // if defined by through, through stays fixed and direction changes
@@ -4250,7 +4242,7 @@ describe('Ray Tag Tests', function () {
         args: { x: hvhd[0], y: hvhd[1] }
       })
 
-      cy.get('#\\/hfvhd2_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+      cy.get(cesc('#\\/hfvhd2_dom')).should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
 
       // for most rays, endpoints stay fixed and direction changes
@@ -4416,7 +4408,7 @@ describe('Ray Tag Tests', function () {
         args: { headcoords: dvhd }
       })
 
-      cy.get('#\\/dfvhd2_hdom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
+      cy.get(cesc('#\\/dfvhd2_hdom')).should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
       // for most rays, endpoints stay fixed and through changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -4562,13 +4554,13 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let x1 = 1, y1 = 0;
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
-    cy.get('#\\/v1h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+    cy.get(cesc('#\\/v1h')).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4593,7 +4585,7 @@ describe('Ray Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/v1h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc('#\\/v1h')).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
 
       cy.window().then(async (win) => {
@@ -4619,7 +4611,7 @@ describe('Ray Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/v1t').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc('#\\/v1t')).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
 
       cy.window().then(async (win) => {
@@ -4645,7 +4637,7 @@ describe('Ray Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get('#\\/v2t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc('#\\/v2t')).should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4669,7 +4661,7 @@ describe('Ray Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get('#\\/v2h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc('#\\/v2h')).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4693,7 +4685,7 @@ describe('Ray Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/v3h').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc('#\\/v3h')).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4718,7 +4710,7 @@ describe('Ray Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get('#\\/v3t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc('#\\/v3t')).should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4746,7 +4738,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4761,7 +4753,7 @@ describe('Ray Tag Tests', function () {
       expect(stateVariables['/_ray1'].stateValues.through).eqls([throughx, throughy]);
       expect(stateVariables['/_ray1'].stateValues.direction).eqls([directionx, directiony]);
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
     })
 
@@ -4781,7 +4773,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: [endpointx, endpointy] }
       })
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4807,7 +4799,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4822,7 +4814,7 @@ describe('Ray Tag Tests', function () {
       expect(stateVariables['/_ray1'].stateValues.through).eqls([throughx, throughy]);
       expect(stateVariables['/_ray1'].stateValues.direction).eqls([directionx, directiony]);
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
     })
 
@@ -4842,7 +4834,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: [throughx, throughy] }
       })
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4868,7 +4860,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4883,7 +4875,7 @@ describe('Ray Tag Tests', function () {
       expect(stateVariables['/_ray1'].stateValues.through).eqls([throughx, throughy]);
       expect(stateVariables['/_ray1'].stateValues.direction).eqls([directionx, directiony]);
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
     })
 
@@ -4903,7 +4895,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: [endpointx, endpointy] }
       })
 
-      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
+      cy.get(cesc("#\\/v1a") + " .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4955,9 +4947,9 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
-    cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(4)})`)
+    cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(4)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4994,7 +4986,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: [1, 2] }
       })
 
-      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -5011,7 +5003,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: [-4, 5] }
       })
 
-      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
+      cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v1"].stateValues.through).eqls([-4, 5])
@@ -5027,7 +5019,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: [1, 2] }
       })
 
-      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v3h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.through).eqls([1, 2])
@@ -5043,7 +5035,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: [-4, 5] }
       })
 
-      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
+      cy.get(cesc("#\\/v3h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.through).eqls([-4, 5])
@@ -5060,7 +5052,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: [1, 2] }
       })
 
-      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v2h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.through).eqls([1, 2])
@@ -5076,7 +5068,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: [5, 7] }
       })
 
-      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
+      cy.get(cesc("#\\/v2h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.through).eqls([-4, -5])
@@ -5091,7 +5083,7 @@ describe('Ray Tag Tests', function () {
         componentName: "/v5",
         args: { throughcoords: [1, 2] }
       })
-      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.get(cesc("#\\/v5h") + " .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.through).eqls([1, 2])
@@ -5106,7 +5098,7 @@ describe('Ray Tag Tests', function () {
         componentName: "/v5",
         args: { endpointcoords: [5, 7] }
       })
-      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
+      cy.get(cesc("#\\/v5h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.through).eqls([-4, -5])
@@ -5122,7 +5114,7 @@ describe('Ray Tag Tests', function () {
         componentName: "/v4",
         args: { throughcoords: [-1, 1] }
       })
-      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
+      cy.get(cesc("#\\/v4h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.through).eqls([-8, -6])
@@ -5142,7 +5134,7 @@ describe('Ray Tag Tests', function () {
       // since based on endpoint and direction
       // Ray sets direction to try to keep through in the same place
 
-      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
+      cy.get(cesc("#\\/v4h") + " .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.through).eqls([4, -8])
@@ -5158,7 +5150,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: [-1, 1] }
       })
 
-      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
+      cy.get(cesc("#\\/v6h") + " .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.through).eqls([-8, -6])
@@ -5177,7 +5169,7 @@ describe('Ray Tag Tests', function () {
       // since based on endpoint and direction
       // Ray sets direction to try to keep through in the same place
 
-      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
+      cy.get(cesc("#\\/v6h") + " .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.through).eqls([4, -8])
@@ -5224,7 +5216,7 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let endpoints = [
       [0, 0],
@@ -5248,7 +5240,7 @@ describe('Ray Tag Tests', function () {
 
     let directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-    cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[0][0])},${nInDOM(endpoints[0][1])})`)
+    cy.get(cesc("#\\/v0t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[0][0])},${nInDOM(endpoints[0][1])})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5280,7 +5272,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: endpoints[0] }
       })
 
-      cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[0][0])},${nInDOM(endpoints[0][1])})`)
+      cy.get(cesc("#\\/v0t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[0][0])},${nInDOM(endpoints[0][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5311,7 +5303,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: throughs[0] }
       })
 
-      cy.get("#\\/v0h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[0][0])},${nInDOM(throughs[0][1])})`)
+      cy.get(cesc("#\\/v0h") + " .mjx-mrow").should('contain.text', `(${nInDOM(throughs[0][0])},${nInDOM(throughs[0][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5340,7 +5332,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: throughs[1] }
       })
 
-      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[1][0])},${nInDOM(throughs[1][1])})`)
+      cy.get(cesc("#\\/v1h") + " .mjx-mrow").should('contain.text', `(${nInDOM(throughs[1][0])},${nInDOM(throughs[1][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5372,7 +5364,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: endpoints[1] }
       })
 
-      cy.get("#\\/v1t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[1][0])},${nInDOM(endpoints[1][1])})`)
+      cy.get(cesc("#\\/v1t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[1][0])},${nInDOM(endpoints[1][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5401,7 +5393,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: endpoints[2] }
       })
 
-      cy.get("#\\/v2t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[2][0])},${nInDOM(endpoints[2][1])})`)
+      cy.get(cesc("#\\/v2t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[2][0])},${nInDOM(endpoints[2][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5430,7 +5422,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: throughs[2] }
       })
 
-      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[2][0])},${nInDOM(throughs[2][1])})`)
+      cy.get(cesc("#\\/v2h") + " .mjx-mrow").should('contain.text', `(${nInDOM(throughs[2][0])},${nInDOM(throughs[2][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5461,7 +5453,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: throughs[3] }
       })
 
-      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[3][0])},${nInDOM(throughs[3][1])})`)
+      cy.get(cesc("#\\/v3h") + " .mjx-mrow").should('contain.text', `(${nInDOM(throughs[3][0])},${nInDOM(throughs[3][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5493,7 +5485,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: endpoints[3] }
       })
 
-      cy.get("#\\/v3t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[3][0])},${nInDOM(endpoints[3][1])})`)
+      cy.get(cesc("#\\/v3t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[3][0])},${nInDOM(endpoints[3][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5524,7 +5516,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: endpoints[4] }
       })
 
-      cy.get("#\\/v4t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[4][0])},${nInDOM(endpoints[4][1])})`)
+      cy.get(cesc("#\\/v4t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[4][0])},${nInDOM(endpoints[4][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5554,7 +5546,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: throughs[4] }
       })
 
-      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[4][0])},${nInDOM(throughs[4][1])})`)
+      cy.get(cesc("#\\/v4h") + " .mjx-mrow").should('contain.text', `(${nInDOM(throughs[4][0])},${nInDOM(throughs[4][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5585,7 +5577,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: throughs[5] }
       })
 
-      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[5][0])},${nInDOM(throughs[5][1])})`)
+      cy.get(cesc("#\\/v5h") + " .mjx-mrow").should('contain.text', `(${nInDOM(throughs[5][0])},${nInDOM(throughs[5][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5619,7 +5611,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: endpoints[5] }
       })
 
-      cy.get("#\\/v5t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[5][0])},${nInDOM(endpoints[5][1])})`)
+      cy.get(cesc("#\\/v5t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[5][0])},${nInDOM(endpoints[5][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5651,7 +5643,7 @@ describe('Ray Tag Tests', function () {
         args: { endpointcoords: endpoints[6] }
       })
 
-      cy.get("#\\/v6t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[6][0])},${nInDOM(endpoints[6][1])})`)
+      cy.get(cesc("#\\/v6t") + " .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[6][0])},${nInDOM(endpoints[6][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5683,7 +5675,7 @@ describe('Ray Tag Tests', function () {
         args: { throughcoords: throughs[6] }
       })
 
-      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[6][0])},${nInDOM(throughs[6][1])})`)
+      cy.get(cesc("#\\/v6h") + " .mjx-mrow").should('contain.text', `(${nInDOM(throughs[6][0])},${nInDOM(throughs[6][1])})`)
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
@@ -5734,122 +5726,122 @@ describe('Ray Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(1,0)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').should('contain.text', '(1,0)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(1,0)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(1,0)');
 
     cy.log('change head using alt vector')
-    cy.get('#\\/mivt textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 6,9{enter}", { force: true });
+    cy.get(cesc('#\\/mivt') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 6,9{enter}", { force: true });
 
-    cy.get('#\\/vThrough .mjx-mrow').should('contain.text', '(6,9)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').should('contain.text', '(6,9)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(0,0)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
 
 
     cy.log('change tail using alt vector')
-    cy.get('#\\/mive textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -3,7{enter}", { force: true });
-    cy.get('#\\/vEndpoint .mjx-mrow').should('contain.text', '(−3,7)');
+    cy.get(cesc('#\\/mive') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -3,7{enter}", { force: true });
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').should('contain.text', '(−3,7)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(3,16)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(6,9)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(3,16)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(3,16)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(3,16)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(6,9)');
 
     cy.log('change displacement using alt vector')
-    cy.get('#\\/mivd textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -4,1{enter}", { force: true });
-    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(−4,1)');
+    cy.get(cesc('#\\/mivd') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -4,1{enter}", { force: true });
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').should('contain.text', '(−4,1)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(−7,8)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(−4,1)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(−7,8)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(−7,8)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(−4,1)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(−7,8)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(−4,1)');
 
 
     cy.log('cannot change dimnension through displacement')
-    cy.get('#\\/mivd textarea').type("{ctrl+home}{shift+end}{backspace}(9,8,7{enter}", { force: true });
-    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(9,8)');
+    cy.get(cesc('#\\/mivd') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(9,8,7{enter}", { force: true });
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').should('contain.text', '(9,8)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(6,15)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(6,15)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−3,7)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(6,15)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(6,15)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−3,7)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
 
 
     cy.log('cannot change dimnension through tail')
-    cy.get('#\\/mive textarea').type("{ctrl+home}{shift+end}{backspace}(-5,-6,-7{enter}", { force: true });
-    cy.get('#\\/vEndpoint .mjx-mrow').should('contain.text', '(−5,−6)');
+    cy.get(cesc('#\\/mive') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(-5,-6,-7{enter}", { force: true });
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').should('contain.text', '(−5,−6)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(4,2)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(9,8)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(4,2)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(4,2)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(4,2)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(9,8)');
 
 
     cy.log('cannot change dimnension through head')
-    cy.get('#\\/mivt textarea').type("{ctrl+home}{shift+end}{backspace}(9,-9,7{enter}", { force: true });
-    cy.get('#\\/vThrough .mjx-mrow').should('contain.text', '(9,−9)');
+    cy.get(cesc('#\\/mivt') + ' textarea').type("{ctrl+home}{shift+end}{backspace}(9,-9,7{enter}", { force: true });
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').should('contain.text', '(9,−9)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(9,−9)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(14,−3)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(9,−9)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(14,−3)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(9,−9)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(14,−3)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(9,−9)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(14,−3)');
 
 
 
     cy.log('cannot change dimnension through copied head')
-    cy.get('#\\/miv2t textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 0,1,2,3{enter}", { force: true });
-    cy.get('#\\/vThrough .mjx-mrow').should('contain.text', '(0,1)');
+    cy.get(cesc('#\\/miv2t') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 0,1,2,3{enter}", { force: true });
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').should('contain.text', '(0,1)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(0,1)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(5,7)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(0,1)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(0,1)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(0,1)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−6)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
 
 
     cy.log('cannot change dimnension through copied tail')
-    cy.get('#\\/miv2e textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 2, 4, 6, 8{enter}", { force: true });
-    cy.get('#\\/vEndpoint .mjx-mrow').should('contain.text', '(2,4)');
+    cy.get(cesc('#\\/miv2e') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle 2, 4, 6, 8{enter}", { force: true });
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').should('contain.text', '(2,4)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(7,11)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(5,7)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(7,11)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(7,11)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(7,11)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(5,7)');
 
 
     cy.log('cannot change dimnension through copied displacement')
-    cy.get('#\\/miv2d textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -8, -6, =4, -2{enter}", { force: true });
-    cy.get('#\\/vDirection .mjx-mrow').should('contain.text', '(−8,−6)');
+    cy.get(cesc('#\\/miv2d') + ' textarea').type("{ctrl+home}{shift+end}{backspace}\\langle -8, -6, =4, -2{enter}", { force: true });
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').should('contain.text', '(−8,−6)');
 
-    cy.get('#\\/vThrough .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
-    cy.get('#\\/vEndpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/vDirection .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
-    cy.get('#\\/v2Through .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
-    cy.get('#\\/v2Endpoint .mjx-mrow').eq(0).should('have.text', '(2,4)');
-    cy.get('#\\/v2Direction .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+    cy.get(cesc('#\\/vThrough') + ' .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
+    cy.get(cesc('#\\/vEndpoint') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/vDirection') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
+    cy.get(cesc('#\\/v2Through') + ' .mjx-mrow').eq(0).should('have.text', '(−6,−2)');
+    cy.get(cesc('#\\/v2Endpoint') + ' .mjx-mrow').eq(0).should('have.text', '(2,4)');
+    cy.get(cesc('#\\/v2Direction') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−6)');
 
 
   })
@@ -5876,9 +5868,9 @@ describe('Ray Tag Tests', function () {
     });
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Ray A is thick brown.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red ray.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black ray.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Ray A is thick brown.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a dark red ray.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin black ray.');
 
     cy.log('set dark mode')
     cy.get('#testRunner_toggleControls').click();
@@ -5887,9 +5879,9 @@ describe('Ray Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Ray A is thick yellow.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red ray.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white ray.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Ray A is thick yellow.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a light red ray.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin white ray.');
 
 
   });

@@ -3,6 +3,7 @@ import me from 'math-expressions';
 import { convertValueToMathExpression, roundForDisplay, vectorOperators } from '../utils/math';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
+import { returnTextStyleDescriptionDefinitions } from '../utils/style';
 
 export default class Point extends GraphicalComponent {
   constructor(args) {
@@ -12,7 +13,7 @@ export default class Point extends GraphicalComponent {
       movePoint: this.movePoint.bind(this),
       switchPoint: this.switchPoint.bind(this),
       pointClicked: this.pointClicked.bind(this),
-      mouseDownOnPoint: this.mouseDownOnPoint.bind(this),
+      pointFocused: this.pointFocused.bind(this),
     });
 
   }
@@ -247,6 +248,9 @@ export default class Point extends GraphicalComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
     stateVariableDefinitions.styleDescription = {
       public: true,
       shadowingInstructions: {
@@ -363,6 +367,7 @@ export default class Point extends GraphicalComponent {
     // that shadows the component adapted or copied
     stateVariableDefinitions.coordsShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "coords",
       returnDependencies: () => ({}),
@@ -524,6 +529,7 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.unconstrainedXs = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["unconstrainedX"],
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
@@ -796,6 +802,7 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.xs = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -920,6 +927,7 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.coords = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -997,7 +1005,7 @@ export default class Point extends GraphicalComponent {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "latex"
       },
       returnDependencies: () => ({
         coords: {
@@ -1136,7 +1144,7 @@ export default class Point extends GraphicalComponent {
 
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.numericalXs) {
-          if (!dependencyValuesByKey[arrayKey]) {
+          if (!dependencyNamesByKey[arrayKey]) {
             continue;
           }
           instructions.push({
@@ -1251,30 +1259,33 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  async pointClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async pointClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
+  async pointFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-  async mouseDownOnPoint({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
-
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

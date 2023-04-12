@@ -103,7 +103,7 @@ export default React.memo(function Legend(props) {
 
       } else if (element.swatchType === "rectangle") {
         let rectangleStyle = {
-          fillColor: element.filled ? element.fillColor.toLowerCase() : "none",
+          fillColor: element.filled ? element.fillColor : "none",
           fillOpacity: element.fillOpacity,
           fixed: true,
           highlight: false,

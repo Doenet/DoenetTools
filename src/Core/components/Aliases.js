@@ -4,6 +4,7 @@ import Template from './Template';
 import MathComponent from './Math';
 import Label from './Label';
 import MathList from './MathList';
+import { Div } from './Divisions';
 
 
 export class Columns extends TextComponent {
@@ -47,4 +48,16 @@ export class MatrixRow extends MathList {
 export class MatrixColumn extends MathList {
   static componentType = "matrixColumn";
   static rendererType = "mathList";
+}
+
+export class Statement extends Div {
+  static componentType = "statement";
+}
+
+export class Introduction extends Div {
+  static componentType = "introduction";
+}
+
+export class Conclusion extends Div {
+  static componentType = "conclusion";
 }

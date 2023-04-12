@@ -1,3 +1,6 @@
+import { cesc } from '../../../../src/_utils/url';
+
+
 describe('Curve Tag Bezier Tests', function () {
 
   beforeEach(() => {
@@ -112,7 +115,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]]
     let directions = ["none", "none", "none", "none"];
@@ -138,8 +141,8 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('cannot change control vector')
-    cy.get(`#\\/dir1`).select(`2`);
-    cy.get(`#\\/dir1`).should('have.value', '1');
+    cy.get(cesc(`#\\/dir1`)).select(`2`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '1');
 
     cy.window().then(async (win) => {
 
@@ -213,8 +216,8 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('cannot move next control vector')
-    cy.get(`#\\/dir2`).select(`2`);
-    cy.get(`#\\/dir2`).should('have.value', '1');
+    cy.get(cesc(`#\\/dir2`)).select(`2`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '1');
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -332,7 +335,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
 
@@ -359,10 +362,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('activate and move control vector on curve1')
-    cy.get(`#\\/dir1`).select(`2`);
-    cy.get(`#\\/dir1`).should('have.value', '2');
-    cy.get(`#\\/dir1a`).should('have.value', '2');
-    cy.get(`#\\/dir1b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1`)).select(`2`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '2');
 
     let controlVectors = [[[-2, -1], [2, 1]]]
 
@@ -439,10 +442,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('symmetric control vector on curve 3')
-    cy.get(`#\\/dir2a`).select(`2`);
-    cy.get(`#\\/dir2`).should('have.value', '2');
-    cy.get(`#\\/dir2a`).should('have.value', '2');
-    cy.get(`#\\/dir2b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2a`)).select(`2`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '2');
     cy.window().then(async (win) => {
       controlVectors[1] = [[4, -2], [-4, 2]]
 
@@ -482,10 +485,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('asymmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`3`);
-    cy.get(`#\\/dir3`).should('have.value', '3');
-    cy.get(`#\\/dir3a`).should('have.value', '3');
-    cy.get(`#\\/dir3b`).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3`)).select(`3`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '3');
     cy.window().then(async (win) => {
       controlVectors[2] = [[1, 0], [0, -2]]
 
@@ -533,10 +536,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       controlVectors[1] = [[-4, -5]]
 
@@ -576,10 +579,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       controlVectors[2] = [null, [6, 2]]
 
@@ -747,7 +750,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "symmetric", "symmetric", "symmetric"];
@@ -892,10 +895,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('asymmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`3`);
-    cy.get(`#\\/dir3`).should('have.value', '3');
-    cy.get(`#\\/dir3a`).should('have.value', '3');
-    cy.get(`#\\/dir3b`).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3`)).select(`3`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '3');
     cy.window().then(async (win) => {
       controlVectors[2] = [[1, 0], [0, -2]]
 
@@ -943,10 +946,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       controlVectors[1] = [[-4, -5]]
 
@@ -986,10 +989,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       controlVectors[2] = [null, [6, 2]]
 
@@ -1028,10 +1031,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -1062,10 +1065,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector at beginning curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -1224,7 +1227,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "both", "both", "symmetric"];
@@ -1375,10 +1378,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('symmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`2`);
-    cy.get(`#\\/dir3`).should('have.value', '2');
-    cy.get(`#\\/dir3a`).should('have.value', '2');
-    cy.get(`#\\/dir3b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3`)).select(`2`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '2');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [-1, -0]]
@@ -1417,10 +1420,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
@@ -1459,10 +1462,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
@@ -1501,10 +1504,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -1535,10 +1538,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector at end of curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -1646,10 +1649,10 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
-    cy.get('#\\/dira_input').should('have.value', 'symmetric')
-    cy.get('#\\/dirb_input').should('have.value', 'symmetric')
+    cy.get(cesc('#\\/dira_input')).should('have.value', 'symmetric')
+    cy.get(cesc('#\\/dirb_input')).should('have.value', 'symmetric')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1661,10 +1664,10 @@ describe('Curve Tag Bezier Tests', function () {
     })
 
 
-    cy.get('#\\/dira_input').clear().type("both{enter}")
+    cy.get(cesc('#\\/dira_input')).clear().type("both{enter}")
 
-    cy.get('#\\/dira_input').should('have.value', 'both')
-    cy.get('#\\/dirb_input').should('have.value', 'both')
+    cy.get(cesc('#\\/dira_input')).should('have.value', 'both')
+    cy.get(cesc('#\\/dirb_input')).should('have.value', 'both')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1691,10 +1694,10 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'b'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'b'); //wait for window to load
 
-    cy.get('#\\/dira_input').should('have.value', 'symmetric')
-    cy.get('#\\/dirb_input').should('have.value', 'symmetric')
+    cy.get(cesc('#\\/dira_input')).should('have.value', 'symmetric')
+    cy.get(cesc('#\\/dirb_input')).should('have.value', 'symmetric')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1706,10 +1709,10 @@ describe('Curve Tag Bezier Tests', function () {
     })
 
 
-    cy.get('#\\/dirb_input').clear().type("none{enter}")
+    cy.get(cesc('#\\/dirb_input')).clear().type("none{enter}")
 
-    cy.get('#\\/dira_input').should('have.value', 'none')
-    cy.get('#\\/dirb_input').should('have.value', 'none')
+    cy.get(cesc('#\\/dira_input')).should('have.value', 'none')
+    cy.get(cesc('#\\/dirb_input')).should('have.value', 'none')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1800,7 +1803,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "symmetric", "symmetric", "symmetric"];
@@ -1945,10 +1948,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('asymmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`3`);
-    cy.get(`#\\/dir3`).should('have.value', '3');
-    cy.get(`#\\/dir3a`).should('have.value', '3');
-    cy.get(`#\\/dir3b`).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3`)).select(`3`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '3');
     cy.window().then(async (win) => {
       controlVectors[2] = [[1, 0], [0, -2]]
 
@@ -1996,10 +1999,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       controlVectors[1] = [[-4, -5]]
 
@@ -2039,10 +2042,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       controlVectors[2] = [null, [6, 2]]
 
@@ -2081,10 +2084,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -2115,10 +2118,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector at end of curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -2282,7 +2285,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "symmetric", "symmetric", "symmetric"];
@@ -2427,10 +2430,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('asymmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`3`);
-    cy.get(`#\\/dir3`).should('have.value', '3');
-    cy.get(`#\\/dir3a`).should('have.value', '3');
-    cy.get(`#\\/dir3b`).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3`)).select(`3`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '3');
     cy.window().then(async (win) => {
       controlVectors[2] = [[1, 0], [0, -2]]
 
@@ -2478,10 +2481,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       controlVectors[1] = [[-4, -5]]
 
@@ -2521,10 +2524,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       controlVectors[2] = [null, [6, 2]]
 
@@ -2563,10 +2566,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -2597,10 +2600,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector at end of curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -2762,7 +2765,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "none", "symmetric", "symmetric"];
@@ -2914,10 +2917,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('asymmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`3`);
-    cy.get(`#\\/dir3`).should('have.value', '3');
-    cy.get(`#\\/dir3a`).should('have.value', '3');
-    cy.get(`#\\/dir3b`).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3`)).select(`3`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '3');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '3');
     cy.window().then(async (win) => {
       controlVectors[2] = [[1, 0], [0, -2]]
 
@@ -2965,10 +2968,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       controlVectors[1] = [[-4, -5]]
 
@@ -3008,10 +3011,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       controlVectors[2] = [null, [6, 2]]
 
@@ -3050,10 +3053,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -3084,10 +3087,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector at end of curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -3250,7 +3253,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "both", "both", "symmetric"];
@@ -3404,10 +3407,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('symmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`2`);
-    cy.get(`#\\/dir3`).should('have.value', '2');
-    cy.get(`#\\/dir3a`).should('have.value', '2');
-    cy.get(`#\\/dir3b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3`)).select(`2`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '2');
     cy.window().then(async (win) => {
       controlVectors[2] = [[1, 0], [-1, -0]]
 
@@ -3447,10 +3450,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       controlVectors[1] = [[-4, -5]]
 
@@ -3490,10 +3493,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       controlVectors[2] = [null, [6, 2]]
 
@@ -3533,10 +3536,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -3567,10 +3570,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector at end of curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -3735,7 +3738,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "both", "both", "symmetric"];
@@ -3889,10 +3892,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('symmetric control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`2`);
-    cy.get(`#\\/dir3`).should('have.value', '2');
-    cy.get(`#\\/dir3a`).should('have.value', '2');
-    cy.get(`#\\/dir3b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3`)).select(`2`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '2');
     cy.window().then(async (win) => {
       controlVectors[2] = [[1, 0], [-1, -0]]
 
@@ -3932,10 +3935,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector on curve 2')
-    cy.get(`#\\/dir2a`).select(`4`);
-    cy.get(`#\\/dir2`).should('have.value', '4');
-    cy.get(`#\\/dir2a`).should('have.value', '4');
-    cy.get(`#\\/dir2b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).select(`4`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       controlVectors[1] = [[-4, -5]]
 
@@ -3975,10 +3978,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector on curve 3')
-    cy.get(`#\\/dir3b`).select(`5`);
-    cy.get(`#\\/dir3`).should('have.value', '5');
-    cy.get(`#\\/dir3a`).should('have.value', '5');
-    cy.get(`#\\/dir3b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).select(`5`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       controlVectors[2] = [null, [6, 2]]
 
@@ -4018,10 +4021,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -4052,10 +4055,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('next control vector at end of curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -4220,7 +4223,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "previous", "next", "symmetric"];
@@ -4400,10 +4403,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('switch previous to next on curve 1')
-    cy.get(`#\\/dir2`).select(`5`);
-    cy.get(`#\\/dir2`).should('have.value', '5');
-    cy.get(`#\\/dir2a`).should('have.value', '5');
-    cy.get(`#\\/dir2b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir2`)).select(`5`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1][1] = controlVectors[1][0];
@@ -4469,10 +4472,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('switch next to previous on curve 3')
-    cy.get(`#\\/dir3b`).select(`4`);
-    cy.get(`#\\/dir3`).should('have.value', '4');
-    cy.get(`#\\/dir3a`).should('have.value', '4');
-    cy.get(`#\\/dir3b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir3b`)).select(`4`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2][0] = controlVectors[2][1];
@@ -4538,10 +4541,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('switch next to symmetric on curve 2')
-    cy.get(`#\\/dir2a`).select(`2`);
-    cy.get(`#\\/dir2`).should('have.value', '2');
-    cy.get(`#\\/dir2a`).should('have.value', '2');
-    cy.get(`#\\/dir2b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2a`)).select(`2`);
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '2');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1][0] = controlVectors[1][1];
@@ -4643,10 +4646,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('previous control vector at end of curve 3')
-    cy.get(`#\\/dir4b`).select(`4`);
-    cy.get(`#\\/dir4`).should('have.value', '4');
-    cy.get(`#\\/dir4a`).should('have.value', '4');
-    cy.get(`#\\/dir4b`).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).select(`4`);
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '4');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '4');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -4712,10 +4715,10 @@ describe('Curve Tag Bezier Tests', function () {
     });
 
     cy.log('next control vector at end of curve 1')
-    cy.get(`#\\/dir1`).select(`5`);
-    cy.get(`#\\/dir1`).should('have.value', '5');
-    cy.get(`#\\/dir1a`).should('have.value', '5');
-    cy.get(`#\\/dir1b`).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1`)).select(`5`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '5');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '5');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -4884,7 +4887,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [2, 1]];
     let directions = ["symmetric", "symmetric", "both", "symmetric"];
@@ -5118,7 +5121,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -5203,7 +5206,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -5280,7 +5283,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -5420,7 +5423,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let directions = ["symmetric", "symmetric", "both", "symmetric"];
 
@@ -5871,7 +5874,7 @@ describe('Curve Tag Bezier Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); //wait for window to load
 
     let directions = ["symmetric", "symmetric", "both", "symmetric"];
 
@@ -6318,7 +6321,7 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [1, 2]];
     let directions = ["none", "none", "none", "none"];
@@ -6598,22 +6601,22 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('move control vectors')
-    cy.get(`#\\/dir1`).select(`2`);
-    cy.get(`#\\/dir2a`).select(`2`);
-    cy.get(`#\\/dir3b`).select(`2`);
-    cy.get(`#\\/dir4`).select(`2`);
-    cy.get(`#\\/dir1`).should('have.value', '2');
-    cy.get(`#\\/dir1a`).should('have.value', '2');
-    cy.get(`#\\/dir1b`).should('have.value', '2');
-    cy.get(`#\\/dir2`).should('have.value', '2');
-    cy.get(`#\\/dir2a`).should('have.value', '2');
-    cy.get(`#\\/dir2b`).should('have.value', '2');
-    cy.get(`#\\/dir3`).should('have.value', '2');
-    cy.get(`#\\/dir3a`).should('have.value', '2');
-    cy.get(`#\\/dir3b`).should('have.value', '2');
-    cy.get(`#\\/dir4`).should('have.value', '2');
-    cy.get(`#\\/dir4a`).should('have.value', '2');
-    cy.get(`#\\/dir4b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1`)).select(`2`);
+    cy.get(cesc(`#\\/dir2a`)).select(`2`);
+    cy.get(cesc(`#\\/dir3b`)).select(`2`);
+    cy.get(cesc(`#\\/dir4`)).select(`2`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '2');
     let controlVectors = [
       [[3, 1], [-3, -1]],
       [[-1, 5], [1, -5]],
@@ -6818,7 +6821,7 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [1, 2]];
     let directions = ["none", "none", "none", "none"];
@@ -7098,22 +7101,22 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('move control vectors')
-    cy.get(`#\\/dir1`).select(`2`);
-    cy.get(`#\\/dir2a`).select(`2`);
-    cy.get(`#\\/dir3b`).select(`2`);
-    cy.get(`#\\/dir4`).select(`2`);
-    cy.get(`#\\/dir1`).should('have.value', '2');
-    cy.get(`#\\/dir1a`).should('have.value', '2');
-    cy.get(`#\\/dir1b`).should('have.value', '2');
-    cy.get(`#\\/dir2`).should('have.value', '2');
-    cy.get(`#\\/dir2a`).should('have.value', '2');
-    cy.get(`#\\/dir2b`).should('have.value', '2');
-    cy.get(`#\\/dir3`).should('have.value', '2');
-    cy.get(`#\\/dir3a`).should('have.value', '2');
-    cy.get(`#\\/dir3b`).should('have.value', '2');
-    cy.get(`#\\/dir4`).should('have.value', '2');
-    cy.get(`#\\/dir4a`).should('have.value', '2');
-    cy.get(`#\\/dir4b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1`)).select(`2`);
+    cy.get(cesc(`#\\/dir2a`)).select(`2`);
+    cy.get(cesc(`#\\/dir3b`)).select(`2`);
+    cy.get(cesc(`#\\/dir4`)).select(`2`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '2');
     let controlVectors = [
       [[3, 1], [-3, -1]],
       [[-1, 5], [1, -5]],
@@ -7327,7 +7330,7 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [1, 2], [2, 2]];
     let directions = ["none", "none", "none", "none", "none"];
@@ -7715,26 +7718,26 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('move control vectors')
-    cy.get(`#\\/dir1`).select(`2`);
-    cy.get(`#\\/dir2a`).select(`2`);
-    cy.get(`#\\/dir3b`).select(`2`);
-    cy.get(`#\\/dir4`).select(`2`);
-    cy.get(`#\\/dir5`).select(`2`);
-    cy.get(`#\\/dir1`).should('have.value', '2');
-    cy.get(`#\\/dir1a`).should('have.value', '2');
-    cy.get(`#\\/dir1b`).should('have.value', '2');
-    cy.get(`#\\/dir2`).should('have.value', '2');
-    cy.get(`#\\/dir2a`).should('have.value', '2');
-    cy.get(`#\\/dir2b`).should('have.value', '2');
-    cy.get(`#\\/dir3`).should('have.value', '2');
-    cy.get(`#\\/dir3a`).should('have.value', '2');
-    cy.get(`#\\/dir3b`).should('have.value', '2');
-    cy.get(`#\\/dir4`).should('have.value', '2');
-    cy.get(`#\\/dir4a`).should('have.value', '2');
-    cy.get(`#\\/dir4b`).should('have.value', '2');
-    cy.get(`#\\/dir5`).should('have.value', '2');
-    cy.get(`#\\/dir5a`).should('have.value', '2');
-    cy.get(`#\\/dir5b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1`)).select(`2`);
+    cy.get(cesc(`#\\/dir2a`)).select(`2`);
+    cy.get(cesc(`#\\/dir3b`)).select(`2`);
+    cy.get(cesc(`#\\/dir4`)).select(`2`);
+    cy.get(cesc(`#\\/dir5`)).select(`2`);
+    cy.get(cesc(`#\\/dir1`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir1b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir2b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir4b`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir5`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir5a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir5b`)).should('have.value', '2');
     let controlVectors = [
       [[3, 1], [-3, -1]],
       [[-1, 5], [1, -5]],
@@ -7905,7 +7908,7 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let throughPoints = [[-5, -1], [1, 2], [3, 4], [-5, -1], [5, 7], [-5, 7],
     [-5, -1], [3, 1], [5, 0], [-5, -1]]
@@ -8481,7 +8484,7 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let throughPoints = [[-2, 2], [1, 2], [3, 4], [-3, 1], [5, 7], [-5, 7],
     [-4, 0], [3, 1], [5, 0], [-5, -1]]
@@ -9069,7 +9072,7 @@ describe('Curve Tag Bezier Tests', function () {
   <copy source="g2" assignNames="g3" />
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6]];
     let controlVectors = [
@@ -9400,7 +9403,7 @@ describe('Curve Tag Bezier Tests', function () {
   </p>
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6]];
     let controlVectors = [
@@ -9546,10 +9549,10 @@ describe('Curve Tag Bezier Tests', function () {
 
 
     cy.log('turn on third control vector on curve 1')
-    cy.get(`#\\/dir3`).select(`2`);
-    cy.get(`#\\/dir3`).should('have.value', '2');
-    cy.get(`#\\/dir3a`).should('have.value', '2');
-    cy.get(`#\\/dir3b`).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3`)).select(`2`);
+    cy.get(cesc(`#\\/dir3`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3a`)).should('have.value', '2');
+    cy.get(cesc(`#\\/dir3b`)).should('have.value', '2');
 
     cy.log("move first control vector of curve 1")
     cy.window().then(async (win) => {
@@ -9810,7 +9813,7 @@ describe('Curve Tag Bezier Tests', function () {
 
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     let throughPoints = [[1, 2], [3, 4], [-5, 6], [3, 5]];
@@ -10222,90 +10225,90 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(3,4)")
     })
-    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,7)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,6)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(4,7)")
     })
-    cy.get('#\\/t1 .mjx-mrow').eq(0).should('have.text', "2")
-    cy.get('#\\/x1').should('have.text', "4")
-    cy.get('#\\/y1').should('have.text', "2")
-    cy.get('#\\/c1').should('have.text', "6")
+    cy.get(cesc('#\\/t1') + ' .mjx-mrow').eq(0).should('have.text', "2")
+    cy.get(cesc('#\\/x1')).should('have.text', "4")
+    cy.get(cesc('#\\/y1')).should('have.text', "2")
+    cy.get(cesc('#\\/c1')).should('have.text', "6")
 
 
     cy.log('set propIndex to 1')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/Px1 .mjx-mrow').should('contain.text', "(3,4)")
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').should('contain.text', "(3,4)")
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,2)")
     })
-    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(3,4)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,2)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,6)")
     })
-    cy.get('#\\/t1 .mjx-mrow').eq(0).should('have.text', "1")
-    cy.get('#\\/x1').should('have.text', "3")
-    cy.get('#\\/y1').should('have.text', "1")
-    cy.get('#\\/c1').should('have.text', "-2")
+    cy.get(cesc('#\\/t1') + ' .mjx-mrow').eq(0).should('have.text', "1")
+    cy.get(cesc('#\\/x1')).should('have.text', "3")
+    cy.get(cesc('#\\/y1')).should('have.text', "1")
+    cy.get(cesc('#\\/c1')).should('have.text', "-2")
 
 
     cy.log('erase propIndex')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{enter}", { force: true });
 
-    cy.get('#\\/Pt1').should('not.exist');
-    cy.get('#\\/Pt2').should('not.exist');
+    cy.get(cesc('#\\/Pt1')).should('not.exist');
+    cy.get(cesc('#\\/Pt2')).should('not.exist');
 
-    cy.get('#\\/Px1').should('not.exist');
-    cy.get('#\\/Px2').should('not.exist');
+    cy.get(cesc('#\\/Px1')).should('not.exist');
+    cy.get(cesc('#\\/Px2')).should('not.exist');
 
-    cy.get('#\\/Py1').should('not.exist');
-    cy.get('#\\/Py2').should('not.exist');
-    cy.get('#\\/Py3').should('not.exist');
-    cy.get('#\\/Py4').should('not.exist');
+    cy.get(cesc('#\\/Py1')).should('not.exist');
+    cy.get(cesc('#\\/Py2')).should('not.exist');
+    cy.get(cesc('#\\/Py3')).should('not.exist');
+    cy.get(cesc('#\\/Py4')).should('not.exist');
 
-    cy.get('#\\/Pc1').should('not.exist');
-    cy.get('#\\/Pc2').should('not.exist');
+    cy.get(cesc('#\\/Pc1')).should('not.exist');
+    cy.get(cesc('#\\/Pc2')).should('not.exist');
 
-    cy.get('#\\/t1').should('not.exist');
-    cy.get('#\\/x1').should('not.exist');
-    cy.get('#\\/y1').should('not.exist');
-    cy.get('#\\/c1').should('not.exist');
+    cy.get(cesc('#\\/t1')).should('not.exist');
+    cy.get(cesc('#\\/x1')).should('not.exist');
+    cy.get(cesc('#\\/y1')).should('not.exist');
+    cy.get(cesc('#\\/c1')).should('not.exist');
 
 
     cy.log('set propIndex to 4')
 
-    cy.get('#\\/n textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("4{enter}", { force: true });
 
-    cy.get('#\\/Py1 .mjx-mrow').should('contain.text', "(6,5)")
-    cy.get('#\\/Px1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').should('contain.text', "(6,5)")
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,7)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(6,5)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/t1').should('not.exist')
-    cy.get('#\\/x1').should('not.exist')
-    cy.get('#\\/y1').should('not.exist')
-    cy.get('#\\/c1').should('not.exist')
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/t1')).should('not.exist')
+    cy.get(cesc('#\\/x1')).should('not.exist')
+    cy.get(cesc('#\\/y1')).should('not.exist')
+    cy.get(cesc('#\\/c1')).should('not.exist')
 
 
   })
@@ -10339,90 +10342,90 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(3,4)")
     })
-    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,7)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,6)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(4,7)")
     })
-    cy.get('#\\/t1 .mjx-mrow').eq(0).should('have.text', "2")
-    cy.get('#\\/x1').should('have.text', "4")
-    cy.get('#\\/y1').should('have.text', "2")
-    cy.get('#\\/c1').should('have.text', "6")
+    cy.get(cesc('#\\/t1') + ' .mjx-mrow').eq(0).should('have.text', "2")
+    cy.get(cesc('#\\/x1')).should('have.text', "4")
+    cy.get(cesc('#\\/y1')).should('have.text', "2")
+    cy.get(cesc('#\\/c1')).should('have.text', "6")
 
 
     cy.log('set propIndex to 1')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/Px1 .mjx-mrow').should('contain.text', "(3,4)")
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').should('contain.text', "(3,4)")
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,2)")
     })
-    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(3,4)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,2)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,6)")
     })
-    cy.get('#\\/t1 .mjx-mrow').eq(0).should('have.text', "1")
-    cy.get('#\\/x1').should('have.text', "3")
-    cy.get('#\\/y1').should('have.text', "1")
-    cy.get('#\\/c1').should('have.text', "-2")
+    cy.get(cesc('#\\/t1') + ' .mjx-mrow').eq(0).should('have.text', "1")
+    cy.get(cesc('#\\/x1')).should('have.text', "3")
+    cy.get(cesc('#\\/y1')).should('have.text', "1")
+    cy.get(cesc('#\\/c1')).should('have.text', "-2")
 
 
     cy.log('erase propIndex')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{enter}", { force: true });
 
-    cy.get('#\\/Pt1').should('not.exist');
-    cy.get('#\\/Pt2').should('not.exist');
+    cy.get(cesc('#\\/Pt1')).should('not.exist');
+    cy.get(cesc('#\\/Pt2')).should('not.exist');
 
-    cy.get('#\\/Px1').should('not.exist');
-    cy.get('#\\/Px2').should('not.exist');
+    cy.get(cesc('#\\/Px1')).should('not.exist');
+    cy.get(cesc('#\\/Px2')).should('not.exist');
 
-    cy.get('#\\/Py1').should('not.exist');
-    cy.get('#\\/Py2').should('not.exist');
-    cy.get('#\\/Py3').should('not.exist');
-    cy.get('#\\/Py4').should('not.exist');
+    cy.get(cesc('#\\/Py1')).should('not.exist');
+    cy.get(cesc('#\\/Py2')).should('not.exist');
+    cy.get(cesc('#\\/Py3')).should('not.exist');
+    cy.get(cesc('#\\/Py4')).should('not.exist');
 
-    cy.get('#\\/Pc1').should('not.exist');
-    cy.get('#\\/Pc2').should('not.exist');
+    cy.get(cesc('#\\/Pc1')).should('not.exist');
+    cy.get(cesc('#\\/Pc2')).should('not.exist');
 
-    cy.get('#\\/t1').should('not.exist');
-    cy.get('#\\/x1').should('not.exist');
-    cy.get('#\\/y1').should('not.exist');
-    cy.get('#\\/c1').should('not.exist');
+    cy.get(cesc('#\\/t1')).should('not.exist');
+    cy.get(cesc('#\\/x1')).should('not.exist');
+    cy.get(cesc('#\\/y1')).should('not.exist');
+    cy.get(cesc('#\\/c1')).should('not.exist');
 
 
     cy.log('set propIndex to 4')
 
-    cy.get('#\\/n textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("4{enter}", { force: true });
 
-    cy.get('#\\/Py1 .mjx-mrow').should('contain.text', "(6,5)")
-    cy.get('#\\/Px1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').should('contain.text', "(6,5)")
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,7)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(6,5)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/t1').should('not.exist')
-    cy.get('#\\/x1').should('not.exist')
-    cy.get('#\\/y1').should('not.exist')
-    cy.get('#\\/c1').should('not.exist')
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/t1')).should('not.exist')
+    cy.get(cesc('#\\/x1')).should('not.exist')
+    cy.get(cesc('#\\/y1')).should('not.exist')
+    cy.get(cesc('#\\/c1')).should('not.exist')
 
 
   })
@@ -10456,90 +10459,90 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(3,4)")
     })
-    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,7)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,6)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(4,7)")
     })
-    cy.get('#\\/t1 .mjx-mrow').eq(0).should('have.text', "2")
-    cy.get('#\\/x1').should('have.text', "4")
-    cy.get('#\\/y1').should('have.text', "2")
-    cy.get('#\\/c1').should('have.text', "6")
+    cy.get(cesc('#\\/t1') + ' .mjx-mrow').eq(0).should('have.text', "2")
+    cy.get(cesc('#\\/x1')).should('have.text', "4")
+    cy.get(cesc('#\\/y1')).should('have.text', "2")
+    cy.get(cesc('#\\/c1')).should('have.text', "6")
 
 
     cy.log('set propIndex to 1')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/Px1 .mjx-mrow').should('contain.text', "(3,4)")
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').should('contain.text', "(3,4)")
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,2)")
     })
-    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(3,4)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,2)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,6)")
     })
-    cy.get('#\\/t1 .mjx-mrow').eq(0).should('have.text', "1")
-    cy.get('#\\/x1').should('have.text', "3")
-    cy.get('#\\/y1').should('have.text', "1")
-    cy.get('#\\/c1').should('have.text', "-2")
+    cy.get(cesc('#\\/t1') + ' .mjx-mrow').eq(0).should('have.text', "1")
+    cy.get(cesc('#\\/x1')).should('have.text', "3")
+    cy.get(cesc('#\\/y1')).should('have.text', "1")
+    cy.get(cesc('#\\/c1')).should('have.text', "-2")
 
 
     cy.log('erase propIndex')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{enter}", { force: true });
 
-    cy.get('#\\/Pt1').should('not.exist');
-    cy.get('#\\/Pt2').should('not.exist');
+    cy.get(cesc('#\\/Pt1')).should('not.exist');
+    cy.get(cesc('#\\/Pt2')).should('not.exist');
 
-    cy.get('#\\/Px1').should('not.exist');
-    cy.get('#\\/Px2').should('not.exist');
+    cy.get(cesc('#\\/Px1')).should('not.exist');
+    cy.get(cesc('#\\/Px2')).should('not.exist');
 
-    cy.get('#\\/Py1').should('not.exist');
-    cy.get('#\\/Py2').should('not.exist');
-    cy.get('#\\/Py3').should('not.exist');
-    cy.get('#\\/Py4').should('not.exist');
+    cy.get(cesc('#\\/Py1')).should('not.exist');
+    cy.get(cesc('#\\/Py2')).should('not.exist');
+    cy.get(cesc('#\\/Py3')).should('not.exist');
+    cy.get(cesc('#\\/Py4')).should('not.exist');
 
-    cy.get('#\\/Pc1').should('not.exist');
-    cy.get('#\\/Pc2').should('not.exist');
+    cy.get(cesc('#\\/Pc1')).should('not.exist');
+    cy.get(cesc('#\\/Pc2')).should('not.exist');
 
-    cy.get('#\\/t1').should('not.exist');
-    cy.get('#\\/x1').should('not.exist');
-    cy.get('#\\/y1').should('not.exist');
-    cy.get('#\\/c1').should('not.exist');
+    cy.get(cesc('#\\/t1')).should('not.exist');
+    cy.get(cesc('#\\/x1')).should('not.exist');
+    cy.get(cesc('#\\/y1')).should('not.exist');
+    cy.get(cesc('#\\/c1')).should('not.exist');
 
 
     cy.log('set propIndex to 4')
 
-    cy.get('#\\/n textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/n') + ' textarea').type("4{enter}", { force: true });
 
-    cy.get('#\\/Py1 .mjx-mrow').should('contain.text', "(6,5)")
-    cy.get('#\\/Px1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/Pt1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').should('contain.text', "(6,5)")
+    cy.get(cesc('#\\/Px1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/Pt1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−4,7)")
     })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/Py1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(6,5)")
     })
-    cy.get('#\\/Pc1 .mjx-mrow').should('not.exist')
-    cy.get('#\\/t1').should('not.exist')
-    cy.get('#\\/x1').should('not.exist')
-    cy.get('#\\/y1').should('not.exist')
-    cy.get('#\\/c1').should('not.exist')
+    cy.get(cesc('#\\/Pc1') + ' .mjx-mrow').should('not.exist')
+    cy.get(cesc('#\\/t1')).should('not.exist')
+    cy.get(cesc('#\\/x1')).should('not.exist')
+    cy.get(cesc('#\\/y1')).should('not.exist')
+    cy.get(cesc('#\\/c1')).should('not.exist')
 
 
   })
@@ -10564,24 +10567,24 @@ describe('Curve Tag Bezier Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/cv1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−1,0)")
     })
-    cy.get('#\\/cv2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,0)")
     })
-    cy.get('#\\/cv3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(0,−1)")
     })
-    cy.get('#\\/cv4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−1,0)")
     })
-    cy.get('#\\/cv5 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv5') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(1,0)")
     })
-    cy.get('#\\/cv6 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−1,0)")
     })
 
@@ -10623,23 +10626,23 @@ describe('Curve Tag Bezier Tests', function () {
     })
 
 
-    cy.get('#\\/cv6 .mjx-mrow').should('contain.text', "(2,6)");
-    cy.get('#\\/cv1 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv6') + ' .mjx-mrow').should('contain.text', "(2,6)");
+    cy.get(cesc('#\\/cv1') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,−1)")
     })
-    cy.get('#\\/cv2 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv2') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(2,1)")
     })
-    cy.get('#\\/cv3 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv3') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(3,−5)")
     })
-    cy.get('#\\/cv4 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv4') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(2,−4)")
     })
-    cy.get('#\\/cv5 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv5') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(−2,−6)")
     })
-    cy.get('#\\/cv6 .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/cv6') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(2,6)")
     })
 

@@ -68,7 +68,7 @@ describe('Multipage activity tests', function () {
 
     cy.visit(`/public?doenetId=${doenetId}`)
 
-    cy.get('#\\/_p1').should('have.text', 'This is public')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'This is public')
 
     cy.title().should('contain', 'Cypress Activity')
     cy.go("back");
@@ -86,7 +86,7 @@ describe('Multipage activity tests', function () {
 
     cy.visit(`/public?doenetId=${doenetId}`)
 
-    cy.get('#\\/_p1').should('have.text', 'This is public')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'This is public')
 
     cy.title().should('contain', 'Cypress Activity')
     cy.go("back");
@@ -94,15 +94,15 @@ describe('Multipage activity tests', function () {
 
     cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
 
-    cy.get('#\\/_p1').should('have.text', 'This is public')
-    cy.get('#\\/_p2').should('not.exist')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'This is public')
+    cy.get(cesc('#\\/_p2')).should('not.exist')
 
     cy.title().should('contain', 'Cypress Activity')
 
     cy.get('.cm-content').type('{moveToEnd}<p>A new paragraph</p>{enter}{ctrl+s}')
     cy.get('.cm-content').type('{command+s}') //TODO: Why do I need this?
 
-    cy.get('#\\/_p2').should('have.text', 'A new paragraph')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'A new paragraph')
 
   })
 
@@ -143,7 +143,7 @@ describe('Multipage activity tests', function () {
     cy.visit(`/public?doenetId=${doenetId}`)
 
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
 
     cy.get('[data-test="Main Panel"]').then(el => {
@@ -151,27 +151,27 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
 
-    cy.get('#\\/toAside').click();
+    cy.get(cesc('#\\/toAside')).click();
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
-    cy.get('#\\/asideTitle').click();
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).click();
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
-    cy.get('#\\/toAside').scrollIntoView();
+    cy.get(cesc('#\\/toAside')).scrollIntoView();
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -179,12 +179,12 @@ describe('Multipage activity tests', function () {
     cy.url().should('match', /#\/aside$/)
 
 
-    cy.get('#\\/toAside').click();
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/toAside')).click();
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -192,7 +192,7 @@ describe('Multipage activity tests', function () {
 
     cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
 
     cy.get('[data-test="Main Panel"]').then(el => {
@@ -200,27 +200,27 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
 
-    cy.get('#\\/toAside').click();
+    cy.get(cesc('#\\/toAside')).click();
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
-    cy.get('#\\/asideTitle').click();
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).click();
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
-    cy.get('#\\/toAside').scrollIntoView();
+    cy.get(cesc('#\\/toAside')).scrollIntoView();
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -228,12 +228,12 @@ describe('Multipage activity tests', function () {
     cy.url().should('match', /#\/aside$/)
 
 
-    cy.get('#\\/toAside').click();
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/toAside')).click();
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -284,7 +284,7 @@ describe('Multipage activity tests', function () {
     cy.visit(`/public?doenetId=${doenetId}`)
 
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
 
     cy.get('[data-test="Main Panel"]').then(el => {
@@ -292,31 +292,31 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
-    cy.get('#\\/toAside').scrollIntoView();
+    cy.get(cesc('#\\/toAside')).scrollIntoView();
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
-    cy.get('#\\/toAside').click();
+    cy.get(cesc('#\\/toAside')).click();
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
 
-    cy.get('#\\/bottom').scrollIntoView();
+    cy.get(cesc('#\\/bottom')).scrollIntoView();
 
-    cy.get('#\\/bottom').then(el => {
+    cy.get(cesc('#\\/bottom')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -324,7 +324,7 @@ describe('Multipage activity tests', function () {
     cy.go("back");
     cy.url().should('match', /[^#]/)
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -332,7 +332,7 @@ describe('Multipage activity tests', function () {
     cy.visit(`/public?tool=editor&doenetId=${doenetId}`)
 
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
 
     cy.get('[data-test="Main Panel"]').then(el => {
@@ -340,31 +340,31 @@ describe('Multipage activity tests', function () {
     })
 
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
-    cy.get('#\\/toAside').scrollIntoView();
+    cy.get(cesc('#\\/toAside')).scrollIntoView();
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
-    cy.get('#\\/toAside').click();
+    cy.get(cesc('#\\/toAside')).click();
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
 
-    cy.get('#\\/bottom').scrollIntoView();
+    cy.get(cesc('#\\/bottom')).scrollIntoView();
 
-    cy.get('#\\/bottom').then(el => {
+    cy.get(cesc('#\\/bottom')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -372,7 +372,7 @@ describe('Multipage activity tests', function () {
     cy.go("back");
     cy.url().should('match', /[^#]/)
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })

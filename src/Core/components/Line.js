@@ -1,6 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { returnNVariables, convertValueToMathExpression, roundForDisplay } from '../utils/math';
+import { returnTextStyleDescriptionDefinitions } from '../utils/style';
 
 export default class Line extends GraphicalComponent {
   constructor(args) {
@@ -10,7 +11,7 @@ export default class Line extends GraphicalComponent {
       moveLine: this.moveLine.bind(this),
       switchLine: this.switchLine.bind(this),
       lineClicked: this.lineClicked.bind(this),
-      mouseDownOnLine: this.mouseDownOnLine.bind(this),
+      lineFocused: this.lineFocused.bind(this),
     });
 
   }
@@ -155,6 +156,9 @@ export default class Line extends GraphicalComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -465,6 +469,7 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.essentialPoints = {
       isArray: true,
       nDimensions: "2",
+      isLocation: true,
       hasEssential: true,
       entryPrefixes: ["essentialPointX", "essentialPoint"],
       set: convertValueToMathExpression,
@@ -555,6 +560,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.points = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1061,6 +1067,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.equation = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1386,6 +1393,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.slope = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1412,6 +1420,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.xintercept = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1440,6 +1449,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.yintercept = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
@@ -1489,7 +1499,7 @@ export default class Line extends GraphicalComponent {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "latex"
       },
       returnDependencies: () => ({
         equation: {
@@ -1681,29 +1691,33 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  async lineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnLine({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async lineFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

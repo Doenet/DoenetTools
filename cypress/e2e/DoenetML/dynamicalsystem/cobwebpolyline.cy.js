@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('CobwebPolyline Tag Tests', function () {
 
@@ -88,32 +80,32 @@ describe('CobwebPolyline Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let xCenter = (-2 + 5) / 2, yCenter = (-2.2 + 4.5) / 2;
 
-    cy.get('#\\/_p1').should('contain.text', 'Initial condition is')
+    cy.get(cesc('#\\/_p1')).should('contain.text', 'Initial condition is')
 
     cy.log('Click both submit buttons');
-    cy.get('#\\/check_initial_submit').click();
-    cy.get('#\\/check_initial_incorrect').should('be.visible');
-    cy.get('#\\/check_cobweb_submit').click();
-    cy.get('#\\/check_cobweb_incorrect').should('be.visible');
+    cy.get(cesc('#\\/check_initial_submit')).click();
+    cy.get(cesc('#\\/check_initial_incorrect')).should('be.visible');
+    cy.get(cesc('#\\/check_cobweb_submit')).click();
+    cy.get(cesc('#\\/check_cobweb_incorrect')).should('be.visible');
 
-    cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x0=−1.5')
     })
-    cy.get('#\\/_md1').find('.mjx-mtr').eq(1).should('not.exist');
+    cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).should('not.exist');
 
-    cy.get('#\\/psr').find('.mjx-mrow').eq(0).eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−1.5,0)')
     })
-    cy.get('#\\/psr').find('.mjx-mrow').eq(2).should('not.exist');
+    cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).should('not.exist');
 
-    cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−1.5,0)')
     })
-    cy.get("#\\/cr2").should('not.exist');
+    cy.get(cesc("#\\/cr2")).should('not.exist');
 
 
     cy.log('Move first point');
@@ -129,31 +121,31 @@ describe('CobwebPolyline Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/cr1 .mjx-mrow").should('contain.text', '(1,0)')
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").should('contain.text', '(1,0)')
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_initial_submit').click();
-      cy.get('#\\/check_initial_correct').should('be.visible');
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_initial_submit')).click();
+      cy.get(cesc('#\\/check_initial_correct')).should('be.visible');
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1.5,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2").should('not.exist');
+      cy.get(cesc("#\\/cr2")).should('not.exist');
 
       cy.log('Add second point');
 
-      cy.get('#\\/addline_button').click();
+      cy.get(cesc('#\\/addline_button')).click();
 
-      cy.get("#\\/cr2 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.log('Move second point to wrong location');
 
@@ -168,34 +160,34 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr2 .mjx-mrow").should('contain.text', '(3,4)')
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").should('contain.text', '(3,4)')
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_incorrect').should('be.visible');
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_incorrect')).should('be.visible');
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=4')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
-      cy.get("#\\/cr3").should('not.exist');
+      cy.get(cesc("#\\/cr3")).should('not.exist');
 
 
       cy.log('Move second point to second wrong location');
@@ -211,34 +203,34 @@ describe('CobwebPolyline Tag Tests', function () {
           }
         })
       })
-      cy.get("#\\/cr2 .mjx-mrow").should('contain.text', '(1,1)')
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").should('contain.text', '(1,1)')
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_incorrect').should('be.visible');
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_incorrect')).should('be.visible');
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1)')
       })
-      cy.get("#\\/cr3").should('not.exist');
+      cy.get(cesc("#\\/cr3")).should('not.exist');
 
       cy.log('Move second point to correct location');
 
@@ -253,79 +245,79 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr2 .mjx-mrow").should('contain.text', '(1,1.6667)')
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").should('contain.text', '(1,1.6667)')
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('20% correct')
       });
 
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3").should('not.exist');
+      cy.get(cesc("#\\/cr3")).should('not.exist');
 
 
       cy.log('Add third point');
 
       // don't move to check that it is at center of graph
-      cy.get('#\\/addline_button').click();
+      cy.get(cesc('#\\/addline_button')).click();
 
-      cy.get("#\\/cr3 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '20%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '20%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('20% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal(`(${xCenter},${yCenter})`)
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(${xCenter},${yCenter})`)
       })
-      cy.get("#\\/cr4").should('not.exist');
+      cy.get(cesc("#\\/cr4")).should('not.exist');
 
 
       cy.log('Move third point to correct location');
@@ -341,50 +333,50 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr3 .mjx-mrow").should('contain.text', `(1.6667,1.6667)`)
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").should('contain.text', `(1.6667,1.6667)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '40%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '40%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('40% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4").should('not.exist');
+      cy.get(cesc("#\\/cr4")).should('not.exist');
 
 
       cy.log('Add fourth point and move to wrong location');
 
-      cy.get('#\\/addline_button').click()
+      cy.get(cesc('#\\/addline_button')).click()
 
-      cy.get("#\\/cr4 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async (win) => {
         win.callAction1({
@@ -397,53 +389,53 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr4 .mjx-mrow").should('contain.text', `(1,2)`)
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").should('contain.text', `(1,2)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '40%')
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '40%')
 
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('40% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1,2)`)
       })
-      cy.get("#\\/cr5").should('not.exist');
+      cy.get(cesc("#\\/cr5")).should('not.exist');
 
 
       cy.log('Move fourth point to correct location');
@@ -459,151 +451,151 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr4 .mjx-mrow").should('contain.text', `(1.6667,2.4074)`)
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").should('contain.text', `(1.6667,2.4074)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '60%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '60%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('60% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5").should('not.exist');
+      cy.get(cesc("#\\/cr5")).should('not.exist');
 
 
       cy.log("Delete fourth point");
-      cy.get('#\\/deleteline_button').click();
+      cy.get(cesc('#\\/deleteline_button')).click();
 
-      cy.get("#\\/cr4").should('not.exist');
+      cy.get(cesc("#\\/cr4")).should('not.exist');
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '40%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '40%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('40% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4").should('not.exist');
+      cy.get(cesc("#\\/cr4")).should('not.exist');
 
 
       cy.log('Add fourth point back')
-      cy.get('#\\/addline_button').click();
+      cy.get(cesc('#\\/addline_button')).click();
 
-      cy.get("#\\/cr4 .mjx-mrow").should('contain.text', `(1.6667,2.4074)`)
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").should('contain.text', `(1.6667,2.4074)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '60%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '60%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('60% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5").should('not.exist');
+      cy.get(cesc("#\\/cr5")).should('not.exist');
 
 
       cy.log('Add fifth point and move to correct location');
 
-      cy.get('#\\/addline_button').click();
-      cy.get("#\\/cr5 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
+      cy.get(cesc('#\\/addline_button')).click();
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
         win.callAction1({
@@ -616,63 +608,63 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr5 .mjx-mrow").should('contain.text', `(2.4074,2.4074)`)
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").should('contain.text', `(2.4074,2.4074)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '80%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '80%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('80% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(10).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(10).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.4074)`)
       })
-      cy.get("#\\/cr6").should('not.exist');
+      cy.get(cesc("#\\/cr6")).should('not.exist');
 
       cy.log('Add sixth point and move to wrong location');
 
-      cy.get('#\\/addline_button').click();
-      cy.get("#\\/cr6 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
+      cy.get(cesc('#\\/addline_button')).click();
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
         win.callAction1({
@@ -685,67 +677,67 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr6 .mjx-mrow").should('contain.text', `(−1,3)`)
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").should('contain.text', `(−1,3)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '80%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '80%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('80% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
         expect(text.trim()).equal('x3=3')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(4).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(4).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(10).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(10).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,3)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(12).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(12).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.4074)`)
       })
-      cy.get("#\\/cr6 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(−1,3)`)
       })
-      cy.get("#\\/cr7").should('not.exist');
+      cy.get(cesc("#\\/cr7")).should('not.exist');
 
 
       cy.log('Move sixth point correct location');
@@ -761,70 +753,70 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr6 .mjx-mrow").should('contain.text', `(2.4074,2.8829)`)
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").should('contain.text', `(2.4074,2.8829)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_correct').should('be.visible');
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_correct')).should('be.visible');
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
         expect(text.trim()).equal('x3=2.8829')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(4).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(4).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(10).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(10).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.8829)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(12).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(12).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.4074)`)
       })
-      cy.get("#\\/cr6 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.8829)`)
       })
-      cy.get("#\\/cr7").should('not.exist');
+      cy.get(cesc("#\\/cr7")).should('not.exist');
 
 
       cy.log('Add seventh point and move to wrong location');
 
-      cy.get('#\\/addline_button').click();
-      cy.get("#\\/cr7 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
+      cy.get(cesc('#\\/addline_button')).click();
+      cy.get(cesc("#\\/cr7") + " .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
         win.callAction1({
@@ -837,73 +829,73 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr7 .mjx-mrow").should('contain.text', `(3,1)`)
+      cy.get(cesc("#\\/cr7") + " .mjx-mrow").should('contain.text', `(3,1)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_partial').should('contain.text', '83%')
-      cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_partial')).should('contain.text', '83%')
+      cy.get(cesc('#\\/check_cobweb_partial')).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('83% correct')
       });
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
         expect(text.trim()).equal('x3=2.8829')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(4).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(4).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(10).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(10).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.8829)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(12).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(12).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,1)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(14).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(14).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.4074)`)
       })
-      cy.get("#\\/cr6 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.8829)`)
       })
-      cy.get("#\\/cr7 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr7") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(3,1)`)
       })
-      cy.get("#\\/cr8").should('not.exist');
+      cy.get(cesc("#\\/cr8")).should('not.exist');
 
 
       cy.log('Move seventh point correct location');
@@ -919,76 +911,76 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr7 .mjx-mrow").should('contain.text', `(2.8829,2.8829)`)
+      cy.get(cesc("#\\/cr7") + " .mjx-mrow").should('contain.text', `(2.8829,2.8829)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_correct').should('be.visible');
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_correct')).should('be.visible');
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
         expect(text.trim()).equal('x3=2.8829')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(4).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(4).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(10).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(10).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.8829)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(12).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(12).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.8829,2.8829)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(14).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(14).should('not.exist');
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.4074)`)
       })
-      cy.get("#\\/cr6 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.8829)`)
       })
-      cy.get("#\\/cr7 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr7") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.8829,2.8829)`)
       })
-      cy.get("#\\/cr8").should('not.exist');
+      cy.get(cesc("#\\/cr8")).should('not.exist');
 
 
       cy.log('Add eighth point and move to correct location');
 
-      cy.get('#\\/addline_button').click();
-      cy.get("#\\/cr8 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
+      cy.get(cesc('#\\/addline_button')).click();
+      cy.get(cesc("#\\/cr8") + " .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
         win.callAction1({
@@ -1001,80 +993,80 @@ describe('CobwebPolyline Tag Tests', function () {
         })
       })
 
-      cy.get("#\\/cr8 .mjx-mrow").should('contain.text', `(2.8829,2.9954)`)
+      cy.get(cesc("#\\/cr8") + " .mjx-mrow").should('contain.text', `(2.8829,2.9954)`)
 
       cy.log('Click submit');
 
-      cy.get('#\\/check_cobweb_submit').click();
-      cy.get('#\\/check_cobweb_correct').should('be.visible');
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/check_cobweb_submit')).click();
+      cy.get(cesc('#\\/check_cobweb_correct')).should('be.visible');
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x0=1')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('x1=1.6667')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('x2=2.4074')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
         expect(text.trim()).equal('x3=2.8829')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('x4=2.9954')
       })
-      cy.get('#\\/_md1').find('.mjx-mtr').eq(5).should('not.exist');
-      cy.get('#\\/psr').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#\\/_md1')).find('.mjx-mtr').eq(5).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,1.6667)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.6667,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(8).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.4074)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(10).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(10).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.4074,2.8829)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(12).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(12).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.8829,2.8829)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(14).invoke('text').then((text) => {
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(14).invoke('text').then((text) => {
         expect(text.trim()).equal('(2.8829,2.9954)')
       })
-      cy.get('#\\/psr').find('.mjx-mrow').eq(16).should('not.exist');
+      cy.get(cesc('#\\/psr')).find('.mjx-mrow').eq(16).should('not.exist');
 
 
-      cy.get("#\\/cr1 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr1") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,0)')
       })
-      cy.get("#\\/cr2 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr2") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      cy.get("#\\/cr3 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr3") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,1.6667)`)
       })
-      cy.get("#\\/cr4 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr4") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(1.6667,2.4074)`)
       })
-      cy.get("#\\/cr5 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr5") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.4074)`)
       })
-      cy.get("#\\/cr6 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr6") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.4074,2.8829)`)
       })
-      cy.get("#\\/cr7 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr7") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.8829,2.8829)`)
       })
-      cy.get("#\\/cr8 .mjx-mrow").eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/cr8") + " .mjx-mrow").eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(`(2.8829,2.9954)`)
       })
-      cy.get("#\\/cr9").should('not.exist');
+      cy.get(cesc("#\\/cr9")).should('not.exist');
 
 
     });
@@ -1097,15 +1089,15 @@ describe('CobwebPolyline Tag Tests', function () {
 
     let f = x => 2 * x - x ** 2 / 3;
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get(cesc('#/gradedApplet/initialCorrect_submit')).click();
-    cy.get(cesc('#/gradedApplet/initialCorrect_incorrect')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/initialCorrect_submit')).click();
+    cy.get(cesc2('#/gradedApplet/initialCorrect_incorrect')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/startFeedback')).should('be.visible')
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1117,27 +1109,27 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     });
 
-    cy.get(cesc('#/gradedApplet/initialCorrect_submit')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/initialCorrect_submit')).click();
-    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/initialCorrect_submit')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/initialCorrect_submit')).click();
+    cy.get(cesc2('#/gradedApplet/initialCorrect_correct')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('span').eq(0).click();
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('span').eq(0).click();
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).should('not.exist');
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/startFeedback')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     let x1 = f(1);
     cy.window().then(async (win) => {
@@ -1149,56 +1141,56 @@ describe('CobwebPolyline Tag Tests', function () {
         }
       })
     });
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('20% correct')
     })
-    cy.get(cesc('#/gradedApplet/insufficientFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/insufficientFeedback')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/deleteLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/deleteLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/startFeedback')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).should('not.exist');
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('20% correct')
     })
-    cy.get(cesc('#/gradedApplet/insufficientFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/insufficientFeedback')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('20% correct')
     })
-    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1209,24 +1201,24 @@ describe('CobwebPolyline Tag Tests', function () {
         }
       })
     });
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
-    cy.get(cesc('#/gradedApplet/insufficientFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/insufficientFeedback')).should('be.visible')
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).should('be.visible')
 
     let x2 = f(x1);
     cy.window().then(async (win) => {
@@ -1238,24 +1230,24 @@ describe('CobwebPolyline Tag Tests', function () {
         }
       })
     });
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).should('be.visible');
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).should('be.visible');
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).should('not.exist');
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
 
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).should('be.visible')
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1267,23 +1259,23 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     });
 
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).should('be.visible');
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).should('be.visible');
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).should('not.exist');
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).should('be.visible')
 
     let x3 = f(x2);
     cy.window().then(async (win) => {
@@ -1296,33 +1288,33 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     });
 
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x3=${Math.round(x3 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).should('not.exist');
 
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).should('be.visible');
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).should('be.visible');
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('83% correct')
     })
-    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1333,33 +1325,33 @@ describe('CobwebPolyline Tag Tests', function () {
         }
       })
     });
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x3=${Math.round(x3 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).should('not.exist');
 
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine_button')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).should('be.visible');
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/addLine_button')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).should('be.visible');
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('86% correct')
     })
-    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     let x4 = f(x3);
     cy.window().then(async (win) => {
@@ -1371,26 +1363,26 @@ describe('CobwebPolyline Tag Tests', function () {
         }
       })
     });
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
-    cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc2('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
 
 
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal("x0=1")
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x3=${Math.round(x3 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).invoke('text').then((text) => {
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal(`x4=${Math.round(x4 * 10000) / 10000}`)
     })
-    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(5).should('not.exist');
+    cy.get(cesc2('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(5).should('not.exist');
 
 
   });
@@ -1412,14 +1404,14 @@ describe('CobwebPolyline Tag Tests', function () {
 
     let f = x => 2 * x - x ** 2 / 3;
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get(cesc('#/ca')).should('have.text', '0')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/cobwebTutorial/addPoint1_button')).click();
-    cy.get(cesc('#/cobwebTutorial/addPoint1_button')).should('not.exist');
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/cobwebTutorial/addPoint1_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/addPoint1_button')).should('not.exist');
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1429,15 +1421,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/ca')).should('have.text', '0.167')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/ca')).should('have.text', '0.167')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
-    cy.get((cesc('#/cobwebTutorial/addVline1_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addVline1_button'))).should('not.exist');
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addVline1_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addVline1_button'))).should('not.exist');
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1450,15 +1442,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.167')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.167')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.333')
 
-    cy.get((cesc('#/cobwebTutorial/addHline1_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addHline1_button'))).should('not.exist');
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addHline1_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addHline1_button'))).should('not.exist');
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1470,11 +1462,11 @@ describe('CobwebPolyline Tag Tests', function () {
         }
       })
     })
-    cy.get((cesc('#/cobwebTutorial/addPoint2_button'))).should('be.visible')
-    cy.get(cesc('#/ca')).should('have.text', '0.333')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get((cesc('#/cobwebTutorial/addPoint2_button'))).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint2_button'))).should('be.visible')
+    cy.get(cesc2('#/ca')).should('have.text', '0.333')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint2_button'))).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1484,15 +1476,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.333')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.5')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.333')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.5')
 
-    cy.get((cesc('#/cobwebTutorial/addPoint3_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addPoint3_button'))).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint3_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addPoint3_button'))).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1502,16 +1494,16 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.5')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.667')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.5')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.667')
 
 
-    cy.get((cesc('#/cobwebTutorial/addVline2_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addVline2_button'))).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addVline2_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addVline2_button'))).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1524,15 +1516,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.667')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.667')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.833')
 
-    cy.get((cesc('#/cobwebTutorial/addHline2_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addHline2_button'))).should('not.exist');
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addHline2_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addHline2_button'))).should('not.exist');
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1545,12 +1537,12 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get((cesc('#/cobwebTutorial/addPoint4_button'))).should('be.visible')
-    cy.get(cesc('#/ca')).should('have.text', '0.833')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get((cesc('#/cobwebTutorial/addPoint4_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addPoint4_button'))).should("not.exist")
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint4_button'))).should('be.visible')
+    cy.get(cesc2('#/ca')).should('have.text', '0.833')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint4_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addPoint4_button'))).should("not.exist")
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1560,26 +1552,26 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.833')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '1')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.833')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '1')
 
-    cy.get(cesc('#/cobwebTutorial/shortcutButton_button')).click();
-    cy.get(cesc('#/cobwebTutorial/shortcutButton_button')).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '1')
+    cy.get(cesc2('#/cobwebTutorial/shortcutButton_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/shortcutButton_button')).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '1')
 
-    cy.get(cesc('#/cobwebTutorial/resetTutorial_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/resetTutorial_button')).click();
 
 
-    cy.get(cesc('#/ca')).should('have.text', '0')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/cobwebTutorial/addPoint1_button')).click();
-    cy.get(cesc('#/cobwebTutorial/addPoint1_button')).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/cobwebTutorial/addPoint1_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/addPoint1_button')).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1589,15 +1581,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/ca')).should('have.text', '0.167')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/ca')).should('have.text', '0.167')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
-    cy.get((cesc('#/cobwebTutorial/addVline1_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addVline1_button'))).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addVline1_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addVline1_button'))).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1610,15 +1602,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.167')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.167')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.333')
 
-    cy.get((cesc('#/cobwebTutorial/addHline1_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addHline1_button'))).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addHline1_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addHline1_button'))).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1631,12 +1623,12 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get((cesc('#/cobwebTutorial/addPoint2_button'))).should('be.visible')
-    cy.get(cesc('#/ca')).should('have.text', '0.333')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get((cesc('#/cobwebTutorial/addPoint2_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addPoint2_button'))).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint2_button'))).should('be.visible')
+    cy.get(cesc2('#/ca')).should('have.text', '0.333')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint2_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addPoint2_button'))).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1646,15 +1638,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.333')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.5')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.333')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.5')
 
-    cy.get((cesc('#/cobwebTutorial/addPoint3_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addPoint3_button'))).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint3_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addPoint3_button'))).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1664,16 +1656,16 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.5')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.667')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.5')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.667')
 
 
-    cy.get((cesc('#/cobwebTutorial/addVline2_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addVline2_button'))).should("not.exist")
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addVline2_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addVline2_button'))).should("not.exist")
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1686,15 +1678,15 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.667')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.667')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.833')
 
-    cy.get((cesc('#/cobwebTutorial/addHline2_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addHline2_button'))).should("not.exist")
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addHline2_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addHline2_button'))).should("not.exist")
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1707,12 +1699,12 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get((cesc('#/cobwebTutorial/addPoint4_button'))).should("be.visible")
-    cy.get(cesc('#/ca')).should('have.text', '0.833')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get((cesc('#/cobwebTutorial/addPoint4_button'))).click();
-    cy.get((cesc('#/cobwebTutorial/addPoint4_button'))).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint4_button'))).should("be.visible")
+    cy.get(cesc2('#/ca')).should('have.text', '0.833')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc2('#/cobwebTutorial/addPoint4_button'))).click();
+    cy.get((cesc2('#/cobwebTutorial/addPoint4_button'))).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1722,16 +1714,16 @@ describe('CobwebPolyline Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('not.be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '0.833')
-    cy.get(cesc('#/cobwebTutorial/next_button')).click();
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '1')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('not.be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '0.833')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '1')
 
-    cy.get(cesc('#/cobwebTutorial/shortcutButton_button')).click();
-    cy.get(cesc('#/cobwebTutorial/shortcutButton_button')).should('not.exist')
-    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
-    cy.get(cesc('#/ca')).should('have.text', '1')
+    cy.get(cesc2('#/cobwebTutorial/shortcutButton_button')).click();
+    cy.get(cesc2('#/cobwebTutorial/shortcutButton_button')).should('not.exist')
+    cy.get(cesc2('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc2('#/ca')).should('have.text', '1')
 
 
   });

@@ -5,10 +5,10 @@ import { faComment as thoughtBubble } from '@fortawesome/free-regular-svg-icons'
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import styled from 'styled-components';
 const FeedbackStyling = styled.aside`
-  background-color: white;
+  background-color: var(--canvas);
   margin: 0px 4px 12px 4px;
   padding: 1em;
-  border: 2px solid black;
+  border: 2px solid var(--canvastext);
   border-top: 0px;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -21,7 +21,7 @@ const SpanStyling = styled.span`
   display: block;
   margin: 12px 4px 0px 4px;
   padding: 6px;
-  border: 2px solid black;
+  border: 2px solid var(--canvastext);
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color: var(--mainGray);
@@ -63,7 +63,7 @@ export default React.memo(function Feedback(props) {
       </SpanStyling>
       <FeedbackStyling
         id={id}
-        // tabIndex="0"
+      // tabIndex="0"
       >
         <a name={id} />
 

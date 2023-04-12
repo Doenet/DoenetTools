@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Pluralize Tag Tests', function () {
 
@@ -24,15 +26,15 @@ describe('Pluralize Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'one dog')
-    cy.get('#\\/_p2').should('have.text', 'two dogs')
-    cy.get('#\\/_p3').should('have.text', 'zero dogs')
-    cy.get('#\\/_p4').should('have.text', '1 mouse')
-    cy.get('#\\/_p5').should('have.text', '2 mice')
-    cy.get('#\\/_p6').should('have.text', '0 mice')
-    cy.get('#\\/_p7').should('have.text', 'one thousand buses')
-    cy.get('#\\/_p8').should('have.text', '0.5 buses')
-    cy.get('#\\/_p9').should('have.text', '1 bus')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'one dog')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'two dogs')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'zero dogs')
+    cy.get(cesc('#\\/_p4')).should('have.text', '1 mouse')
+    cy.get(cesc('#\\/_p5')).should('have.text', '2 mice')
+    cy.get(cesc('#\\/_p6')).should('have.text', '0 mice')
+    cy.get(cesc('#\\/_p7')).should('have.text', 'one thousand buses')
+    cy.get(cesc('#\\/_p8')).should('have.text', '0.5 buses')
+    cy.get(cesc('#\\/_p9')).should('have.text', '1 bus')
 
   })
 
@@ -50,12 +52,12 @@ describe('Pluralize Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'dogs')
-    cy.get('#\\/_p2').should('have.text', 'mice')
-    cy.get('#\\/_p3').should('have.text', 'buses')
-    cy.get('#\\/_p4').should('have.text', 'geese')
-    cy.get('#\\/_p5').should('have.text', 'ponies')
-    cy.get('#\\/_p6').should('have.text', 'only')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'dogs')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'mice')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'buses')
+    cy.get(cesc('#\\/_p4')).should('have.text', 'geese')
+    cy.get(cesc('#\\/_p5')).should('have.text', 'ponies')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'only')
 
   })
 
@@ -76,15 +78,15 @@ describe('Pluralize Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'one dog')
-    cy.get('#\\/_p2').should('have.text', 'two cheetahs')
-    cy.get('#\\/_p3').should('have.text', 'zero cheetahs')
-    cy.get('#\\/_p4').should('have.text', '1 mouse')
-    cy.get('#\\/_p5').should('have.text', '2 cheetahs')
-    cy.get('#\\/_p6').should('have.text', '0 cheetahs')
-    cy.get('#\\/_p7').should('have.text', 'one thousand cheetahs')
-    cy.get('#\\/_p8').should('have.text', '0.5 cheetahs')
-    cy.get('#\\/_p9').should('have.text', '1 bus')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'one dog')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'two cheetahs')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'zero cheetahs')
+    cy.get(cesc('#\\/_p4')).should('have.text', '1 mouse')
+    cy.get(cesc('#\\/_p5')).should('have.text', '2 cheetahs')
+    cy.get(cesc('#\\/_p6')).should('have.text', '0 cheetahs')
+    cy.get(cesc('#\\/_p7')).should('have.text', 'one thousand cheetahs')
+    cy.get(cesc('#\\/_p8')).should('have.text', '0.5 cheetahs')
+    cy.get(cesc('#\\/_p9')).should('have.text', '1 bus')
 
   })
 
@@ -102,12 +104,12 @@ describe('Pluralize Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'cheetahs')
-    cy.get('#\\/_p2').should('have.text', 'cheetahs')
-    cy.get('#\\/_p3').should('have.text', 'cheetahs')
-    cy.get('#\\/_p4').should('have.text', 'cheetahs')
-    cy.get('#\\/_p5').should('have.text', 'cheetahs')
-    cy.get('#\\/_p6').should('have.text', 'cheetahs')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'cheetahs')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'cheetahs')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'cheetahs')
+    cy.get(cesc('#\\/_p4')).should('have.text', 'cheetahs')
+    cy.get(cesc('#\\/_p5')).should('have.text', 'cheetahs')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'cheetahs')
 
   })
 
@@ -128,15 +130,15 @@ describe('Pluralize Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'one dogs')
-    cy.get('#\\/_p2').should('have.text', 'two dog')
-    cy.get('#\\/_p3').should('have.text', 'zero dogs')
-    cy.get('#\\/_p4').should('have.text', '1 mice')
-    cy.get('#\\/_p5').should('have.text', '2 mice')
-    cy.get('#\\/_p6').should('have.text', '0 mouse')
-    cy.get('#\\/_p7').should('have.text', 'one thousand bus')
-    cy.get('#\\/_p8').should('have.text', '0.5 buses')
-    cy.get('#\\/_p9').should('have.text', '1 buses')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'one dogs')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'two dog')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'zero dogs')
+    cy.get(cesc('#\\/_p4')).should('have.text', '1 mice')
+    cy.get(cesc('#\\/_p5')).should('have.text', '2 mice')
+    cy.get(cesc('#\\/_p6')).should('have.text', '0 mouse')
+    cy.get(cesc('#\\/_p7')).should('have.text', 'one thousand bus')
+    cy.get(cesc('#\\/_p8')).should('have.text', '0.5 buses')
+    cy.get(cesc('#\\/_p9')).should('have.text', '1 buses')
 
   })
 
@@ -161,18 +163,18 @@ describe('Pluralize Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'dogs')
-    cy.get('#\\/_p2').should('have.text', 'dog')
-    cy.get('#\\/_p3').should('have.text', 'mice')
-    cy.get('#\\/_p4').should('have.text', 'mouse')
-    cy.get('#\\/_p5').should('have.text', 'buses')
-    cy.get('#\\/_p6').should('have.text', 'bus')
-    cy.get('#\\/_p7').should('have.text', 'geese')
-    cy.get('#\\/_p8').should('have.text', 'goose')
-    cy.get('#\\/_p9').should('have.text', 'ponies')
-    cy.get('#\\/_p10').should('have.text', 'pony')
-    cy.get('#\\/_p11').should('have.text', 'only')
-    cy.get('#\\/_p12').should('have.text', 'only')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'dogs')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'dog')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'mice')
+    cy.get(cesc('#\\/_p4')).should('have.text', 'mouse')
+    cy.get(cesc('#\\/_p5')).should('have.text', 'buses')
+    cy.get(cesc('#\\/_p6')).should('have.text', 'bus')
+    cy.get(cesc('#\\/_p7')).should('have.text', 'geese')
+    cy.get(cesc('#\\/_p8')).should('have.text', 'goose')
+    cy.get(cesc('#\\/_p9')).should('have.text', 'ponies')
+    cy.get(cesc('#\\/_p10')).should('have.text', 'pony')
+    cy.get(cesc('#\\/_p11')).should('have.text', 'only')
+    cy.get(cesc('#\\/_p12')).should('have.text', 'only')
 
   })
 
@@ -186,8 +188,8 @@ describe('Pluralize Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', 'one dog three cats two squirrels or 1 cat plus 7 geese')
-    cy.get('#\\/_p2').should('have.text', 'one hundred green planes flew through one big sky, rather than six shiny skies')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'one dog three cats two squirrels or 1 cat plus 7 geese')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'one hundred green planes flew through one big sky, rather than six shiny skies')
 
   })
 
@@ -203,25 +205,25 @@ describe('Pluralize Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p3').should('have.text', `I have 1 goose even if one doesn't have 1 tooth`);
+    cy.get(cesc('#\\/_p3')).should('have.text', `I have 1 goose even if one doesn't have 1 tooth`);
 
-    cy.get('#\\/ngeese_input').clear().type("three{enter}");
-    cy.get('#\\/_p3').should('have.text', `I have three geese even if one doesn't have 1 tooth`);
+    cy.get(cesc('#\\/ngeese_input')).clear().type("three{enter}");
+    cy.get(cesc('#\\/_p3')).should('have.text', `I have three geese even if one doesn't have 1 tooth`);
 
-    cy.get('#\\/nteeth_input').clear().type("0{enter}");
-    cy.get('#\\/_p3').should('have.text', `I have three geese even if one doesn't have 0 teeth`);
+    cy.get(cesc('#\\/nteeth_input')).clear().type("0{enter}");
+    cy.get(cesc('#\\/_p3')).should('have.text', `I have three geese even if one doesn't have 0 teeth`);
 
-    cy.get('#\\/nteeth_input').clear().type("one{enter}");
-    cy.get('#\\/_p3').should('have.text', `I have three geese even if one doesn't have one tooth`);
+    cy.get(cesc('#\\/nteeth_input')).clear().type("one{enter}");
+    cy.get(cesc('#\\/_p3')).should('have.text', `I have three geese even if one doesn't have one tooth`);
 
-    cy.get('#\\/nteeth_input').clear().type("one thousand{enter}");
-    cy.get('#\\/_p3').should('have.text', `I have three geese even if one doesn't have one thousand teeth`);
+    cy.get(cesc('#\\/nteeth_input')).clear().type("one thousand{enter}");
+    cy.get(cesc('#\\/_p3')).should('have.text', `I have three geese even if one doesn't have one thousand teeth`);
 
-    cy.get('#\\/ngeese_input').clear().type("-1{enter}");
-    cy.get('#\\/_p3').should('have.text', `I have -1 geese even if one doesn't have one thousand teeth`);
+    cy.get(cesc('#\\/ngeese_input')).clear().type("-1{enter}");
+    cy.get(cesc('#\\/_p3')).should('have.text', `I have -1 geese even if one doesn't have one thousand teeth`);
 
-    cy.get('#\\/ngeese_input').clear().type("-2{enter}");
-    cy.get('#\\/_p3').should('have.text', `I have -2 geese even if one doesn't have one thousand teeth`);
+    cy.get(cesc('#\\/ngeese_input')).clear().type("-2{enter}");
+    cy.get(cesc('#\\/_p3')).should('have.text', `I have -2 geese even if one doesn't have one thousand teeth`);
 
   })
 })

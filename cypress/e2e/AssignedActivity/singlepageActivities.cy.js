@@ -1,4 +1,5 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
+import { cesc } from "../../../src/_utils/url";
 
 
 describe('Single page activity tests', function () {
@@ -63,7 +64,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Assigned Activity"]').click();
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
 
     cy.get('[data-test="Main Panel"]').then(el => {
@@ -71,27 +72,27 @@ describe('Single page activity tests', function () {
     })
 
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
 
-    cy.get('#\\/toAside').click();
+    cy.get(cesc('#\\/toAside')).click();
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
-    cy.get('#\\/asideTitle').click();
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).click();
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
-    cy.get('#\\/toAside').scrollIntoView();
+    cy.get(cesc('#\\/toAside')).scrollIntoView();
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -99,12 +100,12 @@ describe('Single page activity tests', function () {
     cy.url().should('match', /#\/aside$/)
 
 
-    cy.get('#\\/toAside').click();
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/toAside')).click();
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -147,7 +148,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Assigned Activity"]').click();
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
     cy.url().should('match', /[^#]/)
 
     cy.get('[data-test="Main Panel"]').then(el => {
@@ -155,31 +156,31 @@ describe('Single page activity tests', function () {
     })
 
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
-    cy.get('#\\/toAside').scrollIntoView();
+    cy.get(cesc('#\\/toAside')).scrollIntoView();
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
-    cy.get('#\\/toAside').click();
+    cy.get(cesc('#\\/toAside')).click();
     cy.url().should('match', /#\/aside$/)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
 
-    cy.get('#\\/bottom').scrollIntoView();
+    cy.get(cesc('#\\/bottom')).scrollIntoView();
 
-    cy.get('#\\/bottom').then(el => {
+    cy.get(cesc('#\\/bottom')).then(el => {
       let rect = el[0].getBoundingClientRect();
       cy.log(rect.top)
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
@@ -187,7 +188,7 @@ describe('Single page activity tests', function () {
     cy.go("back");
     cy.url().should('match', /[^#]/)
 
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc('#\\/toAside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       cy.log(rect.top)
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
@@ -255,34 +256,34 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Link to top');
 
     cy.log('click link to top, remove target so uses same tab')
-    cy.get('#\\/toTop').invoke('removeAttr', 'target').click();
+    cy.get(cesc('#\\/toTop')).invoke('removeAttr', 'target').click();
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
     cy.url().should('contain', doenetId)
 
     cy.go("back");
 
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Link to top');
     cy.url().should('contain', doenetId2)
 
     cy.log('click link to aside, remove target so uses same tab')
-    cy.get('#\\/toAside').invoke('removeAttr', 'target').click();
+    cy.get(cesc('#\\/toAside')).invoke('removeAttr', 'target').click();
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
 
 
     cy.url().should('match', /#\/aside$/)
     cy.url().should('contain', doenetId)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -291,39 +292,39 @@ describe('Single page activity tests', function () {
 
     cy.go("back");
 
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Link to top');
     cy.url().should('contain', doenetId2)
 
     cy.log('click link to top, remove target so uses same tab')
-    cy.get('#\\/toTop').invoke('removeAttr', 'target').click();
+    cy.get(cesc('#\\/toTop')).invoke('removeAttr', 'target').click();
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
-    cy.get('#\\/asideTitle').click();
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/asideTitle')).click();
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
     cy.wait(1500);  // wait for debounce
 
     cy.go("back");
 
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Link to top');
     cy.url().should('contain', doenetId2)
 
 
     cy.log('click link b to aside, remove target so uses same tab')
-    cy.get('#\\/toAsideb').invoke('removeAttr', 'target').click();
+    cy.get(cesc('#\\/toAsideb')).invoke('removeAttr', 'target').click();
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
 
 
     cy.url().should('match', /#\/aside$/)
     cy.url().should('contain', doenetId)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -359,9 +360,9 @@ describe('Single page activity tests', function () {
     cy.log('go to url')
     cy.visit(`/course?tool=assignment&doenetId=${doenetId}`)
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('not.exist');
 
     cy.url().should('contain', doenetId)
 
@@ -372,15 +373,15 @@ describe('Single page activity tests', function () {
     cy.log('go to aside url')
     cy.visit(`/course?tool=assignment&doenetId=${doenetId}#/aside`)
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
+    cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
+    cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
 
 
     cy.url().should('match', /#\/aside$/)
     cy.url().should('contain', doenetId)
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -416,8 +417,8 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
     cy.wait(2000)
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
+    cy.get(cesc('#\\/ans') + ' textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/credit')).should('have.text', '1')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -426,13 +427,13 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/ans') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
     cy.log('At least for now, hitting enter before core is intialized does not submit response')
-    cy.get('#\\/cr').should("contain.text", '1')
-    cy.get('#\\/ans textarea').type("{enter}", { force: true });
+    cy.get(cesc('#\\/cr')).should("contain.text", '1')
+    cy.get(cesc('#\\/ans') + ' textarea').type("{enter}", { force: true });
 
-    cy.get('#\\/credit').should('have.text', '0')
+    cy.get(cesc('#\\/credit')).should('have.text', '0')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -460,8 +461,8 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
 
     cy.get('[data-test="View Activity"]').click();
-    cy.get('#\\/cr').should('contain.text', '1');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc('#\\/cr')).should('contain.text', '1');
+    cy.get(cesc('#\\/ans2')).should('not.exist');
 
 
     cy.get('[data-test=NewVersionAvailable]').click();
@@ -476,17 +477,17 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
     cy.get('[data-test=ConfirmNewVersion]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/cr')).should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
+    cy.get(cesc('#\\/ans2') + ' textarea').type("3{enter}", { force: true })
     cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
     cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/cr')).should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -521,7 +522,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/ans3') + ' textarea').type("4{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -550,8 +551,8 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
+    cy.get(cesc('#\\/ans') + ' textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/credit')).should('have.text', '1')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -560,13 +561,13 @@ describe('Single page activity tests', function () {
     cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/ans') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
 
     cy.log('At least for now, hitting enter before core is intialized does not submit response')
-    cy.get('#\\/cr').should("contain.text", '1')
-    cy.get('#\\/ans textarea').type("{enter}", { force: true });
+    cy.get(cesc('#\\/cr')).should("contain.text", '1')
+    cy.get(cesc('#\\/ans') + ' textarea').type("{enter}", { force: true });
 
-    cy.get('#\\/credit').should('have.text', '0')
+    cy.get(cesc('#\\/credit')).should('have.text', '0')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -592,8 +593,8 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '1');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc('#\\/cr')).should('contain.text', '1');
+    cy.get(cesc('#\\/ans2')).should('not.exist');
 
     cy.get('[data-test=NewVersionAvailable]').click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
@@ -607,17 +608,17 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
     cy.get('[data-test=ConfirmNewVersion]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/cr')).should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
+    cy.get(cesc('#\\/ans2') + ' textarea').type("3{enter}", { force: true })
     cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
     cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/cr')).should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -649,7 +650,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/ans3') + ' textarea').type("4{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -680,8 +681,8 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
+    cy.get(cesc('#\\/ans') + ' textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/credit')).should('have.text', '1')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -709,8 +710,8 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '2');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc('#\\/cr')).should('contain.text', '2');
+    cy.get(cesc('#\\/ans2')).should('not.exist');
 
     cy.get('[data-test=NewVersionAvailable]').click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
@@ -726,11 +727,11 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="New Attempt"]').should('not.be.disabled')
     cy.get('[data-test=ConfirmNewVersion]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/cr')).should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
+    cy.get(cesc('#\\/ans2') + ' textarea').type("3{enter}", { force: true })
     cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -759,8 +760,8 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
 
     cy.get('[data-test="New Attempt"]').should('be.disabled')
-    cy.get('#\\/ans2').should('be.visible');
-    cy.get('#\\/ans3').should('not.exist');
+    cy.get(cesc('#\\/ans2')).should('be.visible');
+    cy.get(cesc('#\\/ans3')).should('not.exist');
 
     cy.get('[data-test=NewVersionAvailable]').click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
@@ -768,7 +769,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test=ConfirmNewVersion]').click();
 
-    cy.get('#\\/ans3').should('be.visible');
+    cy.get(cesc('#\\/ans3')).should('be.visible');
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -801,7 +802,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans4 textarea').type("5{enter}", { force: true });
+    cy.get(cesc('#\\/ans4') + ' textarea').type("5{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -829,8 +830,8 @@ describe('Single page activity tests', function () {
     cy.log('Can use New Attempt Button to get new content')
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans4').should('be.visible');
-    cy.get('#\\/ans5').should('not.exist');
+    cy.get(cesc('#\\/ans4')).should('be.visible');
+    cy.get(cesc('#\\/ans5')).should('not.exist');
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -840,7 +841,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans5 textarea').type("6{enter}", { force: true });
+    cy.get(cesc('#\\/ans5') + ' textarea').type("6{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '20%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -877,26 +878,26 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
-    cy.get('#\\/cr').should('contain.text', '2');
+    cy.get(cesc('#\\/ans') + ' textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/credit')).should('have.text', '1')
+    cy.get(cesc('#\\/cr')).should('contain.text', '2');
     cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 1:')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
     cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('#\\/credit').should('have.text', '0')
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/credit')).should('have.text', '0')
+    cy.get(cesc('#\\/cr')).should('contain.text', '\uff3f');
 
     cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 2:')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
+    cy.get(cesc('#\\/ans') + ' textarea').type("2{enter}", { force: true });
 
-    cy.get('#\\/credit').should('have.text', '1')
-    cy.get('#\\/cr').should('contain.text', '2');
+    cy.get(cesc('#\\/credit')).should('have.text', '1')
+    cy.get(cesc('#\\/cr')).should('contain.text', '2');
     cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -924,8 +925,8 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '2');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc('#\\/cr')).should('contain.text', '2');
+    cy.get(cesc('#\\/ans2')).should('not.exist');
 
     cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 2:')
 
@@ -943,12 +944,12 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="New Attempt"]').should('not.be.disabled')
     cy.get('[data-test=ConfirmNewVersion]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc('#\\/cr')).should('contain.text', '\uff3f');
     cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 3:')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
+    cy.get(cesc('#\\/ans2') + ' textarea').type("3{enter}", { force: true })
     cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
@@ -983,8 +984,8 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="View Activity"]').click();
 
     cy.get('[data-test="New Attempt"]').should('not.be.disabled')
-    cy.get('#\\/ans2').should('be.visible');
-    cy.get('#\\/ans3').should('be.visible');
+    cy.get(cesc('#\\/ans2')).should('be.visible');
+    cy.get(cesc('#\\/ans3')).should('be.visible');
 
     cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 4:')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
@@ -1023,7 +1024,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans4 textarea').type("5{enter}", { force: true });
+    cy.get(cesc('#\\/ans4') + ' textarea').type("5{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -1034,7 +1035,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
 
-    cy.get('#\\/ans4 textarea').type("5{enter}", { force: true });
+    cy.get(cesc('#\\/ans4') + ' textarea').type("5{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -1062,8 +1063,8 @@ describe('Single page activity tests', function () {
     cy.log('Can use New Attempt Button to get new content')
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans4').should('be.visible');
-    cy.get('#\\/ans5').should('not.exist');
+    cy.get(cesc('#\\/ans4')).should('be.visible');
+    cy.get(cesc('#\\/ans5')).should('not.exist');
 
     cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 6:')
     cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
@@ -1075,7 +1076,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans5 textarea').type("6{enter}", { force: true });
+    cy.get(cesc('#\\/ans5') + ' textarea').type("6{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '20%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -1086,7 +1087,7 @@ describe('Single page activity tests', function () {
     cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
 
-    cy.get('#\\/ans5 textarea').type("6{enter}", { force: true });
+    cy.get(cesc('#\\/ans5') + ' textarea').type("6{enter}", { force: true });
 
     cy.get('[data-test="Attempt Percent"]').should('have.text', '20%')
     cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
@@ -1138,25 +1139,25 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/sect_title').should('have.text', 'Info only')
+    cy.get(cesc('#\\/sect_title')).should('have.text', 'Info only')
     cy.get('[data-test="Main Panel"]').then(el => {
       expect(el.scrollTop()).eq(0);
     })
 
 
-    cy.get('#\\/goMiddle1').click();
+    cy.get(cesc('#\\/goMiddle1')).click();
     cy.url().should('match', /#\/middle$/)
 
-    cy.get('#\\/middle').then(el => {
+    cy.get(cesc('#\\/middle')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
 
-    cy.get('#\\/goBottom2').click();
+    cy.get(cesc('#\\/goBottom2')).click();
     cy.url().should('match', /#\/bottom$/)
 
-    cy.get('#\\/bottom').then(el => {
+    cy.get(cesc('#\\/bottom')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -1166,7 +1167,7 @@ describe('Single page activity tests', function () {
 
     cy.go("back");
 
-    cy.get('#\\/middle').then(el => {
+    cy.get(cesc('#\\/middle')).then(el => {
       let rect = el[0].getBoundingClientRect();
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
@@ -1193,7 +1194,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get("#\\/extra").should('have.text', 'Extra content');
+    cy.get(cesc("#\\/extra")).should('have.text', 'Extra content');
 
     cy.get('[data-test=NewVersionAvailable]').should('not.exist')
 
@@ -1226,8 +1227,8 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/_title1').should('have.text', 'A video')
-    cy.get('#\\/duration').should('have.text', '300')
+    cy.get(cesc('#\\/_title1')).should('have.text', 'A video')
+    cy.get(cesc('#\\/duration')).should('have.text', '300')
 
     cy.wait(1500);  // wait for debounce
 
@@ -1252,15 +1253,15 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/duration').should('have.text', '300')
-    cy.get("#\\/more1").should('have.text', 'More content 1');
+    cy.get(cesc('#\\/duration')).should('have.text', '300')
+    cy.get(cesc("#\\/more1")).should('have.text', 'More content 1');
 
     cy.get('[data-test=NewVersionAvailable]').should('not.exist')
 
-    cy.get('#\\/state').contains("stopped")
-    cy.get('#\\/playAction').click();
-    cy.get('#\\/time').contains("1")
-    cy.get('#\\/pauseAction').click();
+    cy.get(cesc('#\\/state')).contains("stopped")
+    cy.get(cesc('#\\/playAction')).click();
+    cy.get(cesc('#\\/time')).contains("1")
+    cy.get(cesc('#\\/pauseAction')).click();
 
     cy.wait(1500);  // wait for debounce
 
@@ -1285,13 +1286,13 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/duration').should('have.text', '300')
-    cy.get("#\\/more2").should('not.exist');
+    cy.get(cesc('#\\/duration')).should('have.text', '300')
+    cy.get(cesc("#\\/more2")).should('not.exist');
 
     cy.get('[data-test=NewVersionAvailable]').click();
     cy.get('[data-test=ConfirmNewVersion]').click();
 
-    cy.get("#\\/more2").should('have.text', 'More content 2');
+    cy.get(cesc("#\\/more2")).should('have.text', 'More content 2');
 
   })
 
@@ -1323,24 +1324,24 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/_p1').should("have.text", "Enter x: ")
+    cy.get(cesc('#\\/_p1')).should("have.text", "Enter x: ")
 
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
 
 
-    cy.get('#\\/x textarea').type("x", { force: true }).blur();
+    cy.get(cesc('#\\/x') + ' textarea').type("x", { force: true }).blur();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
 
-    cy.get('#\\/x textarea').type("{end}{backspace}y", { force: true }).blur();
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}y", { force: true }).blur();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
 
-    cy.get('#\\/hello input').type("hello").blur();
+    cy.get(cesc('#\\/hello') + ' input').type("hello").blur();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
 
-    cy.get('#\\/correct select').select(1).blur();
+    cy.get(cesc('#\\/correct') + ' select').select(1).blur();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
 
-    cy.get('#\\/correct select').select(2).blur();
+    cy.get(cesc('#\\/correct') + ' select').select(2).blur();
     cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
 
     cy.window().then(async (win) => {
@@ -1408,14 +1409,14 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ti_input').type("hello", { force: true });
+    cy.get(cesc('#\\/ti_input')).type("hello", { force: true });
 
     cy.wait(1500);  // wait for debounce
 
     cy.reload();
 
-    cy.get('#\\/ti_submit').click();
-    cy.get('#\\/ti_correct').should('be.visible');
+    cy.get(cesc('#\\/ti_submit')).click();
+    cy.get(cesc('#\\/ti_correct')).should('be.visible');
 
 
   })
@@ -1452,15 +1453,15 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ti_input').type("hello", { force: true });
+    cy.get(cesc('#\\/ti_input')).type("hello", { force: true });
 
     cy.wait(1500);  // wait for debounce
 
     cy.clearIndexedDB();
     cy.reload();
 
-    cy.get('#\\/ti_submit').click();
-    cy.get('#\\/ti_correct').should('be.visible');
+    cy.get(cesc('#\\/ti_submit')).click();
+    cy.get(cesc('#\\/ti_correct')).should('be.visible');
 
 
   })

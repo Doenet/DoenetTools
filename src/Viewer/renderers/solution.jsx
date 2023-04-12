@@ -5,7 +5,7 @@ import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import styled from 'styled-components';
 import P from '../../Core/components/P';
-const SpanStyling= styled.span`
+const SpanStyling = styled.span`
 // display: block;
 // margin: SVs.open ? 12px 4px 0px 4px : 12px 4px 12px 4px;
 // padding: 6px;
@@ -70,10 +70,10 @@ export default React.memo(function Solution(props) {
       borderBottomRightRadius: '5px',
       backgroundColor: 'var(--canvas)',
 
-      
+
     };
     onKeyPressFunction = (e) => {
-      if(e.key === "Enter"){
+      if (e.key === "Enter") {
         callAction({
           action: actions.closeSolution,
         });
@@ -89,7 +89,7 @@ export default React.memo(function Solution(props) {
       };
 
     } else {
-      onClickFunction = () => {};
+      onClickFunction = () => { };
     }
   } else {
     icon = <FontAwesomeIcon icon={puzzle} rotation={90} />;
@@ -100,7 +100,7 @@ export default React.memo(function Solution(props) {
       });
     };
     onKeyPressFunction = (e) => {
-      if(e.key === "Enter"){
+      if (e.key === "Enter") {
         callAction({
           action: actions.revealSolution,
         });
@@ -110,31 +110,31 @@ export default React.memo(function Solution(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <aside id={id}  style={{ margin: "12px 0" }}>
-      <a name={id} />
-      <SpanStyling
-      style={{
-        display: 'block',
-        margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
-        padding: '6px',
-        border: '2px solid black',
-        borderTopLeftRadius: '5px',
-        borderTopRightRadius: '5px',
-        borderBottomLeftRadius: SVs.open ? '0px' : '5px',
-        borderBottomRightRadius: SVs.open ? '0px' : '5px',
-        backgroundColor: 'var(--mainGray)',
-        cursor: 'pointer',
-      }}
-        tabIndex="0"
-        id={id + '_button'}
-        onClick={onClickFunction}
-        onKeyDown= {onKeyPressFunction}
-      >
-        {icon} Solution {SVs.message} (click to {openCloseText})
-      </SpanStyling>
-      <span style={infoBlockStyle} >{childrenToRender}</span>
+      <aside id={id} style={{ margin: "12px 0" }}>
+        <a name={id} />
+        <SpanStyling
+          style={{
+            display: 'block',
+            margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
+            padding: '6px',
+            border: '2px solid var(--canvastext)',
+            borderTopLeftRadius: '5px',
+            borderTopRightRadius: '5px',
+            borderBottomLeftRadius: SVs.open ? '0px' : '5px',
+            borderBottomRightRadius: SVs.open ? '0px' : '5px',
+            backgroundColor: 'var(--mainGray)',
+            cursor: 'pointer',
+          }}
+          tabIndex="0"
+          id={id + '_button'}
+          onClick={onClickFunction}
+          onKeyDown={onKeyPressFunction}
+        >
+          {icon} {SVs.sectionName} {SVs.message} (click to {openCloseText})
+        </SpanStyling>
+        <span style={infoBlockStyle} >{childrenToRender}</span>
 
-    </aside>
+      </aside>
     </VisibilitySensor>
   );
 })

@@ -1,13 +1,5 @@
-import cssesc from 'cssesc';
 import { widthsBySize } from '../../../../src/Core/utils/size';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Image Tag Tests', function () {
 
@@ -25,11 +17,11 @@ describe('Image Tag Tests', function () {
   <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" width="300px" description="A giant anteater" />
   `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-    cy.get('#\\/_image1').invoke('css', 'width')
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_image1')).invoke('css', 'width')
       .then(width => parseInt(width)).should('be.gte', widthsBySize["small"] - 4).and('be.lte', widthsBySize["small"] + 1)
-    // cy.get('#\\/_image1').invoke('css', 'height').then((height) => expect(height).eq(undefined))
-    cy.get('#\\/_image1').invoke('attr', 'alt').then((alt) => expect(alt).eq("A giant anteater"))
+    // cy.get(cesc('#\\/_image1')).invoke('css', 'height').then((height) => expect(height).eq(undefined))
+    cy.get(cesc('#\\/_image1')).invoke('attr', 'alt').then((alt) => expect(alt).eq("A giant anteater"))
   })
 
   it('image sizes', () => {
@@ -77,7 +69,7 @@ describe('Image Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
 
     let expectedSizes = {
@@ -125,7 +117,7 @@ describe('Image Tag Tests', function () {
     });
 
     for (let name in expectedSizes) {
-      cy.get(cesc("#/" + name)).invoke('css', 'width')
+      cy.get(cesc2("#/" + name)).invoke('css', 'width')
         .then(width => parseInt(width)).should('be.gte', widthsBySize[expectedSizes[name]] - 4).and('be.lte', widthsBySize[expectedSizes[name]] + 1)
     }
 
@@ -146,7 +138,7 @@ describe('Image Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -176,7 +168,7 @@ describe('Image Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -258,26 +250,26 @@ describe('Image Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: upperright')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: center')
-    cy.get("#\\/positionFromAnchor1").should('have.value', '1')
-    cy.get("#\\/positionFromAnchor2").should('have.value', '9')
-    cy.get("#\\/pWidth1").should('have.text', 'Width 1: 40%')
-    cy.get("#\\/pWidth2").should('have.text', 'Width 2: 50%')
-    cy.get("#\\/pAspectRatio1").should('have.text', 'Aspect Ratio 1: 1')
-    cy.get("#\\/pAspectRatio2").should('have.text', 'Aspect Ratio 2: NaN')
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: true')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pWidth1")).should('have.text', 'Width 1: 40%')
+    cy.get(cesc("#\\/pWidth2")).should('have.text', 'Width 2: 50%')
+    cy.get(cesc("#\\/pAspectRatio1")).should('have.text', 'Aspect Ratio 1: 1')
+    cy.get(cesc("#\\/pAspectRatio2")).should('have.text', 'Aspect Ratio 2: NaN')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
 
-    cy.get('#\\/image1a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 255, 2)
-    cy.get('#\\/image2a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 425, 2)
-    cy.get('#\\/image1a').invoke('css', 'aspectRatio').then(str => parseInt(str)).should('equal', 1)
-    cy.get('#\\/image2a').invoke('css', 'aspectRatio').should('equal', 'auto');
+    cy.get(cesc('#\\/image1a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 255, 2)
+    cy.get(cesc('#\\/image2a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 425, 2)
+    cy.get(cesc('#\\/image1a')).invoke('css', 'aspectRatio').then(str => parseInt(str)).should('equal', 1)
+    cy.get(cesc('#\\/image2a')).invoke('css', 'aspectRatio').should('equal', 'auto');
 
 
     cy.window().then(async (win) => {
@@ -301,42 +293,42 @@ describe('Image Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
 
 
     cy.log("move images by entering coordinates")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get('#\\/anchorCoords2 textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
 
-    cy.get('#\\/pAnchor2 .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
-    cy.get('#\\/anchorCoords1a textarea').type("{home}{shift+end}{backspace}(7,6){enter}", { force: true })
-    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', '(7,6)')
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(7,6)')
+    cy.get(cesc('#\\/anchorCoords1a') + ' textarea').type("{home}{shift+end}{backspace}(7,6){enter}", { force: true })
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(7,6)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(7,6)')
 
 
     cy.log('change position from anchor');
-    cy.get('#\\/positionFromAnchor1').select("lowerLeft")
-    cy.get('#\\/positionFromAnchor2').select("lowerRight")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
 
-    cy.get("#\\/pPositionFromAnchor1").should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get("#\\/pPositionFromAnchor2").should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
 
 
 
     cy.log('make not draggable')
 
-    cy.get('#\\/draggable1').click();
-    cy.get('#\\/draggable2').click();
-    cy.get("#\\/pDraggable1").should('have.text', 'Draggable 1: false')
-    cy.get("#\\/pDraggable2").should('have.text', 'Draggable 2: false')
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
 
 
     cy.log('cannot move images by dragging')
@@ -354,23 +346,23 @@ describe('Image Tag Tests', function () {
     })
 
     // since nothing will change, wait for boolean input to change to know core has responded
-    cy.get("#\\/bi").click();
-    cy.get("#\\/b").should('have.text', 'true');
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(7,6)')
-    cy.get('#\\/pAnchor2 .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(7,6)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
 
 
     cy.log("change widths")
 
-    cy.get('#\\/width1 textarea').type("{end}{backspace}{backspace}100{enter}", { force: true })
-    cy.get('#\\/width2 textarea').type("{end}{backspace}{backspace}80{enter}", { force: true })
+    cy.get(cesc('#\\/width1') + ' textarea').type("{end}{backspace}{backspace}100{enter}", { force: true })
+    cy.get(cesc('#\\/width2') + ' textarea').type("{end}{backspace}{backspace}80{enter}", { force: true })
 
-    cy.get("#\\/pWidth1").should('have.text', 'Width 1: 100%')
-    cy.get("#\\/pWidth2").should('have.text', 'Width 2: 80%')
+    cy.get(cesc("#\\/pWidth1")).should('have.text', 'Width 1: 100%')
+    cy.get(cesc("#\\/pWidth2")).should('have.text', 'Width 2: 80%')
 
-    cy.get('#\\/image1a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 850, 2)
-    cy.get('#\\/image2a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 595, 2)
+    cy.get(cesc('#\\/image1a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 850, 2)
+    cy.get(cesc('#\\/image2a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 595, 2)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -378,9 +370,9 @@ describe('Image Tag Tests', function () {
       expect(stateVariables["/image2"].stateValues.widthForGraph).eqls({ isAbsolute: true, size: .8 * 20 })
     });
 
-    cy.get('#\\/width1a textarea').type("{end}{backspace}{enter}", { force: true })
-    cy.get("#\\/pWidth1").should('have.text', 'Width 1: 10%')
-    cy.get('#\\/image1a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
+    cy.get(cesc('#\\/width1a') + ' textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc("#\\/pWidth1")).should('have.text', 'Width 1: 10%')
+    cy.get(cesc('#\\/image1a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -389,24 +381,24 @@ describe('Image Tag Tests', function () {
 
     cy.log('change aspect ratio')
 
-    cy.get('#\\/aspectRatio1 textarea').type("{end}{backspace}2{enter}", { force: true })
-    cy.get('#\\/aspectRatio2 textarea').type("1/2{enter}", { force: true })
+    cy.get(cesc('#\\/aspectRatio1') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/aspectRatio2') + ' textarea').type("1/2{enter}", { force: true })
 
 
-    cy.get("#\\/pAspectRatio1").should('have.text', 'Aspect Ratio 1: 2')
-    cy.get("#\\/pAspectRatio2").should('have.text', 'Aspect Ratio 2: 0.5')
-    cy.get('#\\/image1a').invoke('css', 'aspectRatio').then(str => parseFloat(str)).should('equal', 2)
-    cy.get('#\\/image2a').invoke('css', 'aspectRatio').then(str => parseFloat(str)).should('equal', 0.5)
+    cy.get(cesc("#\\/pAspectRatio1")).should('have.text', 'Aspect Ratio 1: 2')
+    cy.get(cesc("#\\/pAspectRatio2")).should('have.text', 'Aspect Ratio 2: 0.5')
+    cy.get(cesc('#\\/image1a')).invoke('css', 'aspectRatio').then(str => parseFloat(str)).should('equal', 2)
+    cy.get(cesc('#\\/image2a')).invoke('css', 'aspectRatio').then(str => parseFloat(str)).should('equal', 0.5)
 
 
-    cy.get('#\\/aspectRatio1a textarea').type("{end}{backspace}{enter}", { force: true })
-    cy.get('#\\/aspectRatio2 textarea').type("{end}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/aspectRatio1a') + ' textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/aspectRatio2') + ' textarea').type("{end}{backspace}{backspace}{backspace}{enter}", { force: true })
 
 
-    cy.get("#\\/pAspectRatio1").should('have.text', 'Aspect Ratio 1: NaN')
-    cy.get("#\\/pAspectRatio2").should('have.text', 'Aspect Ratio 2: NaN')
-    cy.get('#\\/image1a').invoke('css', 'aspectRatio').should('equal', 'auto');
-    cy.get('#\\/image2a').invoke('css', 'aspectRatio').should('equal', 'auto');
+    cy.get(cesc("#\\/pAspectRatio1")).should('have.text', 'Aspect Ratio 1: NaN')
+    cy.get(cesc("#\\/pAspectRatio2")).should('have.text', 'Aspect Ratio 2: NaN')
+    cy.get(cesc('#\\/image1a')).invoke('css', 'aspectRatio').should('equal', 'auto');
+    cy.get(cesc('#\\/image2a')).invoke('css', 'aspectRatio').should('equal', 'auto');
 
   });
 
@@ -432,13 +424,13 @@ describe('Image Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get("#\\/pWidth1").should('have.text', 'Width 1: 5px')
-    cy.get("#\\/pAspectRatio1").should('have.text', 'Aspect Ratio 1: 1')
+    cy.get(cesc("#\\/pWidth1")).should('have.text', 'Width 1: 5px')
+    cy.get(cesc("#\\/pAspectRatio1")).should('have.text', 'Aspect Ratio 1: 1')
 
-    cy.get('#\\/image1a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
-    cy.get('#\\/image1a').invoke('css', 'aspectRatio').then(str => parseInt(str)).should('equal', 1)
+    cy.get(cesc('#\\/image1a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
+    cy.get(cesc('#\\/image1a')).invoke('css', 'aspectRatio').then(str => parseInt(str)).should('equal', 1)
 
 
     cy.window().then(async (win) => {
@@ -448,21 +440,21 @@ describe('Image Tag Tests', function () {
 
     cy.log("change width")
 
-    cy.get('#\\/width1 textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
+    cy.get(cesc('#\\/width1') + ' textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
-    cy.get("#\\/pWidth1").should('have.text', 'Width 1: 10px')
+    cy.get(cesc("#\\/pWidth1")).should('have.text', 'Width 1: 10px')
 
-    cy.get('#\\/image1a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
+    cy.get(cesc('#\\/image1a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/image1"].stateValues.widthForGraph).eqls({ isAbsolute: true, size: 10 })
     });
 
-    cy.get('#\\/width1a textarea').type("{end}{backspace}{backspace}15{enter}", { force: true })
+    cy.get(cesc('#\\/width1a') + ' textarea').type("{end}{backspace}{backspace}15{enter}", { force: true })
 
-    cy.get("#\\/pWidth1").should('have.text', 'Width 1: 15px')
-    cy.get('#\\/image1a').invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
+    cy.get(cesc("#\\/pWidth1")).should('have.text', 'Width 1: 15px')
+    cy.get(cesc('#\\/image1a')).invoke('css', 'width').then(str => parseInt(str)).should('be.closeTo', 70.8, 2)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -472,15 +464,15 @@ describe('Image Tag Tests', function () {
 
     cy.log('change aspect ratio')
 
-    cy.get('#\\/aspectRatio1 textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc('#\\/aspectRatio1') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
 
-    cy.get("#\\/pAspectRatio1").should('have.text', 'Aspect Ratio 1: 2')
-    cy.get('#\\/image1a').invoke('css', 'aspectRatio').then(str => parseFloat(str)).should('equal', 2)
+    cy.get(cesc("#\\/pAspectRatio1")).should('have.text', 'Aspect Ratio 1: 2')
+    cy.get(cesc('#\\/image1a')).invoke('css', 'aspectRatio').then(str => parseFloat(str)).should('equal', 2)
 
-    cy.get('#\\/aspectRatio1a textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get(cesc('#\\/aspectRatio1a') + ' textarea').type("{end}{backspace}{enter}", { force: true })
 
-    cy.get("#\\/pAspectRatio1").should('have.text', 'Aspect Ratio 1: NaN')
-    cy.get('#\\/image1a').invoke('css', 'aspectRatio').should('equal', 'auto');
+    cy.get(cesc("#\\/pAspectRatio1")).should('have.text', 'Aspect Ratio 1: NaN')
+    cy.get(cesc('#\\/image1a')).invoke('css', 'aspectRatio').should('equal', 'auto');
 
   });
 
@@ -503,11 +495,11 @@ describe('Image Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // Is there a way to test the rotation of the image in the graph?
 
-    cy.get("#\\/pRotate1").should('contain.text', 'Rotate 1: 0.785')
+    cy.get(cesc("#\\/pRotate1")).should('contain.text', 'Rotate 1: 0.785')
 
 
     cy.window().then(async (win) => {
@@ -517,18 +509,18 @@ describe('Image Tag Tests', function () {
 
     cy.log("change rotate")
 
-    cy.get('#\\/rotate1 textarea').type("{end}{shift+home}{backspace}3pi/4{enter}", { force: true })
+    cy.get(cesc('#\\/rotate1') + ' textarea').type("{end}{shift+home}{backspace}3pi/4{enter}", { force: true })
 
-    cy.get("#\\/pRotate1").should('contain.text', 'Rotate 1: 2.356')
+    cy.get(cesc("#\\/pRotate1")).should('contain.text', 'Rotate 1: 2.356')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/image1"].stateValues.rotate).eq(3 * Math.PI / 4)
     });
 
-    cy.get('#\\/rotate1a textarea').type("{end}{shift+home}{backspace}-pi{enter}", { force: true })
+    cy.get(cesc('#\\/rotate1a') + ' textarea').type("{end}{shift+home}{backspace}-pi{enter}", { force: true })
 
-    cy.get("#\\/pRotate1").should('contain.text', 'Rotate 1: -3.14159')
+    cy.get(cesc("#\\/pRotate1")).should('contain.text', 'Rotate 1: -3.14159')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -556,26 +548,26 @@ describe('Image Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'x')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'x')
 
 
     cy.log("give good anchor coords")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(6,7)')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
 
     cy.log("give bad anchor coords again")
 
-    cy.get('#\\/anchorCoords1 textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').should('contain.text', 'q')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', 'q')
 
-    cy.get('#\\/pAnchor1 .mjx-mrow').eq(0).should('have.text', 'q')
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'q')
 
 
   });

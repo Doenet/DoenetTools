@@ -566,7 +566,7 @@ function Row({courseId,doenetId,itemType,numberOfVisibleColumns,columnsJSX=[],ic
             }
           }} 
         >
-          <FontAwesomeIcon icon={faChevronDown} />
+          <FontAwesomeIcon icon={faChevronDown} style={{color}} />
         </ToggleCloseIconStyling>
       ) : (
         <ToggleCloseIconStyling 
@@ -585,7 +585,7 @@ function Row({courseId,doenetId,itemType,numberOfVisibleColumns,columnsJSX=[],ic
             }
           }}  
         >
-          <FontAwesomeIcon icon={faChevronRight} />
+          <FontAwesomeIcon icon={faChevronRight} style={{color}} />
         </ToggleCloseIconStyling>
       );
   }

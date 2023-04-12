@@ -1,4 +1,6 @@
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { getFromLatex, getFromText } from '../utils/math';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 
@@ -8,6 +10,8 @@ export default class Text extends InlineComponent {
 
     Object.assign(this.actions, {
       moveText: this.moveText.bind(this),
+      textClicked: this.textClicked.bind(this),
+      textFocused: this.textFocused.bind(this),
     });
 
   }
@@ -16,6 +20,7 @@ export default class Text extends InlineComponent {
   static includeBlankStringChildren = true;
 
   static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   // even if inside a component that turned on descendantCompositesMustHaveAReplacement
   // don't required composite replacements
@@ -41,21 +46,14 @@ export default class Text extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
-
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
+    attributes.isLatex = {
+      createComponentOfType: "boolean",
+      createStateVariable: "isLatex",
+      defaultValue: false,
       public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    };
 
-    attributes.styleNumber.defaultValue = 0;
+    Object.assign(attributes, returnAnchorAttributes())
 
     return attributes;
 
@@ -64,6 +62,7 @@ export default class Text extends InlineComponent {
 
   static returnChildGroups() {
 
+    // Note: Latex class extends Text and depends on "textLike" being the first entry
     return [{
       group: "textLike",
       componentTypes: ["string", "text", "_singleCharacterInline", "_inlineRenderInlineChildren"]
@@ -76,9 +75,16 @@ export default class Text extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
 
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
 
     stateVariableDefinitions.value = {
       public: true,
@@ -175,111 +181,130 @@ export default class Text extends InlineComponent {
 
     }
 
-    stateVariableDefinitions.anchor = {
-      defaultValue: me.fromText("(0,0)"),
+    stateVariableDefinitions.math = {
       public: true,
-      forRenderer: true,
-      hasEssential: true,
       shadowingInstructions: {
-        createComponentOfType: "point"
+        createComponentOfType: "math",
       },
+      forRenderer: true,
       returnDependencies: () => ({
-        anchorAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "anchor",
-          variableNames: ["coords"],
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        },
+        isLatex: {
+          dependencyType: "stateVariable",
+          variableName: "isLatex"
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.anchorAttr) {
-          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
-        } else {
-          return { useEssentialOrDefaultValue: { anchor: true } }
+        let parser = dependencyValues.isLatex ? getFromLatex() : getFromText();
+        let expression;
+        try {
+          expression = parser(dependencyValues.value);
+        } catch (e) {
+          expression = me.fromAst('\uFF3F');
         }
+        return { setValue: { math: expression } }
       },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
-        if (dependencyValues.anchorAttr) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "anchorAttr",
-              desiredValue: desiredStateVariableValues.anchor,
-              variableIndex: 0,
-            }]
-          }
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let text;
+        if (dependencyValues.isLatex) {
+          text = desiredStateVariableValues.math.toLatex();
         } else {
-          return {
-            success: true,
-            instructions: [{
-              setEssentialValue: "anchor",
-              value: desiredStateVariableValues.anchor
-            }]
-          }
+          text = desiredStateVariableValues.math.toString();
         }
-
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: text,
+          }]
+        }
       }
+
+    }
+
+
+
+    stateVariableDefinitions.number = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      forRenderer: true,
+      returnDependencies: () => ({
+        math: {
+          dependencyType: "stateVariable",
+          variableName: "math"
+        },
+      }),
+      definition({ dependencyValues }) {
+
+        return { setValue: { number: dependencyValues.math.evaluate_to_constant() } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "math",
+            desiredValue: me.fromAst(Number(desiredStateVariableValues.number)),
+          }]
+        }
+      }
+
     }
 
     return stateVariableDefinitions;
 
   }
 
+  static adapters = ["math", "number"];
 
-  async moveText({ x, y, z, transient, actionId,
+  async moveText({
+    x, y, z, transient, actionId,
     sourceInformation = {}, skipRendererUpdate = false,
   }) {
-    let components = ["vector"];
-    if (x !== undefined) {
-      components[1] = x;
-    }
-    if (y !== undefined) {
-      components[2] = y;
-    }
-    if (z !== undefined) {
-      components[3] = z;
-    }
-    if (transient) {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        transient,
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
+
+  }
+
+  async textClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      });
-    } else {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
+      })
+    }
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async textFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-        event: {
-          verb: "interacted",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            x, y, z
-          }
-        }
-      });
+      })
     }
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('MatchesPattern Tag Tests', function () {
 
@@ -51,7 +53,7 @@ describe('MatchesPattern Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     let matchNames = {
       default: ["dm1", "dm2"],
@@ -182,23 +184,23 @@ describe('MatchesPattern Tag Tests', function () {
 
     for (let expr in desiredResults) {
       cy.log(`trying: ${expr}`)
-      cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
-      cy.get('#\\/bi').click();
+      cy.get(cesc('#\\/expr') + ' textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
+      cy.get(cesc('#\\/bi')).click();
       b = !b;
-      cy.get('#\\/b').should('have.text', b.toString()) // to make sure change occured
+      cy.get(cesc('#\\/b')).should('have.text', b.toString()) // to make sure change occured
 
       let dResults = desiredResults[expr];
 
       for (let name in dResults) {
         let res = dResults[name];
         if (res) {
-          cy.get(`#\\/${name}`).should('have.text', 'true');
-          cy.get(`#\\/${matchNames[name][0]} .mjx-mrow`).eq(0).should('have.text', res[0]);
-          cy.get(`#\\/${matchNames[name][1]} .mjx-mrow`).eq(0).should('have.text', res[1]);
+          cy.get(cesc(`#\\/${name}`)).should('have.text', 'true');
+          cy.get(cesc(`#\\/${matchNames[name][0]}`) + ` .mjx-mrow`).eq(0).should('have.text', res[0]);
+          cy.get(cesc(`#\\/${matchNames[name][1]}`) + ` .mjx-mrow`).eq(0).should('have.text', res[1]);
         } else {
-          cy.get(`#\\/${name}`).should('have.text', 'false');
-          cy.get(`#\\/${matchNames[name][0]}`).should('not.exist');
-          cy.get(`#\\/${matchNames[name][1]}`).should('not.exist');
+          cy.get(cesc(`#\\/${name}`)).should('have.text', 'false');
+          cy.get(cesc(`#\\/${matchNames[name][0]}`)).should('not.exist');
+          cy.get(cesc(`#\\/${matchNames[name][1]}`)).should('not.exist');
 
         }
       }
@@ -249,7 +251,7 @@ describe('MatchesPattern Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     let matchNames = {
       default: ["dm1", "dm2", "dm3"],
@@ -332,23 +334,23 @@ describe('MatchesPattern Tag Tests', function () {
 
     for (let expr in desiredResults) {
       cy.log(`trying: ${expr}`)
-      cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
-      cy.get('#\\/bi').click();
+      cy.get(cesc('#\\/expr') + ' textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
+      cy.get(cesc('#\\/bi')).click();
       b = !b;
-      cy.get('#\\/b').should('have.text', b.toString()) // to make sure change occured
+      cy.get(cesc('#\\/b')).should('have.text', b.toString()) // to make sure change occured
 
       let dResults = desiredResults[expr];
 
       for (let name in dResults) {
         let res = dResults[name];
         if (res) {
-          cy.get(`#\\/${name}`).should('have.text', 'true');
-          cy.get(`#\\/${matchNames[name][0]} .mjx-mrow`).eq(0).should('have.text', res[0]);
-          cy.get(`#\\/${matchNames[name][1]} .mjx-mrow`).eq(0).should('have.text', res[1]);
+          cy.get(cesc(`#\\/${name}`)).should('have.text', 'true');
+          cy.get(cesc(`#\\/${matchNames[name][0]}`) + ` .mjx-mrow`).eq(0).should('have.text', res[0]);
+          cy.get(cesc(`#\\/${matchNames[name][1]}`) + ` .mjx-mrow`).eq(0).should('have.text', res[1]);
         } else {
-          cy.get(`#\\/${name}`).should('have.text', 'false');
-          cy.get(`#\\/${matchNames[name][0]}`).should('not.exist');
-          cy.get(`#\\/${matchNames[name][1]}`).should('not.exist');
+          cy.get(cesc(`#\\/${name}`)).should('have.text', 'false');
+          cy.get(cesc(`#\\/${matchNames[name][0]}`)).should('not.exist');
+          cy.get(cesc(`#\\/${matchNames[name][1]}`)).should('not.exist');
 
         }
       }
@@ -401,7 +403,7 @@ describe('MatchesPattern Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     let matchNames = {
       base: ["bm1", "bm2", "bm3"],
@@ -472,23 +474,23 @@ describe('MatchesPattern Tag Tests', function () {
 
     for (let expr in desiredResults) {
       cy.log(`trying: ${expr}`)
-      cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
-      cy.get('#\\/bi').click();
+      cy.get(cesc('#\\/expr') + ' textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
+      cy.get(cesc('#\\/bi')).click();
       b = !b;
-      cy.get('#\\/b').should('have.text', b.toString()) // to make sure change occured
+      cy.get(cesc('#\\/b')).should('have.text', b.toString()) // to make sure change occured
 
       let dResults = desiredResults[expr];
 
       for (let name in dResults) {
         let res = dResults[name];
         if (res) {
-          cy.get(`#\\/${name}`).should('have.text', 'true');
-          cy.get(`#\\/${matchNames[name][0]} .mjx-mrow`).eq(0).should('have.text', res[0]);
-          cy.get(`#\\/${matchNames[name][1]} .mjx-mrow`).eq(0).should('have.text', res[1]);
+          cy.get(cesc(`#\\/${name}`)).should('have.text', 'true');
+          cy.get(cesc(`#\\/${matchNames[name][0]}`) + ` .mjx-mrow`).eq(0).should('have.text', res[0]);
+          cy.get(cesc(`#\\/${matchNames[name][1]}`) + ` .mjx-mrow`).eq(0).should('have.text', res[1]);
         } else {
-          cy.get(`#\\/${name}`).should('have.text', 'false');
-          cy.get(`#\\/${matchNames[name][0]}`).should('not.exist');
-          cy.get(`#\\/${matchNames[name][1]}`).should('not.exist');
+          cy.get(cesc(`#\\/${name}`)).should('have.text', 'false');
+          cy.get(cesc(`#\\/${matchNames[name][0]}`)).should('not.exist');
+          cy.get(cesc(`#\\/${matchNames[name][1]}`)).should('not.exist');
 
         }
       }
@@ -507,9 +509,9 @@ describe('MatchesPattern Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/mp').should('have.text', 'false')
+    cy.get(cesc('#\\/mp')).should('have.text', 'false')
 
   })
 
@@ -527,14 +529,14 @@ describe('MatchesPattern Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/mps').should('have.text', 'true')
-    cy.get('#\\/mpsm1 .mjx-mrow').eq(0).should('have.text', 'e')
-    cy.get('#\\/mpsm2 .mjx-mrow').eq(0).should('have.text', 'x+2')
-    cy.get('#\\/mpm').should('have.text', 'true')
-    cy.get('#\\/mpmm1 .mjx-mrow').eq(0).should('have.text', 'e')
-    cy.get('#\\/mpmm2 .mjx-mrow').eq(0).should('have.text', 'x+2')
+    cy.get(cesc('#\\/mps')).should('have.text', 'true')
+    cy.get(cesc('#\\/mpsm1') + ' .mjx-mrow').eq(0).should('have.text', 'e')
+    cy.get(cesc('#\\/mpsm2') + ' .mjx-mrow').eq(0).should('have.text', 'x+2')
+    cy.get(cesc('#\\/mpm')).should('have.text', 'true')
+    cy.get(cesc('#\\/mpmm1') + ' .mjx-mrow').eq(0).should('have.text', 'e')
+    cy.get(cesc('#\\/mpmm2') + ' .mjx-mrow').eq(0).should('have.text', 'x+2')
 
   })
 
@@ -556,7 +558,7 @@ describe('MatchesPattern Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     let desiredResults = {
@@ -610,37 +612,37 @@ describe('MatchesPattern Tag Tests', function () {
 
     for (let expr in desiredResults) {
       cy.log(`trying: ${expr}`)
-      cy.get('#\\/expr textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
-      cy.get('#\\/matchBlanks').click();
-      cy.get('#\\/matchBlanks2').should('have.text', "true") // to make sure change occured
+      cy.get(cesc('#\\/expr') + ' textarea').type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
+      cy.get(cesc('#\\/matchBlanks')).click();
+      cy.get(cesc('#\\/matchBlanks2')).should('have.text', "true") // to make sure change occured
 
       let dResults = desiredResults[expr];
 
       let res = dResults.blanks;
       if (res) {
-        cy.get(`#\\/match`).should('have.text', 'true');
-        cy.get(`#\\/m1 .mjx-mrow`).eq(0).should('have.text', res[0]);
-        cy.get(`#\\/m2 .mjx-mrow`).eq(0).should('have.text', res[1]);
+        cy.get(cesc(`#\\/match`)).should('have.text', 'true');
+        cy.get(cesc(`#\\/m1`) + ` .mjx-mrow`).eq(0).should('have.text', res[0]);
+        cy.get(cesc(`#\\/m2`) + ` .mjx-mrow`).eq(0).should('have.text', res[1]);
       } else {
-        cy.get(`#\\/match`).should('have.text', 'false');
-        cy.get(`#\\/m1`).should('not.exist');
-        cy.get(`#\\/m2`).should('not.exist');
+        cy.get(cesc(`#\\/match`)).should('have.text', 'false');
+        cy.get(cesc(`#\\/m1`)).should('not.exist');
+        cy.get(cesc(`#\\/m2`)).should('not.exist');
 
       }
 
-      cy.get('#\\/matchBlanks').click();
-      cy.get('#\\/matchBlanks2').should('have.text', "false") // to make sure change occured
+      cy.get(cesc('#\\/matchBlanks')).click();
+      cy.get(cesc('#\\/matchBlanks2')).should('have.text', "false") // to make sure change occured
 
 
       res = dResults.default;
       if (res) {
-        cy.get(`#\\/match`).should('have.text', 'true');
-        cy.get(`#\\/m1 .mjx-mrow`).eq(0).should('have.text', res[0]);
-        cy.get(`#\\/m2 .mjx-mrow`).eq(0).should('have.text', res[1]);
+        cy.get(cesc(`#\\/match`)).should('have.text', 'true');
+        cy.get(cesc(`#\\/m1`) + ` .mjx-mrow`).eq(0).should('have.text', res[0]);
+        cy.get(cesc(`#\\/m2`) + ` .mjx-mrow`).eq(0).should('have.text', res[1]);
       } else {
-        cy.get(`#\\/match`).should('have.text', 'false');
-        cy.get(`#\\/m1`).should('not.exist');
-        cy.get(`#\\/m2`).should('not.exist');
+        cy.get(cesc(`#\\/match`)).should('have.text', 'false');
+        cy.get(cesc(`#\\/m1`)).should('not.exist');
+        cy.get(cesc(`#\\/m2`)).should('not.exist');
 
       }
     }

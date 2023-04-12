@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router';
 import { useRecoilCallback, atom, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 
 import styled from 'styled-components';
@@ -36,7 +37,7 @@ export const profileToolViewStashAtom = atom({
 
  
 export default function Logo({hasLink=true}){
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const navigate = useNavigate();
 
   // if (profile.state === "loading"){ return null;}
   //   if (profile.state === "hasError"){ 
@@ -50,7 +51,7 @@ return <LogoButton
 hasLink={hasLink}
 onClick={()=>{
   if (hasLink){
-    setPageToolView({page:'home',tool:'',view:''})
+    navigate('/')
   }
 }
 }/>

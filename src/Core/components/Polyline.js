@@ -9,7 +9,7 @@ export default class Polyline extends GraphicalComponent {
       movePolyline: this.movePolyline.bind(this),
       finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
       polylineClicked: this.polylineClicked.bind(this),
-      mouseDownOnPolyline: this.mouseDownOnPolyline.bind(this),
+      polylineFocused: this.polylineFocused.bind(this),
     });
 
   }
@@ -193,6 +193,7 @@ export default class Polyline extends GraphicalComponent {
 
     stateVariableDefinitions.vertices = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -658,29 +659,33 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  async polylineClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async polylineClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnPolyline({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async polylineFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

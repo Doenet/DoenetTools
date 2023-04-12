@@ -8,24 +8,30 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Ray(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  Ray.ignoreActionsWithoutCore = true;
+  Ray.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
   let rayJXG = useRef(null);
 
-  let pointerAtDown = useRef(false);
-  let pointsAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
 
-  let previousWithLabel = useRef(false);
+  let previousWithLabel = useRef(null);
   let pointCoords = useRef(null);
 
   let lastEndpointFromCore = useRef(null);
   let lastThroughpointFromCore = useRef(null);
+  let fixed = useRef(false);
+  let fixLocation = useRef(false);
 
   lastEndpointFromCore.current = SVs.numericalEndpoint;
   lastThroughpointFromCore.current = SVs.numericalThroughpoint;
+  fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -38,8 +44,20 @@ export default React.memo(function Ray(props) {
         deleteRayJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
 
   function createRayJXG() {
 
@@ -51,10 +69,7 @@ export default React.memo(function Ray(props) {
       return;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
@@ -62,7 +77,7 @@ export default React.memo(function Ray(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
-      fixed,
+      fixed: fixed.current,
       strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: lineColor,
@@ -70,7 +85,7 @@ export default React.memo(function Ray(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
-      highlight: !fixed,
+      highlight: !fixLocation.current,
       straightFirst: false,
     };
 
@@ -94,14 +109,43 @@ export default React.memo(function Ray(props) {
     ];
 
     let newRayJXG = board.create('line', through, jsxRayAttributes);
+    newRayJXG.isDraggable = !fixLocation.current;
 
     newRayJXG.on('drag', function (e) {
+
+      let viaPointer = e.type === "pointermove";
+
       //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
         dragged.current = true;
 
-        pointCoords.current = calculatePointPositions(e);
+        pointCoords.current = []
+
+        for (let i = 0; i < 2; i++) {
+          if (viaPointer) {
+            // the reason we calculate point position with this algorithm,
+            // rather than using .X() and .Y() directly
+            // is so that points don't get trapped on an attracting object
+            // if you move the mouse slowly.
+            // The attributes .X() and .Y() are affected by
+            // .setCoordinates functions called in update()
+            // so will get modified to go back to the attracting object
+            var o = board.origin.scrCoords;
+            let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+              - o[1]) / board.unitX;
+            let calculatedY = (o[2] -
+              (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+              / board.unitY;
+            pointCoords.current.push([calculatedX, calculatedY]);
+          } else {
+            pointCoords.current.push([newRayJXG.point1.X(), newRayJXG.point1.Y()]);
+            pointCoords.current.push([newRayJXG.point2.X(), newRayJXG.point2.Y()]);
+          }
+        }
+
 
         callAction({
           action: actions.moveRay,
@@ -128,25 +172,76 @@ export default React.memo(function Ray(props) {
             throughcoords: pointCoords.current[1],
           }
         })
-      } else {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
-          action: actions.rayClicked
+          action: actions.rayClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
+      pointerIsDown.current = false;
     });
 
+    newRayJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveRay,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newRayJXG.on('down', function (e) {
+
       dragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       pointsAtDown.current = [
         [...newRayJXG.point1.coords.scrCoords],
         [...newRayJXG.point2.coords.scrCoords]
       ]
-      callAction({
-        action: actions.mouseDownOnRay
-      });
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.rayFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
 
     });
+
+    newRayJXG.on('hit', function (e) {
+      dragged.current = false;
+      callAction({
+        action: actions.rayFocused,
+        args: { name }   // send name so get original name if adapted
+      });
+    });
+
+    newRayJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveRay,
+            args: {
+              point1coords: pointCoords.current[0],
+              point2coords: pointCoords.current[1],
+            }
+          })
+          dragged.current = false;
+        }
+
+        callAction({
+          action: actions.rayClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
+
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
@@ -154,38 +249,28 @@ export default React.memo(function Ray(props) {
 
   }
 
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
+
   function deleteRayJXG() {
     rayJXG.current.off('drag');
     rayJXG.current.off('down');
+    rayJXG.current.off('hit');
     rayJXG.current.off('up');
+    rayJXG.current.off('keyfocusout');
+    rayJXG.current.off('keydown');
     board.removeObject(rayJXG.current);
     rayJXG.current = null;
   }
 
-  function calculatePointPositions(e) {
-
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is so that points don't get trapped on an attracting object
-    // if you move the mouse slowly.
-    // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called in update()
-    // so will get modified to go back to the attracting object
-
-    var o = board.origin.scrCoords;
-
-    let pointCoords = []
-
-    for (let i = 0; i < 2; i++) {
-      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      let calculatedY = (o[2] -
-        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      pointCoords.push([calculatedX, calculatedY]);
-    }
-    return pointCoords;
-  }
 
   if (board) {
 
@@ -230,10 +315,9 @@ export default React.memo(function Ray(props) {
         // rayJXG.current.setAttribute({visible: false})
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      rayJXG.current.visProp.fixed = fixed;
-      rayJXG.current.visProp.highlight = !fixed;
+      rayJXG.current.visProp.fixed = fixed.current;
+      rayJXG.current.visProp.highlight = !fixLocation.current;
+      rayJXG.current.isDraggable = !fixLocation.current;
 
       let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = rayJXG.current.visProp.layer !== layer;
@@ -244,7 +328,6 @@ export default React.memo(function Ray(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (rayJXG.current.visProp.strokecolor !== lineColor) {
         rayJXG.current.visProp.strokecolor = lineColor;

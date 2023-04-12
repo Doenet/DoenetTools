@@ -1,3 +1,4 @@
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
 import BlockComponent from './abstract/BlockComponent';
 
 export class Pre extends BlockComponent {
@@ -53,6 +54,7 @@ export class DisplayDoenetML extends BlockComponent {
 
   static includeBlankStringChildren = true;
 
+
   static returnChildGroups() {
 
     return [{
@@ -64,6 +66,13 @@ export class DisplayDoenetML extends BlockComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
 
     stateVariableDefinitions.value = {
       returnDependencies: () => ({

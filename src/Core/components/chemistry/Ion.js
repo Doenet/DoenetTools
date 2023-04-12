@@ -1,5 +1,6 @@
 import InlineComponent from '../abstract/InlineComponent';
 import me from 'math-expressions';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../../utils/style';
 
 
 export default class Ion extends InlineComponent {
@@ -38,6 +39,14 @@ export default class Ion extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+
     // atomicNumberShadow will be null unless atom was created
     // via an adapter or copy prop or from serialized state with coords value
     // In case of adapter or copy prop,
@@ -486,6 +495,10 @@ export default class Ion extends InlineComponent {
     }
 
     stateVariableDefinitions.latex = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "latex"
+      },
       additionalStateVariablesDefined: [{
         variableName: "latexWithInputChildren",
         forRenderer: true,

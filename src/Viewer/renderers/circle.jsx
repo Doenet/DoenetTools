@@ -7,25 +7,31 @@ import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
 export default React.memo(function Circle(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
-  Circle.ignoreActionsWithoutCore = true;
+  Circle.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
   let circleJXG = useRef(null)
 
   let dragged = useRef(false);
-  let pointerAtDown = useRef(false);
-  let centerAtDown = useRef(false);
-  let radiusAtDown = useRef(false);
-  let throughAnglesAtDown = useRef(false);
-  let previousWithLabel = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
+  let centerAtDown = useRef(null);
+  let radiusAtDown = useRef(null);
+  let throughAnglesAtDown = useRef(null);
+  let previousWithLabel = useRef(null);
   let centerCoords = useRef(null);
 
   let lastCenterFromCore = useRef(null);
   let throughAnglesFromCore = useRef(null);
+  let fixed = useRef(false);
+  let fixLocation = useRef(false);
 
   lastCenterFromCore.current = SVs.numericalCenter;
   throughAnglesFromCore.current = SVs.throughAngles;
+  fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -38,8 +44,19 @@ export default React.memo(function Circle(props) {
         deleteCircleJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
 
   function createCircleJXG() {
 
@@ -50,20 +67,17 @@ export default React.memo(function Circle(props) {
       return null;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
-
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
     let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-    fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+    fillColor = SVs.filled ? fillColor : "none";
 
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -76,7 +90,7 @@ export default React.memo(function Circle(props) {
       fillOpacity: SVs.selectedStyle.fillOpacity,
       highlightFillColor: fillColor,
       highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
-      highlight: !fixed,
+      highlight: !fixLocation.current,
     };
 
 
@@ -104,15 +118,42 @@ export default React.memo(function Circle(props) {
       jsxCircleAttributes
     );
 
+    newCircleJXG.isDraggable = !fixLocation.current;
 
     newCircleJXG.on('drag', function (e) {
+
+      let viaPointer = e.type === "pointermove";
+
       //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
         dragged.current = true;
       }
 
-      centerCoords.current = calculateCenterPosition(e);
+
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is so that center doesn't get trapped on an attracting object
+        // if you move the mouse slowly.
+        // The attributes .X() and .Y() are affected by
+        // .setCoordinates functions called in update()
+        // so will get modified to go back to the attracting object
+
+        var o = board.origin.scrCoords;
+        let calculatedX = (centerAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+        let calculatedY = (o[2] -
+          (centerAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+        centerCoords.current = [calculatedX, calculatedY];
+      } else {
+        centerCoords.current = [newCircleJXG.center.X(), newCircleJXG.center.Y()];
+      }
+
+
       callAction({
         action: actions.moveCircle,
         args: {
@@ -138,12 +179,31 @@ export default React.memo(function Circle(props) {
             throughAngles: throughAnglesAtDown.current,
           }
         })
-      } else {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
-          action: actions.circleClicked
+          action: actions.circleClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
+      pointerIsDown.current = false;
     });
+
+
+    newCircleJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveCircle,
+          args: {
+            center: centerCoords.current,
+            radius: radiusAtDown.current,
+            throughAngles: throughAnglesAtDown.current,
+          }
+        })
+        dragged.current = false;
+      }
+      pointerIsDown.current = false;
+    })
+
 
     newCircleJXG.on('down', function (e) {
       dragged.current = false;
@@ -151,10 +211,48 @@ export default React.memo(function Circle(props) {
       centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
       radiusAtDown.current = newCircleJXG.radius;
       throughAnglesAtDown.current = [...throughAnglesFromCore.current];
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.circleFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    });
+
+    // hit is called by jsxgraph when focused in via keyboard
+    newCircleJXG.on('hit', function (e) {
+      dragged.current = false;
+      centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
+      radiusAtDown.current = newCircleJXG.radius;
+      throughAnglesAtDown.current = [...throughAnglesFromCore.current];
       callAction({
-        action: actions.mouseDownOnCircle
+        action: actions.circleFocused,
+        args: { name }   // send name so get original name if adapted
       });
     });
+
+    newCircleJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveCircle,
+            args: {
+              center: centerCoords.current,
+              radius: radiusAtDown.current,
+              throughAngles: throughAnglesAtDown.current,
+            }
+          })
+          dragged.current = false;
+        }
+        callAction({
+          action: actions.circleClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
@@ -162,30 +260,25 @@ export default React.memo(function Circle(props) {
 
   }
 
-  function calculateCenterPosition(e) {
 
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is so that center doesn't get trapped on an attracting object
-    // if you move the mouse slowly.
-    // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called in update()
-    // so will get modified to go back to the attracting object
-
-    var o = board.origin.scrCoords;
-
-    let calculatedX = (centerAtDown.current[1] + e.x - pointerAtDown.current[0]
-      - o[1]) / board.unitX;
-    let calculatedY = (o[2] -
-      (centerAtDown.current[2] + e.y - pointerAtDown.current[1]))
-      / board.unitY;
-    return [calculatedX, calculatedY];
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
   }
 
   function deleteCircleJXG() {
     circleJXG.current.off('drag');
     circleJXG.current.off('down');
     circleJXG.current.off('up');
+    circleJXG.current.off('hit');
+    circleJXG.current.off('keyfocusout');
+    circleJXG.current.off('keydown');
     board.removeObject(circleJXG.current);
     circleJXG.current = null;
   }
@@ -235,11 +328,10 @@ export default React.memo(function Circle(props) {
         // circleJXG.current.setAttribute({visible: false})
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
 
-
-      circleJXG.current.visProp.fixed = fixed;
-      circleJXG.current.visProp.highlight = !fixed;
+      circleJXG.current.visProp.fixed = fixed.current;
+      circleJXG.current.visProp.highlight = !fixLocation.current;
+      circleJXG.current.isDraggable = !fixLocation.current;
 
       let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = circleJXG.current.visProp.layer !== layer;
@@ -249,9 +341,8 @@ export default React.memo(function Circle(props) {
       }
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
       let fillColor = darkMode === "dark" ? SVs.selectedStyle.fillColorDarkMode : SVs.selectedStyle.fillColor;
-      fillColor = SVs.filled ? fillColor.toLowerCase() : "none";
+      fillColor = SVs.filled ? fillColor : "none";
 
       if (circleJXG.current.visProp.strokecolor !== lineColor) {
         circleJXG.current.visProp.strokecolor = lineColor;

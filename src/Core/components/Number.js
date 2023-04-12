@@ -2,11 +2,24 @@ import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { getFromText, mathStateVariableFromNumberStateVariable, numberToMathExpression, roundForDisplay, textToAst } from '../utils/math';
 import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export default class NumberComponent extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      moveNumber: this.moveNumber.bind(this),
+      numberClicked: this.numberClicked.bind(this),
+      numberFocused: this.numberFocused.bind(this),
+    });
+
+  }
   static componentType = "number";
 
   static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -41,6 +54,25 @@ export default class NumberComponent extends InlineComponent {
       createStateVariable: "valueOnNaN",
       defaultValue: NaN,
     };
+
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.layer = {
+      createComponentOfType: "number",
+      createStateVariable: "layer",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true
+    };
+
+    Object.assign(attributes, returnAnchorAttributes())
+
     return attributes;
   }
 
@@ -87,6 +119,16 @@ export default class NumberComponent extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
 
     stateVariableDefinitions.displayDigits = {
       public: true,
@@ -586,14 +628,25 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "child",
           childGroups: ["texts"],
         },
+        convertBoolean: {
+          dependencyType: "stateVariable",
+          variableName: "convertBoolean"
+        },
       }),
       definition({ dependencyValues }) {
 
         let nNumberStrings = dependencyValues.numberChildren.length +
           dependencyValues.stringChildren.length;
         let nMaths = dependencyValues.mathChildren.length;
-        let nOthers = dependencyValues.booleanChildren.length +
-          dependencyValues.textChildren.length;
+        let nOthers = dependencyValues.booleanChildren.length;
+
+        if (dependencyValues.convertBoolean) {
+          nOthers += dependencyValues.textChildren.length;
+        } else {
+          // if don't convert boolean, then we'll convert text children to numbers
+          nNumberStrings += dependencyValues.textChildren.length;
+        }
+
 
         let singleNumberOrStringChild = nNumberStrings <= 1 && nMaths + nOthers === 0;
         let singleMathChild = nMaths === 1 && nNumberStrings + nOthers === 0;
@@ -616,9 +669,29 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "child",
           childGroups: ["strings"],
           variableNames: ["value"]
-        }
+        },
+        convertBoolean: {
+          dependencyType: "stateVariable",
+          variableName: "convertBoolean"
+        },
       }),
-      definition: buildParsedExpression
+      definition({ dependencyValues, componentInfoObjects }) {
+        if (!dependencyValues.convertBoolean) {
+          // if don't convert boolean, then we'll treat texts as numbers
+          dependencyValues = { ...dependencyValues };
+          dependencyValues.allChildren = dependencyValues.allChildren.map(child => {
+            if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "text"
+            })) {
+              child = { componentType: "number" }
+            }
+            return child;
+          })
+        }
+
+        return buildParsedExpression({ dependencyValues, componentInfoObjects })
+      }
     };
 
 
@@ -631,13 +704,17 @@ export default class NumberComponent extends InlineComponent {
         allChildren: {
           dependencyType: "child",
           childGroups: ["strings", "numbers", "maths", "texts", "booleans"],
-          variableNames: ["value", "texts", "maths", "booleans"],
+          variableNames: ["value", "texts", "maths", "booleans", "number"],
           variablesOptional: true,
         },
         codePre: {
           dependencyType: "stateVariable",
           variableName: "codePre"
-        }
+        },
+        convertBoolean: {
+          dependencyType: "stateVariable",
+          variableName: "convertBoolean"
+        },
       }),
       definition({ dependencyValues, componentInfoObjects }) {
 
@@ -668,7 +745,16 @@ export default class NumberComponent extends InlineComponent {
               inheritedComponentType: child.componentType,
               baseComponentType: "text"
             })) {
-              textChildrenByCode[code] = child;
+              if (dependencyValues.convertBoolean) {
+                textChildrenByCode[code] = child;
+              } else {
+                // treat child like a number
+                child = {
+                  componentType: "number",
+                  stateValues: { value: child.stateValues.number }
+                }
+                numberChildrenByCode[code] = child;
+              }
             } else {
               booleanChildrenByCode[code] = child;
             }
@@ -693,7 +779,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "number",
+        createComponentOfType: this.componentType,
         attributesToShadow: [
           "displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros",
         ],
@@ -725,6 +811,11 @@ export default class NumberComponent extends InlineComponent {
               dependencyType: "child",
               childGroups: ["numbers"],
               variableNames: ["value"],
+            },
+            textChild: {
+              dependencyType: "child",
+              childGroups: ["texts"],
+              variableNames: ["number"],
             },
             stringChild: {
               dependencyType: "child",
@@ -787,7 +878,7 @@ export default class NumberComponent extends InlineComponent {
       definition({ dependencyValues, componentInfoObjects }) {
 
         if (dependencyValues.singleNumberOrStringChild) {
-          if (dependencyValues.numberChild.length === 0) {
+          if (dependencyValues.numberChild.length + dependencyValues.textChild.length === 0) {
             if (dependencyValues.stringChild.length === 0) {
               return { useEssentialOrDefaultValue: { value: { defaultValue: dependencyValues.valueOnNaN } } }
             }
@@ -847,7 +938,9 @@ export default class NumberComponent extends InlineComponent {
             }
             return { setValue: { value: number } };
           } else {
-            let number = dependencyValues.numberChild[0].stateValues.value;
+            let number = dependencyValues.numberChild.length === 1 ?
+              dependencyValues.numberChild[0].stateValues.value :
+              dependencyValues.textChild[0].stateValues.number;
             if (Number.isNaN(number)) {
               number = dependencyValues.valueOnNaN;
             }
@@ -1177,7 +1270,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       returnDependencies: () => ({
         valueForDisplay: {
@@ -1276,5 +1369,53 @@ export default class NumberComponent extends InlineComponent {
     },
     "text"
   ];
+
+
+  async moveNumber({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
+
+  }
+
+  async numberClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async numberFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
 
 }

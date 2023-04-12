@@ -1,6 +1,8 @@
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 import { returnLabelStateVariableDefinitions } from '../utils/label';
 import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggeringAttributes } from '../utils/triggering';
 import InlineComponent from './abstract/InlineComponent';
+import me from 'math-expressions';
 
 export default class triggerSet extends InlineComponent {
   constructor(args) {
@@ -8,11 +10,13 @@ export default class triggerSet extends InlineComponent {
 
     Object.assign(this.actions, {
       triggerActions: this.triggerActions.bind(this),
-      triggerActionsIfTriggerNewlyTrue: this.triggerActionsIfTriggerNewlyTrue.bind(this)
+      triggerActionsIfTriggerNewlyTrue: this.triggerActionsIfTriggerNewlyTrue.bind(this),
+      moveButton: this.moveButton.bind(this),
     });
 
   }
   static componentType = "triggerSet";
+  static rendererType = "button";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -25,6 +29,17 @@ export default class triggerSet extends InlineComponent {
       defaultValue: false,
       public: true,
     };
+
+
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    Object.assign(attributes, returnAnchorAttributes())
 
     let triggerAttributes = returnStandardTriggeringAttributes("triggerActionsIfTriggerNewlyTrue")
 
@@ -54,8 +69,16 @@ export default class triggerSet extends InlineComponent {
     addStandardTriggeringStateVariableDefinitions(stateVariableDefinitions, "triggerActions");
 
     let labelDefinitions = returnLabelStateVariableDefinitions();
-
     Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
+    stateVariableDefinitions.clickAction = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { clickAction: "triggerActions" } })
+    }
 
     stateVariableDefinitions.updateValueAndActionsToTrigger = {
       returnDependencies: () => ({
@@ -124,4 +147,20 @@ export default class triggerSet extends InlineComponent {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
+
+
+  async moveButton({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
+
+  }
+
 }

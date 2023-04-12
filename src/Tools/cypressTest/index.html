@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doenet Test Tool</title>
     <link rel="shortcut icon" href="/favicon.ico" />
-    <script
-      type="text/javascript"
-      charset="UTF-8"
-      src="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraphcore.js"
-    ></script>
     <link
       rel="stylesheet"
       type="text/css"
-      href="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraph.css"
+      href="https://cdn.jsdelivr.net/npm/jsxgraph@1.5.0/distrib/jsxgraph.css"
     />
     <!-- <link rel="stylesheet" type="text/css" href="/src/css/handsontable.full.css" /> -->
     <script
@@ -31,55 +26,56 @@
         font-weight: normal;
         src:
       /* url(OpenSansRegularWoffTwo) format('woff2'),
-      url(OpenSansRegularWoff) format('woff'); */ url('/fonts/files/open-sans-v18-latin-regular.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-regular.woff') format('woff');
-      }
+      url(OpenSansRegularWoff) format('woff'); */
+      url('/fonts/files/open-sans-v18-latin-regular.woff2') format('woff2'),
+      url('/fonts/files/open-sans-v18-latin-regular.woff') format('woff');
+  }
+ 
+  @font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: normal;
+    src:
+      url('/fonts/files/open-sans-v18-latin-italic.woff2') format('woff2'),
+      url('/fonts/files/open-sans-v18-latin-italic.woff') format('woff');
+  }
+ 
+  @font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    src:
+      url('/fonts/files/open-sans-v18-latin-700.woff2') format('woff2'),
+      url('/fonts/files/open-sans-v18-latin-700.woff') format('woff');
+  }
 
-      @font-face {
-        font-family: 'Open Sans';
-        font-style: italic;
-        font-weight: normal;
-        src: url('/fonts/files/open-sans-v18-latin-italic.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-italic.woff') format('woff');
-      }
+  @font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 300;
+    src:
+      url('/fonts/files/open-sans-v18-latin-light.woff2') format('woff2'),
+      url('/fonts/files/open-sans-v18-latin-light.woff') format('woff');
+  }
 
-      @font-face {
-        font-family: 'Open Sans';
-        font-style: normal;
-        font-weight: 700;
-        src: url('/fonts/files/open-sans-v18-latin-700.woff2') format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-700.woff') format('woff');
-      }
+  @font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 300;
+    src:
+      url('/fonts/files/open-sans-v18-latin-light-italic.woff2') format('woff2'),
+      url('/fonts/files/open-sans-v18-latin-light-italic.woff') format('woff');
+  }
 
-      @font-face {
-        font-family: 'Open Sans';
-        font-style: normal;
-        font-weight: 300;
-        src: url('/fonts/files/open-sans-v18-latin-light.woff2') format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-light.woff') format('woff');
-      }
-
-      @font-face {
-        font-family: 'Open Sans';
-        font-style: italic;
-        font-weight: 300;
-        src: url('/fonts/files/open-sans-v18-latin-light-italic.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-light-italic.woff')
-            format('woff');
-      }
-
-      @font-face {
-        font-family: 'Open Sans';
-        font-style: italic;
-        font-weight: 700;
-        src: url('/fonts/files/open-sans-v18-latin-700italic.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-700italic.woff') format('woff');
-      }
-      html {
+  @font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 700;
+    src:
+      url('/fonts/files/open-sans-v18-latin-700italic.woff2') format('woff2'),
+      url('/fonts/files/open-sans-v18-latin-700italic.woff') format('woff');
+  }
+  html {
         font-family: 'Open Sans' !important;
         --menuWidth: 220px;
         --mainBlue: #1a5a99;
@@ -101,40 +97,11 @@
         --mainYellow: #94610a;
         --mainPurple: #4a03d9;
       }
-
-      [data-theme='dark'] {
-        font-family: 'Open Sans' !important;
-        --menuWidth: 220px;
-        --mainBlue: #1a5a99;
-        --lightBlue: hsl(209, 54%, 82%);
-        --solidLightBlue: #1a5a99;
-        --mainGray: #a9a9a9;
-        --donutBody: #eea177;
-        --donutTopping: #6d4445;
-        --mainBorder: 2px solid white;
-        --mainBorderRadius: 5px;
-        --mainRed: #c1292e;
-        --lightRed: hsl(0, 54%, 82%);
-        --mainGreen: #459152;
-        --canvas: #121212;
-        --canvastext: white;
-        --lightGreen: #a6f19f;
-        --lightYellow: #f5ed85;
-        --whiteBlankLink: #a9abe5;
-        --mainYellow: #efab34;
-        --mainPurple: #4a03d9;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script>
-      /**
-       * this is a hack for react-mathqill
-       * error: global is not defined
-       */
-      var global = global || window;
-    </script>
+</style>
+</head>
+<body>
+    <div id="root">
+    </div>
     <script type="module" src="./index.jsx"></script>
-  </body>
+</body>
 </html>

@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('P Tag Tests', function () {
 
@@ -18,8 +20,8 @@ describe('P Tag Tests', function () {
     });
 
     cy.log('find paragraphs');
-    cy.get('p#\\/_p1').should('have.text', 'Hello, paragraph 1')
-    cy.get('p#\\/_p2').should('have.text', 'Bye, paragraph 2')
+    cy.get('p' + cesc('#\\/_p1')).should('have.text', 'Hello, paragraph 1')
+    cy.get('p' + cesc('#\\/_p2')).should('have.text', 'Bye, paragraph 2')
 
   })
 
@@ -32,10 +34,10 @@ describe('P Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('find mathjax rendered math in paragraph');
-    cy.get('p#\\/_p1').find('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('p' + cesc('#\\/_p1')).find(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x')
     })
   })
@@ -49,9 +51,9 @@ describe('P Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('p#\\/_p1').invoke('text').should('contain', 'Hello x')
+    cy.get('p' + cesc('#\\/_p1')).invoke('text').should('contain', 'Hello x')
 
   })
 

@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Shuffle Tag Tests', function () {
 
@@ -24,7 +26,7 @@ describe('Shuffle Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/n2').should('have.text', '6');
+    cy.get(cesc('#\\/n2')).should('have.text', '6');
 
     let texts = {};
     let orders = {};
@@ -42,9 +44,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -53,8 +55,8 @@ describe('Shuffle Tag Tests', function () {
 
     cy.log('switch n to 8')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/n2').should('have.text', '8');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/n2')).should('have.text', '8');
 
     cy.window().then(async (win) => {
       let m = 1, n = 8;
@@ -68,9 +70,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -79,8 +81,8 @@ describe('Shuffle Tag Tests', function () {
 
     cy.log('get another list of length 6 by setting m to 3')
 
-    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/m2').should('have.text', '3');
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/m2')).should('have.text', '3');
 
     cy.window().then(async (win) => {
       let m = 3, n = 8;
@@ -94,9 +96,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -105,8 +107,8 @@ describe('Shuffle Tag Tests', function () {
 
     cy.log('get another list of length 8 by setting n to 10')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true });
-    cy.get('#\\/n2').should('have.text', '10');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}10{enter}", { force: true });
+    cy.get(cesc('#\\/n2')).should('have.text', '10');
 
     cy.window().then(async (win) => {
       let m = 3, n = 10;
@@ -120,9 +122,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -146,8 +148,8 @@ describe('Shuffle Tag Tests', function () {
     });
 
 
-    cy.get('#\\/m2').should('have.text', '1');
-    cy.get('#\\/n2').should('have.text', '6');
+    cy.get(cesc('#\\/m2')).should('have.text', '1');
+    cy.get(cesc('#\\/n2')).should('have.text', '6');
 
     cy.window().then(async (win) => {
       let m = 1, n = 6;
@@ -163,9 +165,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -175,8 +177,8 @@ describe('Shuffle Tag Tests', function () {
 
     cy.log('switch n to 8')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/n2').should('have.text', '8');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc('#\\/n2')).should('have.text', '8');
 
     cy.window().then(async (win) => {
       let m = 1, n = 8;
@@ -192,9 +194,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -203,8 +205,8 @@ describe('Shuffle Tag Tests', function () {
 
     cy.log('get another list of length 6 by setting m to 3')
 
-    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/m2').should('have.text', '3');
+    cy.get(cesc('#\\/m') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/m2')).should('have.text', '3');
 
     cy.window().then(async (win) => {
       let m = 3, n = 8;
@@ -218,9 +220,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -229,8 +231,8 @@ describe('Shuffle Tag Tests', function () {
 
     cy.log('get another list of length 8 by setting n to 10')
 
-    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true });
-    cy.get('#\\/n2').should('have.text', '10');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}10{enter}", { force: true });
+    cy.get(cesc('#\\/n2')).should('have.text', '10');
 
     cy.window().then(async (win) => {
       let m = 3, n = 10;
@@ -244,9 +246,9 @@ describe('Shuffle Tag Tests', function () {
 
       let pText = componentOrder.map(x => x + m - 1).join(", ");
 
-      cy.get("#\\/pList").should('have.text', pText)
-      cy.get("#\\/pList2").should('have.text', pText)
-      cy.get("#\\/pList3").should('have.text', pText)
+      cy.get(cesc("#\\/pList")).should('have.text', pText)
+      cy.get(cesc("#\\/pList2")).should('have.text', pText)
+      cy.get(cesc("#\\/pList3")).should('have.text', pText)
 
       texts[[m, n]] = pText;
 
@@ -272,7 +274,7 @@ describe('Shuffle Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let options = ["x", "y", "z", "a", "b", "c", "d", "q", "1", "2", "3", "4"]
 
@@ -302,7 +304,7 @@ describe('Shuffle Tag Tests', function () {
 
 
       for (let ind = 0; ind < 12; ind++) {
-        cy.get('#\\/pList .mjx-mrow').eq(ind).should('contain.text', orderedOptions[ind])
+        cy.get(cesc('#\\/pList') + ' .mjx-mrow').eq(ind).should('contain.text', orderedOptions[ind])
       }
 
     })
@@ -328,7 +330,7 @@ describe('Shuffle Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let options = ["10", "11", "12", "101", "102", "103", "104", "105", "-5", "1", "2", "3", "4", "-99"]
 
@@ -357,7 +359,7 @@ describe('Shuffle Tag Tests', function () {
 
       expect([indOf102, indOf103, indOf104, indOf105]).not.eqls([indOf101 + 1, indOf101 + 2, indOf101 + 3, indOf101 + 4])
 
-      cy.get('#\\/pList').should('have.text', orderedOptions.join(", "))
+      cy.get(cesc('#\\/pList')).should('have.text', orderedOptions.join(", "))
 
     })
 
@@ -382,7 +384,7 @@ describe('Shuffle Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let options = ["apple", "banana", "orange", "hello", "there", "now", "then", "too", "almost", "1", "2", "3", "4", "above"]
 
@@ -411,7 +413,7 @@ describe('Shuffle Tag Tests', function () {
 
       expect([indOfthere, indOfnow, indOfthen, indOftoo]).not.eqls([indOfhello + 1, indOfhello + 2, indOfhello + 3, indOfhello + 4])
 
-      cy.get('#\\/pList').should('have.text', orderedOptions.join(", "))
+      cy.get(cesc('#\\/pList')).should('have.text', orderedOptions.join(", "))
 
     })
 

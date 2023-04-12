@@ -57,6 +57,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.essentialVertex = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["essentialVertexX"],
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
@@ -119,6 +120,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.specifiedCenter = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["specifiedCenterX"],
       returnArraySizeDependencies: () => ({
         haveSpecifiedCenter: {
@@ -193,6 +195,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.specifiedWidth = {
       defaultValue: 1,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "width",
       returnDependencies() {
@@ -249,6 +252,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.specifiedHeight = {
       defaultValue: 1,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "height",
       returnDependencies() {
@@ -303,6 +307,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.center = {
       public: true,
+      isLocation: true,
       isArray: true,
       entryPrefixes: ["centerX"],
       shadowingInstructions: {
@@ -393,6 +398,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.width = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
@@ -446,6 +452,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.height = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
@@ -499,6 +506,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.vertices = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {

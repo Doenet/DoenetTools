@@ -1,3 +1,6 @@
+import { cesc } from '../../../../src/_utils/url';
+
+
 describe('Boolean Operator on Math Tag Tests', function () {
 
   beforeEach(() => {
@@ -33,22 +36,22 @@ describe('Boolean Operator on Math Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/int1').should('have.text', "false");
-    cy.get('#\\/int2').should('have.text', "false");
-    cy.get('#\\/int3').should('have.text', "false");
-    cy.get('#\\/int4').should('have.text', "false");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/int7').should('have.text', "true");
-    cy.get('#\\/int8').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "false");
-    cy.get('#\\/num2').should('have.text', "false");
-    cy.get('#\\/num3').should('have.text', "false");
-    cy.get('#\\/num4').should('have.text', "false");
-    cy.get('#\\/num5').should('have.text', "false");
-    cy.get('#\\/num6').should('have.text', "false");
-    cy.get('#\\/num7').should('have.text', "true");
-    cy.get('#\\/num8').should('have.text', "true");
+    cy.get(cesc('#\\/int1')).should('have.text', "false");
+    cy.get(cesc('#\\/int2')).should('have.text', "false");
+    cy.get(cesc('#\\/int3')).should('have.text', "false");
+    cy.get(cesc('#\\/int4')).should('have.text', "false");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/int7')).should('have.text', "true");
+    cy.get(cesc('#\\/int8')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "false");
+    cy.get(cesc('#\\/num2')).should('have.text', "false");
+    cy.get(cesc('#\\/num3')).should('have.text', "false");
+    cy.get(cesc('#\\/num4')).should('have.text', "false");
+    cy.get(cesc('#\\/num5')).should('have.text', "false");
+    cy.get(cesc('#\\/num6')).should('have.text', "false");
+    cy.get(cesc('#\\/num7')).should('have.text', "true");
+    cy.get(cesc('#\\/num8')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(false);
@@ -70,19 +73,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('36');
-    cy.get('#\\/n textarea').type("36{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "true");
-    cy.get('#\\/int2').should('have.text', "true");
-    cy.get('#\\/int3').should('have.text', "true");
-    cy.get('#\\/int4').should('have.text', "true");
-    cy.get('#\\/int5').should('have.text', "true");
-    cy.get('#\\/int6').should('have.text', "true");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("36{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "true");
+    cy.get(cesc('#\\/int2')).should('have.text', "true");
+    cy.get(cesc('#\\/int3')).should('have.text', "true");
+    cy.get(cesc('#\\/int4')).should('have.text', "true");
+    cy.get(cesc('#\\/int5')).should('have.text', "true");
+    cy.get(cesc('#\\/int6')).should('have.text', "true");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(true);
@@ -100,19 +103,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('37');
-    cy.get('#\\/n textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "true");
-    cy.get('#\\/int2').should('have.text', "true");
-    cy.get('#\\/int3').should('have.text', "true");
-    cy.get('#\\/int4').should('have.text', "true");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "true");
+    cy.get(cesc('#\\/int2')).should('have.text', "true");
+    cy.get(cesc('#\\/int3')).should('have.text', "true");
+    cy.get(cesc('#\\/int4')).should('have.text', "true");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(true);
@@ -130,19 +133,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('37.1');
-    cy.get('#\\/n textarea').type("{end}.1{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "false");
-    cy.get('#\\/int2').should('have.text', "false");
-    cy.get('#\\/int3').should('have.text', "false");
-    cy.get('#\\/int4').should('have.text', "false");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}.1{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "false");
+    cy.get(cesc('#\\/int2')).should('have.text', "false");
+    cy.get(cesc('#\\/int3')).should('have.text', "false");
+    cy.get(cesc('#\\/int4')).should('have.text', "false");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(false);
@@ -160,19 +163,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('42/3');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}42/3{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "true");
-    cy.get('#\\/int2').should('have.text', "true");
-    cy.get('#\\/int3').should('have.text', "true");
-    cy.get('#\\/int4').should('have.text', "true");
-    cy.get('#\\/int5').should('have.text', "true");
-    cy.get('#\\/int6').should('have.text', "true");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}42/3{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "true");
+    cy.get(cesc('#\\/int2')).should('have.text', "true");
+    cy.get(cesc('#\\/int3')).should('have.text', "true");
+    cy.get(cesc('#\\/int4')).should('have.text', "true");
+    cy.get(cesc('#\\/int5')).should('have.text', "true");
+    cy.get(cesc('#\\/int6')).should('have.text', "true");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(true);
@@ -190,19 +193,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('-39.6/3.3');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-39.6/3.3{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "true");
-    cy.get('#\\/int2').should('have.text', "true");
-    cy.get('#\\/int3').should('have.text', "true");
-    cy.get('#\\/int4').should('have.text', "true");
-    cy.get('#\\/int5').should('have.text', "true");
-    cy.get('#\\/int6').should('have.text', "true");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-39.6/3.3{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "true");
+    cy.get(cesc('#\\/int2')).should('have.text', "true");
+    cy.get(cesc('#\\/int3')).should('have.text', "true");
+    cy.get(cesc('#\\/int4')).should('have.text', "true");
+    cy.get(cesc('#\\/int5')).should('have.text', "true");
+    cy.get(cesc('#\\/int6')).should('have.text', "true");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(true);
@@ -220,19 +223,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('x');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "false");
-    cy.get('#\\/int2').should('have.text', "false");
-    cy.get('#\\/int3').should('have.text', "false");
-    cy.get('#\\/int4').should('have.text', "false");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "false");
-    cy.get('#\\/num2').should('have.text', "false");
-    cy.get('#\\/num3').should('have.text', "false");
-    cy.get('#\\/num4').should('have.text', "false");
-    cy.get('#\\/num5').should('have.text', "false");
-    cy.get('#\\/num6').should('have.text', "false");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "false");
+    cy.get(cesc('#\\/int2')).should('have.text', "false");
+    cy.get(cesc('#\\/int3')).should('have.text', "false");
+    cy.get(cesc('#\\/int4')).should('have.text', "false");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "false");
+    cy.get(cesc('#\\/num2')).should('have.text', "false");
+    cy.get(cesc('#\\/num3')).should('have.text', "false");
+    cy.get(cesc('#\\/num4')).should('have.text', "false");
+    cy.get(cesc('#\\/num5')).should('have.text', "false");
+    cy.get(cesc('#\\/num6')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(false);
@@ -250,19 +253,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('sqrt(4)');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}sqrt4{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "true");
-    cy.get('#\\/int2').should('have.text', "true");
-    cy.get('#\\/int3').should('have.text', "true");
-    cy.get('#\\/int4').should('have.text', "true");
-    cy.get('#\\/int5').should('have.text', "true");
-    cy.get('#\\/int6').should('have.text', "true");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}{backspace}sqrt4{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "true");
+    cy.get(cesc('#\\/int2')).should('have.text', "true");
+    cy.get(cesc('#\\/int3')).should('have.text', "true");
+    cy.get(cesc('#\\/int4')).should('have.text', "true");
+    cy.get(cesc('#\\/int5')).should('have.text', "true");
+    cy.get(cesc('#\\/int6')).should('have.text', "true");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(true);
@@ -280,19 +283,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('2sin(pi/4)^2');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}2sin(pi/4){rightarrow}{rightarrow}^2{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "true");
-    cy.get('#\\/int2').should('have.text', "true");
-    cy.get('#\\/int3').should('have.text', "true");
-    cy.get('#\\/int4').should('have.text', "true");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}2sin(pi/4){rightarrow}{rightarrow}^2{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "true");
+    cy.get(cesc('#\\/int2')).should('have.text', "true");
+    cy.get(cesc('#\\/int3')).should('have.text', "true");
+    cy.get(cesc('#\\/int4')).should('have.text', "true");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(true);
@@ -310,19 +313,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('1E-300');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}1E-300{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "false");
-    cy.get('#\\/int2').should('have.text', "false");
-    cy.get('#\\/int3').should('have.text', "false");
-    cy.get('#\\/int4').should('have.text', "false");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}1E-300{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "false");
+    cy.get(cesc('#\\/int2')).should('have.text', "false");
+    cy.get(cesc('#\\/int3')).should('have.text', "false");
+    cy.get(cesc('#\\/int4')).should('have.text', "false");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(false);
@@ -340,19 +343,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('-0');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-0{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "true");
-    cy.get('#\\/int2').should('have.text', "true");
-    cy.get('#\\/int3').should('have.text', "true");
-    cy.get('#\\/int4').should('have.text', "true");
-    cy.get('#\\/int5').should('have.text', "true");
-    cy.get('#\\/int6').should('have.text', "true");
-    cy.get('#\\/num1').should('have.text', "true");
-    cy.get('#\\/num2').should('have.text', "true");
-    cy.get('#\\/num3').should('have.text', "true");
-    cy.get('#\\/num4').should('have.text', "true");
-    cy.get('#\\/num5').should('have.text', "true");
-    cy.get('#\\/num6').should('have.text', "true");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-0{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "true");
+    cy.get(cesc('#\\/int2')).should('have.text', "true");
+    cy.get(cesc('#\\/int3')).should('have.text', "true");
+    cy.get(cesc('#\\/int4')).should('have.text', "true");
+    cy.get(cesc('#\\/int5')).should('have.text', "true");
+    cy.get(cesc('#\\/int6')).should('have.text', "true");
+    cy.get(cesc('#\\/num1')).should('have.text', "true");
+    cy.get(cesc('#\\/num2')).should('have.text', "true");
+    cy.get(cesc('#\\/num3')).should('have.text', "true");
+    cy.get(cesc('#\\/num4')).should('have.text', "true");
+    cy.get(cesc('#\\/num5')).should('have.text', "true");
+    cy.get(cesc('#\\/num6')).should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(true);
@@ -371,19 +374,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
 
     cy.log('0/0');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}0/0{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "false");
-    cy.get('#\\/int2').should('have.text', "false");
-    cy.get('#\\/int3').should('have.text', "false");
-    cy.get('#\\/int4').should('have.text', "false");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "false");
-    cy.get('#\\/num2').should('have.text', "false");
-    cy.get('#\\/num3').should('have.text', "false");
-    cy.get('#\\/num4').should('have.text', "false");
-    cy.get('#\\/num5').should('have.text', "false");
-    cy.get('#\\/num6').should('have.text', "false");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}0/0{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "false");
+    cy.get(cesc('#\\/int2')).should('have.text', "false");
+    cy.get(cesc('#\\/int3')).should('have.text', "false");
+    cy.get(cesc('#\\/int4')).should('have.text', "false");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "false");
+    cy.get(cesc('#\\/num2')).should('have.text', "false");
+    cy.get(cesc('#\\/num3')).should('have.text', "false");
+    cy.get(cesc('#\\/num4')).should('have.text', "false");
+    cy.get(cesc('#\\/num5')).should('have.text', "false");
+    cy.get(cesc('#\\/num6')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(false);
@@ -402,19 +405,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
 
     cy.log('10/0');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}10/0{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "false");
-    cy.get('#\\/int2').should('have.text', "false");
-    cy.get('#\\/int3').should('have.text', "false");
-    cy.get('#\\/int4').should('have.text', "false");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "false");
-    cy.get('#\\/num2').should('have.text', "false");
-    cy.get('#\\/num3').should('have.text', "false");
-    cy.get('#\\/num4').should('have.text', "false");
-    cy.get('#\\/num5').should('have.text', "false");
-    cy.get('#\\/num6').should('have.text', "false");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}10/0{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "false");
+    cy.get(cesc('#\\/int2')).should('have.text', "false");
+    cy.get(cesc('#\\/int3')).should('have.text', "false");
+    cy.get(cesc('#\\/int4')).should('have.text', "false");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "false");
+    cy.get(cesc('#\\/num2')).should('have.text', "false");
+    cy.get(cesc('#\\/num3')).should('have.text', "false");
+    cy.get(cesc('#\\/num4')).should('have.text', "false");
+    cy.get(cesc('#\\/num5')).should('have.text', "false");
+    cy.get(cesc('#\\/num6')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(false);
@@ -433,19 +436,19 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
 
     cy.log('10/-0');
-    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}10/-0{enter}", { force: true });
-    cy.get('#\\/int1').should('have.text', "false");
-    cy.get('#\\/int2').should('have.text', "false");
-    cy.get('#\\/int3').should('have.text', "false");
-    cy.get('#\\/int4').should('have.text', "false");
-    cy.get('#\\/int5').should('have.text', "false");
-    cy.get('#\\/int6').should('have.text', "false");
-    cy.get('#\\/num1').should('have.text', "false");
-    cy.get('#\\/num2').should('have.text', "false");
-    cy.get('#\\/num3').should('have.text', "false");
-    cy.get('#\\/num4').should('have.text', "false");
-    cy.get('#\\/num5').should('have.text', "false");
-    cy.get('#\\/num6').should('have.text', "false");
+    cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}10/-0{enter}", { force: true });
+    cy.get(cesc('#\\/int1')).should('have.text', "false");
+    cy.get(cesc('#\\/int2')).should('have.text', "false");
+    cy.get(cesc('#\\/int3')).should('have.text', "false");
+    cy.get(cesc('#\\/int4')).should('have.text', "false");
+    cy.get(cesc('#\\/int5')).should('have.text', "false");
+    cy.get(cesc('#\\/int6')).should('have.text', "false");
+    cy.get(cesc('#\\/num1')).should('have.text', "false");
+    cy.get(cesc('#\\/num2')).should('have.text', "false");
+    cy.get(cesc('#\\/num3')).should('have.text', "false");
+    cy.get(cesc('#\\/num4')).should('have.text', "false");
+    cy.get(cesc('#\\/num5')).should('have.text', "false");
+    cy.get(cesc('#\\/num6')).should('have.text', "false");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/int1'].stateValues.value).eq(false);

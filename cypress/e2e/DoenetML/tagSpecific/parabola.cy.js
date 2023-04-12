@@ -1,13 +1,5 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 function nInDOM(n) {
   if (n < 0) {
@@ -53,11 +45,11 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let equationAnchor = cesc("#" + stateVariables["/e2"].replacements[0].componentName);
+      let equationAnchor = cesc2("#" + stateVariables["/e2"].replacements[0].componentName);
       let parabola3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[0].componentName;
       let vertex3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[1].componentName;
 
@@ -108,7 +100,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 0, c = 0;
@@ -156,7 +148,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc('#\\/b') + ' textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 0;
@@ -205,7 +197,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
+      cy.get(cesc('#\\/c') + ' textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -253,7 +245,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
+      cy.get(cesc('#\\/a2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -302,7 +294,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
+      cy.get(cesc('#\\/b2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -350,7 +342,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
+      cy.get(cesc('#\\/c2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -586,11 +578,11 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let equationAnchor = cesc("#" + stateVariables["/e2"].replacements[0].componentName);
+      let equationAnchor = cesc2("#" + stateVariables["/e2"].replacements[0].componentName);
       let parabola3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[0].componentName;
       let vertex3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[1].componentName;
 
@@ -642,7 +634,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 0, c = 0;
@@ -693,7 +685,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc('#\\/b') + ' textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 0;
@@ -741,7 +733,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
+      cy.get(cesc('#\\/c') + ' textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -790,7 +782,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
+      cy.get(cesc('#\\/a2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -839,7 +831,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
+      cy.get(cesc('#\\/b2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -888,7 +880,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
+      cy.get(cesc('#\\/c2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -1122,11 +1114,11 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let equationAnchor = cesc("#" + stateVariables["/e2"].replacements[0].componentName);
+      let equationAnchor = cesc2("#" + stateVariables["/e2"].replacements[0].componentName);
       let parabola3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[0].componentName;
       let vertex3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[1].componentName;
 
@@ -1175,7 +1167,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = -2, c = 3;
@@ -1223,7 +1215,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc('#\\/b') + ' textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 3;
@@ -1270,7 +1262,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
+      cy.get(cesc('#\\/c') + ' textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -1317,7 +1309,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
+      cy.get(cesc('#\\/a2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -1364,7 +1356,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
+      cy.get(cesc('#\\/b2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -1411,7 +1403,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
+      cy.get(cesc('#\\/c2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -1653,11 +1645,11 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let equationAnchor = cesc("#" + stateVariables["/e2"].replacements[0].componentName);
+      let equationAnchor = cesc2("#" + stateVariables["/e2"].replacements[0].componentName);
       let parabola3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[0].componentName;
       let vertex3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[1].componentName;
 
@@ -1716,7 +1708,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -1779,7 +1771,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc('#\\/b') + ' textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -1841,7 +1833,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
+      cy.get(cesc('#\\/c') + ' textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -1895,7 +1887,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
+      cy.get(cesc('#\\/a2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -1949,7 +1941,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
+      cy.get(cesc('#\\/b2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -2003,7 +1995,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
+      cy.get(cesc('#\\/c2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -2452,11 +2444,11 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let equationAnchor = cesc("#" + stateVariables["/e2"].replacements[0].componentName);
+      let equationAnchor = cesc2("#" + stateVariables["/e2"].replacements[0].componentName);
       let parabola3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[0].componentName;
       let vertex3Name = stateVariables[stateVariables["/g3"].replacements[0].componentName].activeChildren[1].componentName;
 
@@ -2524,7 +2516,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -2604,7 +2596,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc('#\\/b') + ' textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -2684,7 +2676,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
+      cy.get(cesc('#\\/c') + ' textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -2741,7 +2733,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
+      cy.get(cesc('#\\/a2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -2798,7 +2790,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
+      cy.get(cesc('#\\/b2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -2855,7 +2847,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
+      cy.get(cesc('#\\/c2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -3560,7 +3552,7 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3602,7 +3594,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
+      cy.get(cesc('#\\/a') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
 
       cy.window().then(async (win) => {
@@ -3640,7 +3632,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc('#\\/b2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -3724,7 +3716,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Add a second point");
-      cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
+      cy.get(cesc('#\\/n') + ' textarea').type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
 
 
       cy.window().then(async (win) => {
@@ -3845,7 +3837,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc('#\\/b') + ' textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3924,7 +3916,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
+      cy.get(cesc('#\\/c') + ' textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3980,7 +3972,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
+      cy.get(cesc('#\\/a2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4036,7 +4028,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
+      cy.get(cesc('#\\/b2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4092,7 +4084,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
+      cy.get(cesc('#\\/c2') + ' textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4780,7 +4772,7 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let f_p = x => (x - 1) ** 2 + 2;
 
@@ -4892,7 +4884,7 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let f_p = x => -((x - 1) ** 2 + 2);
 
@@ -5006,7 +4998,7 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let f_p = x => 0.5 * x + 1.5;
 
@@ -5099,7 +5091,7 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let f_p = x => -100 * ((x - 1) ** 2 + 2);
 
@@ -5243,7 +5235,7 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5306,41 +5298,41 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
     let t3x = -3, t3y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -5364,46 +5356,46 @@ describe('Parabola Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
     let t3x = -3, t3y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
 
   });

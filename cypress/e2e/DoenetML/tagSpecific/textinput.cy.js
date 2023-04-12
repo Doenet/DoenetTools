@@ -1,11 +1,7 @@
-import cssesc from 'cssesc';
+import { cesc } from '../../../../src/_utils/url';
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
+function cesc2(s) {
+  return cesc(cesc(s));
 }
 
 describe('TextInput Tag Tests', function () {
@@ -39,19 +35,19 @@ describe('TextInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'hello');
-    cy.get('#\\/ti1a_input').should('have.value', 'hello');
-    cy.get('#\\/ti2_input').should('have.value', '');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'hello');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'hello');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', '');
 
-    cy.get('#\\/v1').should('have.text', 'hello');
-    cy.get('#\\/iv1').should('have.text', 'hello');
-    cy.get('#\\/v1a').should('have.text', 'hello');
-    cy.get('#\\/iv1a').should('have.text', 'hello');
-    cy.get('#\\/v2').should('have.text', '');
-    cy.get('#\\/iv2').should('have.text', '');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'hello');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'hello');
+    cy.get(cesc('#\\/v2')).should('have.text', '');
+    cy.get(cesc('#\\/iv2')).should('have.text', '');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -68,19 +64,19 @@ describe('TextInput Tag Tests', function () {
     // type 2 in first input
 
     cy.log("Typing 2 in first textinput");
-    cy.get('#\\/ti1_input').type(`2`);
+    cy.get(cesc('#\\/ti1_input')).type(`2`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'hello2');
-    cy.get('#\\/ti1a_input').should('have.value', 'hello2');
-    cy.get('#\\/ti2_input').should('have.value', '');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'hello2');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'hello2');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', '');
 
-    cy.get('#\\/v1').should('have.text', 'hello');
-    cy.get('#\\/iv1').should('have.text', 'hello2');
-    cy.get('#\\/v1a').should('have.text', 'hello');
-    cy.get('#\\/iv1a').should('have.text', 'hello2');
-    cy.get('#\\/v2').should('have.text', '');
-    cy.get('#\\/iv2').should('have.text', '');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/v2')).should('have.text', '');
+    cy.get(cesc('#\\/iv2')).should('have.text', '');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -97,19 +93,19 @@ describe('TextInput Tag Tests', function () {
     // press enter in first input
 
     cy.log("Pressing Enter in first textinput");
-    cy.get('#\\/ti1_input').type(`{enter}`);
+    cy.get(cesc('#\\/ti1_input')).type(`{enter}`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'hello2');
-    cy.get('#\\/ti1a_input').should('have.value', 'hello2');
-    cy.get('#\\/ti2_input').should('have.value', '');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'hello2');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'hello2');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', '');
 
-    cy.get('#\\/v1').should('have.text', 'hello2');
-    cy.get('#\\/iv1').should('have.text', 'hello2');
-    cy.get('#\\/v1a').should('have.text', 'hello2');
-    cy.get('#\\/iv1a').should('have.text', 'hello2');
-    cy.get('#\\/v2').should('have.text', '');
-    cy.get('#\\/iv2').should('have.text', '');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/v2')).should('have.text', '');
+    cy.get(cesc('#\\/iv2')).should('have.text', '');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -126,19 +122,19 @@ describe('TextInput Tag Tests', function () {
     // erase "2" and type " you" in second input
 
     cy.log(`Erasing "2" and typing " you" in second textinput`);
-    cy.get('#\\/ti1a_input').type(`{backspace} you`);
+    cy.get(cesc('#\\/ti1a_input')).type(`{backspace} you`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'hello you');
-    cy.get('#\\/ti1a_input').should('have.value', 'hello you');
-    cy.get('#\\/ti2_input').should('have.value', '');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', '');
 
-    cy.get('#\\/v1').should('have.text', 'hello2');
-    cy.get('#\\/iv1').should('have.text', 'hello you');
-    cy.get('#\\/v1a').should('have.text', 'hello2');
-    cy.get('#\\/iv1a').should('have.text', 'hello you');
-    cy.get('#\\/v2').should('have.text', '');
-    cy.get('#\\/iv2').should('have.text', '');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello2');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v2')).should('have.text', '');
+    cy.get(cesc('#\\/iv2')).should('have.text', '');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -154,19 +150,19 @@ describe('TextInput Tag Tests', function () {
 
     // change focus to textinput 1
     cy.log("Changing focus to first textinput");
-    cy.get('#\\/ti1_input').focus();
+    cy.get(cesc('#\\/ti1_input')).focus();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'hello you');
-    cy.get('#\\/ti1a_input').should('have.value', 'hello you');
-    cy.get('#\\/ti2_input').should('have.value', '');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', '');
 
-    cy.get('#\\/v1').should('have.text', 'hello you');
-    cy.get('#\\/iv1').should('have.text', 'hello you');
-    cy.get('#\\/v1a').should('have.text', 'hello you');
-    cy.get('#\\/iv1a').should('have.text', 'hello you');
-    cy.get('#\\/v2').should('have.text', '');
-    cy.get('#\\/iv2').should('have.text', '');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v2')).should('have.text', '');
+    cy.get(cesc('#\\/iv2')).should('have.text', '');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -183,19 +179,19 @@ describe('TextInput Tag Tests', function () {
     // bye in third input
 
     cy.log(`Typing "bye" in third textinput`);
-    cy.get('#\\/ti2_input').type(`bye`);
+    cy.get(cesc('#\\/ti2_input')).type(`bye`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'hello you');
-    cy.get('#\\/ti1a_input').should('have.value', 'hello you');
-    cy.get('#\\/ti2_input').should('have.value', 'bye');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'bye');
 
-    cy.get('#\\/v1').should('have.text', 'hello you');
-    cy.get('#\\/iv1').should('have.text', 'hello you');
-    cy.get('#\\/v1a').should('have.text', 'hello you');
-    cy.get('#\\/iv1a').should('have.text', 'hello you');
-    cy.get('#\\/v2').should('have.text', '');
-    cy.get('#\\/iv2').should('have.text', 'bye');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v2')).should('have.text', '');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'bye');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -213,19 +209,19 @@ describe('TextInput Tag Tests', function () {
     // press enter in textinput 3
 
     cy.log("Pressing enter in third textinput");
-    cy.get('#\\/ti2_input').type(`{enter}`);
+    cy.get(cesc('#\\/ti2_input')).type(`{enter}`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'hello you');
-    cy.get('#\\/ti1a_input').should('have.value', 'hello you');
-    cy.get('#\\/ti2_input').should('have.value', 'bye');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'hello you');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'bye');
 
-    cy.get('#\\/v1').should('have.text', 'hello you');
-    cy.get('#\\/iv1').should('have.text', 'hello you');
-    cy.get('#\\/v1a').should('have.text', 'hello you');
-    cy.get('#\\/iv1a').should('have.text', 'hello you');
-    cy.get('#\\/v2').should('have.text', 'bye');
-    cy.get('#\\/iv2').should('have.text', 'bye');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/v2')).should('have.text', 'bye');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'bye');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -242,19 +238,19 @@ describe('TextInput Tag Tests', function () {
     // type abc enter in textinput 2
 
     cy.log("Typing abc in second textinput");
-    cy.get('#\\/ti1a_input').clear().type(`abc`);
+    cy.get(cesc('#\\/ti1a_input')).clear().type(`abc`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abc');
-    cy.get('#\\/ti1a_input').should('have.value', 'abc');
-    cy.get('#\\/ti2_input').should('have.value', 'bye');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'bye');
 
-    cy.get('#\\/v1').should('have.text', 'hello you');
-    cy.get('#\\/iv1').should('have.text', 'abc');
-    cy.get('#\\/v1a').should('have.text', 'hello you');
-    cy.get('#\\/iv1a').should('have.text', 'abc');
-    cy.get('#\\/v2').should('have.text', 'bye');
-    cy.get('#\\/iv2').should('have.text', 'bye');
+    cy.get(cesc('#\\/v1')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'hello you');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v2')).should('have.text', 'bye');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'bye');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -271,19 +267,19 @@ describe('TextInput Tag Tests', function () {
     // press enter in textinput 2
 
     cy.log("Pressing enter in second textinput");
-    cy.get('#\\/ti1a_input').type(`{enter}`);
+    cy.get(cesc('#\\/ti1a_input')).type(`{enter}`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abc');
-    cy.get('#\\/ti1a_input').should('have.value', 'abc');
-    cy.get('#\\/ti2_input').should('have.value', 'bye');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'bye');
 
-    cy.get('#\\/v1').should('have.text', 'abc');
-    cy.get('#\\/iv1').should('have.text', 'abc');
-    cy.get('#\\/v1a').should('have.text', 'abc');
-    cy.get('#\\/iv1a').should('have.text', 'abc');
-    cy.get('#\\/v2').should('have.text', 'bye');
-    cy.get('#\\/iv2').should('have.text', 'bye');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v2')).should('have.text', 'bye');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'bye');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -299,19 +295,19 @@ describe('TextInput Tag Tests', function () {
     // type abc in textinput 1
 
     cy.log("Typing abc in first textinput");
-    cy.get('#\\/ti1_input').clear().type(`abc`);
+    cy.get(cesc('#\\/ti1_input')).clear().type(`abc`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abc');
-    cy.get('#\\/ti1a_input').should('have.value', 'abc');
-    cy.get('#\\/ti2_input').should('have.value', 'bye');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'bye');
 
-    cy.get('#\\/v1').should('have.text', 'abc');
-    cy.get('#\\/iv1').should('have.text', 'abc');
-    cy.get('#\\/v1a').should('have.text', 'abc');
-    cy.get('#\\/iv1a').should('have.text', 'abc');
-    cy.get('#\\/v2').should('have.text', 'bye');
-    cy.get('#\\/iv2').should('have.text', 'bye');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v2')).should('have.text', 'bye');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'bye');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -328,19 +324,19 @@ describe('TextInput Tag Tests', function () {
     // type saludos in textinput 3
 
     cy.log("Typing saludos in third textinput");
-    cy.get('#\\/ti2_input').clear().type(`saludos`);
+    cy.get(cesc('#\\/ti2_input')).clear().type(`saludos`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abc');
-    cy.get('#\\/ti1a_input').should('have.value', 'abc');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abc');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abc');
-    cy.get('#\\/iv1').should('have.text', 'abc');
-    cy.get('#\\/v1a').should('have.text', 'abc');
-    cy.get('#\\/iv1a').should('have.text', 'abc');
-    cy.get('#\\/v2').should('have.text', 'bye');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/v2')).should('have.text', 'bye');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -357,19 +353,19 @@ describe('TextInput Tag Tests', function () {
     // type d in textinput 1
 
     cy.log("Typing d in first textinput");
-    cy.get('#\\/ti1_input').type(`d`);
+    cy.get(cesc('#\\/ti1_input')).type(`d`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abcd');
-    cy.get('#\\/ti1a_input').should('have.value', 'abcd');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abcd');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abcd');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abc');
-    cy.get('#\\/iv1').should('have.text', 'abcd');
-    cy.get('#\\/v1a').should('have.text', 'abc');
-    cy.get('#\\/iv1a').should('have.text', 'abcd');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abc');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -384,19 +380,19 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log("Typing enter in first textinput");
-    cy.get('#\\/ti1_input').type(`{enter}`);
+    cy.get(cesc('#\\/ti1_input')).type(`{enter}`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abcd');
-    cy.get('#\\/ti1a_input').should('have.value', 'abcd');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abcd');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abcd');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abcd');
-    cy.get('#\\/iv1').should('have.text', 'abcd');
-    cy.get('#\\/v1a').should('have.text', 'abcd');
-    cy.get('#\\/iv1a').should('have.text', 'abcd');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -411,19 +407,19 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log("Clearing second textinput");
-    cy.get('#\\/ti1a_input').clear();
+    cy.get(cesc('#\\/ti1a_input')).clear();
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', '');
-    cy.get('#\\/ti1a_input').should('have.value', '');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', '');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', '');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abcd');
-    cy.get('#\\/iv1').should('have.text', '');
-    cy.get('#\\/v1a').should('have.text', 'abcd');
-    cy.get('#\\/iv1a').should('have.text', '');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1')).should('have.text', '');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1a')).should('have.text', '');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -437,19 +433,19 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log("pressing escape to undo")
-    cy.get('#\\/ti1a_input').type(`{esc}`);
+    cy.get(cesc('#\\/ti1a_input')).type(`{esc}`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abcd');
-    cy.get('#\\/ti1a_input').should('have.value', 'abcd');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abcd');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abcd');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abcd');
-    cy.get('#\\/iv1').should('have.text', 'abcd');
-    cy.get('#\\/v1a').should('have.text', 'abcd');
-    cy.get('#\\/iv1a').should('have.text', 'abcd');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -463,19 +459,19 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log("Type e in second textinput");
-    cy.get('#\\/ti1a_input').type(`e`);
+    cy.get(cesc('#\\/ti1a_input')).type(`e`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abcde');
-    cy.get('#\\/ti1a_input').should('have.value', 'abcde');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abcde');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abcde');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abcd');
-    cy.get('#\\/iv1').should('have.text', 'abcde');
-    cy.get('#\\/v1a').should('have.text', 'abcd');
-    cy.get('#\\/iv1a').should('have.text', 'abcde');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abcd');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -490,19 +486,19 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log("Escape in first input doesn't undo");
-    cy.get('#\\/ti1_input').type(`{Esc}`);
+    cy.get(cesc('#\\/ti1_input')).type(`{Esc}`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abcde');
-    cy.get('#\\/ti1a_input').should('have.value', 'abcde');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abcde');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abcde');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abcde');
-    cy.get('#\\/iv1').should('have.text', 'abcde');
-    cy.get('#\\/v1a').should('have.text', 'abcde');
-    cy.get('#\\/iv1a').should('have.text', 'abcde');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -517,20 +513,20 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log("Delete characters and replace in first input");
-    cy.get('#\\/ti1_input').type(`{backspace}{backspace}f`);
+    cy.get(cesc('#\\/ti1_input')).type(`{backspace}{backspace}f`);
 
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abcf');
-    cy.get('#\\/ti1a_input').should('have.value', 'abcf');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abcf');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abcf');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abcde');
-    cy.get('#\\/iv1').should('have.text', 'abcf');
-    cy.get('#\\/v1a').should('have.text', 'abcde');
-    cy.get('#\\/iv1a').should('have.text', 'abcf');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abcf');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abcf');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -545,19 +541,19 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log("Undo with escape");
-    cy.get('#\\/ti1_input').type(`{Esc}`);
+    cy.get(cesc('#\\/ti1_input')).type(`{Esc}`);
 
     cy.log('Test values displayed in browser')
-    cy.get('#\\/ti1_input').should('have.value', 'abcde');
-    cy.get('#\\/ti1a_input').should('have.value', 'abcde');
-    cy.get('#\\/ti2_input').should('have.value', 'saludos');
+    cy.get(cesc('#\\/ti1_input')).should('have.value', 'abcde');
+    cy.get(cesc('#\\/ti1a_input')).should('have.value', 'abcde');
+    cy.get(cesc('#\\/ti2_input')).should('have.value', 'saludos');
 
-    cy.get('#\\/v1').should('have.text', 'abcde');
-    cy.get('#\\/iv1').should('have.text', 'abcde');
-    cy.get('#\\/v1a').should('have.text', 'abcde');
-    cy.get('#\\/iv1a').should('have.text', 'abcde');
-    cy.get('#\\/v2').should('have.text', 'saludos');
-    cy.get('#\\/iv2').should('have.text', 'saludos');
+    cy.get(cesc('#\\/v1')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/iv1')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/v1a')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/iv1a')).should('have.text', 'abcde');
+    cy.get(cesc('#\\/v2')).should('have.text', 'saludos');
+    cy.get(cesc('#\\/iv2')).should('have.text', 'saludos');
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -583,10 +579,10 @@ describe('TextInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'hello there');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'hello there');
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'hello there');
-    cy.get('#\\/textinput2_input').should('have.value', 'hello there');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'hello there');
+    cy.get(cesc('#\\/textinput2_input')).should('have.value', 'hello there');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -598,12 +594,12 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('enter new values')
-    cy.get('#\\/_textinput1_input').clear().type(`bye now{enter}`);
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`bye now{enter}`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-    cy.get('#\\/textinput2_input').should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/textinput2_input')).should('have.value', 'bye now');
 
-    cy.get('#\\/_text1').should('have.text', 'bye now');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'bye now');
 
 
     cy.window().then(async (win) => {
@@ -625,9 +621,9 @@ describe('TextInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'hello there');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'hello there');
 
-    cy.get('#\\/_text1').should('have.text', 'hello there');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'hello there');
 
 
     cy.log("values revert if not updatable")
@@ -640,11 +636,11 @@ describe('TextInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_textinput1_input').should('have.value', `can't update me`);
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', `can't update me`);
 
-    cy.get('#\\/_text1').should('have.text', `can't update me`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `can't update me`);
 
-    cy.get('#\\/iv').should('have.text', `can't update me`);
+    cy.get(cesc('#\\/iv')).should('have.text', `can't update me`);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -654,13 +650,13 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('enter new values')
-    cy.get('#\\/_textinput1_input').clear().type(`disappear`);
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`disappear`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', `disappear`);
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', `disappear`);
 
-    cy.get('#\\/_text1').should('have.text', `can't update me`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `can't update me`);
 
-    cy.get('#\\/iv').should('have.text', `disappear`);
+    cy.get(cesc('#\\/iv')).should('have.text', `disappear`);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -670,13 +666,13 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('values revert when press enter')
-    cy.get('#\\/_textinput1_input').type(`{enter}`);
+    cy.get(cesc('#\\/_textinput1_input')).type(`{enter}`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', `can't update me`);
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', `can't update me`);
 
-    cy.get('#\\/_text1').should('have.text', `can't update me`);
+    cy.get(cesc('#\\/_text1')).should('have.text', `can't update me`);
 
-    cy.get('#\\/iv').should('have.text', `can't update me`);
+    cy.get(cesc('#\\/iv')).should('have.text', `can't update me`);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -700,13 +696,13 @@ describe('TextInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'hello there');
-    cy.get('#\\/_textinput2_input').should('have.value', 'hello there');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'hello there');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'hello there');
 
-    cy.get('#\\/originalimmediate').should('have.text', 'hello there');
-    cy.get('#\\/originalvalue').should('have.text', 'hello there');
-    cy.get('#\\/secondimmediate').should('have.text', 'hello there');
-    cy.get('#\\/secondvalue').should('have.text', 'hello there');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'hello there');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -717,15 +713,15 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('type new values in first textinput')
-    cy.get('#\\/_textinput1_input').clear().type(`bye now`);
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`bye now`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-    cy.get('#\\/_textinput2_input').should('have.value', 'hello there');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'hello there');
 
-    cy.get('#\\/originalimmediate').should('have.text', 'bye now');
-    cy.get('#\\/originalvalue').should('have.text', 'hello there');
-    cy.get('#\\/secondimmediate').should('have.text', 'hello there');
-    cy.get('#\\/secondvalue').should('have.text', 'hello there');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'hello there');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -736,15 +732,15 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('press enter')
-    cy.get('#\\/_textinput1_input').type(`{enter}`);
+    cy.get(cesc('#\\/_textinput1_input')).type(`{enter}`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-    cy.get('#\\/_textinput2_input').should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'bye now');
 
-    cy.get('#\\/originalimmediate').should('have.text', 'bye now');
-    cy.get('#\\/originalvalue').should('have.text', 'bye now');
-    cy.get('#\\/secondimmediate').should('have.text', 'bye now');
-    cy.get('#\\/secondvalue').should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -756,15 +752,15 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log('type values input second textinput')
-    cy.get('#\\/_textinput2_input').clear().type(`Hello again`);
+    cy.get(cesc('#\\/_textinput2_input')).clear().type(`Hello again`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-    cy.get('#\\/_textinput2_input').should('have.value', 'Hello again');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'Hello again');
 
-    cy.get('#\\/originalimmediate').should('have.text', 'bye now');
-    cy.get('#\\/originalvalue').should('have.text', 'bye now');
-    cy.get('#\\/secondimmediate').should('have.text', 'Hello again');
-    cy.get('#\\/secondvalue').should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -777,15 +773,15 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log('leave second textinput')
-    cy.get('#\\/_textinput2_input').blur();
+    cy.get(cesc('#\\/_textinput2_input')).blur();
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'Hello again');
-    cy.get('#\\/_textinput2_input').should('have.value', 'Hello again');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'Hello again');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'Hello again');
 
-    cy.get('#\\/originalimmediate').should('have.text', 'Hello again');
-    cy.get('#\\/originalvalue').should('have.text', 'Hello again');
-    cy.get('#\\/secondimmediate').should('have.text', 'Hello again');
-    cy.get('#\\/secondvalue').should('have.text', 'Hello again');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'Hello again');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -812,12 +808,12 @@ describe('TextInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'hello there');
-    cy.get('#\\/_textinput2_input').should('have.value', 'hello there');
-    cy.get('#\\/originalimmediate').should('have.text', 'hello there');
-    cy.get('#\\/originalvalue').should('have.text', 'hello there');
-    cy.get('#\\/secondimmediate').should('have.text', 'hello there');
-    cy.get('#\\/secondvalue').should('have.text', 'hello there');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'hello there');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'hello there');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'hello there');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -828,14 +824,14 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('type new values in first textinput')
-    cy.get('#\\/_textinput1_input').clear().type(`bye now`);
+    cy.get(cesc('#\\/_textinput1_input')).clear().type(`bye now`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-    cy.get('#\\/_textinput2_input').should('have.value', 'bye now');
-    cy.get('#\\/originalimmediate').should('have.text', 'bye now');
-    cy.get('#\\/originalvalue').should('have.text', 'hello there');
-    cy.get('#\\/secondimmediate').should('have.text', 'bye now');
-    cy.get('#\\/secondvalue').should('have.text', 'bye now');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'hello there');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -846,14 +842,14 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('press enter')
-    cy.get('#\\/_textinput1_input').type(`{enter}`);
+    cy.get(cesc('#\\/_textinput1_input')).type(`{enter}`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-    cy.get('#\\/_textinput2_input').should('have.value', 'bye now');
-    cy.get('#\\/originalimmediate').should('have.text', 'bye now');
-    cy.get('#\\/originalvalue').should('have.text', 'bye now');
-    cy.get('#\\/secondimmediate').should('have.text', 'bye now');
-    cy.get('#\\/secondvalue').should('have.text', 'bye now');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -865,14 +861,14 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.log('type values in second textinput')
-    cy.get('#\\/_textinput2_input').clear().type(`Hello again`);
+    cy.get(cesc('#\\/_textinput2_input')).clear().type(`Hello again`);
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-    cy.get('#\\/_textinput2_input').should('have.value', 'Hello again');
-    cy.get('#\\/originalimmediate').should('have.text', 'bye now');
-    cy.get('#\\/originalvalue').should('have.text', 'bye now');
-    cy.get('#\\/secondimmediate').should('have.text', 'Hello again');
-    cy.get('#\\/secondvalue').should('have.text', 'bye now');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'bye now');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'Hello again');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'bye now');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -883,14 +879,14 @@ describe('TextInput Tag Tests', function () {
     });
 
     cy.log('leave second textinput, changes all values')
-    cy.get('#\\/_textinput2_input').blur();
+    cy.get(cesc('#\\/_textinput2_input')).blur();
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'Hello again');
-    cy.get('#\\/_textinput2_input').should('have.value', 'Hello again');
-    cy.get('#\\/originalimmediate').should('have.text', 'Hello again');
-    cy.get('#\\/originalvalue').should('have.text', 'Hello again');
-    cy.get('#\\/secondimmediate').should('have.text', 'Hello again');
-    cy.get('#\\/secondvalue').should('have.text', 'Hello again');
+    cy.get(cesc('#\\/_textinput1_input')).should('have.value', 'Hello again');
+    cy.get(cesc('#\\/_textinput2_input')).should('have.value', 'Hello again');
+    cy.get(cesc('#\\/originalimmediate')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/originalvalue')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/secondimmediate')).should('have.text', 'Hello again');
+    cy.get(cesc('#\\/secondvalue')).should('have.text', 'Hello again');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -916,33 +912,33 @@ describe('TextInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/h').should('have.text', 'hello')
+    cy.get(cesc('#\\/h')).should('have.text', 'hello')
 
-    cy.get('#\\/ti_input').type(" bye")
-    cy.get('#\\/iv').should('have.text', ' bye')
-    cy.get('#\\/h').should('have.text', 'hello')
+    cy.get(cesc('#\\/ti_input')).type(" bye")
+    cy.get(cesc('#\\/iv')).should('have.text', ' bye')
+    cy.get(cesc('#\\/h')).should('have.text', 'hello')
 
-    cy.get('#\\/ti_input').clear().type(" there")
-    cy.get('#\\/iv').should('have.text', ' there')
-    cy.get('#\\/h').should('have.text', 'hello')
+    cy.get(cesc('#\\/ti_input')).clear().type(" there")
+    cy.get(cesc('#\\/iv')).should('have.text', ' there')
+    cy.get(cesc('#\\/h')).should('have.text', 'hello')
 
-    cy.get('#\\/ti_input').blur();
-    cy.get('#\\/iv').should('have.text', ' there')
-    cy.get('#\\/h').should('have.text', 'hello there')
+    cy.get(cesc('#\\/ti_input')).blur();
+    cy.get(cesc('#\\/iv')).should('have.text', ' there')
+    cy.get(cesc('#\\/h')).should('have.text', 'hello there')
 
-    cy.get('#\\/ti_input').clear().type("?")
-    cy.get('#\\/iv').should('have.text', '?')
-    cy.get('#\\/h').should('have.text', 'hello there')
+    cy.get(cesc('#\\/ti_input')).clear().type("?")
+    cy.get(cesc('#\\/iv')).should('have.text', '?')
+    cy.get(cesc('#\\/h')).should('have.text', 'hello there')
 
-    cy.get('#\\/ti_input').clear().type("!")
-    cy.get('#\\/iv').should('have.text', '!')
-    cy.get('#\\/h').should('have.text', 'hello there')
+    cy.get(cesc('#\\/ti_input')).clear().type("!")
+    cy.get(cesc('#\\/iv')).should('have.text', '!')
+    cy.get(cesc('#\\/h')).should('have.text', 'hello there')
 
-    cy.get('#\\/ti_input').type("{enter}")
-    cy.get('#\\/iv').should('have.text', '!')
-    cy.get('#\\/h').should('have.text', 'hello there!')
+    cy.get(cesc('#\\/ti_input')).type("{enter}")
+    cy.get(cesc('#\\/iv')).should('have.text', '!')
+    cy.get(cesc('#\\/h')).should('have.text', 'hello there!')
 
   })
 
@@ -958,38 +954,38 @@ describe('TextInput Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/ti_input').type("hello")
-    cy.get('#\\/ti_input').should('have.value', 'hello')
-    cy.get('#\\/_p2').should('have.text', 'hello')
-    cy.get('#\\/_p1').should('have.text', '')
+    cy.get(cesc('#\\/ti_input')).type("hello")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'hello')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'hello')
+    cy.get(cesc('#\\/_p1')).should('have.text', '')
 
 
-    cy.get('#\\/ti_input').blur();
-    cy.get('#\\/ti_input').should('have.value', 'hello')
-    cy.get('#\\/_p2').should('have.text', 'hello')
-    cy.get('#\\/_p1').should('have.text', 'hello')
+    cy.get(cesc('#\\/ti_input')).blur();
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'hello')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'hello')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'hello')
 
-    cy.get('#\\/ti_input').type("{enter}bye{enter}")
-    cy.get('#\\/ti_input').should('have.value', 'hello\nbye\n')
-    cy.get('#\\/_p2').should('have.text', 'hello\nbye\n')
-    cy.get('#\\/_p1').should('have.text', 'hello\nbye')
+    cy.get(cesc('#\\/ti_input')).type("{enter}bye{enter}")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'hello\nbye\n')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'hello\nbye\n')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'hello\nbye')
 
-    cy.get('#\\/ti_input').blur();
-    cy.get('#\\/ti_input').should('have.value', 'hello\nbye\n')
-    cy.get('#\\/_p2').should('have.text', 'hello\nbye\n')
-    cy.get('#\\/_p1').should('have.text', 'hello\nbye\n')
+    cy.get(cesc('#\\/ti_input')).blur();
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'hello\nbye\n')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'hello\nbye\n')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'hello\nbye\n')
 
-    cy.get('#\\/ti_input').type("{moveToStart}new{enter}old{enter}")
-    cy.get('#\\/ti_input').should('have.value', 'new\nold\nhello\nbye\n')
-    cy.get('#\\/_p2').should('have.text', 'new\nold\nhello\nbye\n')
-    cy.get('#\\/_p1').should('have.text', 'new\noldhello\nbye\n')
+    cy.get(cesc('#\\/ti_input')).type("{moveToStart}new{enter}old{enter}")
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'new\nold\nhello\nbye\n')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'new\nold\nhello\nbye\n')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'new\noldhello\nbye\n')
 
-    cy.get('#\\/ti_input').blur();
-    cy.get('#\\/ti_input').should('have.value', 'new\nold\nhello\nbye\n')
-    cy.get('#\\/_p2').should('have.text', 'new\nold\nhello\nbye\n')
-    cy.get('#\\/_p1').should('have.text', 'new\nold\nhello\nbye\n')
+    cy.get(cesc('#\\/ti_input')).blur();
+    cy.get(cesc('#\\/ti_input')).should('have.value', 'new\nold\nhello\nbye\n')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'new\nold\nhello\nbye\n')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'new\nold\nhello\nbye\n')
 
 
   })
@@ -1015,10 +1011,10 @@ describe('TextInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/ti_input').type("hello", { force: true });
+    cy.get(cesc('#\\/ti_input')).type("hello", { force: true });
 
-    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
-    cy.get('#\\/pv').should('have.text', 'value: ')
+    cy.get(cesc('#\\/piv')).should('have.text', 'immediate value: hello')
+    cy.get(cesc('#\\/pv')).should('have.text', 'value: ')
 
     cy.wait(1500);  // wait for debounce
 
@@ -1033,9 +1029,330 @@ describe('TextInput Tag Tests', function () {
 
 
 
-    cy.get('#\\/pv').should('have.text', 'value: hello')
-    cy.get('#\\/piv').should('have.text', 'immediate value: hello')
+    cy.get(cesc('#\\/pv')).should('have.text', 'value: hello')
+    cy.get(cesc('#\\/piv')).should('have.text', 'immediate value: hello')
 
   });
+
+  it('text input in graph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph >
+      <textinput anchor="$anchorCoords1" name="textinput1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1" disabled="$disabled1" fixed="$fixed1" fixLocation="$fixLocation1"><label>input 1</label></textinput>
+      <textinput name="textinput2"><label>input 2</label></textinput>
+    </graph>
+
+    <p name="pAnchor1">Anchor 1 coordinates: $textinput1.anchor</p>
+    <p name="pAnchor2">Anchor 2 coordinates: $textinput2.anchor</p>
+    <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="(1,3)" /></p>
+    <p name="pChangeAnchor2">Change anchor 2 coordinates: <mathinput name="anchorCoords2" bindValueTo="$textinput2.anchor" /></p>
+    <p name="pPositionFromAnchor1">Position from anchor 1: $textinput1.positionFromAnchor</p>
+    <p name="pPositionFromAnchor2">Position from anchor 2: $textinput2.positionFromAnchor</p>
+    <p>Change position from anchor 1
+    <choiceinput inline preselectChoice="1" name="positionFromAnchor1">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p>Change position from anchor 2
+    <choiceinput inline name="positionFromAnchor2" bindValueTo="$textinput2.positionFromAnchor">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p name="pDraggable1">Draggable 1: $draggable1</p>
+    <p name="pDraggable2">Draggable 2: $draggable2</p>
+    <p>Change draggable 1 <booleanInput name="draggable1" prefill="true" /></p>
+    <p>Change draggable 2 <booleanInput name="draggable2" bindValueTo="$textinput2.draggable" /></p>
+    <p name="pDisabled1">Disabled 1: $disabled1</p>
+    <p name="pDisabled2">Disabled 2: $disabled2</p>
+    <p>Change disabled 1 <booleanInput name="disabled1" prefill="true" /></p>
+    <p>Change disabled 2 <booleanInput name="disabled2" bindValueTo="$textinput2.disabled" /></p>
+    <p name="pFixed1">Fixed 1: $fixed1</p>
+    <p name="pFixed2">Fixed 2: $fixed2</p>
+    <p>Change fixed 1 <booleanInput name="fixed1" prefill="false" /></p>
+    <p>Change fixed 2 <booleanInput name="fixed2" bindValueTo="$textinput2.fixed" /></p>
+    <p name="pFixLocation1">FixLocation 1: $fixLocation1</p>
+    <p name="pFixLocation2">FixLocation 2: $fixLocation2</p>
+    <p>Change fixLocation 1 <booleanInput name="fixLocation1" prefill="false" /></p>
+    <p>Change fixLocation 2 <booleanInput name="fixLocation2" bindValueTo="$textinput2.fixLocation" /></p>
+    <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
+
+    ` }, "*");
+    });
+
+    // TODO: how to click on the checkboxes and test if they are disabled?
+
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+
+
+    cy.log("move textinputs by dragging")
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput1",
+        args: { x: -2, y: 3 }
+      })
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput2",
+        args: { x: 4, y: -5 }
+      })
+    })
+
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+
+
+    cy.log("move textinputs by entering coordinates")
+
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+
+    cy.log('change position from anchor');
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+
+    cy.log('make not draggable')
+
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
+
+
+    cy.log('cannot move textinputs by dragging')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput1",
+        args: { x: -10, y: -9 }
+      })
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput2",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+    cy.log('make draggable again')
+
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput1",
+        args: { x: -10, y: -9 }
+      })
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput2",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(−8,−7)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−10,−9)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+
+    cy.log('fix location')
+
+    cy.get(cesc('#\\/fixLocation1')).click();
+    cy.get(cesc('#\\/fixLocation2')).click();
+    cy.get(cesc("#\\/pFixLocation1")).should('have.text', 'FixLocation 1: true')
+    cy.get(cesc("#\\/pFixLocation2")).should('have.text', 'FixLocation 2: true')
+
+
+    cy.log('can change coordinates entering coordinates only for input 1')
+
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(3,4){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(1,2){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(1,2)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('cannot move textinputs by dragging')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput1",
+        args: { x: 4, y: 6 }
+      })
+      win.callAction1({
+        actionName: "moveInput",
+        componentName: "/textinput2",
+        args: { x: 7, y: 8 }
+      })
+    })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'false');
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('can change position from anchor only for input 1');
+    cy.get(cesc('#\\/positionFromAnchor2')).select("bottom")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("top")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: top')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+    cy.log("can change disabled attribute")
+    cy.get(cesc('#\\/disabled1')).click();
+    cy.get(cesc('#\\/disabled2')).click();
+    cy.get(cesc("#\\/pDisabled1")).should('have.text', 'Disabled 1: false')
+    cy.get(cesc("#\\/pDisabled2")).should('have.text', 'Disabled 2: true')
+
+
+    cy.log('make completely fixed')
+    cy.get(cesc('#\\/fixed1')).click();
+    cy.get(cesc('#\\/fixed2')).click();
+    cy.get(cesc("#\\/pFixed1")).should('have.text', 'Fixed 1: true')
+    cy.get(cesc("#\\/pFixed2")).should('have.text', 'Fixed 2: true')
+
+
+    cy.log('can change coordinates entering coordinates only for input 1')
+
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(7,8){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(5,6){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(5,6)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+
+
+    cy.log('can change position from anchor only for input 1');
+    cy.get(cesc('#\\/positionFromAnchor2')).select("left")
+    cy.get(cesc('#\\/positionFromAnchor1')).select("right")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: right')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+
+    cy.log("can change disabled attribute only for input 1")
+    cy.get(cesc('#\\/disabled2')).click();
+    cy.get(cesc('#\\/disabled1')).click();
+    cy.get(cesc("#\\/pDisabled1")).should('have.text', 'Disabled 1: true')
+    cy.get(cesc("#\\/pDisabled2")).should('have.text', 'Disabled 2: true')
+
+
+  })
+
+  it('use textinput as basic math input', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <textinput name="ti" />
+
+    <p>Math from text input: <math name="m1">$ti</math></p>
+    <p>Number from text input: <number name="n1">$ti</number></p>
+    <p>Math via latex from text input: <math name="m2">$ti.value{isLatex}</math></p>
+    <p>Number via latex from text input: <number name="n2">$ti.value{isLatex}</number></p>
+
+    `}, "*");
+    });
+
+    cy.get(cesc2('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', 'NaN')
+
+    cy.get(cesc2('#/ti_input')).type("4/2{enter}")
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").should('contain.text', '42')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '42')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', '42')
+    cy.get(cesc2('#/n1')).should('have.text', '2')
+    cy.get(cesc2('#/n2')).should('have.text', '2')
+
+
+    cy.get(cesc2('#/ti_input')).clear().type("xy{enter}")
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").should('contain.text', 'xy')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', 'xy')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', 'xy')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', 'NaN')
+
+    cy.get(cesc2('#/ti_input')).clear().type("\\frac{{}a}{{}b}{enter}")
+
+    cy.get(cesc2('#/m1') + " .mjx-mrow").should('contain.text', '\uff3f')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', 'ab')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', 'NaN')
+
+    cy.get(cesc2('#/ti_input')).clear().type("\\frac{{}6}{{}2}{enter}")
+
+    cy.get(cesc2('#/m2') + " .mjx-mrow").should('contain.text', '62')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', '62')
+    cy.get(cesc2('#/n1')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n2')).should('have.text', '3')
+
+  })
 
 });

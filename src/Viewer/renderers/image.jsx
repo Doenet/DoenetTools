@@ -10,14 +10,17 @@ export default React.memo(function Image(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
   let [url, setUrl] = useState(null)
 
+  Image.ignoreActionsWithoutCore = () => true;
 
   let imageJXG = useRef(null);
   let anchorPointJXG = useRef(null);
 
   const board = useContext(BoardContext);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
 
   let calculatedX = useRef(null);
@@ -31,6 +34,12 @@ export default React.memo(function Image(props) {
 
   let rotationTransform = useRef(null);
   let lastRotate = useRef(SVs.rotate);
+
+  let fixed = useRef(false);
+  let fixLocation = useRef(false);
+
+  fixed.current = !SVs.draggable || SVs.fixed;
+  fixLocation.current = fixed.current || SVs.fixLocation;
 
   const urlOrSource = (SVs.cid ? url : SVs.source) || "";
 
@@ -63,17 +72,36 @@ export default React.memo(function Image(props) {
     }
   }, [])
 
+  useEffect(() => {
+    //On unmount
+    return () => {
+      // if line is defined
+      if (imageJXG.current !== null) {
+        deleteImageJXG();
+      }
+
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+    }
+  }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
+
 
   function createImageJXG() {
-
-    let fixed = !SVs.draggable || SVs.fixed;
 
     //things to be passed to JSXGraph as attributes
     let jsxImageAttributes = {
       visible: !SVs.hidden,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + IMAGE_LAYER_OFFSET,
-      highlight: !fixed,
+      highlight: !fixLocation.current,
     };
 
 
@@ -140,6 +168,8 @@ export default React.memo(function Image(props) {
 
     let newImageJXG = board.create('image', [urlOrSource, offset, [width, height]], jsxImageAttributes);
 
+    newImageJXG.isDraggable = !fixLocation.current;
+
     // tranformation code copied from jsxgraph documentation:
     // https://jsxgraph.uni-bayreuth.de/wiki/index.php?title=Images#The_JavaScript_code_5
     var tOff = board.create('transform', [
@@ -172,7 +202,23 @@ export default React.memo(function Image(props) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.imageFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    });
 
+    newImageJXG.on('hit', function (e) {
+      pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
+      dragged.current = false;
+      callAction({
+        action: actions.imageFocused,
+        args: { name }   // send name so get original name if adapted
+      });
     });
 
     newImageJXG.on('up', function (e) {
@@ -184,22 +230,41 @@ export default React.memo(function Image(props) {
             y: calculatedY.current,
           }
         });
+        dragged.current = false;
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
+        callAction({
+          action: actions.imageClicked,
+          args: { name }   // send name so get original name if adapted
+        });
       }
-      dragged.current = false;
+      pointerIsDown.current = false;
 
     });
 
+    newImageJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveImage,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        })
+        dragged.current = false;
+      }
+    })
+
     newImageJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        dragged.current = true;
+      }
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let xminAdjusted = xmin + 0.01 * (xmax - xmin) - currentOffset.current[0] - currentSize.current[0];
@@ -208,13 +273,33 @@ export default React.memo(function Image(props) {
       let ymaxAdjusted = ymax - 0.01 * (ymax - ymin) - currentOffset.current[1];
 
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
+        var o = board.origin.scrCoords;
+
+        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+          - o[1]) / board.unitX;
+
+        calculatedY.current = (o[2] -
+          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+          / board.unitY;
+      } else {
+
+        calculatedX.current = newAnchorPointJXG.X() + newImageJXG.relativeCoords.usrCoords[1] - currentOffset.current[0];
+        calculatedY.current = newAnchorPointJXG.Y() + newImageJXG.relativeCoords.usrCoords[2] - currentOffset.current[1];
+
+      }
+
+      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
       calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
 
       callAction({
@@ -230,14 +315,28 @@ export default React.memo(function Image(props) {
       newImageJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, currentOffset.current);
       newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
-      }
 
     });
 
+    newImageJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveImage,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            }
+          })
+          dragged.current = false;
+        }
+        callAction({
+          action: actions.imageClicked,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+    })
 
     imageJXG.current = newImageJXG;
     anchorPointJXG.current = newAnchorPointJXG;
@@ -247,6 +346,29 @@ export default React.memo(function Image(props) {
     // need fullUpdate to get initial rotation in case image was from a blob
     imageJXG.current.fullUpdate();
 
+  }
+
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
+
+
+  function deleteImageJXG() {
+    imageJXG.current.off('drag');
+    imageJXG.current.off('down');
+    imageJXG.current.off('hit');
+    imageJXG.current.off('up');
+    imageJXG.current.off('keyfocusout');
+    imageJXG.current.off('keydown');
+    board.removeObject(imageJXG.current);
+    imageJXG.current = null;
   }
 
   if (board) {
@@ -300,11 +422,10 @@ export default React.memo(function Image(props) {
         imageJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
 
-
-      imageJXG.current.visProp.highlight = !fixed;
-      imageJXG.current.visProp.fixed = fixed;
+      imageJXG.current.visProp.highlight = !fixLocation.current;
+      imageJXG.current.visProp.fixed = fixed.current;
+      imageJXG.current.isDraggable = !fixLocation.current;
 
       imageJXG.current.needsUpdate = true;
 

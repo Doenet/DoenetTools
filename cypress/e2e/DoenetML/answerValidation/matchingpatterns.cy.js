@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('matching patterns answer tests', function () {
 
@@ -56,7 +48,7 @@ describe('matching patterns answer tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     let desiredResults = {
       x: {
@@ -136,28 +128,28 @@ describe('matching patterns answer tests', function () {
       }
     }
 
-    cy.get("#\\/var2 .mjx-mrow").should('contain.text', "\uff3f")
+    cy.get(cesc("#\\/var2") + " .mjx-mrow").should('contain.text', "\uff3f")
 
     for (let varName in desiredResults) {
       cy.log(`setting variable to ${varName}`)
-      cy.get('#\\/var textarea').type(`{end}{backspace}${varName}{enter}`, { force: true })
-      cy.get("#\\/var2 .mjx-mrow").should('contain.text', varName)
+      cy.get(cesc('#\\/var') + ' textarea').type(`{end}{backspace}${varName}{enter}`, { force: true })
+      cy.get(cesc("#\\/var2") + " .mjx-mrow").should('contain.text', varName)
 
       let resultsForVar = desiredResults[varName];
       for (let expr in resultsForVar) {
         cy.log(`trying ${expr} for variable ${varName}`)
 
-        cy.get("#\\/resp textarea").type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
+        cy.get(cesc("#\\/resp") + " textarea").type(`{ctrl+home}{ctrl+shift+end}{backspace}${expr}{enter}`, { force: true })
 
         let res = resultsForVar[expr];
 
         if (res.correct) {
 
-          cy.get("#\\/resp_correct").should('be.visible')
-          cy.get('#\\/p_sub .mjx-mrow').eq(0).should('have.text', res.response[1])
-          cy.get('#\\/p_quad .mjx-mrow').eq(0).should('have.text', res.matches[0][1])
-          cy.get('#\\/p_lin .mjx-mrow').eq(0).should('have.text', res.matches[1][1])
-          cy.get('#\\/p_const .mjx-mrow').eq(0).should('have.text', res.matches[2][1])
+          cy.get(cesc("#\\/resp_correct")).should('be.visible')
+          cy.get(cesc('#\\/p_sub') + ' .mjx-mrow').eq(0).should('have.text', res.response[1])
+          cy.get(cesc('#\\/p_quad') + ' .mjx-mrow').eq(0).should('have.text', res.matches[0][1])
+          cy.get(cesc('#\\/p_lin') + ' .mjx-mrow').eq(0).should('have.text', res.matches[1][1])
+          cy.get(cesc('#\\/p_const') + ' .mjx-mrow').eq(0).should('have.text', res.matches[2][1])
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables["/ans"].stateValues.submittedResponse1).eqls(res.response[0])
@@ -167,11 +159,11 @@ describe('matching patterns answer tests', function () {
           })
 
         } else {
-          cy.get("#\\/resp_incorrect").should('be.visible')
-          cy.get('#\\/p_sub .mjx-mrow').eq(0).should('have.text', res.response[1])
-          cy.get('#\\/p_quad .mjx-mrow').should('not.exist');
-          cy.get('#\\/p_lin .mjx-mrow').should('not.exist');
-          cy.get('#\\/p_const .mjx-mrow').should('not.exist');
+          cy.get(cesc("#\\/resp_incorrect")).should('be.visible')
+          cy.get(cesc('#\\/p_sub') + ' .mjx-mrow').eq(0).should('have.text', res.response[1])
+          cy.get(cesc('#\\/p_quad') + ' .mjx-mrow').should('not.exist');
+          cy.get(cesc('#\\/p_lin') + ' .mjx-mrow').should('not.exist');
+          cy.get(cesc('#\\/p_const') + ' .mjx-mrow').should('not.exist');
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables["/ans"].stateValues.submittedResponse1).eqls(res.response[0])

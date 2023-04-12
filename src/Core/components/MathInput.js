@@ -119,6 +119,13 @@ export default class MathInput extends Input {
       createStateVariable: "removeStrings",
       defaultValue: null,
     }
+    attributes.minWidth = {
+      createComponentOfType: "integer",
+      createStateVariable: "minWidth",
+      defaultValue: 50,
+      public: true,
+      forRenderer: true,
+    }
     return attributes;
   }
 
@@ -417,7 +424,7 @@ export default class MathInput extends Input {
       provideEssentialValuesInDefinition: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       additionalStateVariablesDefined: [{
         variableName: "lastValueForDisplay",
