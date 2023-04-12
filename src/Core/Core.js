@@ -3877,6 +3877,8 @@ export default class Core {
     // - markStale: function from array state variable
     // - freshnessInfo: object from array state variable
     // - getValueFromArrayValues: function used to get this entry's value
+    // - isLocation: array entries are locations if the array state variable is
+    //   (See expanation of location in fixLocation state variable of BaseComponent.js)
 
     stateVarObj.isArrayEntry = true;
 
