@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Avatar,
   Badge,
   Box,
-  Image,
   Icon,
   Tab,
   TabList,
@@ -18,8 +16,10 @@ import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 import Searchbar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
-import { Form, Link } from 'react-router-dom';
+import { Form } from 'react-router-dom';
 import { RiEmotionSadLine } from 'react-icons/ri';
+import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
+import AuthorCard from '../../../_reactComponents/PanelHeaderComponents/AuthorCard';
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -34,114 +34,6 @@ export async function loader({ request }) {
     const { carouselData } = await response.json();
     return { carouselData };
   }
-}
-
-function ActivityCard({ doenetId, imagePath, label, fullName }) {
-  if (!imagePath) {
-    imagePath = '/activity_default.jpg';
-  }
-  const activityLink = `/portfolioviewer/${doenetId}`;
-
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="180px"
-      width="180px"
-      background="black"
-      overflow="hidden"
-      margin="10px"
-      border="2px solid #949494"
-      borderRadius="6px"
-    >
-      <Box height="130px">
-        <Link to={activityLink}>
-          <Image
-            width="100%"
-            height="100%"
-            objectFit="contain"
-            src={imagePath}
-            alt="Activity Card"
-          />
-        </Link>
-      </Box>
-      <Box
-        height="50px"
-        display="flex"
-        justifyContent="flex-start"
-        padding="2px"
-        color="black"
-        background="white"
-      >
-        <Box
-          width="40px"
-          display="flex"
-          alignContent="center"
-          justifyContent="center"
-          alignItems="center"
-          position="relative"
-        >
-          <Avatar size="sm" name={fullName} />
-          <Box position="absolute" width="100px" left="8px" bottom="0px">
-            <Text fontSize="10px">{fullName}</Text>
-          </Box>
-        </Box>
-        <Box>
-          <Text fontSize="sm" lineHeight="1" noOfLines={2}>
-            {label}
-          </Text>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
-
-function AuthorCard({ fullName, portfolioCourseId }) {
-  // function AuthorCard({ doenetId, imagePath, label, fullName }) {
-
-  const authorLink = `/publicportfolio/${portfolioCourseId}`;
-
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="180px"
-      width="180px"
-      background="black"
-      overflow="hidden"
-      margin="10px"
-      border="2px solid #949494"
-      borderRadius="6px"
-    >
-      <Box
-        height="130px"
-        display="flex"
-        alignContent="center"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Link to={authorLink}>
-          <Avatar w="100px" h="100px" fontSize="60pt" name={fullName} />
-        </Link>
-      </Box>
-      <Box
-        height="50px"
-        display="flex"
-        padding="2px"
-        color="black"
-        background="white"
-        alignContent="center"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Box>
-          <Text fontSize="sm" lineHeight="1" noOfLines={2}>
-            {fullName}
-          </Text>
-        </Box>
-      </Box>
-    </Box>
-  );
 }
 
 function Heading(props) {
@@ -289,10 +181,12 @@ export function Community() {
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == 'activity') {
                     const { doenetId, imagePath, label, fullName } = itemObj;
+                    const imageLink = `/portfolioviewer/${doenetId}`;
+
                     return (
                       <ActivityCard
                         key={doenetId}
-                        doenetId={doenetId}
+                        imageLink={imageLink}
                         imagePath={imagePath}
                         label={label}
                         fullName={fullName}
@@ -300,12 +194,13 @@ export function Community() {
                     );
                   } else if (itemObj?.type == 'author') {
                     const { courseId, firstName, lastName } = itemObj;
+                    const imageLink = `/publicportfolio/${courseId}`;
 
                     return (
                       <AuthorCard
                         key={courseId}
                         fullName={`${firstName} ${lastName}`}
-                        portfolioCourseId={courseId}
+                        imageLink={imageLink}
                       />
                     );
                   }
@@ -338,10 +233,12 @@ export function Community() {
                 {searchResults?.activities.map((activityObj) => {
                   const { doenetId, imagePath, label, fullName } = activityObj;
                   //{ activityLink, doenetId, imagePath, label, fullName }
+                  const imageLink = `/portfolioviewer/${doenetId}`;
+
                   return (
                     <ActivityCard
                       key={doenetId}
-                      doenetId={doenetId}
+                      imageLink={imageLink}
                       imagePath={imagePath}
                       label={label}
                       fullName={fullName}
@@ -377,12 +274,13 @@ export function Community() {
                 {searchResults?.users.map((authorObj) => {
                   const { courseId, firstName, lastName } = authorObj;
                   // console.log("authorObj",authorObj)
+                  const imageLink = `/publicportfolio/${courseId}`;
 
                   return (
                     <AuthorCard
                       key={courseId}
                       fullName={`${firstName} ${lastName}`}
-                      portfolioCourseId={courseId}
+                      imageLink={imageLink}
                     />
                   );
                 })}

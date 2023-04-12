@@ -1,5 +1,5 @@
 // import axios from 'axios';
-import { Avatar, Box, Image, Text } from '@chakra-ui/react';
+import { Avatar, Box, Image, Text, Wrap } from '@chakra-ui/react';
 import React from 'react';
 import {
   redirect,
@@ -9,6 +9,7 @@ import {
   Link,
 } from 'react-router-dom';
 import styled from 'styled-components';
+import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 // export async function action() {
@@ -56,62 +57,62 @@ const CardsContainer = styled.div`
   width: calc(100vw - 40px);
 `;
 
-function Card({ doenetId, imagePath, label, pageDoenetId, fullName }) {
-  const activityLink = `/portfolioviewer/${doenetId}`;
+// function Card({ doenetId, imagePath, label, pageDoenetId, fullName }) {
+//   const activityLink = `/portfolioviewer/${doenetId}`;
 
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="180px"
-      width="180px"
-      background="black"
-      overflow="hidden"
-      margin="10px"
-      border="2px solid #949494"
-      borderRadius="6px"
-    >
-      <Box height="130px">
-        <Link to={activityLink}>
-          <Image
-            width="100%"
-            height="100%"
-            objectFit="contain"
-            src={imagePath}
-            alt="Activity Card"
-          />
-        </Link>
-      </Box>
-      <Box
-        height="50px"
-        display="flex"
-        justifyContent="flex-start"
-        padding="2px"
-        color="black"
-        background="white"
-      >
-        <Box
-          width="40px"
-          display="flex"
-          alignContent="center"
-          justifyContent="center"
-          alignItems="center"
-          position="relative"
-        >
-          <Avatar size="sm" name={fullName} />
-          <Box position="absolute" width="100px" left="8px" bottom="0px">
-            <Text fontSize="10px">{fullName}</Text>
-          </Box>
-        </Box>
-        <Box>
-          <Text fontSize="sm" lineHeight="1" noOfLines={2}>
-            {label}
-          </Text>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
+//   return (
+//     <Box
+//       display="flex"
+//       flexDirection="column"
+//       height="180px"
+//       width="180px"
+//       background="black"
+//       overflow="hidden"
+//       margin="10px"
+//       border="2px solid #949494"
+//       borderRadius="6px"
+//     >
+//       <Box height="130px">
+//         <Link to={activityLink}>
+//           <Image
+//             width="100%"
+//             height="100%"
+//             objectFit="contain"
+//             src={imagePath}
+//             alt="Activity Card"
+//           />
+//         </Link>
+//       </Box>
+//       <Box
+//         height="50px"
+//         display="flex"
+//         justifyContent="flex-start"
+//         padding="2px"
+//         color="black"
+//         background="white"
+//       >
+//         <Box
+//           width="40px"
+//           display="flex"
+//           alignContent="center"
+//           justifyContent="center"
+//           alignItems="center"
+//           position="relative"
+//         >
+//           <Avatar size="sm" name={fullName} />
+//           <Box position="absolute" width="100px" left="8px" bottom="0px">
+//             <Text fontSize="10px">{fullName}</Text>
+//           </Box>
+//         </Box>
+//         <Box>
+//           <Text fontSize="sm" lineHeight="1" noOfLines={2}>
+//             {label}
+//           </Text>
+//         </Box>
+//       </Box>
+//     </Box>
+//   );
+// }
 
 const PortfolioGrid = styled.div`
   display: grid;
@@ -150,23 +151,28 @@ export function PublicPortfolio() {
           </Text>
         </Box>
         <PublicActivitiesSection>
-          <CardsContainer>
+          <Wrap p="10px">
             {data.publicActivities.length < 1 ? (
               <div>No Public Activities</div>
             ) : (
               <>
                 {data.publicActivities.map((activity) => {
+                  const { doenetId, label, imagePath } = activity;
+                  const imageLink = `/portfolioviewer/${doenetId}`;
+
                   return (
-                    <Card
-                      key={`Card${activity.doenetId}`}
-                      {...activity}
+                    <ActivityCard
+                      key={`ActivityCard${activity.doenetId}`}
+                      imageLink={imageLink}
+                      label={label}
+                      imagePath={imagePath}
                       fullName={data.fullName}
                     />
                   );
                 })}
               </>
             )}
-          </CardsContainer>
+          </Wrap>
         </PublicActivitiesSection>
       </PortfolioGrid>
     </>

@@ -175,8 +175,8 @@ export function PortfolioActivitySettings() {
 
       let image = await window.BrowserImageResizer.readAndCompressImage(file, {
         quality: 0.9,
-        maxWidth: 176,
-        maxHeight: 127,
+        maxWidth: 350,
+        maxHeight: 253,
         debug: true,
       });
       // const convertToBase64 = (blob) => {

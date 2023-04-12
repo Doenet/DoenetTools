@@ -64,7 +64,7 @@ export default function RecoilActivityCard({
           <Avatar size="sm" name={fullName} />
           <Box width="120px" p="1">
             <Text
-              height="27px"
+              height="26px"
               lineHeight="1.1"
               fontSize="xs"
               fontWeight="700"
