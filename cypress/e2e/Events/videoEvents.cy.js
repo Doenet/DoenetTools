@@ -1,5 +1,7 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
+import { cesc2 } from "../../../src/_utils/url";
+
 
 describe('video events test', function () {
   const userId = "cyuserId";
@@ -54,8 +56,11 @@ describe('video events test', function () {
     cy.get('[data-test="Unassign Activity"]').should('be.visible');
 
 
-    cy.get('[data-test="Crumb Menu"]').click({ force: true });
-    cy.get('[data-test="Crumb Menu Item 2"]').click();
+    // Since breakcrumb links aren't working in cypress, go to link directly
+    // cy.get('[data-test="Crumb Menu"]').click({ force: true });
+    // cy.get('[data-test="Crumb Menu Item 2"]').click();
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`)
+
     cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
 
@@ -66,47 +71,47 @@ describe('video events test', function () {
 
     //Interact with content
 
-    cy.get(cesc('#\\/state')).contains("stopped")
-    cy.get(cesc('#\\/play')).click();
+    cy.get(cesc2('#/state')).contains("stopped")
+    cy.get(cesc2('#/play')).click();
 
-    cy.get(cesc('#\\/time')).contains("5");
-    cy.get(cesc('#\\/pause')).click();
+    cy.get(cesc2('#/time')).contains("5");
+    cy.get(cesc2('#/pause')).click();
 
     cy.log('skip forward while paused')
-    cy.get(cesc("#\\/mi") + " textarea").type("{home}{shift+end}{backspace}105{enter}", { force: true });
-    cy.get(cesc('#\\/time')).contains("105");
+    cy.get(cesc2("#/mi") + " textarea").type("{home}{shift+end}{backspace}105{enter}", { force: true });
+    cy.get(cesc2('#/time')).contains("105");
 
-    cy.get(cesc('#\\/play')).click();
+    cy.get(cesc2('#/play')).click();
 
     cy.log('skip forward without pausing')
-    cy.get(cesc('#\\/time')).contains("107");
-    cy.get(cesc('#\\/skip1')).click();
+    cy.get(cesc2('#/time')).contains("107");
+    cy.get(cesc2('#/skip1')).click();
 
-    cy.get(cesc('#\\/time')).contains('160');
-    cy.get(cesc('#\\/pause')).click();
-    cy.get(cesc('#\\/state')).contains("stopped")
+    cy.get(cesc2('#/time')).contains('160');
+    cy.get(cesc2('#/pause')).click();
+    cy.get(cesc2('#/state')).contains("stopped")
 
     cy.log('skip backward while paused')
-    cy.get(cesc("#\\/mi") + " textarea").type("{home}{shift+end}{backspace}141{enter}", { force: true });
-    cy.get(cesc('#\\/time')).contains("141");
+    cy.get(cesc2("#/mi") + " textarea").type("{home}{shift+end}{backspace}141{enter}", { force: true });
+    cy.get(cesc2('#/time')).contains("141");
 
-    cy.get(cesc('#\\/play')).click();
+    cy.get(cesc2('#/play')).click();
 
     cy.log('skip backward without pausing')
-    cy.get(cesc('#\\/time')).contains("143");
-    cy.get(cesc('#\\/skip2')).click();
+    cy.get(cesc2('#/time')).contains("143");
+    cy.get(cesc2('#/skip2')).click();
 
-    cy.get(cesc('#\\/time')).contains('58');
-    cy.get(cesc('#\\/pause')).click();
-    cy.get(cesc('#\\/state')).contains("stopped")
+    cy.get(cesc2('#/time')).contains('58');
+    cy.get(cesc2('#/pause')).click();
+    cy.get(cesc2('#/state')).contains("stopped")
 
     cy.log('play last seconds')
-    cy.get(cesc("#\\/mi") + " textarea").type("{home}{shift+end}{backspace}297{enter}", { force: true });
-    cy.get(cesc('#\\/time')).contains("297");
+    cy.get(cesc2("#/mi") + " textarea").type("{home}{shift+end}{backspace}297{enter}", { force: true });
+    cy.get(cesc2('#/time')).contains("297");
 
-    cy.get(cesc('#\\/play')).click();
-    cy.get(cesc('#\\/time')).contains("298");
-    cy.get(cesc('#\\/state')).contains("stopped")
+    cy.get(cesc2('#/play')).click();
+    cy.get(cesc2('#/time')).contains("298");
+    cy.get(cesc2('#/state')).contains("stopped")
 
     cy.wait(1000); //TODO: time travel instead of wait?
     //Test if interactions were recorded

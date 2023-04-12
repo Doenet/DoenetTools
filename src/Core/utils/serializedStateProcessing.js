@@ -3537,6 +3537,10 @@ export function extractRangeIndexPieces({
 }
 
 export function countComponentTypes(serializedComponents) {
+  // Count component types from the components in the array (not recursing to children).
+  // Used for counting the sections in a document in order to increment section counts
+  // subsequent pages.
+
   let componentTypeCounts = {};
 
   for (let component of serializedComponents) {
