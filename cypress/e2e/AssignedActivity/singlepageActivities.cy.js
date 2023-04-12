@@ -77,7 +77,7 @@ describe('Single page activity tests', function () {
 
 
     cy.get(cesc('#\\/toAside')).click();
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should('match', /#\\\/aside$/)
 
     cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -97,13 +97,13 @@ describe('Single page activity tests', function () {
       expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
     })
 
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should('match', /#\\\/aside$/)
 
 
     cy.get(cesc('#\\/toAside')).click();
     cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
 
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should('match', /#\\\/aside$/)
 
     cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -167,7 +167,7 @@ describe('Single page activity tests', function () {
     })
 
     cy.get(cesc('#\\/toAside')).click();
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should('match', /#\\\/aside$/)
 
     cy.get(cesc('#\\/aside')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -218,7 +218,7 @@ describe('Single page activity tests', function () {
     const doenetMLother = `
 <p><ref name="toTop" uri="doenet:doenetId=${doenetId}">Link to top</ref></p>
 <p><ref name="toAside" uri="doenet:doenetId=${doenetId}" target="aside">Link to aside</ref></p>
-<p><ref name="toAsideb" uri="doenet:doenetId=${doenetId}#/aside">Link to aside</ref></p>
+<p><ref name="toAsideb" uri="doenet:doenetId=${doenetId}#\\/aside">Link to aside</ref></p>
 `
 
 
@@ -280,7 +280,7 @@ describe('Single page activity tests', function () {
     cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
 
 
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should('match', /#\\\/aside$/)
     cy.url().should('contain', doenetId)
 
     cy.get(cesc('#\\/aside')).then(el => {
@@ -321,7 +321,7 @@ describe('Single page activity tests', function () {
     cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
 
 
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should('match', /#\\\/aside$/)
     cy.url().should('contain', doenetId)
 
     cy.get(cesc('#\\/aside')).then(el => {
@@ -356,6 +356,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100)
 
     cy.log('go to url')
     cy.visit(`/course?tool=assignment&doenetId=${doenetId}`)
@@ -371,14 +372,14 @@ describe('Single page activity tests', function () {
 
 
     cy.log('go to aside url')
-    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#/aside`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#\\/aside`)
 
     cy.get(cesc('#\\/insideAside')).should('have.text', 'Content in aside');
     cy.get(cesc('#\\/_section1_title')).should('have.text', 'Section 1')
     cy.get(cesc('#\\/asideTitle')).should('have.text', 'The aside');
 
 
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should('match', /#\\\/aside$/)
     cy.url().should('contain', doenetId)
 
     cy.get(cesc('#\\/aside')).then(el => {
@@ -1146,7 +1147,7 @@ describe('Single page activity tests', function () {
 
 
     cy.get(cesc('#\\/goMiddle1')).click();
-    cy.url().should('match', /#\/middle$/)
+    cy.url().should('match', /#\\\/middle$/)
 
     cy.get(cesc('#\\/middle')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -1155,7 +1156,7 @@ describe('Single page activity tests', function () {
 
 
     cy.get(cesc('#\\/goBottom2')).click();
-    cy.url().should('match', /#\/bottom$/)
+    cy.url().should('match', /#\\\/bottom$/)
 
     cy.get(cesc('#\\/bottom')).then(el => {
       let rect = el[0].getBoundingClientRect();
@@ -1396,6 +1397,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100);
 
     // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
@@ -1440,6 +1442,7 @@ describe('Single page activity tests', function () {
 
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.wait(100);
 
     // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
