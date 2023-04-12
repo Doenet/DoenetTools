@@ -1,33 +1,15 @@
 // import axios from 'axios';
-import {
-  Avatar,
-  Box,
-  Image,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Icon,
-  Text,
-  Flex,
-  Wrap,
-} from '@chakra-ui/react';
+import { Box, Icon, Text, Flex, Wrap } from '@chakra-ui/react';
 import React from 'react';
 import {
   redirect,
   Form,
   useOutletContext,
   useLoaderData,
-  Link,
-  useFetcher,
 } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { GoKebabVertical } from 'react-icons/go';
-import {
-  itemByDoenetId,
-  useCourse,
-} from '../../../_reactComponents/Course/CourseActions';
+
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { RiEmotionSadLine } from 'react-icons/ri';
