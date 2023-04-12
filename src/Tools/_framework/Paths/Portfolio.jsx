@@ -10,6 +10,7 @@ import {
   Icon,
   Text,
   Flex,
+  Wrap,
 } from '@chakra-ui/react';
 import React from 'react';
 import {
@@ -30,6 +31,7 @@ import {
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { RiEmotionSadLine } from 'react-icons/ri';
+import RecoilActivityCard from '../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard';
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -120,13 +122,7 @@ const PublicActivitiesSection = styled.div`
   text-align: center;
   background: var(--lightBlue);
 `;
-const CardsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 10px 10px 10px 10px;
-  margin: 0px;
-  width: calc(100vw - 40px);
-`;
+
 const PrivateActivitiesSection = styled.div`
   grid-row: 3/4;
   display: flex;
@@ -138,161 +134,6 @@ const PrivateActivitiesSection = styled.div`
   text-align: center;
   background: var(--mainGray);
 `;
-
-function Card({
-  doenetId,
-  imagePath,
-  label,
-  pageDoenetId,
-  fullName,
-  isPublic,
-  courseId,
-  version,
-  content,
-}) {
-  const fetcher = useFetcher();
-  //TODO: find the courseId
-  const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
-  // const activityLink = `/portfolio/${doenetId}/editor`;
-  const activityLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
-
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="180px"
-      width="180px"
-      background="black"
-      overflow="hidden"
-      margin="10px"
-      border="2px solid #949494"
-      borderRadius="6px"
-    >
-      <Box position="relative" height="130px">
-        <Link
-          to={activityLink}
-          onClick={() => {
-            setPageToolView({
-              page: 'portfolioeditor',
-              tool: 'editor',
-              view: '',
-              params: {},
-            });
-          }}
-        >
-          <Image
-            width="100%"
-            height="100%"
-            objectFit="contain"
-            src={imagePath}
-            alt="Activity Card"
-          />
-        </Link>
-        <Box position="absolute" right="1px" top="4px">
-          <Menu>
-            <MenuButton>
-              {/* <MenuButton as={Button} > */}
-              <Icon color="#949494" as={GoKebabVertical} boxSize={6} />
-            </MenuButton>
-            <MenuList>
-              {isPublic ? (
-                <MenuItem
-                  onClick={() => {
-                    fetcher.submit(
-                      { _action: 'Make Private', doenetId },
-                      { method: 'post' },
-                    );
-                  }}
-                >
-                  Make Private
-                </MenuItem>
-              ) : (
-                <MenuItem
-                  onClick={() => {
-                    //THINGS WE NEED FROM THE DB
-                    //- Version of DoenetML
-                    //Eventually we want the content too (multipage)
-
-                    setItemByDoenetId({
-                      version,
-                      isSinglePage: true,
-                      content,
-                    });
-
-                    compileActivity({
-                      activityDoenetId: doenetId,
-                      isAssigned: true,
-                      courseId,
-                      // successCallback: () => {
-                      //   addToast('Activity Assigned.', toastType.INFO);
-                      // },
-                    });
-                    updateAssignItem({
-                      doenetId,
-                      isAssigned: true,
-                      successCallback: () => {
-                        fetcher.submit(
-                          { _action: 'Make Public', doenetId },
-                          { method: 'post' },
-                        );
-                        //addToast(assignActivityToast, toastType.INFO);
-                      },
-                    });
-                  }}
-                >
-                  Make Public
-                </MenuItem>
-              )}
-              <MenuItem
-                onClick={() => {
-                  fetcher.submit(
-                    { _action: 'Delete', doenetId },
-                    { method: 'post' },
-                  );
-                }}
-              >
-                Delete
-              </MenuItem>
-              <MenuItem as={Link} to={`/portfolio/${doenetId}/settings`}>
-                Settings
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </Box>
-      </Box>
-      <Box
-        height="50px"
-        display="flex"
-        justifyContent="flex-start"
-        padding="2px"
-        color="black"
-        background="white"
-      >
-        <Box
-          width="40px"
-          display="flex"
-          alignContent="center"
-          justifyContent="center"
-          alignItems="center"
-          position="relative"
-        >
-          <Avatar size="sm" name={fullName} />
-          <Box position="absolute" width="100px" left="8px" bottom="0px">
-            <Text fontSize="10px">{fullName}</Text>
-          </Box>
-        </Box>
-        <Box>
-          <Text fontSize="sm" lineHeight="1" noOfLines={2}>
-            {label}
-          </Text>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
 
 const PortfolioGrid = styled.div`
   display: grid;
@@ -356,7 +197,7 @@ export function Portfolio() {
           <Text fontSize="20px" fontWeight="700">
             Public
           </Text>
-          <CardsContainer>
+          <Wrap p="10px" pb="110px">
             {data.publicActivities.length < 1 ? (
               <Flex
                 flexDirection="column"
@@ -375,7 +216,7 @@ export function Portfolio() {
               <>
                 {data.publicActivities.map((activity) => {
                   return (
-                    <Card
+                    <RecoilActivityCard
                       key={`Card${activity.doenetId}`}
                       {...activity}
                       fullName={data.fullName}
@@ -386,14 +227,14 @@ export function Portfolio() {
                 })}
               </>
             )}
-          </CardsContainer>
+          </Wrap>
         </PublicActivitiesSection>
 
         <PrivateActivitiesSection>
           <Text fontSize="20px" fontWeight="700">
             Private
           </Text>
-          <CardsContainer>
+          <Wrap p="10px" pb="110px">
             {data.privateActivities.length < 1 ? (
               <Flex
                 flexDirection="column"
@@ -412,7 +253,7 @@ export function Portfolio() {
               <>
                 {data.privateActivities.map((activity) => {
                   return (
-                    <Card
+                    <RecoilActivityCard
                       key={`Card${activity.doenetId}`}
                       {...activity}
                       fullName={data.fullName}
@@ -423,7 +264,7 @@ export function Portfolio() {
                 })}
               </>
             )}
-          </CardsContainer>
+          </Wrap>
         </PrivateActivitiesSection>
       </PortfolioGrid>
     </>
