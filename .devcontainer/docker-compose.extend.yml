@@ -20,12 +20,17 @@ services:
     #   dockerfile: .devcontainer/Dockerfile
     image: lyanthropos/doenet_dev
     volumes:
-      # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
+      # mount daemon for docker in docker control
       - /var/run/docker.sock:/var/run/docker.sock
+      # mount in auth sock for ssh support
       - /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock
       # mount local files
       - ./:/home/node/workspace
+      # named volume for linux node modules
       - node_modules:/home/node/workspace/node_modules
+      # Persist VS Code extensions between rebuilds
+      # - vscode-extensions:/root/.vscode-server/extensions
+      # mount ssh configuration
       - ~/.ssh:/.ssh
     networks:
       - dev_net
