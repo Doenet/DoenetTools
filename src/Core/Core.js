@@ -123,9 +123,14 @@ export default class Core {
 
     this.initialized = false;
     this.initializedPromiseResolves = [];
+    this.postInitializedMessages = [];
     this.resolveInitialized = () => {
       this.initializedPromiseResolves.forEach(resolve => resolve(true))
       this.initialized = true;
+      for (let message of this.postInitializedMessages) {
+        postMessage(message);
+      }
+      this.postInitializedMessages = [];
     }
     this.getInitializedPromise = () => {
       if (this.initialized) {
@@ -10432,11 +10437,17 @@ export default class Core {
   }
 
   requestAnimationFrame(args) {
-    postMessage({
+    let animateMessage = {
       messageType: "requestAnimationFrame",
       coreId: this.coreId,
       args
-    });
+    };
+    if (this.initialized) {
+      postMessage(animateMessage);
+    } else {
+      this.postInitializedMessages.push(animateMessage)
+    }
+
   }
 
   cancelAnimationFrame(args) {
