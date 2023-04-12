@@ -43,7 +43,7 @@ export function getFromText({
   appliedFunctionSymbols = appliedFunctionSymbolsDefault,
   splitSymbols = true,
   parseScientificNotation = false,
-}) {
+} = {}) {
   return x => me.fromAst((new me.converters.textToAstObj({
     appliedFunctionSymbols, functionSymbols, splitSymbols, parseScientificNotation
   })).convert(x))
@@ -59,7 +59,7 @@ export function getFromLatex({
   appliedFunctionSymbols = appliedFunctionSymbolsDefaultLatex,
   splitSymbols = true,
   parseScientificNotation = false,
-}) {
+} = {}) {
   if (splitSymbols) {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,

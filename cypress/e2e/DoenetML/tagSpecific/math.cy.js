@@ -6174,5 +6174,50 @@ describe('Math Tag Tests', function () {
 
   })
 
+  it('recover math values through latex state variables', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>
+    <vector name="v">(3,4)</vector>
+    <point name="p">(5,6)</point>
+    <function name="f">sin(x)/exp(x)</function>
+    <m name="m">\\frac{x}{y}</m>
+    <math name="math">y/z</math>
+    <line name="l">y=x+4</line>
+    <aslist name="al"><math>sin(x)</math><math>cos(x)</math></aslist>
+    <mathlist name="ml">tan(x) cot(y)</mathlist>
+  </p>
+  <p>
+    <math name="v2">$v.latex</math>
+    <math name="p2">$p.latex</math>
+    <math name="f2">$f.latex</math>
+    <math name="m2">$m.latex</math>
+    <math name="math2">$math.latex</math>
+    <math name="l2">$l.latex</math>
+    <math name="al2">$al.latex</math>
+    <math name="ml2">$ml.latex</math>
+  </p>
+  ` }, "*");
+    });
+
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/v2'].stateValues.value).eqls(["tuple", 3, 4]);
+      expect(stateVariables['/p2'].stateValues.value).eqls(["tuple", 5, 6]);
+      expect(stateVariables['/f2'].stateValues.value).eqls(["/", ["apply", "sin", "x"], ["apply", "exp", "x"]]);
+      expect(stateVariables['/m2'].stateValues.value).eqls(["/", "x", "y"]);
+      expect(stateVariables['/math2'].stateValues.value).eqls(["/", "y", "z"]);
+      expect(stateVariables['/l2'].stateValues.value).eqls(["=", "y", ["+", "x", 4]]);
+      expect(stateVariables['/al2'].stateValues.value).eqls(["list", ["apply", "sin", "x"], ["apply", "cos", "x"]]);
+      expect(stateVariables['/ml2'].stateValues.value).eqls(["list", ["apply", "tan", "x"], ["apply", "cot", "y"]]);
+
+    })
+
+  })
+
 })
 

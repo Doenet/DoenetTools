@@ -1493,7 +1493,7 @@ export default class Line extends GraphicalComponent {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "latex"
       },
       returnDependencies: () => ({
         equation: {

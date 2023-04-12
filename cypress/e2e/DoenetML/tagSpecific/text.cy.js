@@ -39,6 +39,42 @@ describe('Text Tag Tests', function () {
 
   })
 
+  it('text adapts to components', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <p>number: <number name="n1"><text>4/2</text></number></p>
+    <p>number from latex: <number name="n2"><text isLatex>\\frac{4}{2}</text></number></p>
+    <p>number from latex 2: <number name="n2a"><latex>\\frac{4}{2}</latex></number></p>
+    <p>number latex not parsed as latex: <number name="n3"><text>\\frac{4}{2}</text></number></p>
+    <p>number does not adapt with convertBoolean: <number name="n4" convertBoolean><text>4/2</text></number></p>
+    <p>number multiplies adjacent texts: <number name="n5"><text>5</text><text>4</text></number></p>
+    <p>number multiplies adjacent text and string: <number name="n6">5<text>4</text></number></p>
+    <p>math: <math name="m1"><text>sin(2x)</text></math></p>
+    <p>math from latex: <math name="m2"><text isLatex>\\sin(2x)</text></math></p>
+    <p>math from latex 2: <math name="m2a"><latex>\\sin(2x)</latex></math></p>
+    <p>math latex not parsed as latex: <math name="m3"><text>\\sin(2x)</text></math></p>
+    <p>math multiplies adjacent texts: <math name="m4" simplify><text>5</text><text>4</text></math></p>
+    <p>math multiplies adjacent text and string: <math name="m5" simplify>5<text>4</text></math></p>
+    `}, "*");
+    });
+
+    cy.get(cesc2('#/n1')).should('have.text', '2')
+    cy.get(cesc2('#/n2')).should('have.text', '2')
+    cy.get(cesc2('#/n2a')).should('have.text', '2')
+    cy.get(cesc2('#/n3')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n4')).should('have.text', 'NaN')
+    cy.get(cesc2('#/n5')).should('have.text', '20')
+    cy.get(cesc2('#/n6')).should('have.text', '20')
+    cy.get(cesc2('#/m1') + " .mjx-mrow").eq(0).should('have.text', 'sin(2x)')
+    cy.get(cesc2('#/m2') + " .mjx-mrow").eq(0).should('have.text', 'sin(2x)')
+    cy.get(cesc2('#/m2a') + " .mjx-mrow").eq(0).should('have.text', 'sin(2x)')
+    cy.get(cesc2('#/m3') + " .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get(cesc2('#/m4') + " .mjx-mrow").eq(0).should('have.text', '20')
+    cy.get(cesc2('#/m5') + " .mjx-mrow").eq(0).should('have.text', '20')
+
+  })
+
   it('text from paragraph components', () => {
     cy.window().then(async (win) => {
       win.postMessage({

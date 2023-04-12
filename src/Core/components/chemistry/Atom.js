@@ -637,6 +637,10 @@ export default class Atom extends InlineComponent {
     }
 
     stateVariableDefinitions.latex = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "latex"
+      },
       additionalStateVariablesDefined: [{
         variableName: "latexWithInputChildren",
         forRenderer: true,

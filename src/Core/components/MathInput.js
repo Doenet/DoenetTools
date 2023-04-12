@@ -424,7 +424,7 @@ export default class MathInput extends Input {
       provideEssentialValuesInDefinition: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       additionalStateVariablesDefined: [{
         variableName: "lastValueForDisplay",

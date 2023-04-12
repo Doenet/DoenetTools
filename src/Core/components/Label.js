@@ -164,7 +164,7 @@ export default class Label extends InlineComponent {
         variableName: "latex",
         public: true,
         shadowingInstructions: {
-          createComponentOfType: "text"
+          createComponentOfType: "latex"
         },
       }, {
         variableName: "value",

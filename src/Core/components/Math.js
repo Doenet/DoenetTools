@@ -1176,7 +1176,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       forRenderer: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       returnDependencies: () => ({
         valueForDisplay: {
