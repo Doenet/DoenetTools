@@ -2089,7 +2089,9 @@ describe('Sectioning Tag Tests', function () {
     });
   });
 
-  it('Add auto name to aside', () => {
+  // TODO: reinstate this test
+  // Temporarily skipping due to stopgap solution of reverting new type of section
+  it.skip('Add auto name to aside', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2437,7 +2439,9 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
-  it('Theorem elements', () => {
+  // TODO: reinstate this test
+  // Temporarily skipping due to stopgap solution of reverting new type of section
+  it.skip('Theorem elements', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2476,7 +2480,9 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
-  it('Sections number independently of other sectioning elements', () => {
+  // TODO: reinstate this test
+  // Temporarily skipping due to stopgap solution of reverting new type of section
+  it.skip('Sections number independently of other sectioning elements', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

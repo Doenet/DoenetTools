@@ -67,7 +67,7 @@ export class Paragraphs extends SectioningComponentNumberWithSiblings {
 
 }
 
-export class Aside extends SectioningComponent {
+export class Aside extends SectioningComponentNumberWithSiblings {
   static componentType = "aside";
   static rendererType = "section";
 
@@ -124,7 +124,7 @@ export class Aside extends SectioningComponent {
 
 }
 
-export class Objectives extends SectioningComponent {
+export class Objectives extends SectioningComponentNumberWithSiblings {
   static componentType = "objectives";
   static rendererType = "section";
 
@@ -153,7 +153,7 @@ export class Objectives extends SectioningComponent {
 
 }
 
-export class Problem extends SectioningComponent {
+export class Problem extends SectioningComponentNumberWithSiblings {
   static componentType = "problem";
   static rendererType = "section";
 
@@ -185,7 +185,7 @@ export class Activity extends Problem {
   static componentType = "activity";
 }
 
-export class Example extends SectioningComponent {
+export class Example extends SectioningComponentNumberWithSiblings {
   static componentType = "example";
   static rendererType = "section";
 
