@@ -7,7 +7,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImage } from '@fortawesome/free-solid-svg-icons';
-import { Box, Checkbox, Image, Text } from '@chakra-ui/react';
+import { Card, Checkbox, Image, Text } from '@chakra-ui/react';
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
@@ -176,7 +176,7 @@ export function PortfolioActivitySettings() {
       let image = await window.BrowserImageResizer.readAndCompressImage(file, {
         quality: 0.9,
         maxWidth: 350,
-        maxHeight: 253,
+        maxHeight: 234,
         debug: true,
       });
       // const convertToBase64 = (blob) => {
@@ -254,7 +254,7 @@ export function PortfolioActivitySettings() {
                       <Td>
                         <input {...getInputProps()} />
                         <SideBySide>
-                          Image{' '}
+                          <Text>Image</Text>
                           <Button
                             value="Upload"
                             onClick={(e) => e.preventDefault()}
@@ -263,29 +263,25 @@ export function PortfolioActivitySettings() {
                       </Td>
                       <Td>
                         <input {...getInputProps()} />
-                        <Box
-                          height="130px"
-                          width="180px"
-                          background="black"
-                          overflow="hidden"
-                          border="2px solid #949494"
-                          borderRadius="6px"
-                        >
+                        <Card width="180px" height="120px" p="0" m="0">
                           <Image
-                            width="100%"
-                            height="100%"
-                            objectFit="contain"
+                            height="120px"
+                            maxWidth="180px"
                             src={imagePath}
-                            alt="Activity Card"
+                            alt="Activity Card Image"
+                            borderTopRadius="md"
+                            objectFit="cover"
                           />
-                        </Box>
+                        </Card>
                       </Td>
                     </>
                   )}
                 </tr>
 
                 <tr>
-                  <Td>Activity Label</Td>
+                  <Td>
+                    <Text>Activity Label</Text>
+                  </Td>
                   <Td>
                     <input
                       name="label"
