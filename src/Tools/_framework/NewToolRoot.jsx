@@ -462,7 +462,7 @@ let navigationObj = {
     editor: {
       //singleFile
       pageName: 'PortfolioEditor',
-      menuPanelCap: 'PortfilioEditorInfoCap',
+      menuPanelCap: 'PortfolioEditorInfoCap',
       currentMainPanel: 'EditorViewer',
       currentMenus: [
         'PageVariant',

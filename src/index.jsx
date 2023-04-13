@@ -28,7 +28,7 @@ import {
   action as portfolioAction,
   Portfolio,
 } from './Tools/_framework/Paths/Portfolio';
-import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfilioEditorInfoCap';
+import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
 import {
   loader as publicPortfolioLoader,
   PublicPortfolio,
@@ -87,7 +87,7 @@ const theme = extendTheme({
         _disabled: {
           bg: '#E2E2E2',
           color: 'black',
-          cursor: 'none'
+          cursor: 'none',
         },
       },
       variants: {

@@ -280,8 +280,8 @@ export default function MenuPanel({
     DriveInfoCap: lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
     DataCap: lazy(() => import('../MenuPanelCaps/DataCap')),
     EditorInfoCap: lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
-    PortfilioEditorInfoCap: lazy(() =>
-      import('../MenuPanelCaps/PortfilioEditorInfoCap'),
+    PortfolioEditorInfoCap: lazy(() =>
+      import('../MenuPanelCaps/PortfolioEditorInfoCap'),
     ),
     PublicEditorInfoCap: lazy(() =>
       import('../MenuPanelCaps/PublicEditorInfoCap'),

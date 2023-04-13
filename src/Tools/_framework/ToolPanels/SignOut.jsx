@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useSetRecoilState } from 'recoil';
-import { pageToolViewAtom } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import {
   checkIfUserClearedOut,
   clearUsersInformationFromTheBrowser,
 } from '../../../_utils/applicationUtils';
+import { useNavigate } from 'react-router';
 
 export default function SignOut() {
   const [isSignedOut, setIsSignedOut] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function checkSignout() {
@@ -67,9 +66,7 @@ export default function SignOut() {
             <Button
               dataTest="homepage button"
               value="Homepage"
-              onClick={() => {
-                setPageToolView({ page: 'home', tool: '', view: '' });
-              }}
+              onClick={() => navigate('/')}
             />
           </div>
         </div>
