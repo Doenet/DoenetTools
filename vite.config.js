@@ -7,9 +7,7 @@ import { resolve } from 'path';
 
 export default defineConfig((env) => ({
   appType: 'mpa',
-  plugins: [
-    react()
-  ],
+  plugins: [react()],
   server: {
     port: 8000,
     proxy: {
@@ -62,6 +60,17 @@ export default defineConfig((env) => ({
     },
     commonjsOptions: {
       transformMixedEsModules: true,
+      // Bugfix required to handle issue with vite, rollup and libs (like react-datetime)
+      // https://github.com/vitejs/vite/issues/2139#issuecomment-1399098579
+      defaultIsModuleExports(id) {
+        try {
+          const module = require(id);
+          if (module?.default) return false;
+          return 'auto';
+        } catch (error) {
+          return 'auto';
+        }
+      },
     },
   },
 }));
