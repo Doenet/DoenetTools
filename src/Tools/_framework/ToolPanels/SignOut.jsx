@@ -1,34 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useSetRecoilState } from 'recoil';
-import { pageToolViewAtom } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { checkIfUserClearedOut, clearUsersInformationFromTheBrowser } from '../../../_utils/applicationUtils';
+import {
+  checkIfUserClearedOut,
+  clearUsersInformationFromTheBrowser,
+} from '../../../_utils/applicationUtils';
+import { useNavigate } from 'react-router';
 
 export default function SignOut() {
   const [isSignedOut, setIsSignedOut] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-  useEffect( () => {
-    async function checkSignout(){
+  useEffect(() => {
+    async function checkSignout() {
       // console.log("checkSignout")
-      let { userInformationIsCompletelyRemoved, messageArray } = await checkIfUserClearedOut();
+      let { userInformationIsCompletelyRemoved, messageArray } =
+        await checkIfUserClearedOut();
       setIsSignedOut(userInformationIsCompletelyRemoved);
-      setErrorMessage(messageArray.map((text,i)=> <p key={`error ${i}`}>{text}</p>));
+      setErrorMessage(
+        messageArray.map((text, i) => <p key={`error ${i}`}>{text}</p>),
+      );
     }
 
     clearUsersInformationFromTheBrowser()
-    .then(() => {
-      // console.log("clearUsersInformationFromTheBrowser completed")
-      checkSignout();
-    })
-    .catch((error) => {
-      // console.log("clearUsersInformationFromTheBrowser completed error")
-      checkSignout();
-    });
+      .then(() => {
+        // console.log("clearUsersInformationFromTheBrowser completed")
+        checkSignout();
+      })
+      .catch((error) => {
+        // console.log("clearUsersInformationFromTheBrowser completed error")
+        checkSignout();
+      });
   }, []);
-  
 
   if (isSignedOut) {
     return (
@@ -52,16 +55,26 @@ export default function SignOut() {
               'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
             }
           />
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             <h2>You are Signed Out!</h2>
-            <Button dataTest='homepage button' value="Homepage" onClick={() => {setPageToolView({page: 'home', tool: '', view: ''})}}/>
+            <Button
+              dataTest="homepage button"
+              value="Homepage"
+              onClick={() => navigate('/')}
+            />
           </div>
         </div>
       </div>
     );
   }
 
-  if (errorMessage != "") {
+  if (errorMessage != '') {
     return (
       <div>
         <div
@@ -92,7 +105,6 @@ export default function SignOut() {
       </div>
     );
   }
-
 
   return (
     <div>
