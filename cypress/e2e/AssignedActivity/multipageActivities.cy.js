@@ -923,7 +923,7 @@ describe('Multipage activity tests', function () {
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-    cy.get('[data-test="Paginate"').click();
+    cy.get('[data-test="Paginate"]').click();
     cy.wait(100) //TODO: need the UI to let us know this was successful
 
     cy.signin({ userId: studentUserId })

@@ -28,7 +28,7 @@ export default function ActivityCard({
   }
   //Note: when we have a menu width 140px becomes 120px
   return (
-    <Card width="180px" height="180px" p="0" m="0">
+    <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
       <Link to={imageLink}>
         <Image
           height="120px"

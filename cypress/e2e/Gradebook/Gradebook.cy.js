@@ -134,6 +134,7 @@ describe('Gradebook tests', function () {
     cy.get('[data-test="Assignment Percent"]').should('have.text', '33.3%')
 
 
+    cy.wait(1000)
     cy.get('[data-test="Crumb 2"]').click();
     cy.get('.navigationRow').should('have.length', 1);
 
@@ -168,17 +169,17 @@ describe('Gradebook tests', function () {
     cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`).then(() => {
       // put inside a "then" just so that pageOrder and ns have their new values
 
-      cy.get('#page3/_title1').should('have.text', `Option ${pageOrder[2]}`)
+      cy.get(cesc2('#page3/_title1')).should('have.text', `Option ${pageOrder[2]}`)
       cy.get(cesc2('#page3/ans2') + ' .mjx-mrow').should('contain.text', `${ns[2]}`)
 
       cy.get('[data-test=previous').click();
 
-      cy.get('#page2/_title1').should('have.text', `Option ${pageOrder[1]}`)
+      cy.get(cesc2('#page2/_title1')).should('have.text', `Option ${pageOrder[1]}`)
       cy.get(cesc2('#page2/ans2') + ' .mjx-mrow').should('contain.text', "\uff3f")
 
       cy.get('[data-test=previous').click();
 
-      cy.get('#page1/_title1').should('have.text', `Option ${pageOrder[0]}`)
+      cy.get(cesc2('#page1/_title1')).should('have.text', `Option ${pageOrder[0]}`)
       cy.get(cesc2('#page1/ans2') + ' .mjx-mrow').should('contain.text', "wrong")
 
 
