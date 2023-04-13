@@ -22,6 +22,7 @@ import {
   useDisclosure,
   Wrap,
   Flex,
+  VStack,
 } from '@chakra-ui/react';
 import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
@@ -113,30 +114,32 @@ export function MoveToGroupMenuItem({ doenetId }) {
           <DrawerHeader>Add Activity To Group</DrawerHeader>
 
           <DrawerBody>
-            {carouselGroups.map((carouselItem) => {
-              return (
-                <Button
-                  size="sm"
-                  mergin="5px"
-                  key={carouselItem.groupName}
-                  onClick={() => {
-                    const uploadData = { groupId: carouselItem.id, doenetId };
-                    console.log('doenetId during request', uploadData);
-                    axios
-                      .post('/api/addPromotedContent.php', uploadData)
-                      .then(({ data }) => {
-                        onClose();
-                      })
-                      .catch((e) => {
-                        alert('Error saving new promoted activity');
-                        console.log(e);
-                      });
-                  }}
-                >
-                  Move to group "{carouselItem.groupName}"
-                </Button>
-              );
-            })}
+            <VStack spacing="2">
+              {carouselGroups.map((carouselItem) => {
+                return (
+                  <Button
+                    size="sm"
+                    mergin="5px"
+                    key={carouselItem.groupName}
+                    onClick={() => {
+                      const uploadData = { groupId: carouselItem.id, doenetId };
+                      console.log('doenetId during request', uploadData);
+                      axios
+                        .post('/api/addPromotedContent.php', uploadData)
+                        .then(({ data }) => {
+                          onClose();
+                        })
+                        .catch((e) => {
+                          alert('Error saving new promoted activity');
+                          console.log(e);
+                        });
+                    }}
+                  >
+                    Move to group "{carouselItem.groupName}"
+                  </Button>
+                );
+              })}
+            </VStack>
           </DrawerBody>
 
           <DrawerFooter>
