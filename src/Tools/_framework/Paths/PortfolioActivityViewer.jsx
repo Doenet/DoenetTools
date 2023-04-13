@@ -200,20 +200,11 @@ export function PortfolioActivityViewer() {
             </div>
             <div>
               <HeaderSectionRight>
-                <Button
-                  value="See Inside"
-                  onClick={() => {
-                    setPageToolView({
-                      page: 'public',
-                      tool: 'editor',
-                      view: '',
-                      params: {},
-                    });
-                    navigate(
-                      `/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
-                    );
-                  }}
-                />
+                <a
+                  href={`/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`}
+                >
+                  <Button value="See Inside" />
+                </a>
               </HeaderSectionRight>
               {signedIn ? (
                 <HeaderSectionRight>
