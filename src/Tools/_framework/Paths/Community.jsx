@@ -264,7 +264,7 @@ export function Community() {
               </Wrap>
             </TabPanel>
             <TabPanel>
-              <Flex
+              <Wrap
                 p={10}
                 m={0}
                 display="flex"
@@ -299,7 +299,7 @@ export function Community() {
                     <Text fontSize="36pt">No Matching Authors Found!</Text>
                   </Flex>
                 ) : null}
-              </Flex>
+              </Wrap>
             </TabPanel>
           </TabPanels>
         </Tabs>
