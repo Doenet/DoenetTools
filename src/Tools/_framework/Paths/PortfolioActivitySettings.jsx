@@ -32,20 +32,27 @@ export async function action({ request, params }) {
 
   const formData = await request.formData();
   let updates = Object.fromEntries(formData);
+
   let response = await axios.post('/api/updatePortfolioActivitySettings.php', {
     ...updates,
     doenetId: params.doenetId,
   });
+  const portfolioCourseId = response?.data?.portfolioCourseId;
+
+  if (updates.makePublicPrivate) {
+    let response = await fetch(
+      `/api/updateIsPublicActivity.php?doenetId=${updates.doenetId}&isPublic=1`,
+    );
+  }
 
   if (referrer == 'portfolioeditor') {
     return redirect(
       `/portfolioeditor/${updates.doenetId}?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`,
     );
   } else {
-    const portfolioCourseId = response.data.portfolioCourseId;
     return redirect(`/portfolio/${portfolioCourseId}`);
   }
-
+  // return true;
   // if (response.ok) {
   //   // let { doenetId } = await response.json();
   // if (updates._source == "_source")
@@ -115,7 +122,7 @@ export function PortfolioActivitySettings() {
   let numberOfFilesUploading = useRef(0);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const { compileActivity, updateAssignItem } = useCourse(data.courseId);
-  let isMakePublic = useRef(false);
+  const [isMakePublic, setIsMakePublic] = useState(false);
 
   let [imagePath, setImagePath] = useState(data.imagePath);
 
@@ -294,9 +301,9 @@ export function PortfolioActivitySettings() {
                         onChange={(e) => {
                           //Need to track that it was not public and now it is
                           if (e.target.checked && data.public == 0) {
-                            isMakePublic.current = true;
+                            setIsMakePublic(true);
                           } else {
-                            isMakePublic.current = false;
+                            setIsMakePublic(false);
                           }
                         }}
                       >
@@ -330,15 +337,15 @@ export function PortfolioActivitySettings() {
                 type="submit"
                 value="Update"
                 onClick={() => {
-                  //Assume that they came from the editor to orient Tool Root
-                  setPageToolView({
-                    page: 'portfolioeditor',
-                    tool: 'editor',
-                    view: '',
-                    params: {},
-                  });
+                  // //Assume that they came from the editor to orient Tool Root
+                  // setPageToolView({
+                  //   page: 'portfolioeditor',
+                  //   tool: 'editor',
+                  //   view: '',
+                  //   params: {},
+                  // });
                   // console.log("check isMakePublic",e.target.checked,data.public,isMakePublic.current)
-                  if (isMakePublic.current) {
+                  if (isMakePublic) {
                     //"Making private a public activity
                     compileActivity({
                       activityDoenetId: data.doenetId,
@@ -361,13 +368,14 @@ export function PortfolioActivitySettings() {
             </SideBySide>
           </Slot3>
         </MainGrid>
-        <input type="hidden" name="imagePath" value={imagePath}></input>
-        <input type="hidden" name="doenetId" value={data.doenetId}></input>
         <input
           type="hidden"
-          name="pageDoenetId"
-          value={data.pageDoenetId}
+          name="makePublicPrivate"
+          value={isMakePublic}
         ></input>
+        <input type="hidden" name="imagePath" value={imagePath}></input>
+        <input type="hidden" name="doenetId" value={data.doenetId}></input>
+        <input type="hidden" name="pageDoenetId" value={data.pageDoenetId} />
         {/* <input type="hidden" name="_source" value="portfolio activity settings"></input> */}
       </Form>
     </>

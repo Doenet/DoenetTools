@@ -10,8 +10,6 @@ import {
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
-import { useSetRecoilState } from 'recoil';
-import { pageToolViewAtom } from '../NewToolRoot';
 import { RiEmotionSadLine } from 'react-icons/ri';
 import RecoilActivityCard from '../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard';
 
