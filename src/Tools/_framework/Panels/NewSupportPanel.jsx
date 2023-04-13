@@ -79,10 +79,16 @@ export default function SupportPanel({ hide, children }) {
   const navigate = useNavigate();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const recoilPageToolView = useRecoilValue(pageToolViewAtom);
-  const { compileActivity, updateAssignItem } = useCourse(data?.courseId);
+  const { compileActivity, updateAssignItem } = useCourse(
+    data?.activityData?.courseId,
+  );
 
   let canRemix = false;
-  if (recoilPageToolView?.page == 'public' && data?.userCanViewSource == '1') {
+
+  if (
+    recoilPageToolView?.page == 'public' &&
+    data?.activityData?.userCanViewSource == '1'
+  ) {
     canRemix = true;
   }
   return (
@@ -93,7 +99,7 @@ export default function SupportPanel({ hide, children }) {
         data-test="Support Panel Controls"
       >
         {recoilPageToolView?.page == 'portfolioeditor' &&
-        data?.public == '1' ? (
+        data?.activityData?.public == '1' ? (
           <Button
             style={{ background: '#ff7b00' }}
             value="Update Public Activity"
@@ -101,7 +107,7 @@ export default function SupportPanel({ hide, children }) {
               compileActivity({
                 activityDoenetId: doenetId,
                 isAssigned: true,
-                courseId: data?.courseId,
+                courseId: data?.activityData?.courseId,
                 // successCallback: () => {
                 //   addToast('Activity Assigned.', toastType.INFO);
                 // },
