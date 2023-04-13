@@ -5,9 +5,22 @@ import { Form } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useDropzone } from 'react-dropzone';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImage } from '@fortawesome/free-solid-svg-icons';
-import { Card, Checkbox, Image, Text } from '@chakra-ui/react';
+import { FaFileImage } from 'react-icons/fa';
+import {
+  Card,
+  Checkbox,
+  Icon,
+  Image,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+} from '@chakra-ui/react';
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
@@ -94,48 +107,6 @@ const Slot3 = styled.div`
 const SideBySide = styled.div`
   display: flex;
   column-gap: 20px;
-`;
-
-const Table = styled.table`
-  border: solid 1px var(--mainGray);
-  padding: 10px;
-  border-radius: 6px;
-`;
-
-const Th = styled.th`
-  border-bottom: solid 1px var(--mainGray);
-  max-width: 420px;
-  min-width: 390px;
-  text-align: left;
-  padding: 10px;
-`;
-const Td = styled.td`
-  border-bottom: solid 1px var(--mainGray);
-  max-width: 420px;
-  min-width: 390px;
-  text-align: left;
-  padding: 10px;
-`;
-
-const DropPad = styled.div`
-  border: 2px dashed #949494;
-  height: 144px;
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-`;
-
-const DropText = styled.div`
-  color: #949494;
-  font-size: 24pt;
-`;
-
-const DropIcon = styled.div`
-  color: #949494;
-  font-size: 30pt;
 `;
 
 export function PortfolioActivitySettings() {
@@ -230,95 +201,113 @@ export function PortfolioActivitySettings() {
             {/* <div><h1>Activity Settings</h1></div> */}
           </Slot1>
           <Slot2>
-            <Table>
-              <thead>
-                <tr>
-                  <Th>Property</Th>
-                  <Th>Setting</Th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr key="drop" {...getRootProps()}>
-                  {isDragActive ? (
-                    <Td colSpan={2}>
-                      <input {...getInputProps()} />
-                      <DropPad>
-                        <DropIcon>
-                          <FontAwesomeIcon icon={faFileImage} />
-                        </DropIcon>
-                        <DropText>Drop Image Here</DropText>
-                      </DropPad>
-                    </Td>
-                  ) : (
-                    <>
-                      <Td>
+            <TableContainer
+              borderWidth="1px"
+              borderStyle="solid"
+              borderColor="doenet.grey"
+              p="10px"
+              borderRadius="lg"
+            >
+              <Table variant="simple">
+                <Thead>
+                  <Tr>
+                    <Th>Property</Th>
+                    <Th>Setting</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  <Tr key="drop" {...getRootProps()}>
+                    {isDragActive ? (
+                      <Td colSpan={2}>
                         <input {...getInputProps()} />
-                        <SideBySide>
-                          <Text>Image</Text>
-                          <Button
-                            value="Upload"
-                            onClick={(e) => e.preventDefault()}
+                        <VStack
+                          spacing={4}
+                          p="24px"
+                          border="2px dashed #949494"
+                          borderRadius="lg"
+                          width="556px"
+                        >
+                          <Icon
+                            fontSize="24pt"
+                            color="#949494"
+                            as={FaFileImage}
                           />
-                        </SideBySide>
+                          <Text color="#949494" fontSize="24pt">
+                            Drop Image Here
+                          </Text>
+                        </VStack>
                       </Td>
-                      <Td>
-                        <input {...getInputProps()} />
-                        <Card width="180px" height="120px" p="0" m="0">
-                          <Image
-                            height="120px"
-                            maxWidth="180px"
-                            src={imagePath}
-                            alt="Activity Card Image"
-                            borderTopRadius="md"
-                            objectFit="cover"
-                          />
-                        </Card>
-                      </Td>
-                    </>
-                  )}
-                </tr>
+                    ) : (
+                      <>
+                        <Td>
+                          <input {...getInputProps()} />
+                          <SideBySide>
+                            <Text>Image</Text>
+                            <Button
+                              value="Upload"
+                              onClick={(e) => e.preventDefault()}
+                            />
+                          </SideBySide>
+                        </Td>
+                        <Td>
+                          <input {...getInputProps()} />
+                          <Card width="180px" height="120px" p="0" m="0">
+                            <Image
+                              height="120px"
+                              maxWidth="180px"
+                              src={imagePath}
+                              alt="Activity Card Image"
+                              borderTopRadius="md"
+                              objectFit="cover"
+                            />
+                          </Card>
+                        </Td>
+                      </>
+                    )}
+                  </Tr>
 
-                <tr>
-                  <Td>
-                    <Text>Activity Label</Text>
-                  </Td>
-                  <Td>
-                    <input
-                      name="label"
-                      style={{ width: '390px' }}
-                      type="text"
-                      placeholder="Activity 1"
-                      defaultValue={data.label}
-                    />
-                  </Td>
-                </tr>
-                {/* <tr>
+                  <Tr>
+                    <Td>
+                      <Text>Activity Label</Text>
+                    </Td>
+                    <Td>
+                      <input
+                        name="label"
+                        style={{ width: '390px' }}
+                        type="text"
+                        placeholder="Activity 1"
+                        defaultValue={data.label}
+                      />
+                    </Td>
+                  </Tr>
+                  {/* <Tr>
         <Td>Learning Outcomes</Td>
         <Td><textarea name="learningOutcomes" style={{width:"390px",resize: "vertical"}} placeholder='Description of Learning Outcomes' defaultValue={data.learningOutcomes}/></Td>
-        </tr> */}
-                <tr>
-                  <Td>
-                    <Checkbox
-                      size="lg"
-                      name="public"
-                      value="on"
-                      defaultChecked={data.public == '1'}
-                      onChange={(e) => {
-                        //Need to track that it was not public and now it is
-                        if (e.target.checked && data.public == 0) {
-                          isMakePublic.current = true;
-                        } else {
-                          isMakePublic.current = false;
-                        }
-                      }}
-                    >
-                      Public
-                    </Checkbox>
-                  </Td>
-                  <Td></Td>
-                </tr>
-              </tbody>
-            </Table>
+        </Tr> */}
+                  <Tr>
+                    <Td>
+                      <Checkbox
+                        size="lg"
+                        name="public"
+                        value="on"
+                        defaultChecked={data.public == '1'}
+                        onChange={(e) => {
+                          //Need to track that it was not public and now it is
+                          if (e.target.checked && data.public == 0) {
+                            isMakePublic.current = true;
+                          } else {
+                            isMakePublic.current = false;
+                          }
+                        }}
+                      >
+                        Public
+                      </Checkbox>
+                    </Td>
+                    <Td></Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </TableContainer>
           </Slot2>
           <Slot3>
             <SideBySide>
