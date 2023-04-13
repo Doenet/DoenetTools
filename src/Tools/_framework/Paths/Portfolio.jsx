@@ -127,8 +127,6 @@ const PortfolioGrid = styled.div`
 export function Portfolio() {
   let context = useOutletContext();
   let data = useLoaderData();
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  // const navigate = useNavigate();
 
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null) {
@@ -160,17 +158,7 @@ export function Portfolio() {
           </Text>
           <div style={{ position: 'absolute', top: '48px', right: '10px' }}>
             <Form method="post">
-              <Button
-                value="Add Activity"
-                onClick={() => {
-                  setPageToolView({
-                    page: 'portfolioeditor',
-                    tool: 'editor',
-                    view: '',
-                    params: {},
-                  });
-                }}
-              />
+              <Button value="Add Activity" />
               <input type="hidden" name="_action" value="Add Activity" />
             </Form>
           </div>

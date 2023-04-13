@@ -17,7 +17,6 @@ import { GoKebabVertical } from 'react-icons/go';
 import { Link, useFetcher } from 'react-router-dom';
 import { itemByDoenetId, useCourse } from '../Course/CourseActions';
 import { useSetRecoilState } from 'recoil';
-import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 
 export default function RecoilActivityCard({
   doenetId,
@@ -33,23 +32,12 @@ export default function RecoilActivityCard({
   const fetcher = useFetcher();
   const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
   const { compileActivity, updateAssignItem } = useCourse(courseId);
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const imageLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
   return (
     <Card width="180px" height="180px" p="0" m="0">
-      <Link
-        to={imageLink}
-        onClick={() => {
-          setPageToolView({
-            page: 'portfolioeditor',
-            tool: 'editor',
-            view: '',
-            params: {},
-          });
-        }}
-      >
+      <a href={imageLink}>
         <Image
           height="120px"
           maxWidth="180px"
@@ -58,7 +46,7 @@ export default function RecoilActivityCard({
           borderTopRadius="md"
           objectFit="cover"
         />
-      </Link>
+      </a>
       <CardBody p="1">
         <Flex columnGap="2px">
           <Avatar size="sm" name={fullName} />

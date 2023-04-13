@@ -57,63 +57,6 @@ const CardsContainer = styled.div`
   width: calc(100vw - 40px);
 `;
 
-// function Card({ doenetId, imagePath, label, pageDoenetId, fullName }) {
-//   const activityLink = `/portfolioviewer/${doenetId}`;
-
-//   return (
-//     <Box
-//       display="flex"
-//       flexDirection="column"
-//       height="180px"
-//       width="180px"
-//       background="black"
-//       overflow="hidden"
-//       margin="10px"
-//       border="2px solid #949494"
-//       borderRadius="6px"
-//     >
-//       <Box height="130px">
-//         <Link to={activityLink}>
-//           <Image
-//             width="100%"
-//             height="100%"
-//             objectFit="contain"
-//             src={imagePath}
-//             alt="Activity Card"
-//           />
-//         </Link>
-//       </Box>
-//       <Box
-//         height="50px"
-//         display="flex"
-//         justifyContent="flex-start"
-//         padding="2px"
-//         color="black"
-//         background="white"
-//       >
-//         <Box
-//           width="40px"
-//           display="flex"
-//           alignContent="center"
-//           justifyContent="center"
-//           alignItems="center"
-//           position="relative"
-//         >
-//           <Avatar size="sm" name={fullName} />
-//           <Box position="absolute" width="100px" left="8px" bottom="0px">
-//             <Text fontSize="10px">{fullName}</Text>
-//           </Box>
-//         </Box>
-//         <Box>
-//           <Text fontSize="sm" lineHeight="1" noOfLines={2}>
-//             {label}
-//           </Text>
-//         </Box>
-//       </Box>
-//     </Box>
-//   );
-// }
-
 const PortfolioGrid = styled.div`
   display: grid;
   grid-template-rows: 80px auto;
