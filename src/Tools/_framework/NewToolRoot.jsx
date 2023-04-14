@@ -1122,6 +1122,9 @@ function RootController(props) {
     //push url with no refresh
     let tool = nextPageToolView.tool;
     let pathname = '/' + recoilPageToolView.page;
+    if (recoilPageToolView.optionalURLParam) {
+      pathname = pathname + '/' + recoilPageToolView.optionalURLParam;
+    }
     searchObj = { ...recoilPageToolView.params };
     if (tool !== '' && tool !== undefined) {
       searchObj = { tool, ...recoilPageToolView.params };

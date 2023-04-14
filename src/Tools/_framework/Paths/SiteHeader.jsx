@@ -1,11 +1,13 @@
 import { Box } from '@chakra-ui/react';
-import React from 'react';
-import { Outlet, useLoaderData } from 'react-router';
+import React, { useEffect, useRef } from 'react';
+import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import RouterLogo from '../RouterLogo';
+import { pageToolViewAtom } from '../NewToolRoot';
+import { useRecoilState } from 'recoil';
 
 export async function loader() {
   //Check if signedIn
@@ -92,17 +94,49 @@ function MenuItem({ to, children }) {
 
 export function SiteHeader(props) {
   let data = useLoaderData();
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef('');
+
+  if (navigateTo.current != '') {
+    const newHref = navigateTo.current;
+    navigateTo.current = '';
+    location.href = newHref;
+  }
 
   let signInButton = (
-    <a href="/course">
-      <Button dataTest="Nav to course" size="medium" value="My Courses" />
-    </a>
+    <Button
+      dataTest="Nav to course"
+      size="medium"
+      value="My Courses"
+      onClick={() => {
+        navigateTo.current = '/course';
+        setRecoilPageToolView({
+          page: 'course',
+          tool: '',
+          view: '',
+          params: {},
+        });
+      }}
+    />
   );
   if (!data.signedIn) {
     signInButton = (
-      <a href="/SignIn">
-        <Button dataTest="Nav to signin" size="medium" value="Sign In" />
-      </a>
+      <Button
+        dataTest="Nav to signin"
+        size="medium"
+        value="Sign In"
+        onClick={() => {
+          navigateTo.current = '/signin';
+          setRecoilPageToolView({
+            page: 'signin',
+            tool: '',
+            view: '',
+            params: {},
+          });
+        }}
+      />
     );
   }
 
