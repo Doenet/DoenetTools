@@ -36,43 +36,29 @@ $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 $label = mysqli_real_escape_string($conn, $_POST['label']);
 $imagePath = mysqli_real_escape_string($conn, $_POST['imagePath']);
 $public = mysqli_real_escape_string($conn, $_POST['public']);
-// $learningOutcomes = mysqli_real_escape_string(
-//     $conn,
-//     $_POST['learningOutcomes']
-// );
+
 
 $isPublic = '0';
 if ($public) {
     $isPublic = '1';
 }
 
-//TODO: Make this a handler function fail(message,code);
-
-// if (trim($label) == ''){
-//     http_response_code(400);
-
-//     echo json_encode([
-//         'success' => false,
-//         'message' => "Label can't be blank.",
-//     ]);
-
-//     $conn->close();
-//     exit();
-// }
-
-
 
 $sql = "
-SELECT courseId
+SELECT courseId,
+isPublic
 FROM course_content
 WHERE doenetId = '$doenetId'
 ";
 $result = $conn->query($sql);
 
+$dbIsPublic = "";
+
 //Test if the user has permission to update
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $portfolioCourseId = $row['courseId'];
+    $dbIsPublic = $row['isPublic'];
     $permissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
         $userId,
@@ -88,15 +74,28 @@ if ($result->num_rows > 0) {
 }
 
 if ($success) {
-    // $sql = "
-    //     UPDATE course_content
-    //     SET label = '$label', 
-    //     imagePath = '$imagePath',
-    //     isPublic = '$isPublic',
-    //     learningOutcomes = '$learningOutcomes'
-    //     WHERE doenetId = '$doenetId'
-    //     AND courseId = '$portfolioCourseId'
-    //     ";
+
+    if ($dbIsPublic == '0' && $isPublic == '1'){
+        //Was private and now is public
+        $sql = "
+        UPDATE course_content
+        SET isPublic = '1',
+        userCanViewSource = '1',
+        addToPublicPortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+        WHERE doenetId = '$doenetId'
+        ";
+        $conn->query($sql);
+    }else if($dbIsPublic == '1' && $isPublic == '0') {
+        //Was public and now is private
+        $sql = "
+        UPDATE course_content
+        SET isPublic = '0',
+        addToPrivatePortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+        WHERE doenetId = '$doenetId'
+        ";
+        $conn->query($sql);
+    }
+
     $sql = "
         UPDATE course_content
         SET label = '$label', 

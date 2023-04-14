@@ -71,7 +71,6 @@ if ($success) {
         $sql = "
         UPDATE course_content
         SET isPublic = '0',
-        userCanViewSource = '1',
         addToPrivatePortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
         WHERE doenetId = '$doenetId'
         ";
