@@ -12,6 +12,7 @@ import {
   loader as communityLoader,
   Community,
 } from './Tools/_framework/Paths/Community';
+import { loader as adminLoader, Admin } from './Tools/_framework/Paths/Admin';
 import {
   loader as siteLoader,
   SiteHeader,
@@ -153,6 +154,15 @@ const router = createBrowserRouter([
         element: (
           <ChakraProvider theme={theme}>
             <Community />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: 'admin',
+        loader: adminLoader,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Admin />
           </ChakraProvider>
         ),
       },

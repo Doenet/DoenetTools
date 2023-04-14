@@ -39,7 +39,6 @@ export async function loader({ request }) {
   if (q) {
     //Show search results
     const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
-    //const response = await fetch(`/api/getAllRecentPublicActivites.php`);
     const respObj = await response.json();
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const { isAdmin } = await isAdminResponse.json();
@@ -91,8 +90,7 @@ const CarouselSection = styled.div`
   background: var(--mainGray);
 `;
 
-export function MoveToGroupMenuItem({ doenetId }) {
-  const { carouselGroups } = useLoaderData();
+export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
 
@@ -269,7 +267,6 @@ export function Community() {
 
                     return (
                       <ActivityCard
-                        carouselGroups={carouselGroups}
                         key={doenetId}
                         imageLink={imageLink}
                         imagePath={imagePath}
@@ -278,7 +275,10 @@ export function Community() {
                         menuItems={
                           isAdmin ? (
                             <>
-                              <MoveToGroupMenuItem doenetId={doenetId} />
+                              <MoveToGroupMenuItem
+                                doenetId={doenetId}
+                                carouselGroups={carouselGroups}
+                              />
                             </>
                           ) : null
                         }
@@ -329,7 +329,6 @@ export function Community() {
 
                   return (
                     <ActivityCard
-                      carouselGroups={carouselGroups}
                       key={doenetId}
                       imageLink={imageLink}
                       imagePath={imagePath}
@@ -338,7 +337,10 @@ export function Community() {
                       menuItems={
                         isAdmin ? (
                           <>
-                            <MoveToGroupMenuItem doenetId={doenetId} />
+                            <MoveToGroupMenuItem
+                              doenetId={doenetId}
+                              carouselGroups={carouselGroups}
+                            />
                           </>
                         ) : null
                       }
