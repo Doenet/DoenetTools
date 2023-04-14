@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 include 'db_connection.php';
 include 'createPortfolioCourseFunction.php';
 include 'mineActivityForIdsFunction.php';
-
+include 'parseActivityDefinitionRenamePages.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
@@ -27,10 +27,11 @@ if ($prevActivityDoenetId == ""){
 
 $prevCourseId = "";
 
-//Make sure the activity is public
+//Make sure the activity is public and assigned
 if ($success) {
     $sql = "
     SELECT isPublic,
+    isAssigned,
     courseId
     FROM course_content
     WHERE doenetId = '$prevActivityDoenetId'
@@ -41,12 +42,16 @@ if ($success) {
     if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $isPublic = $row['isPublic'];
+    $isAssigned = $row['isAssigned'];
     $prevCourseId = $row['courseId'];
 
     if ($isPublic != '1'){
         $success = FALSE;
         $message = 'Internal Error: Activity is not public';
     }
+    }else if ($isAssigned != '1'){
+        $success = FALSE;
+        $message = 'Internal Error: Activity is not public';
     }else{
         $success = FALSE;
         $message = 'Internal Error: Activity is not available';
@@ -85,7 +90,7 @@ $nextActivityDoenetId = "";
 // Duplicate the activity
 if ($success) {
 
-    //Querry the activity's information
+    //Query the activity's information
     $sql = "
     SELECT 
     type,
@@ -119,125 +124,84 @@ if ($success) {
     $prevToNextDoenetIds[$prevCourseId] = $nextCourseId; //Need this for parentDoenetIds
     $prevToNextDoenetIds[$prevActivityDoenetId] = $nextActivityDoenetId; 
 
+    $activityJSON = json_decode($previous_activity_content['jsonDefinition'], true);
+    $assignedCid = $activityJSON["assignedCid"];
 
-    $allPreviousIds = mine_activity_for_ids(
-        json_decode($previous_activity_content['jsonDefinition'], true)
-    );
-    $allPreviousPageIds = $allPreviousIds['PageIds'];
-    $allPreviousOrderIds = $allPreviousIds['OrderIds'];
+    $assignedActivity = file_get_contents("../media/$assignedCid.doenet");
 
-    $nextActivityJsonDefinition = $previous_activity_content['jsonDefinition'];
+    if($assignedActivity == FALSE) {
+        $success = FALSE;
+        $message = 'Internal Error: Activity is not available';
+    } else {
 
-    //Insert new pages for the new activity
-    //And prepare the new activity json
-    foreach ($allPreviousPageIds as $previousPageId){
-        $nextDoenetId = include 'randomId.php';
-        $nextDoenetId = '_' . $nextDoenetId;
-        $prevToNextDoenetIds[$previousPageId] = $nextDoenetId;
-        $nextActivityJsonDefinition = str_replace(
-            $previousPageId,
-            $nextDoenetId,
-            $nextActivityJsonDefinition);
+        $parse_results = parse_activity_definition_rename_pages($assignedActivity);
 
-        //copy the page file
-        $sourceFile = "../media/byPageId/$previousPageId.doenet";
-        $destinationFile = "../media/byPageId/$nextDoenetId.doenet";
+        if(!$parse_results["success"]) {
+            $success = FALSE;
+            $message = 'Internal Error: $parse_results["message"]';
+        } else {
 
-        $dirname = dirname($destinationFile);
-        if (!is_dir($dirname)) {
-            mkdir($dirname, 0755, true);
-        }
-        if (!copy($sourceFile, $destinationFile)) {
-            $success = false;
-            $message = 'failed to copy';
-        }    
+            $nextActivityJsonDefinition = $parse_results["activity_definition"];
 
-    }
-    
+            $nextFirstPageDoenetId = $parse_results["first_page_id"];
 
-    //SELECT all the pages table info
-    $allPreviousPageIdsQuoted = array_map(function($value) {
-        return '"' . $value . '"';
-    }, $allPreviousPageIds);
-    $str_select_pages = implode(',', $allPreviousPageIdsQuoted);
+            // for now, just copy the list of files?
+            $nextActivityJsonDefinition["files"] = $activityJSON["files"];
 
-    $insert_to_pages = [];
+            $nextActivityJsonDefinition = json_encode($nextActivityJsonDefinition);
 
-    $sql = "
-    SELECT
-    doenetId,
-    label,
-    containingDoenetId
-    FROM pages
-    WHERE doenetId IN ($str_select_pages)
-    AND isDeleted='0'
-    ";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
+            $insert_to_pages = [];
 
-            $previousDoenetId = $row['doenetId'];
-            $nextDoenetId = $prevToNextDoenetIds[$previousDoenetId];
-            $containingDoenetId = $row['containingDoenetId'];
-            $nextContainingDoenetId = $prevToNextDoenetIds[$containingDoenetId];
-            $label = $row['label'];
-            $escapedLabel = mysqli_real_escape_string($conn, $label);
-            array_push(
-                $insert_to_pages,
-                "('$nextCourseId','$nextContainingDoenetId','$nextDoenetId','$escapedLabel')"
-            );
-            //TODO: Make sure orders work
-               //         if ($contained_pages[$containingDoenetId] == '') {
-    //             $contained_pages[$containingDoenetId] = [
-    //                 [
-    //                     'previous' => $pageDoenetId,
-    //                     'next' => $nextDoenetId,
-    //                 ],
-    //             ];
-    //         } else {
-    //             array_push($contained_pages[$containingDoenetId], [
-    //                 'previous' => $pageDoenetId,
-    //                 'next' => $nextDoenetId,
-    //             ]);
-    //         }
+            foreach($parse_results["renamed_pages"] as $old_page_cid => $new_page_id) {
+                $sourceFile = "../media/$old_page_cid.doenet";
+                $destinationFile = "../media/byPageId/$new_page_id.doenet";
+        
+                $dirname = dirname($destinationFile);
+                if (!is_dir($dirname)) {
+                    mkdir($dirname, 0755, true);
+                }
+                if (!copy($sourceFile, $destinationFile)) {
+                    $success = false;
+                    $message = 'failed to copy';
+                }  
+
+                array_push(
+                    $insert_to_pages,
+                    "('$nextCourseId','$nextActivityDoenetId','$new_page_id','Untitled')"
+                );
+            }
+
+
+            $escapedLabel = mysqli_real_escape_string($conn, $previous_activity_content['label']);
+            $imagePath = $previous_activity_content['imagePath'];
+            $type = $previous_activity_content['type'];
+            $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
+            
+            
+            //INSERT the new activity into course_content
+            $sql = "
+            INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath,addToPrivatePortfolioDate)
+            VALUES
+            $str_insert_to_course_content
+            ";
+            $conn->query($sql);
+            
+
+            $str_insert_to_pages = implode(',', $insert_to_pages);
+            //INSERT all the new pages into the pages table
+            $sql = "
+            INSERT INTO pages (courseId,containingDoenetId,doenetId,label)
+            VALUES
+            $str_insert_to_pages
+            ";
+            $result = $conn->query($sql);
+
+
         }
     }
-    $str_insert_to_pages = implode(',', $insert_to_pages);
-
-
-     //Prepare the new activity json for new orders
-
-    
-    //TODO: Fix sortOrder
-    //TODO: Figure out learningOutcomes
-
-    $escapedLabel = mysqli_real_escape_string($conn, $previous_activity_content['label']);
-    $imagePath = $previous_activity_content['imagePath'];
-    $type = $previous_activity_content['type'];
-    $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath')";
-    
-    
-    //INSERT the new activity into course_content
-    $sql = "
-    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath)
-    VALUES
-    $str_insert_to_course_content
-    ";
-    $conn->query($sql);
-    
-    //INSERT all the new pages into the pages table
-    $sql = "
-    INSERT INTO pages (courseId,containingDoenetId,doenetId,label)
-    VALUES
-    $str_insert_to_pages
-    ";
-    $conn->query($sql);
-
-
-   
-
- 
 }
+
+
 
 
 //copy support files
@@ -281,8 +245,6 @@ if ($success) {
 //     }
 // }
 
-
-$nextFirstPageDoenetId = $prevToNextDoenetIds[$allPreviousPageIds[0]];
 
 $response_arr = [
     'success' => $success,

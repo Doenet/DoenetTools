@@ -1801,7 +1801,7 @@ export const useCourse = (courseId) => {
         }
 
         if (activity.shuffleItemWeights) {
-          attributeString += ` shuffleItemWeights`;
+          attributeString += ` shuffleItemWeights="true"`;
         }
 
         if (activity.numberOfVariants !== undefined) {
@@ -1809,7 +1809,7 @@ export const useCourse = (courseId) => {
         }
 
         if (activity.isSinglePage) {
-          attributeString += ` isSinglePage`;
+          attributeString += ` isSinglePage="true"`;
         }
 
         let childrenString ="";
