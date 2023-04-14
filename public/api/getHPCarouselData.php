@@ -22,14 +22,14 @@ try {
 
     $sql = 
         "select groupName, currentlyFeatured, homepage,
-                pc.sortOrder, doenetId, course_content.label, course_content.imagePath,
+                pc.sortOrder, doenetId, cc.label, cc.imagePath,
                 screenName, email, lastName, firstName, 
                 profilePicture, trackingConsent, canUpload
         from promoted_content_groups pcg
         join promoted_content pc on pcg.id = pc.promoted_content_groups_id
-        join course_content using(doenetId)
-        join course on course_content.courseId = course.courseId
-        join user on course.portfolioCourseForUserId = user.userId
+        join course_content cc using(doenetId)
+        join course c on cc.courseId = c.courseId
+        join user on c.portfolioCourseForUserId = user.userId
         AND cc.isPublic = 1
         AND cc.isDeleted = 0
         AND c.portfolioCourseForUserId IS NOT NULL
