@@ -39,6 +39,7 @@ export async function loader({ request }) {
   if (q) {
     //Show search results
     const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
+    //const response = await fetch(`/api/getAllRecentPublicActivites.php`);
     const respObj = await response.json();
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const { isAdmin } = await isAdminResponse.json();

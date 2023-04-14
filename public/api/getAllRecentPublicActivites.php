@@ -21,38 +21,32 @@ $response_arr;
 try {
 
     $sql = 
-        "select groupName, currentlyFeatured, homepage,
-                pc.sortOrder, doenetId, course_content.label, course_content.imagePath,
-                screenName, email, lastName, firstName, 
+        "select doenetId, cc.label, cc.imagePath,
+                screenName, email, concat(firstName, concat(' ', lastName)) as fullName,
                 profilePicture, trackingConsent, canUpload
-        from promoted_content_groups pcg
-        join promoted_content pc on pcg.id = pc.promoted_content_groups_id
-        join course_content using(doenetId)
-        join course on course_content.courseId = course.courseId
-        join user on course.portfolioCourseForUserId = user.userId
+        from course_content cc
+        join course c on cc.courseId = c.courseId
+        join user on c.portfolioCourseForUserId = user.userId
         AND cc.isPublic = 1
         AND cc.isDeleted = 0
         AND c.portfolioCourseForUserId IS NOT NULL
+        order by cc.creationDate desc
+        limit 100
         ";
 
     $result = $conn->query($sql);
     if ($result->num_rows <= 0) {
-        throw new Exception("No promoted content groups were found.");
+        throw new Exception("No promoted content groups were found." . $conn->error);
     } else {
-        $promotedGroups = [];
+        $matchingActivities = [];
         while ($row = $result->fetch_assoc()) {
-            if ($promotedGroups[$row['groupName']]) {
-                // add to existing list for this group if it was found in the list of rows so far
-                array_push($promotedGroups[$row['groupName']], $row);
-            } else {
-                // otherwise add a new nested array for the group and add this first row to it
-                $promotedGroups[$row['groupName']] = [$row];
-            }
+            $row['type'] = 'activity';
+            $matchingActivities[] = $row;
         }
     }
     $response_arr = [
         'success' => true,
-        'carouselData' => $promotedGroups
+        "searchResults"=>["users"=>[],"activities"=>$matchingActivities],
     ];
     // set response code - 200 OK
     http_response_code(200);
