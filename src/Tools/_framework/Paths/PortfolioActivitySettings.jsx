@@ -21,7 +21,7 @@ import {
   Tr,
   VStack,
 } from '@chakra-ui/react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 
@@ -47,25 +47,20 @@ export async function action({ request, params }) {
     return redirect(`/portfolio/${portfolioCourseId}`);
   }
   // return true;
-  // if (response.ok) {
-  //   // let { doenetId } = await response.json();
-  // if (updates._source == "_source")
-  // return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`)
-  // return redirect(`/portfolioeditor?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`)
-  // }else{
-  //   return redirect(`/portfolio/${portfolioCourseId}`)
-  // }
-  // }else{
-  //   throw Error(response.message)
-  // }
 }
 
 export async function loader({ params }) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const referrer = urlParams.get('referrer');
+
   const response = await fetch(
     `/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`,
   );
   const data = await response.json();
-  return data.activityData;
+  let activityData = data.activityData;
+
+  return { ...activityData, referrer };
 }
 
 export async function ErrorBoundry(whatdoIget) {
@@ -112,13 +107,28 @@ const SideBySide = styled.div`
 
 export function PortfolioActivitySettings() {
   let data = useLoaderData();
+  console.log('data', data);
+
   const navigate = useNavigate();
   let numberOfFilesUploading = useRef(0);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const { compileActivity, updateAssignItem } = useCourse(data.courseId);
   const [isMakePublic, setIsMakePublic] = useState(false);
+  const [label, setLabel] = useState(data.label);
+  const [isPublic, setIsPublic] = useState(data.public == '1');
 
   let [imagePath, setImagePath] = useState(data.imagePath);
+
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef('');
+
+  if (navigateTo.current != '') {
+    const newHref = navigateTo.current;
+    navigateTo.current = '';
+    location.href = newHref;
+  }
 
   const onDrop = useCallback(
     async (files) => {
@@ -193,180 +203,213 @@ export function PortfolioActivitySettings() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
     <>
-      <Form method="post">
-        <MainGrid>
-          <Slot1>
-            <Text fontSize="24px" fontWeight="700">
-              Activity Settings
-            </Text>
-            {/* <div><h1>Activity Settings</h1></div> */}
-          </Slot1>
-          <Slot2>
-            <TableContainer
-              borderWidth="1px"
-              borderStyle="solid"
-              borderColor="doenet.grey"
-              p="10px"
-              borderRadius="lg"
-            >
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>Property</Th>
-                    <Th>Setting</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  <Tr key="drop" {...getRootProps()}>
-                    {isDragActive ? (
-                      <Td colSpan={2}>
+      {/* <Form method="post"> */}
+      <MainGrid>
+        <Slot1>
+          <Text fontSize="24px" fontWeight="700">
+            Activity Settings
+          </Text>
+          {/* <div><h1>Activity Settings</h1></div> */}
+        </Slot1>
+        <Slot2>
+          <TableContainer
+            borderWidth="1px"
+            borderStyle="solid"
+            borderColor="doenet.grey"
+            p="10px"
+            borderRadius="lg"
+          >
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Property</Th>
+                  <Th>Setting</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr key="drop" {...getRootProps()}>
+                  {isDragActive ? (
+                    <Td colSpan={2}>
+                      <input {...getInputProps()} />
+                      <VStack
+                        spacing={4}
+                        p="24px"
+                        border="2px dashed #949494"
+                        borderRadius="lg"
+                        width="556px"
+                      >
+                        <Icon
+                          fontSize="24pt"
+                          color="#949494"
+                          as={FaFileImage}
+                        />
+                        <Text color="#949494" fontSize="24pt">
+                          Drop Image Here
+                        </Text>
+                      </VStack>
+                    </Td>
+                  ) : (
+                    <>
+                      <Td>
                         <input {...getInputProps()} />
-                        <VStack
-                          spacing={4}
-                          p="24px"
-                          border="2px dashed #949494"
-                          borderRadius="lg"
-                          width="556px"
-                        >
-                          <Icon
-                            fontSize="24pt"
-                            color="#949494"
-                            as={FaFileImage}
+                        <SideBySide>
+                          <Text>Image</Text>
+                          <Button
+                            value="Upload"
+                            onClick={(e) => e.preventDefault()}
                           />
-                          <Text color="#949494" fontSize="24pt">
-                            Drop Image Here
-                          </Text>
-                        </VStack>
+                        </SideBySide>
                       </Td>
-                    ) : (
-                      <>
-                        <Td>
-                          <input {...getInputProps()} />
-                          <SideBySide>
-                            <Text>Image</Text>
-                            <Button
-                              value="Upload"
-                              onClick={(e) => e.preventDefault()}
-                            />
-                          </SideBySide>
-                        </Td>
-                        <Td>
-                          <input {...getInputProps()} />
-                          <Card width="180px" height="120px" p="0" m="0">
-                            <Image
-                              height="120px"
-                              maxWidth="180px"
-                              src={imagePath}
-                              alt="Activity Card Image"
-                              borderTopRadius="md"
-                              objectFit="cover"
-                            />
-                          </Card>
-                        </Td>
-                      </>
-                    )}
-                  </Tr>
+                      <Td>
+                        <input {...getInputProps()} />
+                        <Card width="180px" height="120px" p="0" m="0">
+                          <Image
+                            height="120px"
+                            maxWidth="180px"
+                            src={imagePath}
+                            alt="Activity Card Image"
+                            borderTopRadius="md"
+                            objectFit="cover"
+                          />
+                        </Card>
+                      </Td>
+                    </>
+                  )}
+                </Tr>
 
-                  <Tr>
-                    <Td>
-                      <Text>Activity Label</Text>
-                    </Td>
-                    <Td>
-                      <input
-                        name="label"
-                        style={{ width: '390px' }}
-                        type="text"
-                        placeholder="Activity 1"
-                        defaultValue={data.label}
-                      />
-                    </Td>
-                  </Tr>
-                  {/* <Tr>
+                <Tr>
+                  <Td>
+                    <Text>Activity Label</Text>
+                  </Td>
+                  <Td>
+                    <input
+                      name="label"
+                      style={{ width: '390px' }}
+                      type="text"
+                      placeholder="Activity 1"
+                      // defaultValue={data.label}
+                      value={label}
+                      onChange={(e) => {
+                        setLabel(e.target.value);
+                      }}
+                    />
+                  </Td>
+                </Tr>
+                {/* <Tr>
         <Td>Learning Outcomes</Td>
         <Td><textarea name="learningOutcomes" style={{width:"390px",resize: "vertical"}} placeholder='Description of Learning Outcomes' defaultValue={data.learningOutcomes}/></Td>
         </Tr> */}
-                  <Tr>
-                    <Td>
-                      <Checkbox
-                        size="lg"
-                        name="public"
-                        value="on"
-                        defaultChecked={data.public == '1'}
-                        onChange={(e) => {
-                          //Need to track that it was not public and now it is
-                          if (e.target.checked && data.public == 0) {
-                            setIsMakePublic(true);
-                          } else {
-                            setIsMakePublic(false);
-                          }
-                        }}
-                      >
-                        Public
-                      </Checkbox>
-                    </Td>
-                    <Td></Td>
-                  </Tr>
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </Slot2>
-          <Slot3>
-            <SideBySide>
-              <Button
-                alert
-                value="Cancel"
-                onClick={(e) => {
-                  e.preventDefault();
-                  //Assume that they came from the editor to orient Tool Root
-                  setPageToolView({
-                    page: 'portfolioeditor',
-                    tool: 'editor',
-                    view: '',
-                    params: {},
+                <Tr>
+                  <Td>
+                    <Checkbox
+                      size="lg"
+                      name="public"
+                      value="on"
+                      isChecked={isPublic}
+                      // defaultChecked={data.public == '1'}
+                      onChange={(e) => {
+                        setIsPublic(e.target.checked);
+                        //Need to track that it was not public and now it is
+                        if (e.target.checked && data.public == 0) {
+                          setIsMakePublic(true);
+                        } else {
+                          setIsMakePublic(false);
+                        }
+                      }}
+                    >
+                      Public
+                    </Checkbox>
+                  </Td>
+                  <Td></Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Slot2>
+        <Slot3>
+          <SideBySide>
+            <Button
+              alert
+              value="Cancel"
+              onClick={(e) => {
+                e.preventDefault();
+                //Assume that they came from the editor to orient Tool Root
+                setPageToolView({
+                  page: 'portfolioeditor',
+                  tool: 'editor',
+                  view: '',
+                  params: {},
+                });
+                navigate(-1);
+              }}
+            />
+            <Button
+              // type="submit"
+              value="Update"
+              onClick={async () => {
+                if (isMakePublic) {
+                  //"Making private a public activity
+                  compileActivity({
+                    activityDoenetId: data.doenetId,
+                    isAssigned: true,
+                    courseId: data.courseId,
+                    successCallback: () => {
+                      //   addToast('Activity Assigned.', toastType.INFO);
+                    },
                   });
-                  navigate(-1);
-                }}
-              />
-              <Button
-                type="submit"
-                value="Update"
-                onClick={() => {
-                  // //Assume that they came from the editor to orient Tool Root
-                  // setPageToolView({
-                  //   page: 'portfolioeditor',
-                  //   tool: 'editor',
-                  //   view: '',
-                  //   params: {},
-                  // });
-                  // console.log("check isMakePublic",e.target.checked,data.public,isMakePublic.current)
-                  if (isMakePublic) {
-                    //"Making private a public activity
-                    compileActivity({
-                      activityDoenetId: data.doenetId,
-                      isAssigned: true,
-                      courseId: data.courseId,
-                      successCallback: () => {
-                        //   addToast('Activity Assigned.', toastType.INFO);
-                      },
-                    });
-                    updateAssignItem({
-                      doenetId: data.doenetId,
-                      isAssigned: true,
-                      successCallback: () => {
-                        //addToast(assignActivityToast, toastType.INFO);
-                      },
-                    });
-                  }
-                }}
-              />
-            </SideBySide>
-          </Slot3>
-        </MainGrid>
-        <input type="hidden" name="imagePath" value={imagePath}></input>
+                  updateAssignItem({
+                    doenetId: data.doenetId,
+                    isAssigned: true,
+                    successCallback: () => {
+                      //addToast(assignActivityToast, toastType.INFO);
+                    },
+                  });
+                }
+
+                // console.log({
+                //   label: label,
+                //   doenetId: data.doenetId,
+                //   imagePath,
+                //   public: isPublic,
+                // });
+
+                let response = await axios.post(
+                  '/api/updatePortfolioActivitySettings.php',
+                  {
+                    label: label,
+                    doenetId: data.doenetId,
+                    imagePath,
+                    public: isPublic,
+                  },
+                );
+                const portfolioCourseId = response?.data?.portfolioCourseId;
+                console.log('data.referrer', data.referrer);
+                // if (data.referrer == 'portfolioeditor') {
+                //   navigateTo.current = `/portfolioeditor/${data.doenetId}?tool=editor&doenetId=${data.doenetId}&pageId=${data.pageDoenetId}`;
+                // } else {
+                //   navigateTo.current = `/portfolio/${portfolioCourseId}`;
+                // }
+                // //Need this even if its going to portfolio to refresh the component
+                // setPageToolView({
+                //   page: 'portfolioeditor',
+                //   optionalURLParam: data.doenetId,
+                //   tool: 'editor',
+                //   view: '',
+                //   params: {
+                //     doenetId: data.doenetId,
+                //     pageId: data.pageDoenetId,
+                //   },
+                // });
+              }}
+            />
+          </SideBySide>
+        </Slot3>
+      </MainGrid>
+      {/* <input type="hidden" name="imagePath" value={imagePath}></input>
         <input type="hidden" name="doenetId" value={data.doenetId}></input>
-        <input type="hidden" name="pageDoenetId" value={data.pageDoenetId} />
-        {/* <input type="hidden" name="_source" value="portfolio activity settings"></input> */}
-      </Form>
+        <input type="hidden" name="pageDoenetId" value={data.pageDoenetId} /> */}
+      {/* <input type="hidden" name="_source" value="portfolio activity settings"></input> */}
+      {/* </Form> */}
     </>
   );
 }
