@@ -139,6 +139,8 @@ export function Carousel({ title = '', data = [] }) {
                 <SwiperSlide key={`swipercard${i}`}>
                   <ActivityCard
                     {...cardObj}
+                    fullName={cardObj.firstName + ' ' + cardObj.lastName}
+                    imageLink={`/portfolioviewer/${cardObj.doenetId}`}
                     menuItems={
                       null
                       /* z-index stacking issues, might be related to the carousel
