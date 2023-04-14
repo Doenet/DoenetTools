@@ -1,6 +1,6 @@
 // import axios from 'axios';
 import { Box, Icon, Text, Flex, Wrap } from '@chakra-ui/react';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   redirect,
   Form,
@@ -12,6 +12,8 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 import { RiEmotionSadLine } from 'react-icons/ri';
 import RecoilActivityCard from '../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard';
+import { pageToolViewAtom } from '../NewToolRoot';
+import { useRecoilState } from 'recoil';
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -126,6 +128,17 @@ export function Portfolio() {
   let context = useOutletContext();
   let data = useLoaderData();
 
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef('');
+
+  if (navigateTo.current != '') {
+    const newHref = navigateTo.current;
+    navigateTo.current = '';
+    location.href = newHref;
+  }
+
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null) {
     return null;
@@ -155,10 +168,29 @@ export function Portfolio() {
             Portfolio
           </Text>
           <div style={{ position: 'absolute', top: '48px', right: '10px' }}>
-            <Form method="post">
-              <Button value="Add Activity" />
-              <input type="hidden" name="_action" value="Add Activity" />
-            </Form>
+            {/* <Form method="post"> */}
+            <Button
+              value="Add Activity"
+              onClick={async () => {
+                //Create a portfilio activity and redirect to the editor for it
+                let response = await fetch('/api/createPortfolioActivity.php');
+
+                if (response.ok) {
+                  let { doenetId, pageDoenetId } = await response.json();
+                  navigateTo.current = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
+                  setRecoilPageToolView({
+                    page: 'portfolioeditor',
+                    tool: 'editor',
+                    view: '',
+                    params: { doenetId, pageId: pageDoenetId },
+                  });
+                } else {
+                  throw Error(response.message);
+                }
+              }}
+            />
+            {/* <input type="hidden" name="_action" value="Add Activity" /> */}
+            {/* </Form> */}
           </div>
         </Box>
         <PublicActivitiesSection>

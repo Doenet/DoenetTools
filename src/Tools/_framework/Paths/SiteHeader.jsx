@@ -96,33 +96,22 @@ export function SiteHeader(props) {
   let data = useLoaderData();
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
-  const navigate = useNavigate();
 
-  let changeCount = useRef(0);
-  useEffect(() => {
-    console.log(
-      'recoilPageToolView 0',
-      recoilPageToolView,
-      changeCount.current,
-    );
-    if (changeCount.current == 0) {
-      changeCount.current++;
-    } else if (changeCount.current == 1) {
-      if (recoilPageToolView.page == 'course') {
-        navigate('/course');
-      } else if (recoilPageToolView.page == 'signin') {
-        navigate('/signin');
-      }
-    }
-  }, [recoilPageToolView, navigate]);
+  let navigateTo = useRef('');
 
-  // <a href="/course">
+  if (navigateTo.current != '') {
+    const newHref = navigateTo.current;
+    navigateTo.current = '';
+    location.href = newHref;
+  }
+
   let signInButton = (
     <Button
       dataTest="Nav to course"
       size="medium"
       value="My Courses"
       onClick={() => {
+        navigateTo.current = '/course';
         setRecoilPageToolView({
           page: 'course',
           tool: '',
@@ -139,6 +128,7 @@ export function SiteHeader(props) {
         size="medium"
         value="Sign In"
         onClick={() => {
+          navigateTo.current = '/signin';
           setRecoilPageToolView({
             page: 'signin',
             tool: '',
