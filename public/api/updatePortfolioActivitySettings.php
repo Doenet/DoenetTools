@@ -46,19 +46,22 @@ if ($public) {
 
 $sql = "
 SELECT courseId,
-isPublic
+isPublic,
+userCanViewSource
 FROM course_content
 WHERE doenetId = '$doenetId'
 ";
 $result = $conn->query($sql);
 
 $dbIsPublic = "";
+$dbIsUserCanViewSource = "";
 
 //Test if the user has permission to update
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $portfolioCourseId = $row['courseId'];
     $dbIsPublic = $row['isPublic'];
+    $dbUserCanViewSource = $row['userCanViewSource'];
     $permissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
         $userId,
@@ -80,7 +83,7 @@ if ($success) {
         $userCanViewSource = 1;
         if (!$isPublic) {
                 //if we are moving back to private don't change userCanViewSource
-                   $userCanViewSource = $dbIsUserCanViewSource;
+                   $userCanViewSource = $dbUserCanViewSource;
             }
 
             //Changing from public to private or vice versa
