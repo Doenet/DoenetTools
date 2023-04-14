@@ -10,13 +10,6 @@ include 'db_connection.php';
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
-/*
-if ($userId == '') {
-    $success = false;
-    $message = 'You need to be signed in to create a portfolio activity.';
-}
-*/
-
 $response_arr;
 try {
 

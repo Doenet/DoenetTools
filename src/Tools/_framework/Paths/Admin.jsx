@@ -5,20 +5,6 @@ import { useLoaderData } from 'react-router-dom';
 import styled from 'styled-components';
 import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
 import { MoveToGroupMenuItem } from './Community';
-// import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-
-// export async function action() {
-//   //Create a portfilio activity and redirect to the editor for it
-//   let response = await fetch("/api/createPortfolioActivity.php");
-
-//       if (response.ok) {
-//         let { doenetId, pageDoenetId } = await response.json();
-//         return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
-//         // return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
-//       }else{
-//         throw Error(response.message)
-//       }
-// }
 
 export async function loader() {
   const response = await fetch(`/api/getAllRecentPublicActivites.php`);

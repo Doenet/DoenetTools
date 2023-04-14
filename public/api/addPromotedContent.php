@@ -11,13 +11,6 @@ include 'checkForCommunityAdminFunctions.php';
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
-/*
-if ($userId == '') {
-    $success = false;
-    $message = 'You need to be signed in to create a portfolio activity.';
-}
-*/
-
 $_POST = json_decode(file_get_contents("php://input"),true);
 
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
