@@ -38,6 +38,13 @@ try {
         }
     }
     $sql = 
+        "select doenetId from promoted_content where doenetId = '$doenetId' and promoted_content_groups_id = '$groupId'";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows == 1) {
+        throw new Exception("This activity is already in that group.");
+    }
+
+    $sql = 
         "insert into promoted_content (doenetId, promoted_content_groups_id,sortOrder) values ('$doenetId','$groupId', 1)";
 
     $result = $conn->query($sql);

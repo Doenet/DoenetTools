@@ -42,7 +42,6 @@ export async function loader({ request }) {
     const respObj = await response.json();
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const { isAdmin } = await isAdminResponse.json();
-    console.log('QWERQERQWER', isAdmin);
     let carouselGroups = [];
     if (isAdmin) {
       const carouselDataGroups = await fetch(
@@ -51,7 +50,6 @@ export async function loader({ request }) {
       const responseGroups = await carouselDataGroups.json();
       carouselGroups = responseGroups.carouselGroups;
     }
-    console.log('loading groups', carouselGroups);
     return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
     const response = await fetch('/api/getHPCarouselData.php');
@@ -123,19 +121,18 @@ export function MoveToGroupMenuItem({ doenetId }) {
                     key={carouselItem.groupName}
                     onClick={() => {
                       const uploadData = { groupId: carouselItem.id, doenetId };
-                      console.log('doenetId during request', uploadData);
                       axios
                         .post('/api/addPromotedContent.php', uploadData)
                         .then(({ data }) => {
                           onClose();
                         })
                         .catch((e) => {
-                          alert('Error saving new promoted activity');
+                          alert('Error - ' + e.response.data.message);
                           console.log(e);
                         });
                     }}
                   >
-                    Move to group "{carouselItem.groupName}"
+                    Add to group "{carouselItem.groupName}"
                   </Button>
                 );
               })}
@@ -432,12 +429,15 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        <Carousel title="College Math" data={carouselData['College Math']} />
+        <Carousel
+          title="College Math"
+          data={carouselData ? carouselData['College Math'] : []}
+        />
         <Carousel
           title="Science & Engineering"
-          data={carouselData['Engineering']}
+          data={carouselData ? carouselData['Engineering'] : []}
         />
-        <Carousel title="K-12 Math" data={carouselData[2]} />
+        {/* <Carousel title="K-12 Math" data={carouselData[2]} /> */}
       </CarouselSection>
     </>
   );
