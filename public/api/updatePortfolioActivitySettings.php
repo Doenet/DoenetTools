@@ -75,25 +75,23 @@ if ($result->num_rows > 0) {
 
 if ($success) {
 
-    if ($dbIsPublic == '0' && $isPublic == '1'){
-        //Was private and now is public
-        $sql = "
-        UPDATE course_content
-        SET isPublic = '1',
-        userCanViewSource = '1',
-        addToPublicPortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
-        WHERE doenetId = '$doenetId'
-        ";
-        $conn->query($sql);
-    }else if($dbIsPublic == '1' && $isPublic == '0') {
-        //Was public and now is private
-        $sql = "
-        UPDATE course_content
-        SET isPublic = '0',
-        addToPrivatePortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
-        WHERE doenetId = '$doenetId'
-        ";
-        $conn->query($sql);
+    if($dbIsPublic != $isPublic) {
+        
+        $userCanViewSource = 1;
+        if (!$isPublic) {
+                //if we are moving back to private don't change userCanViewSource
+                   $userCanViewSource = $dbIsUserCanViewSource;
+            }
+
+            //Changing from public to private or vice versa
+            $sql = "
+            UPDATE course_content
+            SET isPublic = '$isPublic',
+            userCanViewSource = '$userCanViewSource',
+            addToPrivatePortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+            WHERE doenetId = '$doenetId'
+            ";
+            $conn->query($sql);
     }
 
     $sql = "
