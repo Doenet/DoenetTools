@@ -39,7 +39,7 @@ export async function action({ request, params }) {
   });
   const portfolioCourseId = response?.data?.portfolioCourseId;
 
-  if (updates.makePublicPrivate) {
+  if (updates.makePublicPrivate == 'true') {
     let response = await fetch(
       `/api/updateIsPublicActivity.php?doenetId=${updates.doenetId}&isPublic=1`,
     );
