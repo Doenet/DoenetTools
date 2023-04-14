@@ -42,6 +42,7 @@ export default function RecoilActivityCard({
   if (navigateTo.current != '') {
     const newHref = navigateTo.current;
     navigateTo.current = '';
+    fetcher.submit({ _action: 'noop' }, { method: 'post' });
     location.href = newHref;
   }
 

@@ -1118,14 +1118,11 @@ function RootController(props) {
     }
   }
 
-  console.log('recoilPageToolView', recoilPageToolView);
-
   if (isRecoilChange) {
     //push url with no refresh
     let tool = nextPageToolView.tool;
     let pathname = '/' + recoilPageToolView.page;
     if (recoilPageToolView.optionalURLParam) {
-      console.log('optionalURLParam!');
       pathname = pathname + '/' + recoilPageToolView.optionalURLParam;
     }
     searchObj = { ...recoilPageToolView.params };

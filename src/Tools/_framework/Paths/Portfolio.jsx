@@ -64,6 +64,8 @@ export async function action({ request }) {
     } else {
       throw Error(response.message);
     }
+  } else if (formObj?._action == 'noop') {
+    return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
