@@ -967,44 +967,6 @@ CREATE TABLE `user_device` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- -----------------------------------------------------
--- Table `doenet_local`.`promoted_content_groups`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `doenet_local`.`promoted_content_groups` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `groupName` VARCHAR(255) NULL,
-  `currentlyFeatured` INT(1) NULL,
-  `homepage` INT(1) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `doenet_local`.`promoted_content`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `doenet_local`.`promoted_content` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `promoted_content_groups_id` INT NOT NULL,
-  `doenetId` VARCHAR(255) NOT NULL,
-  `sortOrder` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_promoted_content_promoted_content_groups1`
-    FOREIGN KEY (`promoted_content_groups_id`)
-    REFERENCES `doenet_local`.`promoted_content_groups` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `doenet_local`.`community_admins`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `doenet_local`.`community_admins` (
-  `id` INT(11) NOT NULL,
-  `userId` VARCHAR(45) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
 LOCK TABLES `user_device` WRITE;
 /*!40000 ALTER TABLE `user_device` DISABLE KEYS */;
 
@@ -1017,6 +979,50 @@ VALUES
 UNLOCK TABLES;
 
 
+-- -----------------------------------------------------
+-- Table `doenet_local`.`promoted_content_group`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `doenet_local`.`promoted_content_group` ;
+
+CREATE TABLE IF NOT EXISTS `doenet_local`.`promoted_content_group` (
+  `promotedGroupId` INT NOT NULL AUTO_INCREMENT,
+  `groupName` VARCHAR(255) NULL,
+  `currentlyFeatured` INT(1) NULL,
+  `homepage` INT(1) NULL,
+  PRIMARY KEY (`promotedGroupId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `doenet_local`.`promoted_content`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `doenet_local`.`promoted_content` ;
+
+CREATE TABLE IF NOT EXISTS `doenet_local`.`promoted_content` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `doenetId` VARCHAR(255) NOT NULL,
+  `sortOrder` VARCHAR(255) NOT NULL,
+  `promotedGroupId` INT NOT NULL,
+  PRIMARY KEY (`id`, `promotedGroupId`),
+  INDEX `fk_promoted_content_promoted_content_groups1_idx` (`promotedGroupId` ASC) VISIBLE,
+  CONSTRAINT `fk_promoted_content_promoted_content_groups1`
+    FOREIGN KEY (`promotedGroupId`)
+    REFERENCES `doenet_local`.`promoted_content_group` (`promotedGroupId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `doenet_local`.`community_admin`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `doenet_local`.`community_admin` ;
+
+CREATE TABLE IF NOT EXISTS `doenet_local`.`community_admin` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `userId` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

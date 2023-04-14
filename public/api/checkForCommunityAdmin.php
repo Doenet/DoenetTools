@@ -15,7 +15,7 @@ try {
     $isAdmin = false;
     if ($userId != '') {
         $sql = 
-            "select userId from community_admins
+            "select userId from community_admin
             where userId = '$userId'
             ";
 

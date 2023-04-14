@@ -28,7 +28,7 @@ try {
         throw new Exception('You need to be logged in to modify the promoted material groups.');
     } else {
         $sql = 
-            "select userId from community_admins
+            "select userId from community_admin
             where userId = '$userId'
             ";
 
@@ -38,14 +38,14 @@ try {
         }
     }
     $sql = 
-        "select doenetId from promoted_content where doenetId = '$doenetId' and promoted_content_groups_id = '$groupId'";
+        "select doenetId from promoted_content where doenetId = '$doenetId' and promotedGroupId = '$groupId'";
     $result = $conn->query($sql);
     if ($result && $result->num_rows == 1) {
         throw new Exception("This activity is already in that group.");
     }
 
     $sql = 
-        "insert into promoted_content (doenetId, promoted_content_groups_id,sortOrder) values ('$doenetId','$groupId', 1)";
+        "insert into promoted_content (doenetId, promotedGroupId,sortOrder) values ('$doenetId','$groupId', 'a')";
 
     $result = $conn->query($sql);
     if ($result && $conn->affected_rows == 1) {
@@ -53,7 +53,7 @@ try {
             'success' => true,
         ];
     } else {
-        throw new Exception(print_r($_POST, true) . $sql . "Failed to add this activity to promoted material group. " . $conn->error . $conn->affected_rows );
+        throw new Exception("Failed to add this activity to promoted material group. " . $conn->error);
     }
     // set response code - 200 OK
     http_response_code(200);

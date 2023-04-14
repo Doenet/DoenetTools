@@ -16,7 +16,7 @@ try {
         throw new Exception('You need to be logged in to see the promoted materials groups.');
     } else {
         $sql = 
-            "select userId from community_admins
+            "select userId from community_admin
             where userId = '$userId'
             ";
 
@@ -27,8 +27,8 @@ try {
     }
 
     $sql = 
-        "select groupName, currentlyFeatured, homepage, id
-        from promoted_content_groups pcg";
+        "select groupName, currentlyFeatured, homepage, promotedGroupId
+        from promoted_content_group pcg";
 
     $result = $conn->query($sql);
     if ($result->num_rows <= 0) {

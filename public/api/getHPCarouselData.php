@@ -25,8 +25,8 @@ try {
                 pc.sortOrder, doenetId, cc.label, cc.imagePath,
                 screenName, email, lastName, firstName, 
                 profilePicture, trackingConsent, canUpload
-        from promoted_content_groups pcg
-        join promoted_content pc on pcg.id = pc.promoted_content_groups_id
+        from promoted_content_group pcg
+        join promoted_content pc using(promotedGroupId)
         join course_content cc using(doenetId)
         join course c on cc.courseId = c.courseId
         join user on c.portfolioCourseForUserId = user.userId

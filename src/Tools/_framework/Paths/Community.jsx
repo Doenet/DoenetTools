@@ -93,6 +93,9 @@ const CarouselSection = styled.div`
 export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
+  if (!carouselGroups) {
+    carouselGroups = [];
+  }
 
   return (
     <>
@@ -119,7 +122,10 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                     mergin="5px"
                     key={carouselItem.groupName}
                     onClick={() => {
-                      const uploadData = { groupId: carouselItem.id, doenetId };
+                      const uploadData = {
+                        groupId: carouselItem.promotedGroupId,
+                        doenetId,
+                      };
                       axios
                         .post('/api/addPromotedContent.php', uploadData)
                         .then(({ data }) => {
