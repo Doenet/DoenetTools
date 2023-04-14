@@ -6,25 +6,15 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
+include 'checkForCommunityAdminFunctions.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 $response_arr;
 try {
-    if ($userId == '') {
-        throw new Exception('You need to be logged in to see the promoted materials groups.');
-    } else {
-        $sql = 
-            "select userId from community_admin
-            where userId = '$userId'
-            ";
-
-        $result = $conn->query($sql);
-        if ($result->num_rows == 0) {
-            throw new Exception('You do not have permissions to modify the promoted materials.');
-        }
-    }
+    // throws exception if current user is not an admin
+    checkForAdmin($userId, $conn);
 
     $sql = 
         "select groupName, currentlyFeatured, homepage, promotedGroupId

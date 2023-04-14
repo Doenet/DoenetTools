@@ -6,6 +6,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
+include 'checkForCommunityAdminFunctions.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
@@ -24,19 +25,9 @@ $groupId = mysqli_real_escape_string($conn,$_POST["groupId"]);
 
 $response_arr;
 try {
-    if ($userId == '') {
-        throw new Exception('You need to be logged in to modify the promoted material groups.');
-    } else {
-        $sql = 
-            "select userId from community_admin
-            where userId = '$userId'
-            ";
+    // throws exception if current user is not an admin
+    checkForAdmin($userId, $conn);
 
-        $result = $conn->query($sql);
-        if ($result->num_rows == 0) {
-            throw new Exception('You do not have permissions to modify the promoted material groups.');
-        }
-    }
     $sql = 
         "select doenetId from promoted_content where doenetId = '$doenetId' and promotedGroupId = '$groupId'";
     $result = $conn->query($sql);

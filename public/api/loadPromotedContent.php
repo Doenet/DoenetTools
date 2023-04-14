@@ -10,25 +10,23 @@ include 'db_connection.php';
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
-/*
-if ($userId == '') {
-    $success = false;
-    $message = 'You need to be signed in to create a portfolio activity.';
-}
-*/
-
 $response_arr;
 try {
+
     $sql = 
         "select groupName, currentlyFeatured, homepage,
-                positionInGroup, doenetId, label, 
+                pc.sortOrder, doenetId, cc.label, cc.imagePath,
                 screenName, email, lastName, firstName, 
                 profilePicture, trackingConsent, canUpload
-        from promoted_content_groups pcg
-        join promoted_content pc on pcg.id = pc.promoted_content_groups_id
-        join course_content using(doenetId)
-        join course on course_content.courseId = course.courseId
-        join user on course.portfolioCourseForUserId = user.userId";
+        from promoted_content_group pcg
+        join promoted_content pc using(promotedGroupId)
+        join course_content cc using(doenetId)
+        join course c on cc.courseId = c.courseId
+        join user on c.portfolioCourseForUserId = user.userId
+        AND cc.isPublic = 1
+        AND cc.isDeleted = 0
+        AND c.portfolioCourseForUserId IS NOT NULL
+        ";
 
     $result = $conn->query($sql);
     if ($result->num_rows <= 0) {
@@ -46,9 +44,8 @@ try {
         }
     }
     $response_arr = [
-        'success' => $success,
-        'message' => $message,
-        'promotedGroups' => $promotedGroups
+        'success' => true,
+        'carouselData' => $promotedGroups
     ];
     // set response code - 200 OK
     http_response_code(200);

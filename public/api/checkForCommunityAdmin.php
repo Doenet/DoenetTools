@@ -6,24 +6,15 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
+include 'checkForCommunityAdminFunctions.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 $response_arr;
 try {
-    $isAdmin = false;
-    if ($userId != '') {
-        $sql = 
-            "select userId from community_admin
-            where userId = '$userId'
-            ";
+    $isAdmin = userIsAdmin($userId, $conn);
 
-        $result = $conn->query($sql);
-        if ($result->num_rows == 1) {
-            $isAdmin = true;
-        }
-    }
     $response_arr = [
         'success' => true,
         'isAdmin' => $isAdmin

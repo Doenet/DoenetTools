@@ -52,7 +52,7 @@ export async function loader({ request }) {
     }
     return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
-    const response = await fetch('/api/getHPCarouselData.php');
+    const response = await fetch('/api/loadPromotedContent.php');
     const { carouselData } = await response.json();
     return { carouselData };
   }

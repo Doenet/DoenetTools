@@ -26,7 +26,7 @@ import { BsGithub, BsDiscord } from 'react-icons/bs';
 // import RouterLogo from '../RouterLogo';
 
 export async function loader() {
-  const response = await fetch('/api/getHPCarouselData.php');
+  const response = await fetch('/api/loadPromotedContent.php');
   const data = await response.json();
   return data;
 }
