@@ -20,8 +20,10 @@ export default function SignIn(props) {
   let [validCode, setValidCode] = useState(false);
   let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
   let [signInDisabled, setSignInDisabled] = useState(true);
+  let [firstName, setFirstName] = useState('');
+  let [lastName, setLastName] = useState('');
 
-  // console.log("sign in stage",signInStage);
+  // console.log('signInStage', signInStage);
 
   const jwt = Cookies.get();
 
@@ -69,20 +71,28 @@ export default function SignIn(props) {
     axios
       .get('/api/loadProfile.php', { params: {} })
       .then((resp) => {
+        // if (resp.data.success === '1') {
+        localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
+        const needsName = localStorage.getItem('Needs Name');
 
-        if (resp.data.success === '1') {
-          localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
-          location.href = '/#/course';
+        if (needsName) {
+          setSignInStage('Need Name Entered');
         } else {
-          //  Error currently does nothing
+          location.href = '/';
+          setSignInStage('Loading');
+          return null;
         }
+        // navigate('/'); //Not sure why this doesn't work
+        // navigate('/course');
+        //   location.href = '/#/course';
+        // } else {
+        //   //  Error currently does nothing
+        // }
       })
       .catch((error) => {
         console.log(error);
         //  Error currently does nothing
       });
-
-    return null;
   }
 
   // ** *** *** *** *** **
@@ -134,8 +144,6 @@ export default function SignIn(props) {
     axios
       .get('/api/checkCredentials.php', payload)
       .then((resp) => {
-        // console.log('checkCredentials resp',resp);
-
         if (resp.data.success) {
           let newAccount = '1';
           if (resp.data.existed) {
@@ -144,6 +152,12 @@ export default function SignIn(props) {
           let stay = '0';
           if (maxAge > 0) {
             stay = '1';
+          }
+
+          if (resp.data.hasFullName == 0) {
+            localStorage.setItem('Needs Name', true);
+          } else {
+            localStorage.setItem('Needs Name', false);
           }
 
           // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
@@ -168,6 +182,64 @@ export default function SignIn(props) {
 
     return null;
   }
+
+  if (signInStage === 'Need Name Entered') {
+    return (
+      <div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            margin: '20',
+          }}
+        >
+          <h2 style={{ textAlign: 'center' }}>
+            Please enter your first and last name.
+          </h2>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', rowGap: '10px' }}
+          >
+            <div>
+              First Name:{' '}
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                }}
+              />
+            </div>
+            <div>
+              Last Name:{' '}
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                }}
+              />
+            </div>
+            <Button
+              disabled={firstName == '' || lastName == ''}
+              value="Submit"
+              onClick={() => {
+                axios
+                  .get('/api/saveUsersName.php', {
+                    params: { firstName, lastName },
+                  })
+                  .then((resp) => {
+                    location.href = '/';
+                  });
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (signInStage === 'Loading') {
     return (
       <div>
@@ -185,6 +257,7 @@ export default function SignIn(props) {
       </div>
     );
   }
+
   if (signInStage === 'Code expired') {
     return (
       <div
@@ -199,7 +272,7 @@ export default function SignIn(props) {
         <h2 style={{ textAlign: 'center' }}>Code Expired</h2>
         <Button
           onClick={() => {
-            location.href = '/#/signin';
+            location.href = '/signin';
           }}
           value="Restart Signin"
         ></Button>
@@ -338,7 +411,7 @@ export default function SignIn(props) {
           <div>
             <p style={{ marginLeft: '2px' }}>
               <Textfield
-                dataTest='email input'
+                dataTest="email input"
                 label="Email Address:"
                 // type="text"
                 ref={emailRef}

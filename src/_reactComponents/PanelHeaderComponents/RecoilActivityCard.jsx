@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Box,
   Image,
@@ -16,7 +16,8 @@ import {
 import { GoKebabVertical } from 'react-icons/go';
 import { Link, useFetcher } from 'react-router-dom';
 import { itemByDoenetId, useCourse } from '../Course/CourseActions';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 
 export default function RecoilActivityCard({
   doenetId,
@@ -33,20 +34,43 @@ export default function RecoilActivityCard({
   const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
-  const imageLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef('');
+
+  if (navigateTo.current != '') {
+    const newHref = navigateTo.current;
+    navigateTo.current = '';
+    fetcher.submit({ _action: 'noop' }, { method: 'post' });
+    location.href = newHref;
+  }
+
+  // const imageLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
   return (
     <Card width="180px" height="180px" p="0" m="0">
-      <a href={imageLink}>
-        <Image
-          height="120px"
-          maxWidth="180px"
-          src={imagePath}
-          alt="Activity Card Image"
-          borderTopRadius="md"
-          objectFit="cover"
-        />
-      </a>
+      {/* <a href={imageLink}> */}
+      <Image
+        height="120px"
+        maxWidth="180px"
+        src={imagePath}
+        alt="Activity Card Image"
+        borderTopRadius="md"
+        objectFit="cover"
+        cursor="pointer"
+        onClick={() => {
+          navigateTo.current = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
+          setRecoilPageToolView({
+            page: 'portfolioeditor',
+            optionalURLParam: doenetId,
+            tool: 'editor',
+            view: '',
+            params: { doenetId, pageId: pageDoenetId },
+          });
+        }}
+      />
+      {/* </a> */}
       <CardBody p="1">
         <Flex columnGap="2px">
           <Avatar size="sm" name={fullName} />

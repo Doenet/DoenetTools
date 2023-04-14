@@ -1,5 +1,5 @@
 // import axios from 'axios';
-import { Avatar, Box, Image, Text, Wrap } from '@chakra-ui/react';
+import { Avatar, Box, Flex, Icon, Image, Text, Wrap } from '@chakra-ui/react';
 import React from 'react';
 import {
   redirect,
@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 import styled from 'styled-components';
 import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
+import { RiEmotionSadLine } from 'react-icons/ri';
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 // export async function action() {
@@ -96,7 +97,19 @@ export function PublicPortfolio() {
         <PublicActivitiesSection>
           <Wrap p="10px">
             {data.publicActivities.length < 1 ? (
-              <div>No Public Activities</div>
+              <Flex
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                alignContent="center"
+                minHeight={200}
+                background="doenet.canvas"
+                padding={20}
+                width="100%"
+              >
+                <Icon fontSize="48pt" as={RiEmotionSadLine} />
+                <Text fontSize="36pt">No Public Activities</Text>
+              </Flex>
             ) : (
               <>
                 {data.publicActivities.map((activity) => {

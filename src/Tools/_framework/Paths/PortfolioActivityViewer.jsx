@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   redirect,
   useLoaderData,
@@ -168,6 +168,17 @@ export function PortfolioActivityViewer() {
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef('');
+
+  if (navigateTo.current != '') {
+    const newHref = navigateTo.current;
+    navigateTo.current = '';
+    location.href = newHref;
+  }
+
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(
@@ -200,19 +211,65 @@ export function PortfolioActivityViewer() {
             </div>
             <div>
               <HeaderSectionRight>
-                <a
-                  href={`/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`}
-                >
-                  <Button value="See Inside" />
-                </a>
+                <Button
+                  value="See Inside"
+                  onClick={() => {
+                    navigateTo.current = `/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
+                    setRecoilPageToolView({
+                      page: 'public',
+                      tool: '',
+                      view: '',
+                      params: { doenetId, pageId: pageDoenetId },
+                    });
+                  }}
+                />
               </HeaderSectionRight>
               {signedIn ? (
                 <HeaderSectionRight>
-                  <Form method="post">
-                    <Button value="Remix" onClick={() => {}} />
-                  </Form>
+                  {/* <Form method="post"> */}
+                  <Button
+                    value="Remix"
+                    onClick={async () => {
+                      let response = await fetch(
+                        `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
+                      );
+
+                      if (response.ok) {
+                        let { nextActivityDoenetId, nextPageDoenetId } =
+                          await response.json();
+                        navigateTo.current = `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`;
+                        setRecoilPageToolView({
+                          page: 'portfolioeditor',
+                          tool: 'editor',
+                          view: '',
+                          params: {
+                            doenetId: nextActivityDoenetId,
+                            pageId: nextPageDoenetId,
+                          },
+                        });
+                      } else {
+                        throw Error(response.message);
+                      }
+                    }}
+                  />
+                  {/* </Form> */}
                 </HeaderSectionRight>
-              ) : null}
+              ) : (
+                <Button
+                  dataTest="Nav to signin"
+                  size="medium"
+                  value="Sign In To Remix"
+                  onClick={() => {
+                    navigateTo.current = '/signin';
+                    setRecoilPageToolView({
+                      page: 'signin',
+                      tool: '',
+                      view: '',
+                      params: {},
+                    });
+                  }}
+                />
+              )}
             </div>
           </HeaderContent>
         </Header>
