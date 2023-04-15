@@ -62,7 +62,7 @@ describe('Navigation test', function () {
     cy.wait(500);
 
     cy.get('[data-test="Add Collection Button"]').click();
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the 2nd one to appear
+    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the 2nd one to appear
     cy.wait(500);
 
     cy.get('[data-test="Add Section Button"]').click();

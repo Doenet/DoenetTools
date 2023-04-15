@@ -284,6 +284,7 @@ export function PortfolioActivitySettings() {
                       size="sm"
                       width="392px"
                       placeholder="Activity 1"
+                      data-test="Activity Label"
                       value={label}
                       onChange={(e) => {
                         setLabel(e.target.value);

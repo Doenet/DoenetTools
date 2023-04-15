@@ -103,7 +103,7 @@ export function Community() {
           <Box maxW={400} minW={200}>
             <Box w="400px">
               <Form>
-                <Searchbar defaultValue={q} />
+                <Searchbar defaultValue={q} dataTest="Search" />
               </Form>
             </Box>
           </Box>
@@ -169,7 +169,7 @@ export function Community() {
             ))}
           </TabList>
 
-          <TabPanels background="doenet.mainGray">
+          <TabPanels background="doenet.mainGray" data-test="Search Results">
             <TabPanel>
               <Wrap
                 p={10}
@@ -321,7 +321,7 @@ export function Community() {
         <Box maxW={400} minW={200}>
           <Box width="400px">
             <Form>
-              <Searchbar defaultValue={q} />
+              <Searchbar defaultValue={q} dataTest="Search" />
             </Form>
           </Box>
           {/* <input type='text' width="400px" /> */}

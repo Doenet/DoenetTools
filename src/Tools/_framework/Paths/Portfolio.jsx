@@ -173,6 +173,7 @@ export function Portfolio() {
             {/* <Form method="post"> */}
             <Button
               value="Add Activity"
+              dataTest="Add Activity"
               onClick={async () => {
                 //Create a portfilio activity and redirect to the editor for it
                 let response = await fetch('/api/createPortfolioActivity.php');
@@ -195,7 +196,7 @@ export function Portfolio() {
             {/* </Form> */}
           </div>
         </Box>
-        <PublicActivitiesSection>
+        <PublicActivitiesSection data-test="Public Activities">
           <Text fontSize="20px" fontWeight="700">
             Public
           </Text>
@@ -232,7 +233,7 @@ export function Portfolio() {
           </Wrap>
         </PublicActivitiesSection>
 
-        <PrivateActivitiesSection>
+        <PrivateActivitiesSection data-test="Private Activities">
           <Text fontSize="20px" fontWeight="700">
             Private
           </Text>

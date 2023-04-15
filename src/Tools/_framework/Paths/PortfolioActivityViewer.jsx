@@ -49,7 +49,7 @@ export async function loader({ params }) {
   const activityML = await cidResponse.text();
 
   //Find the first page's doenetML
-  const regex = /<page\scid="(\w*)"\s\/>/;
+  const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
   const pageIds = activityML.match(regex);
 
   const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);

@@ -229,6 +229,8 @@ export function parseActivityDefinition(activityDefDoenetML) {
       if (prop === "cid") {
         newPage.cid = pageProps.cid;
         delete pageProps.cid;
+      } else if (prop == "label") {
+        // we ignore label, at least for now
       } else {
         return {
           success: false,

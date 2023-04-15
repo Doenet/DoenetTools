@@ -1784,10 +1784,24 @@ export const useCourse = (courseId) => {
           }
 
           let pageCid = data.cid;
+          let label = data.label;
+
+
+          let escapedLabel = label.replace(/["'<>&]/g, c=> {
+            switch(c) {
+              case '"': return "&quot;";
+              case "'": return "&apos;";
+              case "<": return "&lt;";
+              case ">": return "&gt;";
+              case "&": return "&amp;";
+            }
+          })
+
+          console.log({pageCid, label, escapedLabel})
 
           set(fileByCid(pageCid),pageDoenetML);
 
-          return `${indentSpacing}<page cid="${pageCid}" />\n`;
+          return `${indentSpacing}<page cid="${pageCid}" label="${escapedLabel}" />\n`;
         }
 
         if(!activity) {
@@ -1801,7 +1815,7 @@ export const useCourse = (courseId) => {
         }
 
         if (activity.shuffleItemWeights) {
-          attributeString += ` shuffleItemWeights`;
+          attributeString += ` shuffleItemWeights="true"`;
         }
 
         if (activity.numberOfVariants !== undefined) {
@@ -1809,7 +1823,7 @@ export const useCourse = (courseId) => {
         }
 
         if (activity.isSinglePage) {
-          attributeString += ` isSinglePage`;
+          attributeString += ` isSinglePage="true"`;
         }
 
         let childrenString ="";

@@ -54,22 +54,28 @@ if ($success) {
 
 // check if pageId belongs to courseId
 if ($success) {
-    $sql = "SELECT doenetId
+    $sql = "SELECT doenetId, label
         FROM pages
         WHERE courseId='$courseId' AND doenetId='$pageId'
         ";
 
     $result = $conn->query($sql);
 
-    if ($result->num_rows < 1) {
+    if ($result->num_rows == 1) {
+        $row = $result->fetch_assoc();
+        $label = $row["label"];
+    } else {
         //Try link pages
-        $sql = "SELECT doenetId
+        $sql = "SELECT doenetId, label
         FROM link_pages
         WHERE courseId='$courseId' AND doenetId='$pageId'
         ";
 
         $result = $conn->query($sql);
-        if ($result->num_rows < 1) {
+        if ($result->num_rows == 1) {
+            $row = $result->fetch_assoc();
+            $label = $row["label"];
+        } else {
 
             $success = false;
             $message = "Invalid page";
@@ -112,6 +118,7 @@ $response_arr = [
     "success" => $success,
     "message" => $message,
     "cid" => $cid,
+    "label" => $label,
     "saveAsCid" => $saveAsCid,
     "filename" => $filename
 ];

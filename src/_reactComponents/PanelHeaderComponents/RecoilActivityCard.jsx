@@ -49,7 +49,7 @@ export default function RecoilActivityCard({
   // const imageLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
 
   return (
-    <Card width="180px" height="180px" p="0" m="0">
+    <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
       {/* <a href={imageLink}> */}
       <Image
         height="120px"

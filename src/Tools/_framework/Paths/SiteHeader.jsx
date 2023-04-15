@@ -75,10 +75,10 @@ const ContentContainer = styled.main`
   margin: 0;
 `;
 
-function MenuItem({ to, children }) {
+function MenuItem({ to, children, dataTest }) {
   return (
     <StyledMenuItem
-      to={to}
+      to={to} data-test={dataTest}
       className={({ isActive, isPending }) =>
         location.pathname === '/' || isActive
           ? 'active'
@@ -163,10 +163,10 @@ export function SiteHeader(props) {
             <p>Doenet</p>
           </Branding>
           <BarMenu>
-            <MenuItem to="/">Home</MenuItem>
-            <MenuItem to="community">Community</MenuItem>
+            <MenuItem dataTest="Home" to="/">Home</MenuItem>
+            <MenuItem dataTest="Community" to="community">Community</MenuItem>
             {data.signedIn ? (
-              <MenuItem to={`portfolio/${data.portfolioCourseId}`}>
+              <MenuItem dataTest="Portfolio" to={`portfolio/${data.portfolioCourseId}`}>
                 Portfolio
               </MenuItem>
             ) : null}
