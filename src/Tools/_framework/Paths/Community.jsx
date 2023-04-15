@@ -203,10 +203,12 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                 colorScheme="teal"
                 onClick={() => {
                   const groupName = window.prompt('Enter a new group name');
-                  fetcher.submit(
-                    { _action: 'New Group', groupName },
-                    { method: 'post' },
-                  );
+                  if (groupName) {
+                    fetcher.submit(
+                      { _action: 'New Group', groupName },
+                      { method: 'post' },
+                    );
+                  }
                 }}
               >
                 Add New Group
