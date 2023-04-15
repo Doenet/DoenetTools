@@ -23,6 +23,8 @@ import {
   Wrap,
   Flex,
   VStack,
+  Checkbox,
+  FormLabel,
 } from '@chakra-ui/react';
 import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
@@ -38,7 +40,7 @@ import { HiOutlineLockClosed } from 'react-icons/hi';
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  let { doenetId, groupName } = formObj;
+  let { doenetId, groupName, currentlyFeatured, homepage } = formObj;
 
   if (formObj?._action == 'Ban Content') {
     const uploadData = {
@@ -64,6 +66,23 @@ export async function action({ request }) {
         '/api/addPromotedContentGroup.php',
         uploadData,
       );
+      return true;
+    } catch (e) {
+      console.log(e);
+      alert('Error - ' + e.response?.data?.message);
+      return false;
+    }
+  } else if (formObj?._action == 'Promote Group') {
+    // conver to real booleans
+    currentlyFeatured = currentlyFeatured == 'false' ? false : true;
+    homepage = !!homepage;
+    const uploadData = {
+      groupName,
+      currentlyFeatured,
+      homepage,
+    };
+    try {
+      await axios.post('/api/updatePromotedContentGroup.php', uploadData);
       return true;
     } catch (e) {
       console.log(e);
@@ -173,14 +192,14 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
 
           <DrawerBody>
             <VStack spacing="2">
-              {carouselGroups.map((carouselItem) => {
+              {carouselGroups.map((group) => {
                 return (
                   <Button
                     mergin="5px"
-                    key={carouselItem.groupName}
+                    key={group.groupName}
                     onClick={() => {
                       const uploadData = {
-                        groupId: carouselItem.promotedGroupId,
+                        groupId: group.promotedGroupId,
                         doenetId,
                       };
                       axios
@@ -194,7 +213,7 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                         });
                     }}
                   >
-                    Add to group "{carouselItem.groupName}"
+                    Add to group "{group.groupName}"
                   </Button>
                 );
               })}
@@ -213,6 +232,37 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
               >
                 Add New Group
               </Button>
+              <Box>
+                <Text fontSize="20px">
+                  Select which groups are shown on the community page
+                </Text>
+                <Form>
+                  {carouselGroups.map((group) => {
+                    return (
+                      <Wrap key={group.groupId}>
+                        <Checkbox
+                          isChecked={group.currentlyFeatured == '1'}
+                          name={group.groupId}
+                          onChange={(evt) => {
+                            fetcher.submit(
+                              {
+                                _action: 'Promote Group',
+                                groupName: group.groupName,
+                                currentlyFeatured: evt.target.checked,
+                                homepage: false,
+                              },
+                              { method: 'post' },
+                            );
+                          }}
+                        />
+                        <FormLabel for={group.groupId}>
+                          {group.groupName}
+                        </FormLabel>
+                      </Wrap>
+                    );
+                  })}
+                </Form>
+              </Box>
             </VStack>
           </DrawerBody>
 
