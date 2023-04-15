@@ -35,7 +35,14 @@ try {
         // if we are trying to feature a group, make sure it has at least 4 items in it
         // TODO - this is ignoring deletions and banned items
         $sql = 
-            "select groupName from promoted_content_group join promoted_content using (promotedGroupId) where groupName = '$groupName'";
+            "select groupName from promoted_content_group
+            join promoted_content using (promotedGroupId)
+            join course_content cc using (doenetId)
+            where groupName = '$groupName'
+            AND cc.isPublic = 1
+            AND cc.isDeleted = 0
+            AND cc.isBanned = 0
+            ";
         $result = $conn->query($sql);
         if ($result && $result->num_rows < 4) {
             throw new Exception("Promoted groups must have at least 4 items in them before being shared.");

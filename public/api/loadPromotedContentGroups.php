@@ -20,7 +20,13 @@ try {
         "select groupName, currentlyFeatured, homepage, promotedGroupId, itemCount
         from promoted_content_group pcg
         left join (
-            select count(*) itemCount, promotedGroupId from promoted_content group by promotedGroupId
+            select count(*) itemCount, promotedGroupId
+            from promoted_content
+            join course_content cc using (doenetId)
+            where cc.isPublic = 1
+            AND cc.isDeleted = 0
+            AND cc.isBanned = 0
+            group by promotedGroupId
         ) t using(promotedGroupId)
         ";
 
