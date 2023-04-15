@@ -19,7 +19,7 @@ $response_arr;
 try {
     // throws exception if current user is not an admin
     checkForAdmin($userId, $conn);
-    if (trim($groupName) == '') {
+    if (!$groupName || trim($groupName) == '') {
         throw new Exception("Group name cannot be blank");
     }
 
