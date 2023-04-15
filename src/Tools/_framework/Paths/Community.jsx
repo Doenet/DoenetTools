@@ -38,7 +38,7 @@ import { HiOutlineLockClosed } from 'react-icons/hi';
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  let { doenetId } = formObj;
+  let { doenetId, groupName } = formObj;
 
   if (formObj?._action == 'Ban Content') {
     const uploadData = {
@@ -47,6 +47,21 @@ export async function action({ request }) {
     try {
       const response = await axios.post(
         '/api/markContentAsBanned.php',
+        uploadData,
+      );
+      return true;
+    } catch (e) {
+      console.log(e);
+      alert('Error - ' + e.response?.data?.message);
+      return false;
+    }
+  } else if (formObj?._action == 'New Group') {
+    const uploadData = {
+      groupName,
+    };
+    try {
+      const response = await axios.post(
+        '/api/addPromotedContentGroup.php',
         uploadData,
       );
       return true;
@@ -161,7 +176,6 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
               {carouselGroups.map((carouselItem) => {
                 return (
                   <Button
-                    size="sm"
                     mergin="5px"
                     key={carouselItem.groupName}
                     onClick={() => {
@@ -184,6 +198,19 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                   </Button>
                 );
               })}
+
+              <Button
+                colorScheme="teal"
+                onClick={() => {
+                  const groupName = window.prompt('Enter a new group name');
+                  fetcher.submit(
+                    { _action: 'New Group', groupName },
+                    { method: 'post' },
+                  );
+                }}
+              >
+                Add New Group
+              </Button>
             </VStack>
           </DrawerBody>
 

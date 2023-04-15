@@ -979,7 +979,6 @@ VALUES
 /*!40000 ALTER TABLE `user_device` ENABLE KEYS */;
 UNLOCK TABLES;
 
-
 -- -----------------------------------------------------
 -- Table `doenet_local`.`promoted_content_group`
 -- -----------------------------------------------------
@@ -987,10 +986,11 @@ DROP TABLE IF EXISTS `doenet_local`.`promoted_content_group` ;
 
 CREATE TABLE IF NOT EXISTS `doenet_local`.`promoted_content_group` (
   `promotedGroupId` INT NOT NULL AUTO_INCREMENT,
-  `groupName` VARCHAR(255) NULL,
+  `groupName` VARCHAR(255) NOT NULL,
   `currentlyFeatured` INT(1) NULL,
   `homepage` INT(1) NULL,
-  PRIMARY KEY (`promotedGroupId`))
+  PRIMARY KEY (`promotedGroupId`),
+  UNIQUE INDEX `groupName_UNIQUE` (`groupName` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
@@ -1009,7 +1009,7 @@ CREATE TABLE IF NOT EXISTS `doenet_local`.`promoted_content` (
   CONSTRAINT `fk_promoted_content_promoted_content_groups1`
     FOREIGN KEY (`promotedGroupId`)
     REFERENCES `doenet_local`.`promoted_content_group` (`promotedGroupId`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -1024,6 +1024,7 @@ CREATE TABLE IF NOT EXISTS `doenet_local`.`community_admin` (
   `userId` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
+
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
