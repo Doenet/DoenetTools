@@ -11,6 +11,7 @@ import {
   Checkbox,
   Icon,
   Image,
+  Input,
   Table,
   TableContainer,
   Tbody,
@@ -49,10 +50,9 @@ export async function action({ request, params }) {
   // return true;
 }
 
-export async function loader({ params }) {
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const referrer = urlParams.get('referrer');
+export async function loader({ params, request }) {
+  const url = new URL(request.url);
+  const referrer = url.searchParams.get('referrer');
 
   const response = await fetch(
     `/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`,
@@ -107,11 +107,9 @@ const SideBySide = styled.div`
 
 export function PortfolioActivitySettings() {
   let data = useLoaderData();
-  console.log('data', data);
 
   const navigate = useNavigate();
   let numberOfFilesUploading = useRef(0);
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const { compileActivity, updateAssignItem } = useCourse(data.courseId);
   const [isMakePublic, setIsMakePublic] = useState(false);
   const [label, setLabel] = useState(data.label);
@@ -282,12 +280,10 @@ export function PortfolioActivitySettings() {
                     <Text>Activity Label</Text>
                   </Td>
                   <Td>
-                    <input
-                      name="label"
-                      style={{ width: '390px' }}
-                      type="text"
+                    <Input
+                      size="sm"
+                      width="392px"
                       placeholder="Activity 1"
-                      // defaultValue={data.label}
                       value={label}
                       onChange={(e) => {
                         setLabel(e.target.value);
@@ -334,7 +330,7 @@ export function PortfolioActivitySettings() {
               onClick={(e) => {
                 e.preventDefault();
                 //Assume that they came from the editor to orient Tool Root
-                setPageToolView({
+                setRecoilPageToolView({
                   page: 'portfolioeditor',
                   tool: 'editor',
                   view: '',
@@ -366,13 +362,6 @@ export function PortfolioActivitySettings() {
                   });
                 }
 
-                // console.log({
-                //   label: label,
-                //   doenetId: data.doenetId,
-                //   imagePath,
-                //   public: isPublic,
-                // });
-
                 let response = await axios.post(
                   '/api/updatePortfolioActivitySettings.php',
                   {
@@ -383,23 +372,23 @@ export function PortfolioActivitySettings() {
                   },
                 );
                 const portfolioCourseId = response?.data?.portfolioCourseId;
-                console.log('data.referrer', data.referrer);
-                // if (data.referrer == 'portfolioeditor') {
-                //   navigateTo.current = `/portfolioeditor/${data.doenetId}?tool=editor&doenetId=${data.doenetId}&pageId=${data.pageDoenetId}`;
-                // } else {
-                //   navigateTo.current = `/portfolio/${portfolioCourseId}`;
-                // }
-                // //Need this even if its going to portfolio to refresh the component
-                // setPageToolView({
-                //   page: 'portfolioeditor',
-                //   optionalURLParam: data.doenetId,
-                //   tool: 'editor',
-                //   view: '',
-                //   params: {
-                //     doenetId: data.doenetId,
-                //     pageId: data.pageDoenetId,
-                //   },
-                // });
+
+                if (data.referrer == 'portfolioeditor') {
+                  navigateTo.current = `/portfolioeditor/${data.doenetId}?tool=editor&doenetId=${data.doenetId}&pageId=${data.pageDoenetId}`;
+                } else {
+                  navigateTo.current = `/portfolio/${portfolioCourseId}`;
+                }
+                //Need this even if its going to portfolio to refresh the component
+                setRecoilPageToolView({
+                  page: 'portfolioeditor',
+                  optionalURLParam: data.doenetId,
+                  tool: 'editor',
+                  view: '',
+                  params: {
+                    doenetId: data.doenetId,
+                    pageId: data.pageDoenetId,
+                  },
+                });
               }}
             />
           </SideBySide>
