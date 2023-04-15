@@ -36,30 +36,11 @@ import { ComponentListOfListsWithSelectableType } from '../../../Core/components
 import { HiOutlineLockClosed } from 'react-icons/hi';
 
 export async function action({ request }) {
-  console.log(request);
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  console.log(formObj);
-  let { doenetId, groupId } = formObj;
+  let { doenetId } = formObj;
 
-  if (formObj?._action == 'Promote Content') {
-    const uploadData = {
-      doenetId,
-      groupId,
-    };
-    try {
-      const response = await axios.post(
-        '/api/addPromotedContent.php',
-        uploadData,
-      );
-      console.log(response);
-      return true;
-    } catch (e) {
-      console.log(e);
-      alert('Error - ' + e.response?.data?.message);
-      return false;
-    }
-  } else if (formObj?._action == 'Ban Content') {
+  if (formObj?._action == 'Ban Content') {
     const uploadData = {
       doenetId,
     };
@@ -68,7 +49,6 @@ export async function action({ request }) {
         '/api/markContentAsBanned.php',
         uploadData,
       );
-      console.log(response);
       return true;
     } catch (e) {
       console.log(e);
@@ -192,14 +172,19 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                     mergin="5px"
                     key={carouselItem.groupName}
                     onClick={() => {
-                      fetcher.submit(
-                        {
-                          _action: 'Promote Content',
-                          doenetId,
-                          groupId: carouselItem.promotedGroupId,
-                        },
-                        { method: 'post' },
-                      );
+                      const uploadData = {
+                        groupId: carouselItem.promotedGroupId,
+                        doenetId,
+                      };
+                      axios
+                        .post('/api/addPromotedContent.php', uploadData)
+                        .then(({ data }) => {
+                          onClose();
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                          alert('Error - ' + e.response.data.message);
+                        });
                     }}
                   >
                     Add to group "{carouselItem.groupName}"

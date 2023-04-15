@@ -25,6 +25,7 @@ try {
         join user on c.portfolioCourseForUserId = user.userId
         AND cc.isPublic = 1
         AND cc.isDeleted = 0
+        AND cc.isBanned = 0
         AND c.portfolioCourseForUserId IS NOT NULL
         ";
 
