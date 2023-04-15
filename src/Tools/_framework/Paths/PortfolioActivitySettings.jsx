@@ -345,7 +345,7 @@ export function PortfolioActivitySettings() {
               onClick={async () => {
                 if (isMakePublic) {
                   //"Making private a public activity
-                  compileActivity({
+                  await compileActivity({
                     activityDoenetId: data.doenetId,
                     isAssigned: true,
                     courseId: data.courseId,
@@ -353,7 +353,7 @@ export function PortfolioActivitySettings() {
                       //   addToast('Activity Assigned.', toastType.INFO);
                     },
                   });
-                  updateAssignItem({
+                  await updateAssignItem({
                     doenetId: data.doenetId,
                     isAssigned: true,
                     successCallback: () => {
