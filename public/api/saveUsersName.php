@@ -6,14 +6,13 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
-include 'permissionsAndSettingsForOneCourseFunction.php';
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
 
 $success = true;
 $message = '';
 
+
+$email = mysqli_real_escape_string($conn,$_REQUEST["email"]);
 $firstName = mysqli_real_escape_string($conn,$_REQUEST["firstName"]);
 $lastName = mysqli_real_escape_string($conn,$_REQUEST["lastName"]);
 
@@ -21,7 +20,7 @@ $sql = "
 UPDATE user
 SET firstName='$firstName',
 lastName='$lastName'
-WHERE userId='$userId'
+WHERE email='$email'
 ";
 $conn->query($sql);
 
