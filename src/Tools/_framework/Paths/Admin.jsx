@@ -73,7 +73,7 @@ export function Admin() {
           </Text>
         </Box>
         <PublicActivitiesSection>
-          <Wrap p="10px">
+          <Wrap p="10px" overflow="visible">
             {publicActivities.length < 1 ? (
               <div>No Public Activities</div>
             ) : (

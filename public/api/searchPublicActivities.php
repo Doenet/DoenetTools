@@ -40,6 +40,7 @@ if ($success) {
   WHERE cc.label LIKE '%$q%'
   AND cc.isPublic = 1
   AND cc.isDeleted = 0
+  AND cc.isBanned = 0
   AND c.portfolioCourseForUserId IS NOT NULL
   LIMIT 100
   ";

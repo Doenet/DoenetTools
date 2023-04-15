@@ -10,6 +10,7 @@ import { mathjaxConfig } from './Core/utils/math';
 import DarkmodeController from './Tools/_framework/DarkmodeController';
 import {
   loader as communityLoader,
+  action as communityAction,
   Community,
 } from './Tools/_framework/Paths/Community';
 import { loader as adminLoader, Admin } from './Tools/_framework/Paths/Admin';
@@ -150,6 +151,7 @@ const router = createBrowserRouter([
       {
         path: 'community',
         loader: communityLoader,
+        action: communityAction,
         // action: communitySearchAction,
         element: (
           <ChakraProvider theme={theme}>
@@ -160,6 +162,12 @@ const router = createBrowserRouter([
       {
         path: 'admin',
         loader: adminLoader,
+        // sharing an action with the community page is somewhat intentional
+        // as it shows cards and admins have the same actions that they can perform
+        // on cards as they can on the community page
+        // TODO - determine if this is an okay way to share functionality across
+        // pages or a bad idea
+        action: communityAction,
         element: (
           <ChakraProvider theme={theme}>
             <Admin />

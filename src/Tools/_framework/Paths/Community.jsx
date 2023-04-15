@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
   Badge,
@@ -28,10 +28,55 @@ import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 import Searchbar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
-import { Form } from 'react-router-dom';
+import { Form, useFetcher } from 'react-router-dom';
 import { RiEmotionSadLine } from 'react-icons/ri';
 import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
 import AuthorCard from '../../../_reactComponents/PanelHeaderComponents/AuthorCard';
+import { ComponentListOfListsWithSelectableType } from '../../../Core/components/abstract/ComponentWithSelectableType';
+import { HiOutlineLockClosed } from 'react-icons/hi';
+
+export async function action({ request }) {
+  console.log(request);
+  const formData = await request.formData();
+  let formObj = Object.fromEntries(formData);
+  console.log(formObj);
+  let { doenetId, groupId } = formObj;
+
+  if (formObj?._action == 'Promote Content') {
+    const uploadData = {
+      doenetId,
+      groupId,
+    };
+    try {
+      const response = await axios.post(
+        '/api/addPromotedContent.php',
+        uploadData,
+      );
+      console.log(response);
+      return true;
+    } catch (e) {
+      console.log(e);
+      alert('Error - ' + e.response?.data?.message);
+      return false;
+    }
+  } else if (formObj?._action == 'Ban Content') {
+    const uploadData = {
+      doenetId,
+    };
+    try {
+      const response = await axios.post(
+        '/api/markContentAsBanned.php',
+        uploadData,
+      );
+      console.log(response);
+      return true;
+    } catch (e) {
+      console.log(e);
+      alert('Error - ' + e.response?.data?.message);
+      return false;
+    }
+  }
+}
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -93,6 +138,15 @@ const CarouselSection = styled.div`
 export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
+  const fetcher = useFetcher();
+
+  useEffect(() => {
+    console.log('fetcher.data', fetcher.data);
+    if (fetcher.data) {
+      onClose();
+    }
+  }, [fetcher.data, onClose]);
+
   if (!carouselGroups) {
     carouselGroups = [];
   }
@@ -101,6 +155,22 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
     <>
       <MenuItem ref={btnRef} colorScheme="teal" onClick={onOpen}>
         Promote on Community Page
+      </MenuItem>
+      <MenuItem
+        as="button"
+        type="submit"
+        ref={btnRef}
+        colorScheme="teal"
+        onClick={() => {
+          if (window.confirm('Are you sure you want to ban this content?')) {
+            fetcher.submit(
+              { _action: 'Ban Content', doenetId },
+              { method: 'post' },
+            );
+          }
+        }}
+      >
+        Remove from Community for TOS Violation
       </MenuItem>
       <Drawer
         isOpen={isOpen}
@@ -122,19 +192,14 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                     mergin="5px"
                     key={carouselItem.groupName}
                     onClick={() => {
-                      const uploadData = {
-                        groupId: carouselItem.promotedGroupId,
-                        doenetId,
-                      };
-                      axios
-                        .post('/api/addPromotedContent.php', uploadData)
-                        .then(({ data }) => {
-                          onClose();
-                        })
-                        .catch((e) => {
-                          alert('Error - ' + e.response.data.message);
-                          console.log(e);
-                        });
+                      fetcher.submit(
+                        {
+                          _action: 'Promote Content',
+                          doenetId,
+                          groupId: carouselItem.promotedGroupId,
+                        },
+                        { method: 'post' },
+                      );
                     }}
                   >
                     Add to group "{carouselItem.groupName}"

@@ -260,6 +260,7 @@ CREATE TABLE `course_content` (
   `learningOutcomes` json DEFAULT NULL,
   `addToPrivatePortfolioDate` timestamp NULL DEFAULT NULL,
   `addToPublicPortfolioDate` timestamp NULL DEFAULT NULL,
+  `isBanned` INT(1) NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `courseId` (`courseId`)

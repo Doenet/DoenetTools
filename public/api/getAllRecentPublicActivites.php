@@ -22,20 +22,17 @@ try {
         join user on c.portfolioCourseForUserId = user.userId
         AND cc.isPublic = 1
         AND cc.isDeleted = 0
+        AND cc.isBanned = 0
         AND c.portfolioCourseForUserId IS NOT NULL
         order by cc.creationDate desc
         limit 100
         ";
 
     $result = $conn->query($sql);
-    if ($result->num_rows <= 0) {
-        throw new Exception("No promoted content groups were found." . $conn->error);
-    } else {
-        $matchingActivities = [];
-        while ($row = $result->fetch_assoc()) {
-            $row['type'] = 'activity';
-            $matchingActivities[] = $row;
-        }
+    $matchingActivities = [];
+    while ($row = $result->fetch_assoc()) {
+        $row['type'] = 'activity';
+        $matchingActivities[] = $row;
     }
     $response_arr = [
         'success' => true,
