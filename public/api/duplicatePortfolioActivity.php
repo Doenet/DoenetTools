@@ -12,23 +12,19 @@ include 'parseActivityDefinitionRenamePages.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
-$success = true;
-$message = "";
 
 $prevActivityDoenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
-if ($prevActivityDoenetId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing doenetId';
-}else if ($userId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: you need to be signed in to duplicate an activity';
-}
+try {
+    if ($prevActivityDoenetId == ""){
+        throw new Exception("Internal Error: missing doenetId");
+    }else if ($userId == ""){
+        throw new Exception("Internal Error: you need to be signed in to duplicate an activity");
+    }
 
-$prevCourseId = "";
+    $prevCourseId = "";
 
-//Make sure the activity is public and assigned
-if ($success) {
+    //Make sure the activity is public and assigned
     $sql = "
     SELECT isPublic,
     isAssigned,
@@ -46,22 +42,17 @@ if ($success) {
     $prevCourseId = $row['courseId'];
 
     if ($isPublic != '1'){
-        $success = FALSE;
-        $message = 'Internal Error: Activity is not public';
+        throw new Exception("Internal Error: Activity is not public");
     }
     }else if ($isAssigned != '1'){
-        $success = FALSE;
-        $message = 'Internal Error: Activity is not public';
+        throw new Exception("Internal Error: Activity is not public");
     }else{
-        $success = FALSE;
-        $message = 'Internal Error: Activity is not available';
+        throw new Exception("Internal Error: Activity is not available");
     }
-}
 
-$nextCourseId = '';
+    $nextCourseId = '';
 
-//Identify and make if needed the destination course
-if ($success) {
+    //Identify and make if needed the destination course
     $sql = "
     SELECT c.courseId
     FROM user AS u
@@ -72,8 +63,8 @@ if ($success) {
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $nextCourseId = $row['courseId'];
+        $row = $result->fetch_assoc();
+        $nextCourseId = $row['courseId'];
     }
 
     if ($nextCourseId == ''){
@@ -81,14 +72,11 @@ if ($success) {
         $nextCourseId = createPortfolioCourseFunction($conn,$userId);
     }
 
-}
 
+    $destinationFilesToUpdate = [];
+    $nextActivityDoenetId = "";
 
-$destinationFilesToUpdate = [];
-$nextActivityDoenetId = "";
-
-// Duplicate the activity
-if ($success) {
+    // Duplicate the activity
 
     //Query the activity's information
     $sql = "
@@ -130,131 +118,108 @@ if ($success) {
     $assignedActivity = file_get_contents("../media/$assignedCid.doenet");
 
     if($assignedActivity == FALSE) {
-        $success = FALSE;
-        $message = 'Internal Error: Activity is not available';
-    } else {
+        throw new Exception("Internal Error: Activity is not available");
+    }
 
-        $parse_results = parse_activity_definition_rename_pages($assignedActivity);
+    $parse_results = parse_activity_definition_rename_pages($assignedActivity);
 
-        if(!$parse_results["success"]) {
-            $success = FALSE;
-            $message = 'Internal Error: $parse_results["message"]';
+    if(!$parse_results["success"]) {
+        $message = $parse_results["message"];
+        throw new Exception("Internal Error: $message");
+    }
+
+    $nextActivityJsonDefinition = $parse_results["activity_definition"];
+
+    $nextFirstPageDoenetId = $parse_results["first_page_id"];
+
+    // for now, just copy the list of files?
+    $nextActivityJsonDefinition["files"] = $activityJSON["files"];
+
+    $nextActivityJsonDefinition = json_encode($nextActivityJsonDefinition);
+
+    $insert_to_pages = [];
+
+    foreach($parse_results["renamed_pages"] as $oldPageCid => $newPageInfo) {
+        $newPageId = $newPageInfo["newPageId"];
+        $label = $newPageInfo["label"];
+        $sourceFile = "../media/$oldPageCid.doenet";
+        $destinationFile = "../media/byPageId/$newPageId.doenet";
+
+        $dirname = dirname($destinationFile);
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0755, true);
+        }
+        if (!copy($sourceFile, $destinationFile)) {
+            throw new Exception("Internal Error: Failed to copy file");
+        }
+
+        if($label == NULL) {
+            $label = "Untitled";
         } else {
 
-            $nextActivityJsonDefinition = $parse_results["activity_definition"];
+            $label = str_replace(
+                ["&quot;", "&apos;", "&lt;", "&gt;", "&amp;"],
+                ['"', ",", "<", ">", "&"],
+                $label
+            );
 
-            $nextFirstPageDoenetId = $parse_results["first_page_id"];
-
-            // for now, just copy the list of files?
-            $nextActivityJsonDefinition["files"] = $activityJSON["files"];
-
-            $nextActivityJsonDefinition = json_encode($nextActivityJsonDefinition);
-
-            $insert_to_pages = [];
-
-            foreach($parse_results["renamed_pages"] as $old_page_cid => $new_page_id) {
-                $sourceFile = "../media/$old_page_cid.doenet";
-                $destinationFile = "../media/byPageId/$new_page_id.doenet";
-        
-                $dirname = dirname($destinationFile);
-                if (!is_dir($dirname)) {
-                    mkdir($dirname, 0755, true);
-                }
-                if (!copy($sourceFile, $destinationFile)) {
-                    $success = false;
-                    $message = 'failed to copy';
-                }  
-
-                array_push(
-                    $insert_to_pages,
-                    "('$nextCourseId','$nextActivityDoenetId','$new_page_id','Untitled')"
-                );
-            }
-
-
-            $escapedLabel = mysqli_real_escape_string($conn, $previous_activity_content['label']);
-            $imagePath = $previous_activity_content['imagePath'];
-            $type = $previous_activity_content['type'];
-            $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
-            
-            
-            //INSERT the new activity into course_content
-            $sql = "
-            INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath,addToPrivatePortfolioDate)
-            VALUES
-            $str_insert_to_course_content
-            ";
-            $conn->query($sql);
-            
-
-            $str_insert_to_pages = implode(',', $insert_to_pages);
-            //INSERT all the new pages into the pages table
-            $sql = "
-            INSERT INTO pages (courseId,containingDoenetId,doenetId,label)
-            VALUES
-            $str_insert_to_pages
-            ";
-            $result = $conn->query($sql);
-
-
+            $label = mysqli_real_escape_string($conn, $label);
         }
+
+        array_push(
+            $insert_to_pages,
+            "('$nextCourseId','$nextActivityDoenetId','$newPageId','$label')"
+        );
     }
+
+
+    $escapedLabel = mysqli_real_escape_string($conn, $previous_activity_content['label']);
+    $imagePath = $previous_activity_content['imagePath'];
+    $type = $previous_activity_content['type'];
+    $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
+    
+    
+    //INSERT the new activity into course_content
+    $sql = "
+    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath,addToPrivatePortfolioDate)
+    VALUES
+    $str_insert_to_course_content
+    ";
+    $conn->query($sql);
+    
+
+    $str_insert_to_pages = implode(',', $insert_to_pages);
+    //INSERT all the new pages into the pages table
+    $sql = "
+    INSERT INTO pages (courseId,containingDoenetId,doenetId,label)
+    VALUES
+    $str_insert_to_pages
+    ";
+    $result = $conn->query($sql);
+
+
+    // TODO: how do we handle support files?
+
+    $response_arr = [
+        'success' => $success,
+        'courseId' => $nextCourseId,
+        'nextActivityDoenetId' => $nextActivityDoenetId,
+        'nextPageDoenetId' => $nextFirstPageDoenetId,
+    ];
+
+    http_response_code(200);
+
+} catch (Exception $e) {
+    $response_arr = [
+        'success' => false,
+        'message' => $e->getMessage(),
+    ];
+    // TODO: change response code to an error when front end code can handle it
+    http_response_code(200);
+
+} finally {
+    // make it json format
+    echo json_encode($response_arr);
+    $conn->close();
 }
-
-
-
-
-//copy support files
-// if ($success) {
-//     foreach ($activity_and_collection_ids as $doenetId) {
-//         $nextDoenetId = $prevToNextDoenetIds[$doenetId];
-
-//         $sql = "
-//         INSERT INTO support_files
-//         (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp,isListed,isPublic)
-//         SELECT 
-//         '$userId' AS userId,
-//         cid,
-//         '$nextDoenetId' AS doenetId,
-//         fileType,
-//         description,
-//         asFileName,
-//         sizeInBytes,
-//         widthPixels,
-//         heightPixels,
-//         timestamp,
-//         isListed,
-//         isPublic
-//         FROM support_files
-//         WHERE doenetId = '$doenetId'
-//     ";
-//         $result = $conn->query($sql);
-//     }
-// }
- //Replace previous doenetIds with next doenetIds in destinationFile
-// if ($success) {
-//     foreach($destinationFilesToUpdate as &$destinationFile){
-//         $doenetML = file_get_contents($destinationFile);
-
-//         foreach(array_keys($prevToNextDoenetIds) as $prev){
-//             $next = $prevToNextDoenetIds[$prev];
-//             $doenetML=str_replace($prev, $next, $doenetML);
-//         }
-
-//         file_put_contents($destinationFile, $doenetML);
-//     }
-// }
-
-
-$response_arr = [
-    'success' => $success,
-    'message' => $message,
-    'courseId' => $nextCourseId,
-    'nextActivityDoenetId' => $nextActivityDoenetId,
-    'nextPageDoenetId' => $nextFirstPageDoenetId,
-];
-
-echo json_encode($response_arr);
-
-$conn->close();
 ?>

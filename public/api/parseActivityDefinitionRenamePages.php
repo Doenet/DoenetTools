@@ -84,7 +84,11 @@ function content_from_order($order, &$renamed_pages, &$first_page_id) {
       $newPageId = include 'randomId.php';
       $newPageId = '_' . $newPageId;
       array_push($content, $newPageId);
-      $renamed_pages[(string)$node["cid"]] = $newPageId;
+      $renamed_pages[(string)$node["cid"]] = [
+        "newPageId" => $newPageId,
+        "label" => $node["label"]
+      ];
+
 
       if(!$first_page_id) {
         $first_page_id = $newPageId;

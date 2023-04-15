@@ -32,8 +32,8 @@ describe('doenetEditor test', function () {
 
     cy.get('[data-test="Portfolio"]').click();
 
-    cy.get('[data-test="Public Activities"]').should('contain.text', "No Public Activities")
-    cy.get('[data-test="Private Activities"]').should('contain.text', "No Private Activities")
+    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').should("have.length", 0);
+    cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').should("have.length", 0);
 
     cy.log("Create an activity");
     cy.get('[data-test="Add Activity"]').click();
@@ -42,8 +42,8 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="Viewer Update Button"]').click();
 
     cy.get('[data-test="Crumb 0"]').click();
-    cy.get('[data-test="Public Activities"]').should('contain.text', "No Public Activities")
-
+    cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').should("have.length", 1);
+    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').should("have.length", 0);
 
     cy.log("Edit the activity");
     cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').eq(0).find("img").eq(0).click()
@@ -53,20 +53,22 @@ describe('doenetEditor test', function () {
     cy.get(cesc2('#/_p2')).should('have.text', 'Hello, !')
 
     cy.get('[data-test="Crumb 0"]').click();
-    cy.get('[data-test="Public Activities"]').should('contain.text', "No Public Activities")
+    cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').should("have.length", 1);
+    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').should("have.length", 0);
 
 
     cy.log("Make the activity public");
     cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').eq(0).find("button").eq(0).click()
     cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').eq(0).contains("Make Public").click();
-    cy.get('[data-test="Private Activities"]').should('contain.text', "No Private Activities")
+    cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').should("have.length", 0);
+    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').should("have.length", 1);
 
 
     cy.log("Change activity label")
 
     cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').eq(0).find("button").eq(0).click()
-    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').eq(0).contains("Setting").click();
-    cy.get("input[name='label']").clear().type("Hello!")
+    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').eq(0).contains("Settings").click();
+    cy.get('[data-test="Activity Label"]').clear().type("Hello!")
     cy.contains("button", "Update").click();
 
     cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').eq(0).should('contain.text', "Hello!")
@@ -88,11 +90,9 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="Viewer Update Button"]').click();
 
 
-    // TODO: change the label once it doesn't make it public
-    // cy.get('[data-test="Support Panel Controls"]').contains("Button", "Settings").click();
-    // cy.get("input[name='label']").clear().type("Stay private")
-
-    // cy.contains("button", "Update").click();
+    cy.get('[data-test="Support Panel Controls"]').contains("Button", "Settings").click();
+    cy.get('[data-test="Activity Label"]').clear().type("Stay private")
+    cy.contains("button", "Update").click();
 
 
     cy.get('[data-test="Crumb 0"]').click();
@@ -107,11 +107,13 @@ describe('doenetEditor test', function () {
     cy.visit(`/`)
 
 
-    cy.log("Find public activity Hello!")
+    cy.log("Cannot find private activity Stay Private");
     cy.get('[data-test="Community"]').click();
+    cy.get('[data-test="Search"]').type("Stay Private{enter}")
+    cy.get('[data-test="Search Results"] [data-test="Activity Card"]').should("have.length", 0)
 
-    cy.get('[data-test="Search"]').type("Hello!{enter}")
-
+    cy.log("Find public activity Hello!")
+    cy.get('[data-test="Search"]').clear().type("Hello!{enter}")
     cy.get('[data-test="Search Results"] [data-test="Activity Card"]').eq(0).find("img").click();
 
     cy.get(cesc2('#/_p2')).should('have.text', 'Hello, !')
@@ -156,7 +158,7 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="Crumb 0"]').click();
     cy.get('[data-test="Portfolio"]').click();
 
-    cy.get('[data-test="Public Activities"]').should('contain.text', "No Public Activities")
+    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').should("have.length", 0);
     cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').should('have.length', 1)
 
     cy.log("Edit the activity");
@@ -169,13 +171,6 @@ describe('doenetEditor test', function () {
 
     cy.get(cesc2('#/name')).type("Dad{enter}");
     cy.get(cesc2('#/_p2')).should('have.text', 'Hello, Dad!')
-
-
-    cy.log("Verify private activity is not visible")
-    cy.get('[data-test="Crumb 0"]').click();
-    cy.get('[data-test="Community"]').click();
-    cy.get('[data-test="Search"]').type("Untitled{enter}")
-    cy.get('[data-test="Search Results"] [data-test="Activity Card"]').should('have.length', 0)
 
 
     cy.log("Log back in as first user")
@@ -237,7 +232,7 @@ describe('doenetEditor test', function () {
     cy.get('[data-test="Crumb 0"]').click();
     cy.get('[data-test="Portfolio"]').click();
 
-    cy.get('[data-test="Public Activities"]').should('contain.text', "No Public Activities")
+    cy.get('[data-test="Public Activities"] [data-test="Activity Card"]').should("have.length", 0);
     cy.get('[data-test="Private Activities"] [data-test="Activity Card"]').should('have.length', 2)
 
     cy.log("View the most recently remixed activity");
