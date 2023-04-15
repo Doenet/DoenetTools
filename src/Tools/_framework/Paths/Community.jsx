@@ -120,13 +120,6 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
   const btnRef = React.useRef();
   const fetcher = useFetcher();
 
-  useEffect(() => {
-    console.log('fetcher.data', fetcher.data);
-    if (fetcher.data) {
-      onClose();
-    }
-  }, [fetcher.data, onClose]);
-
   if (!carouselGroups) {
     carouselGroups = [];
   }
