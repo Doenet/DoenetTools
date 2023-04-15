@@ -560,15 +560,37 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        <Carousel
-          title="College Math"
-          data={carouselData ? carouselData['College Math'] : []}
-        />
-        <Carousel
-          title="Science & Engineering"
-          data={carouselData ? carouselData['Engineering'] : []}
-        />
-        {/* <Carousel title="K-12 Math" data={carouselData[2]} /> */}
+        {/* for admins, show the currently promoted groups first */}
+        {Object.keys(carouselData).map((groupName) => {
+          let group = carouselData[groupName];
+          console.log(group);
+          if (group.length < 1 || group[0].currentlyFeatured != '1') {
+            return null;
+          }
+          return (
+            <Carousel
+              key={'carosel-' + group.groupName}
+              title={groupName}
+              data={group}
+            />
+          );
+        })}
+        {/* for admins, show the rest of the groups, the ones not featured
+            these will be filtered out in the server for non-admins and will not show
+         */}
+        {Object.keys(carouselData).map((groupName) => {
+          let group = carouselData[groupName];
+          if (group.length < 1 || group[0].currentlyFeatured == '1') {
+            return null;
+          }
+          return (
+            <Carousel
+              key={'carosel-' + group.groupName}
+              title={groupName + '(Not currently featured)'}
+              data={group}
+            />
+          );
+        })}
       </CarouselSection>
     </>
   );

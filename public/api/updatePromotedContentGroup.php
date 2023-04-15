@@ -31,6 +31,17 @@ try {
         throw new Exception("Group name cannot be blank");
     }
 
+    if ($currentlyFeatured) {
+        // if we are trying to feature a group, make sure it has at least 4 items in it
+        // TODO - this is ignoring deletions and banned items
+        $sql = 
+            "select groupName from promoted_content_group join promoted_content using (promotedGroupId) where groupName = '$groupName'";
+        $result = $conn->query($sql);
+        if ($result && $result->num_rows < 4) {
+            throw new Exception("Promoted groups must have at least 4 items in them before being shared.");
+        }
+    }
+
     $sql = 
         "update promoted_content_group set currentlyFeatured = '$currentlyFeatured', homepage = '$homepage'
          where groupName = '$groupName'";

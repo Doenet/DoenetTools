@@ -17,12 +17,16 @@ try {
     checkForAdmin($userId, $conn);
 
     $sql = 
-        "select groupName, currentlyFeatured, homepage, promotedGroupId
-        from promoted_content_group pcg";
+        "select groupName, currentlyFeatured, homepage, promotedGroupId, itemCount
+        from promoted_content_group pcg
+        join (
+            select count(*) itemCount, promotedGroupId from promoted_content group by promotedGroupId
+        ) t using(promotedGroupId)
+        ";
 
     $result = $conn->query($sql);
     if ($result->num_rows <= 0) {
-        throw new Exception("No promoted content groups were found.");
+        throw new Exception("No promoted content groups were found." . $conn->error);
     } else {
         $promotedGroups = [];
         while ($row = $result->fetch_assoc()) {
