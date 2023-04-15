@@ -329,14 +329,22 @@ export function PortfolioActivitySettings() {
               value="Cancel"
               onClick={(e) => {
                 e.preventDefault();
-                //Assume that they came from the editor to orient Tool Root
+                if (data.referrer == 'portfolioeditor') {
+                  navigateTo.current = `/portfolioeditor/${data.doenetId}?tool=editor&doenetId=${data.doenetId}&pageId=${data.pageDoenetId}`;
+                }
                 setRecoilPageToolView({
                   page: 'portfolioeditor',
+                  optionalURLParam: data.doenetId,
                   tool: 'editor',
                   view: '',
-                  params: {},
+                  params: {
+                    doenetId: data.doenetId,
+                    pageId: data.pageDoenetId,
+                  },
                 });
-                navigate(-1);
+                if (data.referrer !== 'portfolioeditor') {
+                  navigate(-1);
+                }
               }}
             />
             <Button
