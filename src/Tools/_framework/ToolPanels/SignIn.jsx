@@ -11,7 +11,7 @@ export default function SignIn(props) {
   let [nineCode, setNineCode] = useState('');
   let [maxAge, setMaxAge] = useState(0); //'2147483647' sec
 
-  let [signInStage, setSignInStage] = useState('beginning');
+  let [signInStage, setSignInStage] = useState('init');
   let [isSentEmail, setIsSentEmail] = useState(false);
   let [deviceName, setDeviceName] = useState('');
   let [sendEmailAlert, setSendEmailAlert] = useState(false);
@@ -22,6 +22,7 @@ export default function SignIn(props) {
   let [signInDisabled, setSignInDisabled] = useState(true);
   let [firstName, setFirstName] = useState('');
   let [lastName, setLastName] = useState('');
+  let [jwtLink, setJwtLink] = useState('');
 
   // console.log('signInStage', signInStage);
 
@@ -73,15 +74,7 @@ export default function SignIn(props) {
       .then((resp) => {
         // if (resp.data.success === '1') {
         localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
-        const needsName = localStorage.getItem('Needs Name');
-
-        if (needsName) {
-          setSignInStage('Need Name Entered');
-        } else {
-          location.href = '/';
-          setSignInStage('Loading');
-          return null;
-        }
+        location.href = '/';
         // navigate('/'); //Not sure why this doesn't work
         // navigate('/course');
         //   location.href = '/#/course';
@@ -93,6 +86,7 @@ export default function SignIn(props) {
         console.log(error);
         //  Error currently does nothing
       });
+    return null;
   }
 
   // ** *** *** *** *** **
@@ -155,17 +149,24 @@ export default function SignIn(props) {
           }
 
           if (resp.data.hasFullName == 0) {
-            localStorage.setItem('Needs Name', true);
+            setSignInStage('Need Name Entered');
+            setJwtLink(
+              `/api/jwt.php?emailaddress=${encodeURIComponent(
+                email,
+              )}&nineCode=${encodeURIComponent(
+                nineCode,
+              )}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`,
+            );
           } else {
-            localStorage.setItem('Needs Name', false);
+            //We have the user's name so sign them in
+            location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+              email,
+            )}&nineCode=${encodeURIComponent(
+              nineCode,
+            )}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
           }
 
-          // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
-          location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
-            email,
-          )}&nineCode=${encodeURIComponent(
-            nineCode,
-          )}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
+          // // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
         } else {
           if (resp.data.reason === 'Code expired') {
             setSignInStage('Code expired');
@@ -227,10 +228,10 @@ export default function SignIn(props) {
               onClick={() => {
                 axios
                   .get('/api/saveUsersName.php', {
-                    params: { firstName, lastName },
+                    params: { firstName, lastName, email },
                   })
                   .then((resp) => {
-                    location.href = '/';
+                    location.href = jwtLink;
                   });
               }}
             />
@@ -384,7 +385,7 @@ export default function SignIn(props) {
     );
   }
 
-  if (signInStage === 'beginning') {
+  if (signInStage === 'init') {
     let stay = 0;
     if (maxAge > 0) {
       stay = 1;
