@@ -19,7 +19,7 @@ try {
     $sql = 
         "select groupName, currentlyFeatured, homepage, promotedGroupId, itemCount
         from promoted_content_group pcg
-        join (
+        left join (
             select count(*) itemCount, promotedGroupId from promoted_content group by promotedGroupId
         ) t using(promotedGroupId)
         ";

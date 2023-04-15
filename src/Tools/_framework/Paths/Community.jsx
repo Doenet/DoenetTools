@@ -586,7 +586,7 @@ export function Community() {
           return (
             <Carousel
               key={'carosel-' + group.groupName}
-              title={groupName + '(Not currently featured)'}
+              title={groupName + ' (Not currently featured)'}
               data={group}
             />
           );

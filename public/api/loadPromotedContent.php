@@ -6,12 +6,14 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
+include 'checkForCommunityAdminFunctions.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 $response_arr;
 try {
+    $isAdmin = userIsAdmin($userId, $conn);
 
     $sql = 
         "select groupName, currentlyFeatured, homepage,
@@ -28,6 +30,9 @@ try {
         AND cc.isBanned = 0
         AND c.portfolioCourseForUserId IS NOT NULL
         ";
+    if (!$isAdmin) {
+        $sql .= "AND (pcg.currentlyFeatured = 1 OR groupName = 'Homepage')";
+    }
 
     $result = $conn->query($sql);
     if ($result->num_rows <= 0) {
