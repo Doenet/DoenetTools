@@ -1730,7 +1730,7 @@ export const useCourse = (courseId) => {
 
   const compileActivity = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ activityDoenetId, successCallback, isAssigned = false, courseId, failureCallback = defaultFailure }) => {
+      async ({ activityDoenetId, successCallback, isAssigned = false, courseId, activity, failureCallback = defaultFailure }) => {
 
         async function orderToDoenetML({ order, indentLevel = 1 }) {
           // TODO: list of possible order attributes
@@ -1790,7 +1790,9 @@ export const useCourse = (courseId) => {
           return `${indentSpacing}<page cid="${pageCid}" />\n`;
         }
 
-        let activity = await snapshot.getPromise(itemByDoenetId(activityDoenetId));
+        if(!activity) {
+          activity = await snapshot.getPromise(itemByDoenetId(activityDoenetId));
+        }
 
         let attributeString = ` xmlns="https://doenet.org/spec/doenetml/v${activity.version}" type="activity"`
 
