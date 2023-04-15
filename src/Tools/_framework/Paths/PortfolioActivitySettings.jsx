@@ -39,12 +39,6 @@ export async function action({ request, params }) {
   });
   const portfolioCourseId = response?.data?.portfolioCourseId;
 
-  if (updates.makePublicPrivate) {
-    let response = await fetch(
-      `/api/updateIsPublicActivity.php?doenetId=${updates.doenetId}&isPublic=1`,
-    );
-  }
-
   if (referrer == 'portfolioeditor') {
     return redirect(
       `/portfolioeditor/${updates.doenetId}?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`,
@@ -368,11 +362,6 @@ export function PortfolioActivitySettings() {
             </SideBySide>
           </Slot3>
         </MainGrid>
-        <input
-          type="hidden"
-          name="makePublicPrivate"
-          value={isMakePublic}
-        ></input>
         <input type="hidden" name="imagePath" value={imagePath}></input>
         <input type="hidden" name="doenetId" value={data.doenetId}></input>
         <input type="hidden" name="pageDoenetId" value={data.pageDoenetId} />
