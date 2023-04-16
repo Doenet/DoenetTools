@@ -577,35 +577,37 @@ export function Community() {
             groupName += ' (Not currently featured on community page)';
           }
           return (
-            <Box key={'carosel-' + group.groupName}>
-              <Text fontSize="24px">{groupName}</Text>
-              <br />
-              <Wrap>
-                {isAdmin ? (
-                  group.map((cardObj, i) => {
-                    return (
-                      <ActivityCard
-                        {...cardObj}
-                        key={`swipercard${i}`}
-                        fullName={cardObj.firstName + ' ' + cardObj.lastName}
-                        imageLink={`/portfolioviewer/${cardObj.doenetId}`}
-                        menuItems={
-                          null
-                          /* z-index stacking issues, might be related to the carousel
+            <span key={'carosel-' + group.groupName}>
+              {isAdmin ? (
+                <span>
+                  <Text fontSize="24px">{groupName}</Text>
+                  <br />
+                  <Wrap>
+                    {group.map((cardObj, i) => {
+                      return (
+                        <ActivityCard
+                          {...cardObj}
+                          key={`swipercard${i}`}
+                          fullName={cardObj.firstName + ' ' + cardObj.lastName}
+                          imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                          menuItems={
+                            null
+                            /* z-index stacking issues, might be related to the carousel
                       <>
                         <MenuItem>Move Left</MenuItem>
                         <MenuItem>Move Right</MenuItem>
                       </>
                     */
-                        }
-                      />
-                    );
-                  })
-                ) : (
-                  <Carousel title={groupName} data={group} />
-                )}
-              </Wrap>
-            </Box>
+                          }
+                        />
+                      );
+                    })}
+                  </Wrap>
+                </span>
+              ) : (
+                <Carousel title={groupName} data={group} />
+              )}
+            </span>
           );
         })}
       </CarouselSection>
