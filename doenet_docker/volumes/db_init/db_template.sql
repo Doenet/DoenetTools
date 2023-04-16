@@ -498,56 +498,6 @@ CREATE TABLE `experiment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 
-
-# Dump of table homepage_carousel
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `homepage_carousel`;
-
-CREATE TABLE `homepage_carousel` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `section` int DEFAULT '0',
-  `position` int DEFAULT '0',
-  `imagePath` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `link` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-
-LOCK TABLES `homepage_carousel` WRITE;
-/*!40000 ALTER TABLE `homepage_carousel` DISABLE KEYS */;
-
-INSERT INTO `homepage_carousel` (`id`, `section`, `position`, `imagePath`, `label`, `link`)
-VALUES
-	(1,0,1,'https://www.doenet.org/media/bafkreiam4krvixrkppyucgwxwvsqugdnu744fetsjfpaik42e6garyliui.png','Sketching the Derivative of a Function','https://www.doenet.org/public?&doenetId=_2vI5BPzPpy2xIgIdeeT58#page1'),
-	(2,2,1,'https://www.doenet.org/media/bafkreihtu6ojja2rqu7h7ozwgo6wxfaxcbjhfl72qrk35gkyvewkfkdpm4.png','The Distance Formula','https://www.doenet.org/public/?&doenetId=_Nx4JdF9H01nevilBVcpH7&pageId=_2Q0GSCRjcOXzsG2XqkxIy'),
-	(3,1,1,'https://www.doenet.org/media/bafkreibscqr4xqdtzluhxqpq2b5te6aee5klhih5a7gyepbhzg5ef7a4dy.png','Gravity Pendulum','https://www.doenet.org/public?&doenetId=_9yltFP7xicXUxc5zn47kV&pageId=_R01B4y1aIIAhUUMJ1kS4h'),
-	(4,0,2,'https://www.doenet.org/media/bafkreifp3vvgjzyauwcz4sgv3ufnhgt73wgjxeo526bxrc42dy5z7ptdk4.png','Using Critical Points to Graph a Function','https://www.doenet.org/public?&pageId=_nndyecDUVhrBxRSVEsIks&doenetId=_xFp9q8N0M5ZmndOdNoCdV#page1'),
-	(5,0,3,'https://www.doenet.org/media/bafkreidaba7xob6ttqtmrlhxc3tac4ndbyspxyjgdkrum7kqennbbhiksq.png','Cobwebbing as a Graphical Solution Technique','https://www.doenet.org/public?&pageId=_dZtsQukSqUSyj1zpjjKmR&doenetId=_Zhp8bgIK4cH1rmC2qbmZ1#page1'),
-	(6,0,4,'https://www.doenet.org/media/bafkreiaxmhuwpaysgexfyi52u227wjue7sdupuhca5fclc6vz5s75i43gi.png','Finding Equilibria of Dynamical Systems Graphically','https://www.doenet.org/public?&doenetId=_mSq0VF5YtzU1G6O8yKmH3&pageId=_xaxKwgl5eoIW5jSkER4dL'),
-	(7,0,5,'https://www.doenet.org/media/bafkreieiacouqdzeocyuf73nrd2spwnfjt24ttpgbzx3xuex7ma7qkaje4.png','Average Rate of Change of f(x)','https://www.doenet.org/public?&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX'),
-	(8,0,6,'https://www.doenet.org/media/bafkreigezuzjy2jm6afsbzt2bz6aibxibebynhq5m6tgu5q2vx46ptqk4y.png','Retinal Neuron in Response to Light','https://www.doenet.org/public?&doenetId=_0tyHTDbSrC99yN3Dcxatt&pageId=_iDhjQ8aQc3rvRZo4ahMDH'),
-	(9,0,7,'https://www.doenet.org/media/bafkreifdwgupm3bls3oaswjgjdmsdribbnapnoj6vmztssfdhkmewcejiq.png','Sketching Riemann Sums','https://www.doenet.org/public?&doenetId=_szVX6GxaRlNjE85iPorIX&pageId=_I8W0aJ0d29wR4tykHzcTm'),
-	(10,0,8,'https://www.doenet.org/media/bafkreif53m74qbeaaxf6ox7x45vidz77fxluuzgwuxyvkpdhm3aesa7fem.png','Graphical Solution to Autonomous Differential Equation','https://www.doenet.org/public?tool=editor&doenetId=_PdrivZGPIuLsu0yNYgTh1&pageId=_xyXzlFeOcnDf5M043pmOa'),
-	(11,1,2,'https://www.doenet.org/media/bafkreibbljj4oae2mrbmupcnr7a62wjmxgrspgkn6pp2nygsl6vaab2ulq.png','Force Polygon and Free-body Diagram','https://www.doenet.org/public?&doenetId=_oLrDBHvAQ6km8U8oW8n8F&pageId=_bir2xQiClURXl58TRjJyu'),
-	(12,1,3,'https://www.doenet.org/media/bafkreidfgtqqf4pomt2yk7e2n3b2ozgqnspgz34bsydajauy6jc3f3q2ym.png','The Parallel Axis Theorem','https://www.doenet.org/public?&doenetId=_nQhMzFgVSHKdQLYHZdqSi&pageId=_9egpTeOQ7CeyKQOzXJsE4'),
-	(13,1,4,'https://www.doenet.org/media/bafkreidziwruo6ew34pcxucdgjshuwyvtn4yxfe3klm24zipl7qekzn2ji.png','Parametric Curves and the Fibonacci Spiral','https://www.doenet.org/public?&doenetId=_YHXi5AZ50HpDaiDpqY5i4'),
-	(14,1,5,'https://www.doenet.org/media/bafkreiesq4ovdbrbbzwtelrzqi55y5cn77hg2hzdvpka6lzkivgavgs7pm.png','Mohr\'s Circle Construction','https://www.doenet.org/public?&doenetId=_2GQLzLQk720Xtp0IQQlsP'),
-	(15,2,2,'https://www.doenet.org/media/bafkreigbsq22gtn6cyjowbct6yfvmdubxvbbbpcg3w7lb7diwiuedp66wi.png','Parabola in Vertex Form','https://www.doenet.org/public?&doenetId=_Tx6tHFlAjEkwI2JqobpJb&pageId=_xsXSITMkeoe2Kxk09K9nU'),
-	(16,2,3,'https://www.doenet.org/media/bafkreigaqyhy7jozong5oy6d6tazum36koslg737hqpbtvrr6fuvxgl3zu.png','The Unit Circle','https://www.doenet.org/public?&doenetId=_6694ERXlB01d4O02Y6Ss4&pageId=_MKp8wrCuf6RBfwqXt29KU'),
-	(17,2,4,'https://www.doenet.org/media/bafkreie7wydzahclczanva3jvntado4jbn7v57ijjxyyahc34z7k3cwgpa.png','Radioactive Decay','https://www.doenet.org/public?&doenetId=_djqyy5l6czkNhT1WfNfG8&pageId=_O1pgjFfTntXw9vLe7shW3'),
-	(18,2,5,'https://www.doenet.org/media/bafkreiezrefj2verba4vwcl7jwa3nyulazeo736daw57kkp7j7q4ihihy4.png','Rational Functions','https://www.doenet.org/public?&doenetId=_TGnpVEefcj59zLjsnULqK&pageId=_nBhukue9G82wLIs0Nx2XT'),
-	(19,2,6,'https://www.doenet.org/media/bafkreid6r7fcpgqlv32q3lxqsnmt47daicrdjcnws5annfqtwg4qnsrepu.png','Verify Algebraic Simplification','https://www.doenet.org/public?&doenetId=_BrVjSspzU5pdew3DOBlXP&pageId=_Svl7QVdDJFpaByTUDsOi8'),
-	(20,2,7,'https://www.doenet.org/media/bafkreih5kbfwmtkifdfskchyiuekinlx7zo6lsvoozxrboxyyeygspwe2q.png','Transform Trigonometric Functions','https://www.doenet.org/public?&doenetId=_9o97WpLVp3FRYyjwDqpDY'),
-	(21,2,8,'https://www.doenet.org/media/bafkreienne7x5iiq2qr4ca7pct6ngl4omdxv6pkzmrvtwn2nyamybnscyi.png','Integer Practice on the Coordinate Plane','https://www.doenet.org/public?&doenetId=_5kggLH0irOmDTBvrOcDK3'),
-	(22,3,1,'https://www.doenet.org/media/bafkreigezuzjy2jm6afsbzt2bz6aibxibebynhq5m6tgu5q2vx46ptqk4y.png','Retinal Neuron in Response to Light','https://www.doenet.org/public?&doenetId=_0tyHTDbSrC99yN3Dcxatt&pageId=_iDhjQ8aQc3rvRZo4ahMDH'),
-	(23,3,2,'https://www.doenet.org/media/bafkreiezrefj2verba4vwcl7jwa3nyulazeo736daw57kkp7j7q4ihihy4.png','Rational Functions','https://www.doenet.org/public?&doenetId=_TGnpVEefcj59zLjsnULqK&pageId=_nBhukue9G82wLIs0Nx2XT'),
-	(24,3,3,'https://www.doenet.org/media/bafkreienne7x5iiq2qr4ca7pct6ngl4omdxv6pkzmrvtwn2nyamybnscyi.png','Integer Practice on the Coordinate Plane','https://www.doenet.org/public?&doenetId=_5kggLH0irOmDTBvrOcDK3');
-
-/*!40000 ALTER TABLE `homepage_carousel` ENABLE KEYS */;
-UNLOCK TABLES;
-
-
 # Dump of table initial_renderer_state
 # ------------------------------------------------------------
 

@@ -111,9 +111,11 @@ export async function loader({ request }) {
     }
     return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const { isAdmin } = await isAdminResponse.json();
     const response = await fetch('/api/loadPromotedContent.php');
     const { carouselData } = await response.json();
-    return { carouselData };
+    return { carouselData, isAdmin };
   }
 }
 
@@ -564,7 +566,11 @@ export function Community() {
         {Object.keys(carouselData).map((groupName) => {
           let group = carouselData[groupName];
           console.log(group);
-          if (group.length < 1 || group[0].currentlyFeatured != '1') {
+          if (
+            group.length < 1 ||
+            group[0].currentlyFeatured != '1' ||
+            group[0].groupName == 'Homepage'
+          ) {
             return null;
           }
           return (
@@ -580,16 +586,35 @@ export function Community() {
          */}
         {Object.keys(carouselData).map((groupName) => {
           let group = carouselData[groupName];
-          if (group.length < 1 || group[0].currentlyFeatured == '1') {
+          if (
+            group.length > 1 &&
+            isAdmin &&
+            (group[0].currentlyFeatured == '0' ||
+              !group[0].currentlyFeatured ||
+              group[0].groupName == 'Homepage')
+          ) {
+            return (
+              <Carousel
+                key={'carosel-' + group.groupName}
+                title={
+                  groupName + ' (Not currently featured on community page)'
+                }
+                data={group}
+              />
+            );
+          }
+
+          /*
+          if (
+            group.length < 1 ||
+            (group[0].currentlyFeatured == '1' &&
+              group[0].groupName != 'Homepage') ||
+            (group[0].groupName == 'Homepage' && isAdmin)
+          ) {
             return null;
           }
-          return (
-            <Carousel
-              key={'carosel-' + group.groupName}
-              title={groupName + ' (Not currently featured)'}
-              data={group}
-            />
           );
+          */
         })}
       </CarouselSection>
     </>
