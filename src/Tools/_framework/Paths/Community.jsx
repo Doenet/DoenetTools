@@ -577,7 +577,7 @@ export function Community() {
             groupName += ' (Not currently featured on community page)';
           }
           return (
-            <span key={'carosel-' + group.groupName}>
+            <>
               {isAdmin ? (
                 <span>
                   <Text fontSize="24px">{groupName}</Text>
@@ -607,7 +607,7 @@ export function Community() {
               ) : (
                 <Carousel title={groupName} data={group} />
               )}
-            </span>
+            </>
           );
         })}
       </CarouselSection>
