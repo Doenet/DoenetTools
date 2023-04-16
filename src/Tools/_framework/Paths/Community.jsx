@@ -603,18 +603,6 @@ export function Community() {
               />
             );
           }
-
-          /*
-          if (
-            group.length < 1 ||
-            (group[0].currentlyFeatured == '1' &&
-              group[0].groupName != 'Homepage') ||
-            (group[0].groupName == 'Homepage' && isAdmin)
-          ) {
-            return null;
-          }
-          );
-          */
         })}
       </CarouselSection>
     </>
