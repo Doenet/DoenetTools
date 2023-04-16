@@ -550,63 +550,80 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        {Object.keys(carouselData).map((groupName) => {
-          let group = carouselData[groupName];
-          if (!isAdmin && group[0].groupName == 'Homepage') {
-            return null;
-          }
-          if (
-            group.length > 1 &&
-            isAdmin &&
-            (group[0].currentlyFeatured == '0' ||
-              !group[0].currentlyFeatured ||
-              group[0].groupName == 'Homepage')
-          ) {
-            groupName += ' (Not currently featured on community page)';
-          }
-          return (
-            <>
-              {isAdmin ? (
-                <span>
-                  <Text fontSize="24px">{groupName}</Text>
-                  <br />
-                  <Wrap>
-                    {group.map((cardObj, i) => {
-                      return (
-                        <ActivityCard
-                          {...cardObj}
-                          key={`swipercard${i}`}
-                          fullName={cardObj.firstName + ' ' + cardObj.lastName}
-                          imageLink={`/portfolioviewer/${cardObj.doenetId}`}
-                          menuItems={
-                            <>
-                              <MenuItem
-                                onClick={() => {
-                                  fetcher.submit(
-                                    {
-                                      _action: 'Remove Promoted Content',
-                                      doenetId: cardObj.doenetId,
-                                      groupId: cardObj.promotedGroupId,
-                                    },
-                                    { method: 'post' },
-                                  );
-                                }}
-                              >
-                                Remove from group
-                              </MenuItem>
-                            </>
-                          }
-                        />
-                      );
-                    })}
-                  </Wrap>
-                </span>
-              ) : (
-                <Carousel title={groupName} data={group} />
-              )}
-            </>
-          );
-        })}
+        {Object.keys(carouselData)
+          .map((groupName) => {
+            return { activities: carouselData[groupName], groupName };
+          })
+          .sort((a, b) => {
+            if (a.activities[0].groupName == 'Homepage') return -1;
+            else if (b.activities[0].groupName == 'Homepage') return 1;
+            else
+              return a.activities[0].currentlyFeatured >
+                b.activities[0].currentlyFeatured
+                ? -1
+                : 1;
+          })
+          .map((groupInfo) => {
+            let groupName = groupInfo.groupName;
+            const group = groupInfo.activities;
+            if (!isAdmin && group[0].groupName == 'Homepage') {
+              return null;
+            }
+            console.log(carouselData);
+            console.log(group[0]);
+            console.log(!group[0].currentlyFeatured);
+            if (
+              isAdmin &&
+              group[0].groupName != 'Homepage' &&
+              (group[0].currentlyFeatured == '0' || !group[0].currentlyFeatured)
+            ) {
+              groupName += ' (Not currently featured on community page)';
+            }
+            return (
+              <>
+                {isAdmin ? (
+                  <span>
+                    <Text fontSize="24px">{groupName}</Text>
+                    <br />
+                    <Wrap>
+                      {group.map((cardObj, i) => {
+                        return (
+                          <ActivityCard
+                            {...cardObj}
+                            key={`swipercard${i}`}
+                            fullName={
+                              cardObj.firstName + ' ' + cardObj.lastName
+                            }
+                            imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                            menuItems={
+                              <>
+                                <MenuItem
+                                  onClick={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: 'Remove Promoted Content',
+                                        doenetId: cardObj.doenetId,
+                                        groupId: cardObj.promotedGroupId,
+                                      },
+                                      { method: 'post' },
+                                    );
+                                  }}
+                                >
+                                  Remove from group
+                                </MenuItem>
+                              </>
+                            }
+                          />
+                        );
+                      })}
+                    </Wrap>
+                  </span>
+                ) : (
+                  <Carousel title={groupName} data={group} />
+                )}
+              </>
+            );
+          })}
       </CarouselSection>
     </>
   );
