@@ -550,6 +550,10 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
+        <Text>
+          You are logged in as an admin and can manage these lists, they will
+          show to other users as carousels
+        </Text>
         {Object.keys(carouselData)
           .map((groupName) => {
             return { activities: carouselData[groupName], groupName };
@@ -569,9 +573,6 @@ export function Community() {
             if (!isAdmin && group[0].groupName == 'Homepage') {
               return null;
             }
-            console.log(carouselData);
-            console.log(group[0]);
-            console.log(!group[0].currentlyFeatured);
             if (
               isAdmin &&
               group[0].groupName != 'Homepage' &&
