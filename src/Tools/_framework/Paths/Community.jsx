@@ -564,6 +564,9 @@ export function Community() {
       <CarouselSection>
         {Object.keys(carouselData).map((groupName) => {
           let group = carouselData[groupName];
+          if (!isAdmin && group[0].groupName == 'Homepage') {
+            return null;
+          }
           if (
             group.length > 1 &&
             isAdmin &&
