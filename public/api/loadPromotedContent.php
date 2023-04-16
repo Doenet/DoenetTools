@@ -16,7 +16,7 @@ try {
     $isAdmin = userIsAdmin($userId, $conn);
 
     $sql = 
-        "select groupName, currentlyFeatured, homepage,
+        "select groupName, promotedGroupId, currentlyFeatured, homepage,
                 pc.sortOrder, doenetId, cc.label, cc.imagePath,
                 screenName, email, lastName, firstName, 
                 profilePicture, trackingConsent, canUpload

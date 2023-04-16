@@ -40,55 +40,42 @@ import { HiOutlineLockClosed } from 'react-icons/hi';
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  let { doenetId, groupName, currentlyFeatured, homepage } = formObj;
+  let { doenetId, groupName, groupId, currentlyFeatured, homepage } = formObj;
 
-  if (formObj?._action == 'Ban Content') {
-    const uploadData = {
-      doenetId,
-    };
+  async function postApiAlertOnError(url, uploadData) {
     try {
-      const response = await axios.post(
-        '/api/markContentAsBanned.php',
-        uploadData,
-      );
+      const response = await axios.post(url, uploadData);
       return true;
     } catch (e) {
       console.log(e);
       alert('Error - ' + e.response?.data?.message);
       return false;
     }
-  } else if (formObj?._action == 'New Group') {
-    const uploadData = {
-      groupName,
-    };
-    try {
-      const response = await axios.post(
-        '/api/addPromotedContentGroup.php',
-        uploadData,
-      );
-      return true;
-    } catch (e) {
-      console.log(e);
-      alert('Error - ' + e.response?.data?.message);
-      return false;
-    }
-  } else if (formObj?._action == 'Promote Group') {
-    // conver to real booleans
-    currentlyFeatured = currentlyFeatured == 'false' ? false : true;
-    homepage = !!homepage;
-    const uploadData = {
-      groupName,
-      currentlyFeatured,
-      homepage,
-    };
-    try {
-      await axios.post('/api/updatePromotedContentGroup.php', uploadData);
-      return true;
-    } catch (e) {
-      console.log(e);
-      alert('Error - ' + e.response?.data?.message);
-      return false;
-    }
+  }
+
+  console.log(formObj);
+
+  switch (formObj?._action) {
+    case 'Ban Content':
+      return postApiAlertOnError('/api/markContentAsBanned.php', { doenetId });
+    case 'Remove Promoted Content':
+      return postApiAlertOnError('/api/removePromotedContent.php', {
+        doenetId,
+        groupId,
+      });
+    case 'New Group':
+      return postApiAlertOnError('/api/addPromotedContentGroup.php', {
+        groupName,
+      });
+    case 'Promote Group':
+      // convert to real booleans
+      currentlyFeatured = currentlyFeatured == 'false' ? false : true;
+      homepage = homepage == 'false' ? false : true;
+      return postApiAlertOnError('/api/updatePromotedContentGroup.php', {
+        groupName,
+        currentlyFeatured,
+        homepage,
+      });
   }
 }
 
@@ -283,6 +270,7 @@ export function Community() {
   const { carouselData, q, searchResults, carouselGroups, isAdmin } =
     useLoaderData();
   const [currentTab, setCurrentTab] = useState(0);
+  const fetcher = useFetcher();
 
   if (q) {
     let allMatches = [...searchResults?.activities, ...searchResults?.users];
@@ -591,13 +579,22 @@ export function Community() {
                           fullName={cardObj.firstName + ' ' + cardObj.lastName}
                           imageLink={`/portfolioviewer/${cardObj.doenetId}`}
                           menuItems={
-                            null
-                            /* z-index stacking issues, might be related to the carousel
-                      <>
-                        <MenuItem>Move Left</MenuItem>
-                        <MenuItem>Move Right</MenuItem>
-                      </>
-                    */
+                            <>
+                              <MenuItem
+                                onClick={() => {
+                                  fetcher.submit(
+                                    {
+                                      _action: 'Remove Promoted Content',
+                                      doenetId: cardObj.doenetId,
+                                      groupId: cardObj.promotedGroupId,
+                                    },
+                                    { method: 'post' },
+                                  );
+                                }}
+                              >
+                                Remove from group
+                              </MenuItem>
+                            </>
                           }
                         />
                       );
