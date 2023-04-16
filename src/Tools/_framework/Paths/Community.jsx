@@ -1,25 +1,96 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   Badge,
   Box,
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
   Icon,
+  MenuItem,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
   Text,
+  useDisclosure,
   Wrap,
   Flex,
+  VStack,
+  Checkbox,
+  FormLabel,
 } from '@chakra-ui/react';
 import { useLoaderData } from 'react-router';
 import styled from 'styled-components';
 import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
 import Searchbar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
-import { Form } from 'react-router-dom';
+import { Form, useFetcher } from 'react-router-dom';
 import { RiEmotionSadLine } from 'react-icons/ri';
 import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
 import AuthorCard from '../../../_reactComponents/PanelHeaderComponents/AuthorCard';
+import { ComponentListOfListsWithSelectableType } from '../../../Core/components/abstract/ComponentWithSelectableType';
+import { HiOutlineLockClosed } from 'react-icons/hi';
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  let formObj = Object.fromEntries(formData);
+  let { doenetId, groupName, currentlyFeatured, homepage } = formObj;
+
+  if (formObj?._action == 'Ban Content') {
+    const uploadData = {
+      doenetId,
+    };
+    try {
+      const response = await axios.post(
+        '/api/markContentAsBanned.php',
+        uploadData,
+      );
+      return true;
+    } catch (e) {
+      console.log(e);
+      alert('Error - ' + e.response?.data?.message);
+      return false;
+    }
+  } else if (formObj?._action == 'New Group') {
+    const uploadData = {
+      groupName,
+    };
+    try {
+      const response = await axios.post(
+        '/api/addPromotedContentGroup.php',
+        uploadData,
+      );
+      return true;
+    } catch (e) {
+      console.log(e);
+      alert('Error - ' + e.response?.data?.message);
+      return false;
+    }
+  } else if (formObj?._action == 'Promote Group') {
+    // conver to real booleans
+    currentlyFeatured = currentlyFeatured == 'false' ? false : true;
+    homepage = !!homepage;
+    const uploadData = {
+      groupName,
+      currentlyFeatured,
+      homepage,
+    };
+    try {
+      await axios.post('/api/updatePromotedContentGroup.php', uploadData);
+      return true;
+    } catch (e) {
+      console.log(e);
+      alert('Error - ' + e.response?.data?.message);
+      return false;
+    }
+  }
+}
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -28,11 +99,23 @@ export async function loader({ request }) {
     //Show search results
     const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
     const respObj = await response.json();
-    return { q, searchResults: respObj.searchResults };
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const { isAdmin } = await isAdminResponse.json();
+    let carouselGroups = [];
+    if (isAdmin) {
+      const carouselDataGroups = await fetch(
+        `/api/loadPromotedContentGroups.php`,
+      );
+      const responseGroups = await carouselDataGroups.json();
+      carouselGroups = responseGroups.carouselGroups;
+    }
+    return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
-    const response = await fetch('/api/getHPCarouselData.php');
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const { isAdmin } = await isAdminResponse.json();
+    const response = await fetch('/api/loadPromotedContent.php');
     const { carouselData } = await response.json();
-    return { carouselData };
+    return { carouselData, isAdmin };
   }
 }
 
@@ -68,8 +151,137 @@ const CarouselSection = styled.div`
   background: var(--mainGray);
 `;
 
+export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef();
+  const fetcher = useFetcher();
+
+  if (!carouselGroups) {
+    carouselGroups = [];
+  }
+
+  return (
+    <>
+      <MenuItem ref={btnRef} colorScheme="teal" onClick={onOpen}>
+        Promote on Community Page
+      </MenuItem>
+      <MenuItem
+        as="button"
+        type="submit"
+        ref={btnRef}
+        colorScheme="teal"
+        onClick={() => {
+          if (window.confirm('Are you sure you want to ban this content?')) {
+            fetcher.submit(
+              { _action: 'Ban Content', doenetId },
+              { method: 'post' },
+            );
+          }
+        }}
+      >
+        Remove from Community for TOS Violation
+      </MenuItem>
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        finalFocusRef={btnRef}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Add Activity To Group</DrawerHeader>
+
+          <DrawerBody>
+            <VStack spacing="2">
+              {carouselGroups.map((group) => {
+                return (
+                  <Button
+                    mergin="5px"
+                    key={group.groupName}
+                    onClick={() => {
+                      const uploadData = {
+                        groupId: group.promotedGroupId,
+                        doenetId,
+                      };
+                      axios
+                        .post('/api/addPromotedContent.php', uploadData)
+                        .then(({ data }) => {
+                          onClose();
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                          alert('Error - ' + e.response.data.message);
+                        });
+                    }}
+                  >
+                    Add to group "{group.groupName}"
+                  </Button>
+                );
+              })}
+
+              <Button
+                colorScheme="teal"
+                onClick={() => {
+                  const groupName = window.prompt('Enter a new group name');
+                  if (groupName) {
+                    fetcher.submit(
+                      { _action: 'New Group', groupName },
+                      { method: 'post' },
+                    );
+                  }
+                }}
+              >
+                Add New Group
+              </Button>
+              <Box>
+                <Text fontSize="20px">
+                  Select which groups are shown on the community page
+                </Text>
+                <Form>
+                  {carouselGroups.map((group) => {
+                    return (
+                      <Wrap key={group.groupId}>
+                        <Checkbox
+                          isChecked={group.currentlyFeatured == '1'}
+                          name={group.groupId}
+                          onChange={(evt) => {
+                            fetcher.submit(
+                              {
+                                _action: 'Promote Group',
+                                groupName: group.groupName,
+                                currentlyFeatured: evt.target.checked,
+                                homepage: false,
+                              },
+                              { method: 'post' },
+                            );
+                          }}
+                        />
+                        <FormLabel for={group.groupId}>
+                          {group.groupName}
+                        </FormLabel>
+                      </Wrap>
+                    );
+                  })}
+                </Form>
+              </Box>
+            </VStack>
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button variant="outline" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </>
+  );
+}
+
 export function Community() {
-  const { carouselData, q, searchResults } = useLoaderData();
+  const { carouselData, q, searchResults, carouselGroups, isAdmin } =
+    useLoaderData();
   const [currentTab, setCurrentTab] = useState(0);
 
   if (q) {
@@ -190,6 +402,16 @@ export function Community() {
                         imagePath={imagePath}
                         label={label}
                         fullName={fullName}
+                        menuItems={
+                          isAdmin ? (
+                            <>
+                              <MoveToGroupMenuItem
+                                doenetId={doenetId}
+                                carouselGroups={carouselGroups}
+                              />
+                            </>
+                          ) : null
+                        }
                       />
                     );
                   } else if (itemObj?.type == 'author') {
@@ -242,6 +464,16 @@ export function Community() {
                       imagePath={imagePath}
                       label={label}
                       fullName={fullName}
+                      menuItems={
+                        isAdmin ? (
+                          <>
+                            <MoveToGroupMenuItem
+                              doenetId={doenetId}
+                              carouselGroups={carouselGroups}
+                            />
+                          </>
+                        ) : null
+                      }
                     />
                   );
                 })}
@@ -330,9 +562,48 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        <Carousel title="College Math" data={carouselData[0]} />
-        <Carousel title="Science & Engineering" data={carouselData[1]} />
-        <Carousel title="K-12 Math" data={carouselData[2]} />
+        {/* for admins, show the currently promoted groups first */}
+        {Object.keys(carouselData).map((groupName) => {
+          let group = carouselData[groupName];
+          console.log(group);
+          if (
+            group.length < 1 ||
+            group[0].currentlyFeatured != '1' ||
+            group[0].groupName == 'Homepage'
+          ) {
+            return null;
+          }
+          return (
+            <Carousel
+              key={'carosel-' + group.groupName}
+              title={groupName}
+              data={group}
+            />
+          );
+        })}
+        {/* for admins, show the rest of the groups, the ones not featured
+            these will be filtered out in the server for non-admins and will not show
+         */}
+        {Object.keys(carouselData).map((groupName) => {
+          let group = carouselData[groupName];
+          if (
+            group.length > 1 &&
+            isAdmin &&
+            (group[0].currentlyFeatured == '0' ||
+              !group[0].currentlyFeatured ||
+              group[0].groupName == 'Homepage')
+          ) {
+            return (
+              <Carousel
+                key={'carosel-' + group.groupName}
+                title={
+                  groupName + ' (Not currently featured on community page)'
+                }
+                data={group}
+              />
+            );
+          }
+        })}
       </CarouselSection>
     </>
   );

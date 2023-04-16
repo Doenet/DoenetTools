@@ -29,15 +29,18 @@ if ($success) {
   cc.imagePath,
   cc.label,
   cc.courseId,
-  p.doenetId AS 'pageDoenetId'
+  p.doenetId AS 'pageDoenetId',
+  concat(u.firstName, concat(' ', u.lastName)) as fullName
   FROM course_content AS cc
   LEFT JOIN pages AS p
     ON p.containingDoenetId = cc.doenetId
   LEFT JOIN course AS c
     ON c.courseId = cc.courseId
+  join user u on c.portfolioCourseForUserId = u.userId
   WHERE cc.label LIKE '%$q%'
   AND cc.isPublic = 1
   AND cc.isDeleted = 0
+  AND cc.isBanned = 0
   AND c.portfolioCourseForUserId IS NOT NULL
   LIMIT 100
   ";
@@ -54,31 +57,10 @@ if ($success) {
         'content' => $json['content'],
         'imagePath' => $row['imagePath'],
         'label' => $row['label'],
+        'fullName' => $row['fullName'],
         'public' => '1',
         'pageDoenetId' => $row['pageDoenetId'],
       ]);
-    }
-    // $courseToOwnerFullName = [];
-    foreach($matchingActivities as &$activity){
-      $courseId = $activity['courseId'];
-      $sql = "
-      SELECT u.firstName,
-      u.lastName
-      FROM course_role AS cr
-      LEFT JOIN course_user AS cu
-      ON cu.roleId = cr.roleId
-      LEFT JOIN user AS u
-      ON u.userId = cu.userId
-      WHERE cr.courseId = '$courseId'
-      AND cr.isOwner = 1
-      LIMIT 1 
-      ";
-      $result = $conn->query($sql); 
-
-      if ($result->num_rows > 0) {
-      $row = $result->fetch_assoc();
-      $activity['fullName'] = $row['firstName'] . ' ' . $row['lastName'];
-      }
     }
   }
 

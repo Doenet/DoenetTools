@@ -26,7 +26,7 @@ import { BsGithub, BsDiscord } from 'react-icons/bs';
 // import RouterLogo from '../RouterLogo';
 
 export async function loader() {
-  const response = await fetch('/api/getHPCarouselData.php');
+  const response = await fetch('/api/loadPromotedContent.php');
   const data = await response.json();
   return data;
 }
@@ -147,7 +147,7 @@ const Main = styled.main`
 export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
-  const favorites = loaderData?.carouselData?.[3];
+  const favorites = loaderData?.carouselData?.Homepage;
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);

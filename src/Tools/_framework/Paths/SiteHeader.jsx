@@ -17,6 +17,7 @@ export async function loader() {
     signedIn = false;
   }
   let portfolioCourseId = null;
+  let isAdmin = false;
   if (signedIn) {
     //Check on portfolio courseId
     const response = await fetch('/api/getPorfolioCourseId.php');
@@ -26,8 +27,11 @@ export async function loader() {
     if (data.portfolioCourseId == '') {
       portfolioCourseId = 'not_created';
     }
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const isAdminJson = await isAdminResponse.json();
+    isAdmin = isAdminJson.isAdmin;
   }
-  return { signedIn, portfolioCourseId };
+  return { signedIn, portfolioCourseId, isAdmin };
 }
 
 const SignInButtonContainer = styled.div`
@@ -94,6 +98,8 @@ function MenuItem({ to, children, dataTest }) {
 
 export function SiteHeader(props) {
   let data = useLoaderData();
+  const isAdmin = data?.isAdmin;
+
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
 
@@ -170,6 +176,7 @@ export function SiteHeader(props) {
                 Portfolio
               </MenuItem>
             ) : null}
+            {isAdmin ? <MenuItem to={`/admin`}>Admin</MenuItem> : null}
           </BarMenu>
           <SignInButtonContainer>{signInButton}</SignInButtonContainer>
         </Box>

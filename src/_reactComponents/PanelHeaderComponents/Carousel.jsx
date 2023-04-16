@@ -22,126 +22,11 @@ import {
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
-import { Avatar, Box, Image, Text } from '@chakra-ui/react';
+import { Avatar, Box, Image, Text, MenuItem } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+import ActivityCard from './ActivityCard';
 
 SwiperCore.use([Keyboard, Mousewheel]);
-
-function Card({ activityLink, doenetId, imagePath, label, fullName }) {
-  // const activityLink = `/portfolio/${doenetId}/viewer`;
-
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="180px"
-      width="180px"
-      background="black"
-      overflow="hidden"
-      margin="10px"
-      border="2px solid #949494"
-      borderRadius="6px"
-    >
-      <Box height="130px">
-        <Link to={activityLink}>
-          <Image
-            width="100%"
-            height="100%"
-            objectFit="contain"
-            src={imagePath}
-            alt="Activity Card"
-          />
-        </Link>
-      </Box>
-      <Box
-        height="50px"
-        display="flex"
-        justifyContent="flex-start"
-        padding="2px"
-        color="black"
-        background="white"
-      >
-        <Box
-          width="40px"
-          display="flex"
-          alignContent="center"
-          justifyContent="center"
-          alignItems="center"
-          position="relative"
-        >
-          <Avatar size="sm" name={fullName} />
-          <Box position="absolute" width="100px" left="8px" bottom="0px">
-            <Text fontSize="10px">{fullName}</Text>
-          </Box>
-        </Box>
-        <Box>
-          <Text fontSize="sm" lineHeight="1" noOfLines={2}>
-            {label}
-          </Text>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
-
-// function Card({ imagePath, text, link }) {
-//   return (
-// <a style={{
-//   textDecoration: 'none',
-//   // '-webkitUserSelect': 'none',
-//   userSelect: 'none',
-//   cursor: 'pointer',
-//   flexGrow: '1',
-//   maxWidth: '240px',
-// }} href={link} target="_blank">
-//       <div
-//         style={{
-//           display: "flex",
-//           alignItems: "center",
-//           flexDirection: "column",
-//           height: "180px",
-//           border: "2px solid #949494",
-//           borderRadius: "6px"
-//         }}
-//       >
-//         <div
-//           style={{
-//             // display: "flex",
-//             // justifyContent: "center",
-//             // alignItems: "center",
-//             // width: '3fr',
-//             // width: "100%",
-//             // maxWidth: "236px",
-//             flexGrow: '1',
-//             height: "128px",
-//             background: "#121212",
-//             borderRadius: "5px 5px 0px 0px",
-//             overflow: "hidden",
-
-//           }}
-//         >
-//           <img style={{ width: '140px' }} src={imagePath} />
-//           {/* <img src={imagePath} /> */}
-//         </div>
-//         <div
-//           style={{
-//             flexGrow: '1',
-//             height: "54px",
-//             // width: ".9fr",
-//             color: "black",
-//             padding: "2px",
-//             textOverflow: "ellipsis",
-//             overflow: "hidden",
-//             fontSize: ".9em",
-//             // whiteSpace: "nowrap"
-//           }}
-//         >
-//           {text}
-//         </div>
-//       </div>
-//     </a >
-//   );
-// }
 
 const LeftChevron = styled(FontAwesomeIcon)`
   color: #949494;
@@ -252,7 +137,20 @@ export function Carousel({ title = '', data = [] }) {
             {data.map((cardObj, i) => {
               return (
                 <SwiperSlide key={`swipercard${i}`}>
-                  <Card {...cardObj} />
+                  <ActivityCard
+                    {...cardObj}
+                    fullName={cardObj.firstName + ' ' + cardObj.lastName}
+                    imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                    menuItems={
+                      null
+                      /* z-index stacking issues, might be related to the carousel
+                      <>
+                        <MenuItem>Move Left</MenuItem>
+                        <MenuItem>Move Right</MenuItem>
+                      </>
+                    */
+                    }
+                  />
                 </SwiperSlide>
               );
             })}
