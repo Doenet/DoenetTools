@@ -548,10 +548,12 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        <Text>
-          You are logged in as an admin and can manage these lists, they will
-          show to other users as carousels
-        </Text>
+        {isAdmin ? (
+          <Text>
+            You are logged in as an admin and can manage these lists, they will
+            show to other users as carousels
+          </Text>
+        ) : null}
         {Object.keys(carouselData)
           .map((groupName) => {
             return { activities: carouselData[groupName], groupName };
