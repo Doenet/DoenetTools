@@ -570,6 +570,7 @@ export function Community() {
           .map((groupInfo) => {
             let groupName = groupInfo.groupName;
             const group = groupInfo.activities;
+            let notPromoted = false;
             if (!isAdmin && group[0].groupName == 'Homepage') {
               return null;
             }
@@ -579,12 +580,47 @@ export function Community() {
               (group[0].currentlyFeatured == '0' || !group[0].currentlyFeatured)
             ) {
               groupName += ' (Not currently featured on community page)';
+              notPromoted = true;
             }
             return (
               <>
                 {isAdmin ? (
                   <span>
                     <Text fontSize="24px">{groupName}</Text>
+                    {notPromoted ? (
+                      <Button
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              _action: 'Promote Group',
+                              groupName: groupInfo.groupName,
+                              currentlyFeatured: true,
+                              homepage: false,
+                            },
+                            { method: 'post' },
+                          );
+                        }}
+                      >
+                        Promote
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              _action: 'Promote Group',
+                              groupName: groupInfo.groupName,
+                              currentlyFeatured: false,
+                              homepage: false,
+                            },
+                            { method: 'post' },
+                          );
+                        }}
+                      >
+                        Stop Promoting
+                      </Button>
+                    )}
+                    <br />
                     <br />
                     <Wrap>
                       {group.map((cardObj, i) => {
