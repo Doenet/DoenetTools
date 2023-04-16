@@ -577,11 +577,35 @@ export function Community() {
             groupName += ' (Not currently featured on community page)';
           }
           return (
-            <Carousel
-              key={'carosel-' + group.groupName}
-              title={groupName}
-              data={group}
-            />
+            <Box key={'carosel-' + group.groupName}>
+              <Text fontSize="24px">{groupName}</Text>
+              <br />
+              <Wrap>
+                {isAdmin ? (
+                  group.map((cardObj, i) => {
+                    return (
+                      <ActivityCard
+                        {...cardObj}
+                        key={`swipercard${i}`}
+                        fullName={cardObj.firstName + ' ' + cardObj.lastName}
+                        imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                        menuItems={
+                          null
+                          /* z-index stacking issues, might be related to the carousel
+                      <>
+                        <MenuItem>Move Left</MenuItem>
+                        <MenuItem>Move Right</MenuItem>
+                      </>
+                    */
+                        }
+                      />
+                    );
+                  })
+                ) : (
+                  <Carousel title={groupName} data={group} />
+                )}
+              </Wrap>
+            </Box>
           );
         })}
       </CarouselSection>
