@@ -40,55 +40,40 @@ import { HiOutlineLockClosed } from 'react-icons/hi';
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  let { doenetId, groupName, currentlyFeatured, homepage } = formObj;
+  let { doenetId, groupName, groupId, currentlyFeatured, homepage } = formObj;
 
-  if (formObj?._action == 'Ban Content') {
-    const uploadData = {
-      doenetId,
-    };
+  async function postApiAlertOnError(url, uploadData) {
     try {
-      const response = await axios.post(
-        '/api/markContentAsBanned.php',
-        uploadData,
-      );
+      const response = await axios.post(url, uploadData);
       return true;
     } catch (e) {
       console.log(e);
       alert('Error - ' + e.response?.data?.message);
       return false;
     }
-  } else if (formObj?._action == 'New Group') {
-    const uploadData = {
-      groupName,
-    };
-    try {
-      const response = await axios.post(
-        '/api/addPromotedContentGroup.php',
-        uploadData,
-      );
-      return true;
-    } catch (e) {
-      console.log(e);
-      alert('Error - ' + e.response?.data?.message);
-      return false;
-    }
-  } else if (formObj?._action == 'Promote Group') {
-    // conver to real booleans
-    currentlyFeatured = currentlyFeatured == 'false' ? false : true;
-    homepage = !!homepage;
-    const uploadData = {
-      groupName,
-      currentlyFeatured,
-      homepage,
-    };
-    try {
-      await axios.post('/api/updatePromotedContentGroup.php', uploadData);
-      return true;
-    } catch (e) {
-      console.log(e);
-      alert('Error - ' + e.response?.data?.message);
-      return false;
-    }
+  }
+
+  switch (formObj?._action) {
+    case 'Ban Content':
+      return postApiAlertOnError('/api/markContentAsBanned.php', { doenetId });
+    case 'Remove Promoted Content':
+      return postApiAlertOnError('/api/removePromotedContent.php', {
+        doenetId,
+        groupId,
+      });
+    case 'New Group':
+      return postApiAlertOnError('/api/addPromotedContentGroup.php', {
+        groupName,
+      });
+    case 'Promote Group':
+      // convert to real booleans
+      currentlyFeatured = currentlyFeatured == 'false' ? false : true;
+      homepage = homepage == 'false' ? false : true;
+      return postApiAlertOnError('/api/updatePromotedContentGroup.php', {
+        groupName,
+        currentlyFeatured,
+        homepage,
+      });
   }
 }
 
@@ -283,6 +268,7 @@ export function Community() {
   const { carouselData, q, searchResults, carouselGroups, isAdmin } =
     useLoaderData();
   const [currentTab, setCurrentTab] = useState(0);
+  const fetcher = useFetcher();
 
   if (q) {
     let allMatches = [...searchResults?.activities, ...searchResults?.users];
@@ -562,48 +548,119 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        {/* for admins, show the currently promoted groups first */}
-        {Object.keys(carouselData).map((groupName) => {
-          let group = carouselData[groupName];
-          console.log(group);
-          if (
-            group.length < 1 ||
-            group[0].currentlyFeatured != '1' ||
-            group[0].groupName == 'Homepage'
-          ) {
-            return null;
-          }
-          return (
-            <Carousel
-              key={'carosel-' + group.groupName}
-              title={groupName}
-              data={group}
-            />
-          );
-        })}
-        {/* for admins, show the rest of the groups, the ones not featured
-            these will be filtered out in the server for non-admins and will not show
-         */}
-        {Object.keys(carouselData).map((groupName) => {
-          let group = carouselData[groupName];
-          if (
-            group.length > 1 &&
-            isAdmin &&
-            (group[0].currentlyFeatured == '0' ||
-              !group[0].currentlyFeatured ||
-              group[0].groupName == 'Homepage')
-          ) {
+        {isAdmin ? (
+          <Text>
+            You are logged in as an admin and can manage these lists, they will
+            show to other users as carousels
+          </Text>
+        ) : null}
+        {Object.keys(carouselData)
+          .map((groupName) => {
+            return { activities: carouselData[groupName], groupName };
+          })
+          .sort((a, b) => {
+            if (a.activities[0].groupName == 'Homepage') return -1;
+            else if (b.activities[0].groupName == 'Homepage') return 1;
+            else
+              return a.activities[0].currentlyFeatured >
+                b.activities[0].currentlyFeatured
+                ? -1
+                : 1;
+          })
+          .map((groupInfo) => {
+            let groupName = groupInfo.groupName;
+            const group = groupInfo.activities;
+            let notPromoted = false;
+            if (!isAdmin && group[0].groupName == 'Homepage') {
+              return null;
+            }
+            if (
+              isAdmin &&
+              group[0].groupName != 'Homepage' &&
+              (group[0].currentlyFeatured == '0' || !group[0].currentlyFeatured)
+            ) {
+              groupName += ' (Not currently featured on community page)';
+              notPromoted = true;
+            }
             return (
-              <Carousel
-                key={'carosel-' + group.groupName}
-                title={
-                  groupName + ' (Not currently featured on community page)'
-                }
-                data={group}
-              />
+              <>
+                {isAdmin ? (
+                  <span>
+                    <Text fontSize="24px">{groupName}</Text>
+                    {notPromoted ? (
+                      <Button
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              _action: 'Promote Group',
+                              groupName: groupInfo.groupName,
+                              currentlyFeatured: true,
+                              homepage: false,
+                            },
+                            { method: 'post' },
+                          );
+                        }}
+                      >
+                        Promote
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              _action: 'Promote Group',
+                              groupName: groupInfo.groupName,
+                              currentlyFeatured: false,
+                              homepage: false,
+                            },
+                            { method: 'post' },
+                          );
+                        }}
+                      >
+                        Stop Promoting
+                      </Button>
+                    )}
+                    <br />
+                    <br />
+                    <Wrap>
+                      {group.map((cardObj, i) => {
+                        return (
+                          <ActivityCard
+                            {...cardObj}
+                            key={`swipercard${i}`}
+                            fullName={
+                              cardObj.firstName + ' ' + cardObj.lastName
+                            }
+                            imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                            menuItems={
+                              <>
+                                <MenuItem
+                                  onClick={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: 'Remove Promoted Content',
+                                        doenetId: cardObj.doenetId,
+                                        groupId: cardObj.promotedGroupId,
+                                      },
+                                      { method: 'post' },
+                                    );
+                                  }}
+                                >
+                                  Remove from group
+                                </MenuItem>
+                              </>
+                            }
+                          />
+                        );
+                      })}
+                    </Wrap>
+                  </span>
+                ) : (
+                  <Carousel title={groupName} data={group} />
+                )}
+              </>
             );
-          }
-        })}
+          })}
       </CarouselSection>
     </>
   );

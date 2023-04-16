@@ -88,6 +88,7 @@ export function Carousel({ title = '', data = [] }) {
         <Text fontSize="18px" fontWeight="700">
           {title}
         </Text>
+        <br />
 
         <Box display="flex">
           <LeftChevron

@@ -16,7 +16,7 @@ try {
     $isAdmin = userIsAdmin($userId, $conn);
 
     $sql = 
-        "select groupName, currentlyFeatured, homepage,
+        "select groupName, promotedGroupId, currentlyFeatured, homepage,
                 pc.sortOrder, doenetId, cc.label, cc.imagePath,
                 screenName, email, lastName, firstName, 
                 profilePicture, trackingConsent, canUpload
@@ -36,6 +36,9 @@ try {
 
     $result = $conn->query($sql);
     $promotedGroups = [];
+    if (!$result) {
+        throw new Exception("Failure loading promoted content. - " . $conn->error);
+    }
     while ($row = $result->fetch_assoc()) {
         if ($promotedGroups[$row['groupName']]) {
             // add to existing list for this group if it was found in the list of rows so far
