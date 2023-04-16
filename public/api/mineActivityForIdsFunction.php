@@ -11,7 +11,7 @@ function mine_activity_for_ids($jsonArr)
         $jsonContent = $jsonArr['content'];
         foreach ($jsonContent as $content) {
             if (is_string($content)) {
-                array_push($pageids, $content);
+                // array_push($pageids, $content);
             } else if ($content['type'] == 'collectionLink') {
                 array_push($linkids, $content['doenetId']);
                 //Add page ids here
