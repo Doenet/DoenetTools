@@ -562,28 +562,6 @@ export function Community() {
       <Heading heading="Community Public Content" />
 
       <CarouselSection>
-        {/* for admins, show the currently promoted groups first */}
-        {Object.keys(carouselData).map((groupName) => {
-          let group = carouselData[groupName];
-          console.log(group);
-          if (
-            group.length < 1 ||
-            group[0].currentlyFeatured != '1' ||
-            group[0].groupName == 'Homepage'
-          ) {
-            return null;
-          }
-          return (
-            <Carousel
-              key={'carosel-' + group.groupName}
-              title={groupName}
-              data={group}
-            />
-          );
-        })}
-        {/* for admins, show the rest of the groups, the ones not featured
-            these will be filtered out in the server for non-admins and will not show
-         */}
         {Object.keys(carouselData).map((groupName) => {
           let group = carouselData[groupName];
           if (
@@ -593,16 +571,15 @@ export function Community() {
               !group[0].currentlyFeatured ||
               group[0].groupName == 'Homepage')
           ) {
-            return (
-              <Carousel
-                key={'carosel-' + group.groupName}
-                title={
-                  groupName + ' (Not currently featured on community page)'
-                }
-                data={group}
-              />
-            );
+            groupName += ' (Not currently featured on community page)';
           }
+          return (
+            <Carousel
+              key={'carosel-' + group.groupName}
+              title={groupName}
+              data={group}
+            />
+          );
         })}
       </CarouselSection>
     </>
