@@ -35,18 +35,14 @@ try {
     }
 
     $result = $conn->query($sql);
-    if ($result->num_rows <= 0) {
-        throw new Exception("No promoted content groups were found.");
-    } else {
-        $promotedGroups = [];
-        while ($row = $result->fetch_assoc()) {
-            if ($promotedGroups[$row['groupName']]) {
-                // add to existing list for this group if it was found in the list of rows so far
-                array_push($promotedGroups[$row['groupName']], $row);
-            } else {
-                // otherwise add a new nested array for the group and add this first row to it
-                $promotedGroups[$row['groupName']] = [$row];
-            }
+    $promotedGroups = [];
+    while ($row = $result->fetch_assoc()) {
+        if ($promotedGroups[$row['groupName']]) {
+            // add to existing list for this group if it was found in the list of rows so far
+            array_push($promotedGroups[$row['groupName']], $row);
+        } else {
+            // otherwise add a new nested array for the group and add this first row to it
+            $promotedGroups[$row['groupName']] = [$row];
         }
     }
     $response_arr = [
