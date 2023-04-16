@@ -53,8 +53,6 @@ export async function action({ request }) {
     }
   }
 
-  console.log(formObj);
-
   switch (formObj?._action) {
     case 'Ban Content':
       return postApiAlertOnError('/api/markContentAsBanned.php', { doenetId });
