@@ -45,6 +45,8 @@
   border-style: solid;
   border-color: var(--canvastext);
   border-radius: var(--mainBorderRadius);
+  border-width: 2px;
+  box-sizing: content-box;
 }
 
 /* On mouse-over, add a light blue background color */

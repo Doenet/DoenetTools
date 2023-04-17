@@ -1076,7 +1076,7 @@ export default function PageViewer(props) {
   //Spacing around the whole doenetML document
   return <ErrorBoundary setIsInErrorState={props.setIsInErrorState}>
     {noCoreWarning}
-    <div style={pageStyle}>
+    <div style={pageStyle} className='doenet-viewer'>
       {documentRenderer}
     </div>
   </ErrorBoundary>;
