@@ -29,7 +29,7 @@ export default function AssignmentInfoCap() {
 
   if (image != 'none') {
     accessible_name = find_image_label(image);
-    image = 'url(./drive_pictures/' + image + ')';
+    image = 'url(/drive_pictures/' + image + ')';
   }
 
   if (color != 'none') {

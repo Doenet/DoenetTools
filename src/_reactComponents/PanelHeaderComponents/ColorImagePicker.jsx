@@ -156,7 +156,7 @@ export default function ColorImagePicker(props) {
     imageArray.push(
       <Image
         key={i}
-        image={'url(./drive_pictures/' + driveImages[i].Image + ')'}
+        image={'url(/drive_pictures/' + driveImages[i].Image + ')'}
         onClick={() => {
           changeImage(driveImages[i].Image);
         }}
@@ -176,7 +176,7 @@ export default function ColorImagePicker(props) {
           handleClick(e);
         }}
         color={'#' + displayColor}
-        image={'url(./drive_pictures/' + displayImage + ')'}
+        image={'url(/drive_pictures/' + displayImage + ')'}
       >
         <Menu visible={menuOpen}>
           <ColorSection>{colorArray}</ColorSection>
