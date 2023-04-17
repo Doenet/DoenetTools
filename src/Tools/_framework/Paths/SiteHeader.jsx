@@ -1,5 +1,5 @@
-import { Box } from '@chakra-ui/react';
-import React, { useEffect, useRef } from 'react';
+import { Box, Center, Icon, Text } from '@chakra-ui/react';
+import React, { useRef } from 'react';
 import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,6 +8,7 @@ import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import RouterLogo from '../RouterLogo';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { useRecoilState } from 'recoil';
+import { FaCog } from 'react-icons/fa';
 
 export async function loader() {
   //Check if signedIn
@@ -82,7 +83,8 @@ const ContentContainer = styled.main`
 function MenuItem({ to, children, dataTest }) {
   return (
     <StyledMenuItem
-      to={to} data-test={dataTest}
+      to={to}
+      data-test={dataTest}
       className={({ isActive, isPending }) =>
         location.pathname === '/' || isActive
           ? 'active'
@@ -99,6 +101,7 @@ function MenuItem({ to, children, dataTest }) {
 export function SiteHeader(props) {
   let data = useLoaderData();
   const isAdmin = data?.isAdmin;
+  const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -164,15 +167,38 @@ export function SiteHeader(props) {
           borderBottom="1px solid var(--mainGray)"
           zIndex="1200"
         >
-          <Branding>
-            <RouterLogo />
-            <p>Doenet</p>
-          </Branding>
+          {data.signedIn ? (
+            <Center columnGap="6px">
+              <RouterLogo />
+              <Text>Doenet</Text>
+              <Icon
+                ml="10px"
+                cursor="pointer"
+                fontSize="16pt"
+                as={FaCog}
+                onClick={() => {
+                  navigate('/settings');
+                }}
+              />
+            </Center>
+          ) : (
+            <Branding>
+              <RouterLogo />
+              <Text>Doenet</Text>
+            </Branding>
+          )}
           <BarMenu>
-            <MenuItem dataTest="Home" to="/">Home</MenuItem>
-            <MenuItem dataTest="Community" to="community">Community</MenuItem>
+            <MenuItem dataTest="Home" to="/">
+              Home
+            </MenuItem>
+            <MenuItem dataTest="Community" to="community">
+              Community
+            </MenuItem>
             {data.signedIn ? (
-              <MenuItem dataTest="Portfolio" to={`portfolio/${data.portfolioCourseId}`}>
+              <MenuItem
+                dataTest="Portfolio"
+                to={`portfolio/${data.portfolioCourseId}`}
+              >
                 Portfolio
               </MenuItem>
             ) : null}
