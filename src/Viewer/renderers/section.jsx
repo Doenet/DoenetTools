@@ -83,13 +83,22 @@ export default React.memo(function Section(props) {
     }
   }
 
+  let headingStyle = {};
+  if (SVs.collapsible || SVs.boxed) {
+    // remove large margins if heading is in a box
+    headingStyle = {
+      marginBlockStart: 0,
+      marginBlockEnd: 0
+    }
+  }
+
   switch (SVs.level) {
-    case 0: heading = <h1 id={headingId}>{title}</h1>; break;
-    case 1: heading = <h2 id={headingId}>{title}</h2>; break;
-    case 2: heading = <h3 id={headingId}>{title}</h3>; break;
-    case 3: heading = <h4 id={headingId}>{title}</h4>; break;
-    case 4: heading = <h5 id={headingId}>{title}</h5>; break;
-    default: heading = <h6 id={headingId}>{title}</h6>; break;
+    case 0: heading = <h1 id={headingId} style={headingStyle}>{title}</h1>; break;
+    case 1: heading = <h2 id={headingId} style={headingStyle}>{title}</h2>; break;
+    case 2: heading = <h3 id={headingId} style={headingStyle}>{title}</h3>; break;
+    case 3: heading = <h4 id={headingId} style={headingStyle}>{title}</h4>; break;
+    case 4: heading = <h5 id={headingId} style={headingStyle}>{title}</h5>; break;
+    default: heading = <h6 id={headingId} style={headingStyle}>{title}</h6>; break;
   }
   // if (SVs.level === 0) {
   //   heading = <span id={headingId} style={{fontSize:'2em'}}>{title}</span>;
@@ -222,7 +231,7 @@ export default React.memo(function Section(props) {
       </div>
     }
     content =
-      <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)" }} >
+      <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", marginTop: "24px" }} >
         <div
           style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: SVs.open ? "var(--mainBorder)" : "none", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)" }}
           onClick={() => callAction({ action: SVs.open ? actions.closeSection : actions.revealSection })}
@@ -263,10 +272,10 @@ export default React.memo(function Section(props) {
     // }
   } else if (SVs.boxed) {
     content =
-      <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)" }}>
+      <div style={{ border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)", marginTop: "24px" }}>
         <div style={{ padding: "6px", borderBottom: "var(--mainBorder)", backgroundColor: "var(--mainGray)", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)" }}>
           <a name={id} />
-          {heading}<br />
+          {heading}
         </div>
         <div style={{ display: "block", padding: "6px" }}>
           {children}
