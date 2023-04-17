@@ -31,7 +31,7 @@ const Image = styled.img`
   color: var(--mainRed);
   // display: none;
   background-image: ${(props) =>
-    props.url == 'url(./drive_pictures/none)' ? 'none' : props.url};
+    props.url == 'url(/drive_pictures/none)' ? 'none' : props.url};
   background-color: ${(props) =>
     props.color == 'none' ? 'none' : '#' + props.color};
   background-size: cover;
@@ -63,7 +63,7 @@ const LabelContainer = styled.p`
 
 const DriveCard = (props) => {
   // console.log(">>> Drive Card", props)
-  let imageURL = `url(./drive_pictures/${props.image})`;
+  let imageURL = `url(/drive_pictures/${props.image})`;
 
   /* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
 
