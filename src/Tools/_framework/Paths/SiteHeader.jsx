@@ -177,7 +177,13 @@ export function SiteHeader(props) {
                 fontSize="16pt"
                 as={FaCog}
                 onClick={() => {
-                  navigate('/settings');
+                  navigateTo.current = '/settings';
+                  setRecoilPageToolView({
+                    page: 'settings',
+                    tool: '',
+                    view: '',
+                    params: {},
+                  });
                 }}
               />
             </Center>
