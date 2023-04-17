@@ -83,11 +83,21 @@ export default function SupportPanel({ hide, children }) {
     data?.activityData?.courseId,
   );
 
+  let signInToRemix = false;
+  if (
+    recoilPageToolView?.page == 'public' &&
+    data?.activityData?.userCanViewSource == '1' &&
+    !data?.signedIn
+  ) {
+    signInToRemix = true;
+  }
+
   let canRemix = false;
 
   if (
     recoilPageToolView?.page == 'public' &&
-    data?.activityData?.userCanViewSource == '1'
+    data?.activityData?.userCanViewSource == '1' &&
+    data?.signedIn
   ) {
     canRemix = true;
   }
@@ -120,6 +130,15 @@ export default function SupportPanel({ hide, children }) {
                   //addToast(assignActivityToast, toastType.INFO);
                 },
               });
+            }}
+          />
+        ) : null}
+
+        {signInToRemix ? (
+          <Button
+            value="Sign In To Remix"
+            onClick={() => {
+              navigate('/signin');
             }}
           />
         ) : null}

@@ -16,10 +16,10 @@ $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 $success = true;
 $message = '';
 
-if ($userId == '') {
-    $success = false;
-    $message = 'Error: You need to sign in';
-}
+// if ($userId == '') {
+//     $success = false;
+//     $message = 'Error: You need to sign in';
+// }
 
 $sql = "
 SELECT doenetId
@@ -65,18 +65,18 @@ if ($success) {
     }
 }
 
-//Test if they have the permission to edit it
-if ($success) {
-    $permissions = permissionsAndSettingsForOneCourseFunction(
-        $conn,
-        $userId,
-        $courseId
-    );
-    if ($permissions['canModifyActivitySettings'] == '0') {
-        $success = false;
-        $message = 'You need permission to edita a portfolio activity.';
-    }
-}
+// //Test if they have the permission to edit it
+// if ($success) {
+//     $permissions = permissionsAndSettingsForOneCourseFunction(
+//         $conn,
+//         $userId,
+//         $courseId
+//     );
+//     if ($permissions['canModifyActivitySettings'] == '0') {
+//         $success = false;
+//         $message = 'You need permission to edit a portfolio activity.';
+//     }
+// }
 //Assume we are updating the activity and need the current settings
 if ($success) {
     // $sql = "
