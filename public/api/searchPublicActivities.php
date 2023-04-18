@@ -68,15 +68,22 @@ if ($success) {
   $sql = "
   SELECT c.courseId,
   u.firstName,
-  u.lastName
+  u.lastName,
+  max(cc.isPublic) anyPublicActivity
   FROM user AS u
   LEFT JOIN course AS c
   ON c.portfolioCourseForUserId = u.userId
+  JOIN course_content cc using(courseId)
   WHERE c.portfolioCourseForUserId IS NOT NULL
   AND CONCAT(u.firstName, ' ', u.lastName) LIKE '%$q%'
+  GROUP BY 
+  c.courseId,
+  u.firstName,
+  u.lastName
+  HAVING anyPublicActivity = 1 
   LIMIT 100
   ";
-  
+
   $result = $conn->query($sql); 
   if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()){
