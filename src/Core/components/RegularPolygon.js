@@ -10,13 +10,12 @@ export default class RegularPolygon extends Polygon {
     let attributes = super.createAttributesObject();
 
     attributes.nVertices = {
-      createComponentOfType: "number",
-      createStateVariable: "nVertices",
-      isLocation: true,
-      defaultValue: 3,
-      public: true,
-      forRenderer: true,
+      createComponentOfType: "integer",
     };
+
+    attributes.nSides = {
+      createComponentOfType: "integer",
+    }
 
     // Note: vertices is already an attribute from polygon
 
@@ -70,7 +69,6 @@ export default class RegularPolygon extends Polygon {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    delete stateVariableDefinitions.nVertices;
 
     let styleDescriptionWithNounDeps = stateVariableDefinitions.styleDescriptionWithNoun.returnDependencies();
     styleDescriptionWithNounDeps.nSides = {
@@ -90,6 +88,76 @@ export default class RegularPolygon extends Polygon {
 
       return { setValue: { styleDescriptionWithNoun } }
     }
+
+
+    stateVariableDefinitions.nVertices = {
+      isLocation: true,
+      hasEssential: true,
+      defaultValue: 3,
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      returnDependencies: () => ({
+        nVerticesAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nVertices",
+          variableNames: ["value"]
+        },
+        nSidesAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nSides",
+          variableNames: ["value"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.nVerticesAttr) {
+          return { setValue: { nVertices: dependencyValues.nVerticesAttr.stateValues.value } }
+        } else if (dependencyValues.nSidesAttr) {
+          return { setValue: { nVertices: dependencyValues.nSidesAttr.stateValues.value } }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { nVertices: true }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.nVerticesAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "nVerticesAttr",
+              desiredValue: desiredStateVariableValues.nVertices,
+              variableIndex: 0,
+            }]
+          }
+        } else if (dependencyValues.nSidesAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "nSidesAttr",
+              desiredValue: desiredStateVariableValues.nVertices,
+              variableIndex: 0,
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "nVertices",
+              value: desiredStateVariableValues.nVertices
+            }]
+          }
+        }
+      }
+    }
+    
+
+    stateVariableDefinitions.nSides = {
+      isAlias: true,
+      targetVariableName: "nVertices"
+    };
 
     stateVariableDefinitions.nVerticesSpecified = {
 
@@ -1519,12 +1587,6 @@ export default class RegularPolygon extends Polygon {
     }
 
 
-
-
-    stateVariableDefinitions.nSides = {
-      isAlias: true,
-      targetVariableName: "nVertices"
-    };
 
     return stateVariableDefinitions;
   }
