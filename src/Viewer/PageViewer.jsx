@@ -143,6 +143,8 @@ export default function PageViewer(props) {
 
   const previousLocationKeys = useRef([]);
 
+  const errorInitializingRenderers = useRef(false);
+
   const darkMode = useRecoilValue(darkModeAtom);
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
@@ -161,8 +163,9 @@ export default function PageViewer(props) {
       coreWorker.current.onmessage = function (e) {
         // console.log('message from core', e.data)
         if (e.data.messageType === "updateRenderers") {
-          if (e.data.init && coreInfo.current) {
+          if (e.data.init && coreInfo.current && !errorInitializingRenderers.current) {
             // we don't initialize renderer state values if already have a coreInfo
+            // and no errors were encountered
             // as we must have already gotten the renderer information before core was created
           } else {
             updateRenderers(e.data.args)
@@ -177,9 +180,9 @@ export default function PageViewer(props) {
           setStage('coreCreated');
           props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
-          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
-            // we already initialized renderers before core was created
-            // so don't initialize them again when core is createad and this is called a second time
+          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo) && !errorInitializingRenderers.current) {
+            // we already initialized renderers before core was created and no errors were encountered
+            // so don't initialize them again when core sends the initializeRenderers message
           } else {
             initializeRenderers(e.data.args)
           }
@@ -447,6 +450,8 @@ export default function PageViewer(props) {
 
       props.renderersInitializedCallback?.()
 
+    }).catch(e => {
+      errorInitializingRenderers.current = true;
     });
 
 
