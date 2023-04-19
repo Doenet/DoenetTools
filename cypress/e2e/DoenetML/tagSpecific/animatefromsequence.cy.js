@@ -2029,4 +2029,39 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
 
+  it("animate number adapted to math", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+
+  <p>value: <math name="a"><number>1</number></math></p>
+
+  <animateFromSequence name="x" animationMode='increase once' animationOn='$b' target='a' from="1" to="3" animationInterval='100' />
+
+  <booleaninput name="b" />
+  
+  <p>copy: <copy target="a" assignNames="a2" /></p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.get(cesc("#\\/a") + " .mjx-mrow").should("have.text", "1");
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("have.text", "1");
+
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc("#\\/a") + " .mjx-mrow").should("have.text", "2");
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("have.text", "2");
+    cy.get(cesc("#\\/a") + " .mjx-mrow").should("have.text", "3");
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("have.text", "3");
+
+
+  });
+
 });
