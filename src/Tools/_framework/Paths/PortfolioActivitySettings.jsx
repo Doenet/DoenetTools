@@ -358,6 +358,11 @@ export function PortfolioActivitySettings() {
                     activityDoenetId: data.doenetId,
                     isAssigned: true,
                     courseId: data.courseId,
+                    activity: {
+                      version: data.version,
+                      isSinglePage: true,
+                      content: data.content,
+                    },
                     successCallback: () => {
                       //   addToast('Activity Assigned.', toastType.INFO);
                     },

@@ -101,6 +101,7 @@ if ($success) {
     cc.label,
     cc.userCanViewSource,
     cc.isPublic,
+    CAST(jsonDefinition as CHAR) AS json,
     c.portfolioCourseForUserId
     FROM course_content AS cc
     LEFT JOIN course AS c
@@ -112,6 +113,8 @@ if ($success) {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+        $json = json_decode($row['json'], true);
+
         $isPortfolioCourse = '0';
         if ($row['portfolioCourseForUserId'] != ""){
             $isPortfolioCourse = '1'; 
@@ -120,6 +123,8 @@ if ($success) {
             'doenetId' => $doenetId,
             'imagePath' => $row['imagePath'],
             'label' => $row['label'],
+            'version' => $json['version'],
+            'content' => $json['content'],
             'userCanViewSource' => $row['userCanViewSource'],
             // 'learningOutcomes' => $row['learningOutcomes'],
             'public' => $row['isPublic'],

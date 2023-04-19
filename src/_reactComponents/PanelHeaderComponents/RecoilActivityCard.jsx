@@ -113,15 +113,6 @@ export default function RecoilActivityCard({
                     //- Version of DoenetML
                     //Eventually we want the content too (multipage)
 
-                    // TODO: There seemed to be a race condition where
-                    // itemByDoenetId was not set before compileActivity looked up the value.
-                    // We are now instead sending it in directly to compileActivity.
-                    // Do we still need to set itemByDoenetId
-                    setItemByDoenetId({
-                      version,
-                      isSinglePage: true,
-                      content,
-                    });
 
                     compileActivity({
                       activityDoenetId: doenetId,
