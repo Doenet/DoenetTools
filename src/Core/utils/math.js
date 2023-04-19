@@ -442,7 +442,17 @@ export function mathStateVariableFromNumberStateVariable({
     },
     inverseDefinition: function ({ desiredStateVariableValues }) {
 
-      let desiredNumber = desiredStateVariableValues[mathVariableName].evaluate_to_constant();
+      let desiredMath = desiredStateVariableValues[mathVariableName];
+
+      let desiredNumber;
+      if (desiredMath instanceof me.class) {
+        desiredNumber = desiredMath.evaluate_to_constant();
+      } else if (typeof desiredMath === "number") {
+        desiredNumber = desiredMath;
+      } else {
+        desiredNumber = NaN;
+      }
+
       return {
         success: true,
         instructions: [{
