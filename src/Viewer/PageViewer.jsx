@@ -144,6 +144,9 @@ export default function PageViewer(props) {
   const previousLocationKeys = useRef([]);
 
   const errorInitializingRenderers = useRef(false);
+  const errorInsideRenderers = useRef(false);
+
+  const [ignoreRendererError, setIgnoreRendererError] = useState(false);
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -163,12 +166,17 @@ export default function PageViewer(props) {
       coreWorker.current.onmessage = function (e) {
         // console.log('message from core', e.data)
         if (e.data.messageType === "updateRenderers") {
-          if (e.data.init && coreInfo.current && !errorInitializingRenderers.current) {
+          if (e.data.init && coreInfo.current && !errorInitializingRenderers.current && !errorInsideRenderers.current) {
             // we don't initialize renderer state values if already have a coreInfo
             // and no errors were encountered
             // as we must have already gotten the renderer information before core was created
+
           } else {
             updateRenderers(e.data.args)
+            if (errorInsideRenderers.current) {
+              setIgnoreRendererError(true);
+              this.props.setIsInErrorState?.(false);
+            }
           }
         } else if (e.data.messageType === "requestAnimationFrame") {
           requestAnimationFrame(e.data.args);
@@ -180,11 +188,15 @@ export default function PageViewer(props) {
           setStage('coreCreated');
           props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
-          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo) && !errorInitializingRenderers.current) {
+          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo) && !errorInitializingRenderers.current && !errorInsideRenderers.current) {
             // we already initialized renderers before core was created and no errors were encountered
             // so don't initialize them again when core sends the initializeRenderers message
           } else {
             initializeRenderers(e.data.args)
+            if (errorInsideRenderers.current) {
+              setIgnoreRendererError(true);
+              this.props.setIsInErrorState?.(false);
+            }
           }
         } else if (e.data.messageType === "updateCreditAchieved") {
           props.updateCreditAchievedCallback?.(e.data.args);
@@ -955,6 +967,15 @@ export default function PageViewer(props) {
     resolveAction({ actionId });
   }
 
+  function errorHandler() {
+
+    errorInsideRenderers.current = true;
+
+    if (ignoreRendererError) {
+      setIgnoreRendererError(false);
+    }
+  }
+
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
     return <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>{errorIcon} {errMsg}</div>
@@ -1078,8 +1099,9 @@ export default function PageViewer(props) {
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
+
   //Spacing around the whole doenetML document
-  return <ErrorBoundary setIsInErrorState={props.setIsInErrorState}>
+  return <ErrorBoundary setIsInErrorState={props.setIsInErrorState} errorHandler={errorHandler} ignoreError={ignoreRendererError} coreCreated={coreCreated.current}>
     {noCoreWarning}
     <div style={pageStyle} className='doenet-viewer'>
       {documentRenderer}
@@ -1119,10 +1141,17 @@ class ErrorBoundary extends React.Component {
   }
   componentDidCatch(error, errorInfo) {
     this.props.setIsInErrorState?.(true)
+    this.props.errorHandler()
   }
   render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
+    if (this.state.hasError && !this.props.ignoreError) {
+
+      if (!this.props.coreCreated) {
+        return null;
+      } else {
+        return <h1>Something went wrong.</h1>;
+      }
+
     }
     return this.props.children;
   }
