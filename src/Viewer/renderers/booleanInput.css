@@ -49,9 +49,19 @@
   box-sizing: content-box;
 }
 
+.checkmark-disabled {
+  background-color: var(--mainGray);
+  border-color: var(--mainGray);
+}
+
 /* On mouse-over, add a light blue background color */
 .container:hover input ~ .checkmark {
   background-color: var(--lightBlue);
+}
+
+/* On mouse-over of disabled, keep the grey background color */
+.container:hover input ~ .checkmark-disabled {
+  background-color: var(--mainGray);
 }
 
 /* When the checkbox is checked, add a dark blue background */

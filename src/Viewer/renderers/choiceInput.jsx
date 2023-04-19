@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import './choiceInput.css';
 
 // Moved most of checkWorkStyle styling into Button
-const Button = styled.button `
+const Button = styled.button`
   position: relative;
   /* width: 24px; */
   height: 24px;
@@ -246,16 +246,16 @@ export default React.memo(function ChoiceInput(props) {
     // inline="true"
     return <React.Fragment>
       <a name={id} />
-        <select className="custom-select"
-          id={id}
-          onChange={onChangeHandler}
-          value={value}
-          disabled={disabled}
-          multiple={SVs.selectMultiple}
-        >
-          <option hidden={true} value="">{SVs.placeHolder}</option>
-          {optionsList}
-        </select>
+      <select className="custom-select"
+        id={id}
+        onChange={onChangeHandler}
+        value={value}
+        disabled={disabled}
+        multiple={SVs.selectMultiple}
+      >
+        <option hidden={true} value="">{SVs.placeHolder}</option>
+        {optionsList}
+      </select>
       {checkWorkButton}
     </React.Fragment>
   } else {
@@ -395,38 +395,48 @@ export default React.memo(function ChoiceInput(props) {
           return null;
         }
         if (inputType == 'radio') { // selectMultiple="false"
+          let radioDisabled = disabled || svData.choicesDisabled[i]
+          let radioClassName = "radio-checkmark";
+          if (radioDisabled) {
+            radioClassName += " radio-checkmark-disabled"
+          }
           return <label className="radio-container" key={inputKey + '_choice' + (i + 1)}>
-          <input
-            type="radio"
-            id={keyBeginning + (i + 1) + "_input"}
-            name={inputKey}
-            value={i + 1}
-            checked={rendererSelectedIndices.includes(i + 1)}
-            onChange={onChangeHandler}
-            disabled={disabled || svData.choicesDisabled[i]}
-          />
-          <span className="radio-checkmark" />
-          <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{marginLeft: "2px"}}>
-            {child}
+            <input
+              type="radio"
+              id={keyBeginning + (i + 1) + "_input"}
+              name={inputKey}
+              value={i + 1}
+              checked={rendererSelectedIndices.includes(i + 1)}
+              onChange={onChangeHandler}
+              disabled={radioDisabled}
+            />
+            <span className={radioClassName} />
+            <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{ marginLeft: "2px" }}>
+              {child}
+            </label>
           </label>
-        </label>
 
         } else if (inputType == 'checkbox') { // selectMultiple="true"
+          let checkboxDisabled = disabled || svData.choicesDisabled[i]
+          let checkboxClassName = "checkbox-checkmark";
+          if (checkboxDisabled) {
+            checkboxClassName += " checkbox-checkmark-disabled"
+          }
           return <label className="checkbox-container" key={inputKey + '_choice' + (i + 1)}>
-          <input
-            type="checkbox"
-            id={keyBeginning + (i + 1) + "_input"}
-            name={inputKey}
-            value={i + 1}
-            checked={rendererSelectedIndices.includes(i + 1)}
-            onChange={onChangeHandler}
-            disabled={disabled || svData.choicesDisabled[i]}
-          />
-          <span className="checkbox-checkmark" />
-          <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{marginLeft: "2px"}}>
-            {child}
+            <input
+              type="checkbox"
+              id={keyBeginning + (i + 1) + "_input"}
+              name={inputKey}
+              value={i + 1}
+              checked={rendererSelectedIndices.includes(i + 1)}
+              onChange={onChangeHandler}
+              disabled={disabled || svData.choicesDisabled[i]}
+            />
+            <span className={checkboxClassName} />
+            <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{ marginLeft: "2px" }}>
+              {child}
+            </label>
           </label>
-        </label>
         }
       });
 

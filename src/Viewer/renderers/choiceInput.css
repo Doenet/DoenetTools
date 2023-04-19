@@ -29,15 +29,25 @@
     left: 0;
     height: 18px;
     width: 18px;
-    background-color: #eee;
+    background-color: var(--mainGray);
     border-style: solid;
-    border-color: #000;
+    border-color: var(--canvastext);
     border-radius: 50%;
+}
+
+.radio-checkmark-disabled {
+    background-color: var(--mainGray);
+    border-color: var(--mainGray);
 }
   
 /* On mouse-over, add a grey background color */
 .radio-container:hover input ~ .radio-checkmark {
     background-color: var(--lightBlue);
+}
+  
+/* On mouse-over of disabled, keep the grey background color */
+.radio-container:hover input ~ .radio-checkmark-disabled {
+    background-color: var(--mainGray);
 }
   
 /* When the radio button is checked, add a blue background */
@@ -70,7 +80,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: white;
+    background: var(--canvas);
 }
 
 /* CUSTOM STYLING FOR CHECKBOX */
@@ -104,15 +114,25 @@
     left: 0;
     height: 18px;
     width: 18px;
-    background-color: #eee;
+    background-color: var(--mainGray);
     border-style: solid;
-    border-color: #000;
+    border-color: var(--canvastext);
     border-radius: var(--mainBorderRadius);
+}
+
+.checkbox-checkmark-disabled {
+    background-color: var(--mainGray);
+    border-color: var(--mainGray);
 }
   
 /* On mouse-over, add a light blue background color */
 .checkbox-container:hover input ~ .checkbox-checkmark {
     background-color: var(--lightBlue);
+}
+  
+/* On mouse-over of disabled, keep the grey background color */
+.checkbox-container:hover input ~ .checkbox-checkmark-disabled {
+    background-color: var(--mainGray);
 }
   
 /* When the checkbox is checked, add a dark blue background */
@@ -144,7 +164,7 @@
     top: 1px;
     width: 5px;
     height: 10px;
-    border: solid white;
+    border: solid var(--canvas);
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
