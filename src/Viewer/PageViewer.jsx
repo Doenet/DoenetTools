@@ -144,6 +144,10 @@ export default function PageViewer(props) {
   const previousLocationKeys = useRef([]);
 
   const errorInitializingRenderers = useRef(false);
+  const errorInsideRenderers = useRef(false);
+  const initializeRenderersArgsFromCore = useRef(null);
+  const initialUpdateRenderersArgsFromCore = useRef(null);
+  const ignoreFirstRendererError = useRef(false);
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -163,11 +167,19 @@ export default function PageViewer(props) {
       coreWorker.current.onmessage = function (e) {
         // console.log('message from core', e.data)
         if (e.data.messageType === "updateRenderers") {
-          if (e.data.init && coreInfo.current && !errorInitializingRenderers.current) {
+          if (e.data.init && coreInfo.current && !errorInitializingRenderers.current && !errorInsideRenderers.current) {
             // we don't initialize renderer state values if already have a coreInfo
             // and no errors were encountered
             // as we must have already gotten the renderer information before core was created
+
+            // set core's renderer update to a variable in case we need it
+            initialUpdateRenderersArgsFromCore.current = e.data.args;
           } else {
+            console.log("calling update renderers", e.data.args)
+            if (errorInsideRenderers.current) {
+              // turn off that am in an error state
+              ignoreFirstRendererError.current += 1;
+            }
             updateRenderers(e.data.args)
           }
         } else if (e.data.messageType === "requestAnimationFrame") {
@@ -180,10 +192,20 @@ export default function PageViewer(props) {
           setStage('coreCreated');
           props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
-          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo) && !errorInitializingRenderers.current) {
+          console.log('got initializeRenderers, error?', errorInitializingRenderers.current)
+          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo) && !errorInitializingRenderers.current && !errorInsideRenderers.current) {
             // we already initialized renderers before core was created and no errors were encountered
             // so don't initialize them again when core sends the initializeRenderers message
+
+            // set core's renderer state to a variable in case we need it
+            initializeRenderersArgsFromCore.current = e.data.args;
           } else {
+            console.log('calling initializeRenderers', e.data.args)
+
+            if (errorInitializingRenderers.current) {
+              // turn off that am in an error state
+            }
+
             initializeRenderers(e.data.args)
           }
         } else if (e.data.messageType === "updateCreditAchieved") {
@@ -452,6 +474,25 @@ export default function PageViewer(props) {
 
     }).catch(e => {
       errorInitializingRenderers.current = true;
+
+      if (initialUpdateRenderersArgsFromCore.current !== null) {
+        // we encountered this error after we already ignored
+        // the initial updateRenderers from core
+        // Call updateRenders now with this info
+
+        updateRenderers(initialUpdateRenderersArgsFromCore.current);
+        initialUpdateRenderersArgsFromCore.current = null;
+      }
+
+      if (initializeRenderersArgsFromCore.current !== null) {
+        // we encountered this error after we already ignored
+        // initializeRenderers from core
+        // Call initializeRenderers now with this info
+        initializeRenderers(initializeRenderersArgsFromCore.current);
+        initializeRenderersArgsFromCore.current = null;
+
+      }
+
     });
 
 
@@ -1039,6 +1080,9 @@ export default function PageViewer(props) {
     coreInfo.current = null;
     setDocumentRenderer(null);
     coreCreated.current = false;
+    initializeRenderersArgsFromCore.current = null;
+    initialUpdateRenderersArgsFromCore.current = null;
+
 
     setStage("wait");
 
@@ -1078,8 +1122,16 @@ export default function PageViewer(props) {
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
+  let recoverErrorObj = {
+    initializeRenderers,
+    updateRenderers,
+    errorInsideRenderers: errorInsideRenderers,
+    initializeRenderersArgsFromCore,
+    initialUpdateRenderersArgsFromCore,
+  }
+
   //Spacing around the whole doenetML document
-  return <ErrorBoundary setIsInErrorState={props.setIsInErrorState}>
+  return <ErrorBoundary setIsInErrorState={props.setIsInErrorState} recoverErrorObj={recoverErrorObj} ignoreFirstError={ignoreFirstRendererError.current}>
     {noCoreWarning}
     <div style={pageStyle} className='doenet-viewer'>
       {documentRenderer}
@@ -1111,7 +1163,7 @@ export async function renderersloadComponent(promises, rendererClassNames) {
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, haveIgnoredFirstError: false };
   }
 
   static getDerivedStateFromError(error) {
@@ -1119,10 +1171,49 @@ class ErrorBoundary extends React.Component {
   }
   componentDidCatch(error, errorInfo) {
     this.props.setIsInErrorState?.(true)
+    this.props.handleError()
   }
   render() {
-    if (this.state.hasError) {
+    if (this.state.hasError && !this.props.ignoreError) {
+
+      if (!this.state.haveIgnoredFirstError && this.props.ignoreFirstError) {
+        this.setState({ hasError: false, haveIgnoredFirstError: true });
+      } else {
+
+        console.log("have an error", this.props.recoverErrorObj)
+
+        for (let key of ["errorInsideRenderers",
+          "initializeRenderersArgsFromCore",
+          "initialUpdateRenderersArgsFromCore"]) {
+          console.log(`${key}:`, JSON.parse(JSON.stringify(this.props.recoverErrorObj[key].current)))
+        }
+
+        this.props.recoverErrorObj.errorInsideRenderers.current = true;
+
+        if (this.props.recoverErrorObj.initialUpdateRenderersArgsFromCore.current !== null) {
+          // we encountered this error after we already ignored
+          // the initial updateRenderers from core
+          // Call updateRenders now with this info
+
+          this.props.recoverErrorObj.updateRenderers(this.props.initialUpdateRenderersArgsFromCore.current);
+          this.props.recoverErrorObj.initialUpdateRenderersArgsFromCore.current = null;
+
+          this.setState({ hasError: false })
+        }
+
+        if (this.props.recoverErrorObj.initializeRenderersArgsFromCore.current !== null) {
+          // we encountered this error after we already ignored
+          // initializeRenderers from core
+          // Call initializeRenderers now with this info
+          prop.recoverErrorObj.initializeRenderers(this.props.recoverErrorObj.initializeRenderersArgsFromCore.current);
+          this.props.recoverErrorObj.initializeRenderersArgsFromCore.current = null;
+          this.setState({ hasError: false })
+
+        }
+
+      }
       return <h1>Something went wrong.</h1>;
+
     }
     return this.props.children;
   }
