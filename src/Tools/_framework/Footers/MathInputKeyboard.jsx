@@ -19,9 +19,6 @@ import {
 import styled from 'styled-components';
 import { MathJax } from 'better-react-mathjax';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ToggleButton from '../../../_reactComponents/PanelHeaderComponents/ToggleButton';
-import ToggleButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
-import VerticalDivider from '../../../_reactComponents/PanelHeaderComponents/VerticalDivider';
 
 import { faBackspace, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { useToast, toastType } from '../Toast';
@@ -249,88 +246,110 @@ export default function VirtualKeyboard() {
   // if (toggleLetters) {
   // if (toggleCase) {
   let sectionUpperABC = (
-    <Panel tabIndex="0" ref={containerRef}>
-      <LettersSection>
-        {/* <LettersSection> */}
-        <Button variant="letter" onClick={() => callback('write Q')}>
+    <Box
+      ref={containerRef}
+      // height="240px"
+      bottom="0"
+      left="0"
+      width="100%"
+      /* background-color: var(--canvas); */
+      /* color: var(--canvas); */
+      display="flex"
+      flexDirection="row"
+      textAlign="center"
+      justifyContent="center"
+    >
+      <Box
+        height="150px"
+        maxWidth="600px"
+        flexBasis="90%"
+        marginLeft="5px"
+        marginRight="5px"
+        marginTop="auto"
+        marginBottom="auto"
+        display="flex"
+        flexWrap="wrap"
+        justifyContent="space-evenly"
+      >
+        <Button flexBasis="9.5%" onClick={() => callback('write Q')}>
           Q
         </Button>
-        <Button variant="letter" onClick={() => callback('write W')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write W')}>
           W
         </Button>
-        <Button variant="letter" onClick={() => callback('write E')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write E')}>
           E
         </Button>
-        <Button variant="letter" onClick={() => callback('write R')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write R')}>
           R
         </Button>
-        <Button variant="letter" onClick={() => callback('write T')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write T')}>
           T
         </Button>
-        <Button variant="letter" onClick={() => callback('write Y')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write Y')}>
           Y
         </Button>
-        <Button variant="letter" onClick={() => callback('write U')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write U')}>
           U
         </Button>
-        <Button variant="letter" onClick={() => callback('write I')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write I')}>
           I
         </Button>
-        <Button variant="letter" onClick={() => callback('write O')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write O')}>
           O
         </Button>
-        <Button variant="letter" onClick={() => callback('write P')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write P')}>
           P
         </Button>
-        <Button variant="letter" onClick={() => callback('write A')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write A')}>
           A
         </Button>
-        <Button variant="letter" onClick={() => callback('write S')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write S')}>
           S
         </Button>
-        <Button variant="letter" onClick={() => callback('write D')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write D')}>
           D
         </Button>
-        <Button variant="letter" onClick={() => callback('write F')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write F')}>
           F
         </Button>
-        <Button variant="letter" onClick={() => callback('write G')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write G')}>
           G
         </Button>
-        <Button variant="letter" onClick={() => callback('write H')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write H')}>
           H
         </Button>
-        <Button variant="letter" onClick={() => callback('write J')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write J')}>
           J
         </Button>
-        <Button variant="letter" onClick={() => callback('write K')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write K')}>
           K
         </Button>
-        <Button variant="letter" onClick={() => callback('write L')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write L')}>
           L
         </Button>
         <Button variant="letterTransition" onClick={handleToggleABCCase}>
           <FontAwesomeIcon icon={faArrowUp} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write Z')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write Z')}>
           Z
         </Button>
-        <Button variant="letter" onClick={() => callback('write X')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write X')}>
           X
         </Button>
-        <Button variant="letter" onClick={() => callback('write C')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write C')}>
           C
         </Button>
-        <Button variant="letter" onClick={() => callback('write V')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write V')}>
           V
         </Button>
-        <Button variant="letter" onClick={() => callback('write B')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write B')}>
           B
         </Button>
-        <Button variant="letter" onClick={() => callback('write N')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write N')}>
           N
         </Button>
-        <Button variant="letter" onClick={() => callback('write M')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write M')}>
           M
         </Button>
         <Button
@@ -339,87 +358,115 @@ export default function VirtualKeyboard() {
         >
           <FontAwesomeIcon icon={faBackspace} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write ,')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write ,')}>
           ,
         </Button>
-        <Button variant="letter" onClick={() => callback("write '")}>
+        <Button flexBasis="9.5%" onClick={() => callback("write '")}>
           '
         </Button>
-        <Button variant="space" onClick={() => callback('write \\ ')}>
+        <Button flexBasis="49%" onClick={() => callback('write \\ ')}>
           {' '}
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Left')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Left')}
+        >
           <MathJax dynamic>\(\leftarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Right')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Right')}
+        >
           <MathJax dynamic>\(\rightarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => returncallback()}>
+        <Button variant="letterTransition2" onClick={() => returncallback()}>
           Enter
         </Button>
-      </LettersSection>
-      {/* </LettersSection> */}
-    </Panel>
+      </Box>
+    </Box>
   );
-  // } else {
+
   let sectionLowerABC = (
-    <Panel tabIndex="0" ref={containerRef}>
-      <LettersSection>
-        <Button variant="letter" onClick={() => callback('write q')}>
+    <Box
+      ref={containerRef}
+      // height="240px"
+      bottom="0"
+      left="0"
+      width="100%"
+      /* background-color: var(--canvas); */
+      /* color: var(--canvas); */
+      display="flex"
+      flexDirection="row"
+      textAlign="center"
+      justifyContent="center"
+    >
+      <Box
+        height="150px"
+        maxWidth="600px"
+        flexBasis="90%"
+        marginLeft="5px"
+        marginRight="5px"
+        marginTop="auto"
+        marginBottom="auto"
+        display="flex"
+        flexWrap="wrap"
+        justifyContent="space-evenly"
+      >
+        <Button flexBasis="9.5%" onClick={() => callback('write q')}>
           q
         </Button>
-        <Button variant="letter" onClick={() => callback('write w')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write w')}>
           w
         </Button>
-        <Button variant="letter" onClick={() => callback('write e')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write e')}>
           e
         </Button>
-        <Button variant="letter" onClick={() => callback('write r')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write r')}>
           r
         </Button>
-        <Button variant="letter" onClick={() => callback('write t')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write t')}>
           t
         </Button>
-        <Button variant="letter" onClick={() => callback('write y')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write y')}>
           y
         </Button>
-        <Button variant="letter" onClick={() => callback('write u')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write u')}>
           u
         </Button>
-        <Button variant="letter" onClick={() => callback('write i')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write i')}>
           i
         </Button>
-        <Button variant="letter" onClick={() => callback('write o')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write o')}>
           o
         </Button>
-        <Button variant="letter" onClick={() => callback('write p')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write p')}>
           p
         </Button>
-        <Button variant="letter" onClick={() => callback('write a')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write a')}>
           a
         </Button>
-        <Button variant="letter" onClick={() => callback('write s')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write s')}>
           s
         </Button>
-        <Button variant="letter" onClick={() => callback('write d')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write d')}>
           d
         </Button>
-        <Button variant="letter" onClick={() => callback('write f')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write f')}>
           f
         </Button>
-        <Button variant="letter" onClick={() => callback('write g')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write g')}>
           g
         </Button>
-        <Button variant="letter" onClick={() => callback('write h')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write h')}>
           h
         </Button>
-        <Button variant="letter" onClick={() => callback('write j')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write j')}>
           j
         </Button>
-        <Button variant="letter" onClick={() => callback('write k')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write k')}>
           k
         </Button>
-        <Button variant="letter" onClick={() => callback('write l')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write l')}>
           l
         </Button>
         <Button
@@ -429,25 +476,25 @@ export default function VirtualKeyboard() {
         >
           <FontAwesomeIcon icon={faArrowUp} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write z')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write z')}>
           z
         </Button>
-        <Button variant="letter" onClick={() => callback('write x')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write x')}>
           x
         </Button>
-        <Button variant="letter" onClick={() => callback('write c')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write c')}>
           c
         </Button>
-        <Button variant="letter" onClick={() => callback('write v')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write v')}>
           v
         </Button>
-        <Button variant="letter" onClick={() => callback('write b')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write b')}>
           b
         </Button>
-        <Button variant="letter" onClick={() => callback('write n')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write n')}>
           n
         </Button>
-        <Button variant="letter" onClick={() => callback('write m')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write m')}>
           m
         </Button>
         <Button
@@ -456,29 +503,34 @@ export default function VirtualKeyboard() {
         >
           <FontAwesomeIcon icon={faBackspace} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write ,')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write ,')}>
           ,
         </Button>
-        <Button variant="letter" onClick={() => callback("write '")}>
+        <Button flexBasis="9.5%" onClick={() => callback("write '")}>
           '
         </Button>
-        <Button variant="space" onClick={() => callback('write \\ ')}>
+        <Button flexBasis="49%" onClick={() => callback('write \\ ')}>
           {' '}
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Left')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Left')}
+        >
           <MathJax dynamic>\(\leftarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Right')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Right')}
+        >
           <MathJax dynamic>\(\rightarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => returncallback()}>
+        <Button variant="letterTransition2" onClick={() => returncallback()}>
           Enter
         </Button>
-      </LettersSection>
-    </Panel>
+      </Box>
+    </Box>
   );
-  // }
-  // }
+
   let sectionSymbols1 = (
     <SimpleGrid columns={5} spacing={2} margin="4px">
       <Button onClick={() => callback('cmd {')}>{`{`}</Button>
@@ -920,87 +972,110 @@ export default function VirtualKeyboard() {
   );
 
   let sectionUpperGreek = (
-    <Panel tabIndex="0" ref={containerRef}>
-      <LettersSection>
-        <Button variant="letter" onClick={() => callback('write \\Phi')}>
+    <Box
+      ref={containerRef}
+      // height="240px"
+      bottom="0"
+      left="0"
+      width="100%"
+      /* background-color: var(--canvas); */
+      /* color: var(--canvas); */
+      display="flex"
+      flexDirection="row"
+      textAlign="center"
+      justifyContent="center"
+    >
+      <Box
+        height="150px"
+        maxWidth="600px"
+        flexBasis="90%"
+        marginLeft="5px"
+        marginRight="5px"
+        marginTop="auto"
+        marginBottom="auto"
+        display="flex"
+        flexWrap="wrap"
+        justifyContent="space-evenly"
+      >
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Phi')}>
           <MathJax dynamic>\(\Phi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Sigma')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Sigma')}>
           <MathJax dynamic>\(\Sigma\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write E')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write E')}>
           E
         </Button>
-        <Button variant="letter" onClick={() => callback('write P')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write P')}>
           P
         </Button>
-        <Button variant="letter" onClick={() => callback('write T')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write T')}>
           T
         </Button>
-        <Button variant="letter" onClick={() => callback('write Y')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write Y')}>
           Y
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Theta')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Theta')}>
           <MathJax dynamic>\(\Theta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write I')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write I')}>
           I
         </Button>
-        <Button variant="letter" onClick={() => callback('write O')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write O')}>
           O
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Pi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Pi')}>
           <MathJax dynamic>\(\Pi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write A')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write A')}>
           A
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Sigma')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Sigma')}>
           <MathJax dynamic>\(\Sigma\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Delta')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Delta')}>
           <MathJax dynamic>\(\Delta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Phi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Phi')}>
           <MathJax dynamic>\(\Phi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Gamma')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Gamma')}>
           <MathJax dynamic>\(\Gamma\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write H')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write H')}>
           H
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Xi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Xi')}>
           <MathJax dynamic>\(\Xi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write K')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write K')}>
           K
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Lambda')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Lambda')}>
           <MathJax dynamic>\(\Lambda\)</MathJax>
         </Button>
         <Button variant="letterTransition" onClick={handleToggleGreekCase}>
           <FontAwesomeIcon icon={faArrowUp} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write Z')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write Z')}>
           Z
         </Button>
-        <Button variant="letter" onClick={() => callback('write X')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write X')}>
           X
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Psi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Psi')}>
           <MathJax dynamic>\(\Psi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\Omega')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\Omega')}>
           <MathJax dynamic>\(\Delta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write B')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write B')}>
           B
         </Button>
-        <Button variant="letter" onClick={() => callback('write N')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write N')}>
           N
         </Button>
-        <Button variant="letter" onClick={() => callback('write M')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write M')}>
           M
         </Button>
         <Button
@@ -1009,86 +1084,115 @@ export default function VirtualKeyboard() {
         >
           <FontAwesomeIcon icon={faBackspace} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write ,')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write ,')}>
           ,
         </Button>
-        <Button variant="letter" onClick={() => callback("write '")}>
+        <Button flexBasis="9.5%" onClick={() => callback("write '")}>
           '
         </Button>
-        <Button variant="space" onClick={() => callback('write \\ ')}>
+        <Button flexBasis="49%" onClick={() => callback('write \\ ')}>
           {' '}
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Left')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Left')}
+        >
           <MathJax dynamic>\(\leftarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Right')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Right')}
+        >
           <MathJax dynamic>\(\rightarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => returncallback()}>
+        <Button variant="letterTransition2" onClick={() => returncallback()}>
           Enter
         </Button>
-      </LettersSection>
-    </Panel>
+      </Box>
+    </Box>
   );
 
   let sectionLowerGreek = (
-    <Panel tabIndex="0" ref={containerRef}>
-      <LettersSection>
-        <Button variant="letter" onClick={() => callback('write \\phi')}>
+    <Box
+      ref={containerRef}
+      // height="240px"
+      bottom="0"
+      left="0"
+      width="100%"
+      /* background-color: var(--canvas); */
+      /* color: var(--canvas); */
+      display="flex"
+      flexDirection="row"
+      textAlign="center"
+      justifyContent="center"
+    >
+      <Box
+        height="150px"
+        maxWidth="600px"
+        flexBasis="90%"
+        marginLeft="5px"
+        marginRight="5px"
+        marginTop="auto"
+        marginBottom="auto"
+        display="flex"
+        flexWrap="wrap"
+        justifyContent="space-evenly"
+      >
+        <Button flexBasis="9.5%" onClick={() => callback('write \\phi')}>
           <MathJax dynamic>\(\phi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\varsigma')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\varsigma')}>
           <MathJax dynamic>\(\varsigma\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\epsilon')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\epsilon')}>
           <MathJax dynamic>\(\epsilon\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\rho')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\rho')}>
           <MathJax dynamic>\(\rho\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\tau')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\tau')}>
           <MathJax dynamic>\(\tau\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\upsilon')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\upsilon')}>
           <MathJax dynamic>\(\upsilon\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\theta')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\theta')}>
           <MathJax dynamic>\(\theta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\iota')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\iota')}>
           <MathJax dynamic>\(\iota\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write o')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write o')}>
           o
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\pi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\pi')}>
           <MathJax dynamic>\(\pi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\alpha')}>
+        <Button vflexBasis="9.5%" onClick={() => callback('write \\alpha')}>
           <MathJax dynamic>\(\alpha\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\sigma')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\sigma')}>
           <MathJax dynamic>\(\sigma\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\delta')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\delta')}>
           <MathJax dynamic>\(\delta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\varphi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\varphi')}>
           <MathJax dynamic>\(\varphi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\gamma')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\gamma')}>
           <MathJax dynamic>\(\gamma\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\eta')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\eta')}>
           <MathJax dynamic>\(\eta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\xi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\xi')}>
           <MathJax dynamic>\(\xi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\kappa')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\kappa')}>
           <MathJax dynamic>\(\kappa\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\lambda')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\lambda')}>
           <MathJax dynamic>\(\lambda\)</MathJax>
         </Button>
         <Button
@@ -1098,25 +1202,25 @@ export default function VirtualKeyboard() {
         >
           <FontAwesomeIcon icon={faArrowUp} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\zeta')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\zeta')}>
           <MathJax dynamic>\(\zeta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\chi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\chi')}>
           <MathJax dynamic>\(\chi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\psi')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\psi')}>
           <MathJax dynamic>\(\psi\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\omega')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\omega')}>
           <MathJax dynamic>\(\omega\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\beta')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\beta')}>
           <MathJax dynamic>\(\beta\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\nu')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\nu')}>
           <MathJax dynamic>\(\nu\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('write \\mu')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write \\mu')}>
           <MathJax dynamic>\(\mu\)</MathJax>
         </Button>
         <Button
@@ -1125,26 +1229,32 @@ export default function VirtualKeyboard() {
         >
           <FontAwesomeIcon icon={faBackspace} />
         </Button>
-        <Button variant="letter" onClick={() => callback('write ,')}>
+        <Button flexBasis="9.5%" onClick={() => callback('write ,')}>
           ,
         </Button>
-        <Button variant="letter" onClick={() => callback("write '")}>
+        <Button flexBasis="9.5%" onClick={() => callback("write '")}>
           '
         </Button>
-        <Button variant="space" onClick={() => callback('write \\ ')}>
+        <Button flexBasis="49%" onClick={() => callback('write \\ ')}>
           {' '}
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Left')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Left')}
+        >
           <MathJax dynamic>\(\leftarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => callback('keystroke Right')}>
+        <Button
+          variant="letterTransition2"
+          onClick={() => callback('keystroke Right')}
+        >
           <MathJax dynamic>\(\rightarrow\)</MathJax>
         </Button>
-        <Button variant="letter" onClick={() => returncallback()}>
+        <Button variant="letterTransition2" onClick={() => returncallback()}>
           Enter
         </Button>
-      </LettersSection>
-    </Panel>
+      </Box>
+    </Box>
   );
 
   let sectionXYZ = (
@@ -1303,29 +1413,6 @@ export default function VirtualKeyboard() {
 
   return (
     <Center tabIndex="0" ref={containerRef}>
-      {/* <ContainerSection>
-          <ToggleButtonSection>
-            <ToggleButtonGroup onClick={handleGreekToggle}>
-              <ToggleButton value="Greek 1" />
-              <ToggleButton value="Greek 2" />
-            </ToggleButtonGroup>
-          </ToggleButtonSection>
-          {toggleGreek === 0
-            ? sectionGreek1
-            : toggleGreek === 1
-              ? sectionGreek2
-              : null}
-        </ContainerSection> */}
-      {/* <VerticalDivider height="230px" marginTop="10px" /> */}
-      {/* <ToggleButtonSection>
-          <ToggleButtonGroup onClick={handleFnToggle}>
-            <ToggleButton value="123" />
-            <ToggleButton value="f(x)" />
-            <ToggleButton value="ABC" />
-            <ToggleButton value="αβγ" />
-            <ToggleButton value="$%∞" />
-          </ToggleButtonGroup>
-        </ToggleButtonSection> */}
       <Tabs>
         <TabList>
           <Tab>123</Tab>
@@ -1364,50 +1451,6 @@ export default function VirtualKeyboard() {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      {/* {toggleFn === 0 ? (
-          <Flex flexDirection="row" flexWrap="wrap">
-            {sectionXYZ}
-            {section123}
-          </Flex>
-        ) : toggleFn === 1 ? (
-          <SubSection>
-            {sectionTrig1}
-            {sectionFx}
-          </SubSection>
-        ) : toggleFn === 2 ? (
-          toggleABCCase ? (
-            sectionUpperABC
-          ) : (
-            sectionLowerABC
-          )
-        ) : toggleFn === 3 ? (
-          toggleGreekCase ? (
-            sectionUpperGreek
-          ) : (
-            sectionLowerGreek
-          )
-        ) : toggleFn === 4 ? (
-          <SubSection>
-            {sectionSymbols1}
-            {sectionSymbols2}
-          </SubSection>
-        ) : null} */}
-      {/* <VerticalDivider height="230px" marginTop="10px" /> */}
-      {/* <ContainerSection> */}
-      {/* <ToggleButtonSection>
-            <ToggleButtonGroup onClick={handleNumpadToggle}>
-              <ToggleButton value="123" />
-              <ToggleButton value="xy" />
-            </ToggleButtonGroup>
-          </ToggleButtonSection> */}
-      {/* {toggleNumpad === 0
-            ? section123
-            : toggleNumpad === 1
-              ? sectionXYZ
-              : null} */}
-      {/* </ContainerSection> */}
-      {/* <VerticalDivider height="230px" marginTop="10px" /> */}
-      {/* <ControlSection>{sectionControl}</ControlSection> */}
     </Center>
   );
 
