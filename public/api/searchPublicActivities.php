@@ -68,19 +68,20 @@ if ($success) {
   $sql = "
   SELECT c.courseId,
   u.firstName,
-  u.lastName,
-  max(cc.isPublic) anyPublicActivity
+  u.lastName
   FROM user AS u
   LEFT JOIN course AS c
   ON c.portfolioCourseForUserId = u.userId
   JOIN course_content cc using(courseId)
   WHERE c.portfolioCourseForUserId IS NOT NULL
+  AND cc.isPublic = 1
+  AND cc.isDeleted = 0
+  AND cc.isBanned = 0
   AND CONCAT(u.firstName, ' ', u.lastName) LIKE '%$q%'
   GROUP BY 
   c.courseId,
   u.firstName,
   u.lastName
-  HAVING anyPublicActivity = 1 
   LIMIT 100
   ";
 
