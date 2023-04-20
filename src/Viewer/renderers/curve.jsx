@@ -42,8 +42,8 @@ export default React.memo(function Curve(props) {
   let tpCoords = useRef([]);
   let cvCoords = useRef([]);
 
-  fixed.current = !SVs.draggable || SVs.fixed;
-  fixLocation.current = fixed.current || SVs.fixLocation;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   switchable.current = SVs.switchable && !SVs.fixed;
 
   vectorControlDirections.current = SVs.vectorControlDirections;

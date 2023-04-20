@@ -37,8 +37,8 @@ export default React.memo(function Vector(props) {
   let tailDraggable = useRef(true);
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
-  fixed.current = !SVs.draggable || SVs.fixed;
-  fixLocation.current = fixed.current || SVs.fixLocation;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   tailDraggable.current = SVs.tailDraggable && !SVs.fixed && !SVs.fixLocation;
   headDraggable.current = SVs.headDraggable && !SVs.fixed && !SVs.fixLocation;
 

@@ -36,8 +36,8 @@ export default React.memo(function MathComponent(props) {
   let fixed = useRef(false);
   let fixLocation = useRef(false);
 
-  fixed.current = !SVs.draggable || SVs.fixed;
-  fixLocation.current = fixed.current || SVs.fixLocation;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
 
   const darkMode = useRecoilValue(darkModeAtom);
 

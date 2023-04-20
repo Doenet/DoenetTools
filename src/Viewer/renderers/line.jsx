@@ -32,8 +32,8 @@ export default React.memo(function Line(props) {
   let switchable = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalPoints;
-  fixed.current = !SVs.draggable || SVs.fixed;
-  fixLocation.current = fixed.current || SVs.fixLocation;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   switchable.current = SVs.switchable && !SVs.fixed;
 
   const darkMode = useRecoilValue(darkModeAtom);

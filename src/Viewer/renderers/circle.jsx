@@ -30,8 +30,8 @@ export default React.memo(function Circle(props) {
 
   lastCenterFromCore.current = SVs.numericalCenter;
   throughAnglesFromCore.current = SVs.throughAngles;
-  fixed.current = !SVs.draggable || SVs.fixed;
-  fixLocation.current = fixed.current || SVs.fixLocation;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
