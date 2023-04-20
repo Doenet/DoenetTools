@@ -30,8 +30,8 @@ export default React.memo(function Polygon(props) {
   let verticesFixed = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalVertices;
-  fixed.current = !SVs.draggable || SVs.fixed;
-  fixLocation.current = fixed.current || SVs.fixLocation;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   verticesFixed.current = !SVs.verticesDraggable || SVs.fixed || SVs.fixLocation;
 
   const darkMode = useRecoilValue(darkModeAtom);

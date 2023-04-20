@@ -30,8 +30,8 @@ export default React.memo(function Ray(props) {
 
   lastEndpointFromCore.current = SVs.numericalEndpoint;
   lastThroughpointFromCore.current = SVs.numericalThroughpoint;
-  fixed.current = !SVs.draggable || SVs.fixed;
-  fixLocation.current = fixed.current || SVs.fixLocation;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
