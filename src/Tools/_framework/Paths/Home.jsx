@@ -265,7 +265,7 @@ export function Home() {
 
             <div
               style={{
-                background: 'white',
+                background: 'var(--canvas)',
                 padding: '20px 0px 20px 0px',
                 marginTop: '10px',
               }}
