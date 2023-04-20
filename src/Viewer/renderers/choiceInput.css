@@ -12,6 +12,18 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+.radio-container label {
+    cursor: pointer;
+}
+
+.radio-container-disabled {
+    cursor: not-allowed;
+}
+
+.radio-container-disabled label {
+    cursor: not-allowed;
+}
   
 /* Hide the browser's default radio button */
 .radio-container input {
@@ -20,6 +32,10 @@
     cursor: pointer;
     height: 1;
     width: 1;
+}
+
+.radio-container-disabled input {
+    cursor: not-allowed;
 }
   
 /* Create a custom radio button */
@@ -38,6 +54,7 @@
 .radio-checkmark-disabled {
     background-color: var(--mainGray);
     border-color: var(--mainGray);
+    cursor: not-allowed;
 }
   
 /* On mouse-over, add a grey background color */
@@ -97,6 +114,18 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+.checkbox-container label {
+    cursor: pointer;
+}
+
+.checkbox-container-disabled {
+    cursor: not-allowed;
+}
+
+.checkbox-container-disabled label {
+    cursor: not-allowed;
+}
   
 /* Hide the browser's default checkbox */
 .checkbox-container input {
@@ -105,6 +134,10 @@
     cursor: pointer;
     height: 1;
     width: 1;
+}
+
+.checkbox-container-disabled input {
+    cursor: not-allowed;
 }
   
 /* Create a custom checkbox */
@@ -123,6 +156,7 @@
 .checkbox-checkmark-disabled {
     background-color: var(--mainGray);
     border-color: var(--mainGray);
+    cursor: not-allowed;
 }
   
 /* On mouse-over, add a light blue background color */

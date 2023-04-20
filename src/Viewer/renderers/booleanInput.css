@@ -13,6 +13,10 @@
   user-select: none;
 }
 
+.container-disabled {
+  cursor: not-allowed;
+}
+
 /* .button-container {
     display: inline-block;
     position: relative;

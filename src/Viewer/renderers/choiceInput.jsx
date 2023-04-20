@@ -396,11 +396,13 @@ export default React.memo(function ChoiceInput(props) {
         }
         if (inputType == 'radio') { // selectMultiple="false"
           let radioDisabled = disabled || svData.choicesDisabled[i]
+          let containerClassName = "radio-container";
           let radioClassName = "radio-checkmark";
           if (radioDisabled) {
+            containerClassName += " radio-container-disabled"
             radioClassName += " radio-checkmark-disabled"
           }
-          return <label className="radio-container" key={inputKey + '_choice' + (i + 1)}>
+          return <label className={containerClassName} key={inputKey + '_choice' + (i + 1)}>
             <input
               type="radio"
               id={keyBeginning + (i + 1) + "_input"}
@@ -418,11 +420,13 @@ export default React.memo(function ChoiceInput(props) {
 
         } else if (inputType == 'checkbox') { // selectMultiple="true"
           let checkboxDisabled = disabled || svData.choicesDisabled[i]
+          let containerClassName = "checkbox-container";
           let checkboxClassName = "checkbox-checkmark";
           if (checkboxDisabled) {
+            containerClassName += " checkbox-container-disabled"
             checkboxClassName += " checkbox-checkmark-disabled"
           }
-          return <label className="checkbox-container" key={inputKey + '_choice' + (i + 1)}>
+          return <label className={containerClassName} key={inputKey + '_choice' + (i + 1)}>
             <input
               type="checkbox"
               id={keyBeginning + (i + 1) + "_input"}
