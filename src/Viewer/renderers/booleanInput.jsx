@@ -562,8 +562,14 @@ export default React.memo(function BooleanInput(props) {
         disabled={disabled}
       />;
   } else {
+    let containerClass = "container";
+    let checkmarkClass = "checkmark";
+    if (disabled) {
+      containerClass += " container-disabled";
+      checkmarkClass += " checkmark-disabled";
+    }
     input =
-      <label className="container">
+      <label className={containerClass}>
         <input
           type="checkbox"
           key={inputKey}
@@ -572,7 +578,7 @@ export default React.memo(function BooleanInput(props) {
           onChange={onChangeHandler}
           disabled={disabled}
         />
-        <span className="checkmark"></span>
+        <span className={checkmarkClass}></span>
         {label != "" ? <span style={{ marginLeft: "2px" }}>{label}</span> : <span>{label}</span>}
       </label>
     { checkWorkButton }
