@@ -656,7 +656,7 @@ export default function TextInput(props) {
     label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
   }
   if (SVs.expanded) {
-    input = <label>
+    input = <label style={{ display: "inline-flex", maxWidth: "100%" }}>
       {label}
       <TextArea
         key={inputKey}
@@ -674,7 +674,7 @@ export default function TextInput(props) {
       />
     </label>
   } else {
-    input = <label>
+    input = <label style={{ display: "inline-flex", maxWidth: "100%" }}>
       {label}
       <Input
         key={inputKey}
