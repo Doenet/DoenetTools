@@ -81,6 +81,7 @@ if ($success) {
   GROUP BY 
   c.courseId,
   u.firstName,
+  u.userId,
   u.lastName
   LIMIT 100
   ";
