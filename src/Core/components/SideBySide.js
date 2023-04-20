@@ -2030,6 +2030,8 @@ export class Stack extends BlockComponent {
   static rendererType = "containerBlock";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+
   static returnChildGroups() {
 
     return [{
