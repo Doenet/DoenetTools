@@ -175,7 +175,7 @@ export default function PageViewer(props) {
             updateRenderers(e.data.args)
             if (errorInsideRenderers.current) {
               setIgnoreRendererError(true);
-              this.props.setIsInErrorState?.(false);
+              props.setIsInErrorState?.(false);
             }
           }
         } else if (e.data.messageType === "requestAnimationFrame") {
@@ -195,7 +195,7 @@ export default function PageViewer(props) {
             initializeRenderers(e.data.args)
             if (errorInsideRenderers.current) {
               setIgnoreRendererError(true);
-              this.props.setIsInErrorState?.(false);
+              props.setIsInErrorState?.(false);
             }
           }
         } else if (e.data.messageType === "updateCreditAchieved") {
