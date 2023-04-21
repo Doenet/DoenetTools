@@ -140,11 +140,9 @@ export default function EditorViewer() {
           previousLocations.current[location.key]?.lastScrollPosition !==
           undefined
         ) {
-          document
-            .getElementById("mainPanel")
-            .scroll({
-              top: previousLocations.current[location.key].lastScrollPosition,
-            });
+          document.getElementById("mainPanel").scroll({
+            top: previousLocations.current[location.key].lastScrollPosition,
+          });
         }
       }
 
