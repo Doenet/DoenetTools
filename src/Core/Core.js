@@ -9357,6 +9357,7 @@ export default class Core {
     canSkipUpdatingRenderer = false,
     skipRendererUpdate = false,
     sourceInformation = {},
+    attemptLargerMoveIfStuck,
     suppressToast = false, // temporary
   }) {
     if (this.flags.readOnly && !overrideReadOnly) {
@@ -9464,6 +9465,84 @@ export default class Core {
     await this.executeUpdateStateVariables(newStateVariableValues);
 
     newStateVariableValuesProcessed.push(newStateVariableValues);
+
+    if (attemptLargerMoveIfStuck) {
+      // Check to see if state variable specified is unchanged.
+      // If so, attempt larger move
+      let cName = attemptLargerMoveIfStuck.componentName;
+      let vName = attemptLargerMoveIfStuck.stateVariable;
+      let origValue = attemptLargerMoveIfStuck.originalValue;
+      let limits = attemptLargerMoveIfStuck.limits;
+
+      let newValue = await this._components[cName].stateValues[vName];
+
+      let noChange;
+
+      if (newValue instanceof me.class && origValue instanceof me.class) {
+        noChange = newValue.equals(origValue);
+      } else if (Array.isArray(newValue) && Array.isArray(origValue)) {
+        noChange =
+          newValue.length === origValue.length &&
+          newValue.every((v, i) => v === origValue[i]);
+      } else {
+        noChange = newValue === origValue;
+      }
+
+      if (noChange) {
+        let reqValue = attemptLargerMoveIfStuck.requestedValue;
+
+        if (origValue instanceof me.class && reqValue instanceof me.class) {
+          if (
+            origValue.tree[0] === "vector" &&
+            reqValue.tree[0] === "vector" &&
+            origValue.tree.length === reqValue.tree.length
+          ) {
+            let origNums = origValue.tree.slice(1);
+            let reqNums = reqValue.tree.slice(1);
+
+            if (
+              origNums.every(Number.isFinite) &&
+              reqNums.every(Number.isFinite)
+            ) {
+              for (let stepMult = 2; stepMult < 50; stepMult++) {
+                let newDesiredNums = origNums.map(
+                  (v, i) => v + stepMult * (reqNums[i] - v),
+                );
+                if (limits) {
+                  newDesiredNums = newDesiredNums.map((v, i) =>
+                    Math.min(limits[i][1], Math.max(limits[i][0], v)),
+                  );
+                }
+
+                let instruction = {
+                  updateType: "updateValue",
+                  componentName: cName,
+                  stateVariable: vName,
+                  value: me.fromAst(["vector", ...newDesiredNums]),
+                };
+
+                let newStateVariableValues = {};
+                await this.requestComponentChanges({
+                  instruction,
+                  workspace,
+                  newStateVariableValues,
+                });
+
+                await this.executeUpdateStateVariables(newStateVariableValues);
+
+                newStateVariableValuesProcessed.push(newStateVariableValues);
+
+                let newValue = await this._components[cName].stateValues[vName];
+
+                if (!newValue.equals(origValue)) {
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
 
     // always update the renderers from the update instructions themselves,
     // as even if changes were prevented, the renderers need to be given that information

@@ -134,6 +134,9 @@ export async function moveGraphicalObjectWithAnchorAction({
   y,
   z,
   transient,
+  viaKeyboard,
+  lastPosition,
+  limits,
   actionId,
   sourceInformation = {},
   skipRendererUpdate = false,
@@ -152,6 +155,23 @@ export async function moveGraphicalObjectWithAnchorAction({
     components[3] = z;
   }
   if (transient) {
+    let attemptLargerMoveIfStuck;
+    if (viaKeyboard) {
+      let foundChange =
+        (x !== undefined && x != lastPosition[0]) ||
+        (y !== undefined && y != lastPosition[1]) ||
+        (z !== undefined && z != lastPosition[2]);
+
+      if (foundChange) {
+        attemptLargerMoveIfStuck = {
+          componentName,
+          stateVariable: "anchor",
+          originalValue: me.fromAst(["vector", ...lastPosition]),
+          requestedValue: me.fromAst(components),
+          limits,
+        };
+      }
+    }
     return await coreFunctions.performUpdate({
       updateInstructions: [
         {
@@ -165,6 +185,7 @@ export async function moveGraphicalObjectWithAnchorAction({
       actionId,
       sourceInformation,
       skipRendererUpdate,
+      attemptLargerMoveIfStuck,
     });
   } else {
     return await coreFunctions.performUpdate({
