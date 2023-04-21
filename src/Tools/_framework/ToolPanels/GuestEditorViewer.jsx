@@ -1,28 +1,39 @@
-import React, { useEffect, useRef, useState } from 'react';
-import PageViewer, { scrollableContainerAtom } from '../../../Viewer/PageViewer';
-import useEventListener from '../../../_utils/hooks/useEventListener'
+import React, { useEffect, useRef, useState } from "react";
+import PageViewer, {
+  scrollableContainerAtom,
+} from "../../../Viewer/PageViewer";
+import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
   useRecoilCallback,
   useRecoilState,
   useSetRecoilState,
-} from 'recoil';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
-import axios from 'axios';
-import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
-import { parseActivityDefinition } from '../../../_utils/activityUtils';
-import { editorPageIdInitAtom, editorViewerErrorStateAtom, refreshNumberAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
-import { useLocation } from 'react-router';
-import { pageVariantInfoAtom, pageVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
-import { useUpdateViewer } from './EditorViewer';
-
+} from "recoil";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import { findFirstPageOfActivity } from "../../../_reactComponents/Course/CourseActions";
+import axios from "axios";
+import { retrieveTextFileForCid } from "../../../Core/utils/retrieveTextFile";
+import { parseActivityDefinition } from "../../../_utils/activityUtils";
+import {
+  editorPageIdInitAtom,
+  editorViewerErrorStateAtom,
+  refreshNumberAtom,
+  textEditorDoenetMLAtom,
+  updateTextEditorDoenetMLAtom,
+  viewerDoenetMLAtom,
+} from "../../../_sharedRecoil/EditorViewerRecoil";
+import { useLocation } from "react-router";
+import {
+  pageVariantInfoAtom,
+  pageVariantPanelAtom,
+} from "../../../_sharedRecoil/PageViewerRecoil";
+import { useUpdateViewer } from "./EditorViewer";
 
 export default function EditorViewer() {
   // console.log(">>>>===EditorViewer")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
 
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
@@ -40,17 +51,19 @@ export default function EditorViewer() {
   const previousLocations = useRef({});
   const currentLocationKey = useRef(null);
 
-
-
   useEffect(() => {
     const prevTitle = document.title;
 
     const setTitle = async () => {
       // determine cid
-      let resp = await axios.get(
-        `/api/getCidForAssignment.php`,
-        { params: { doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true } },
-      );
+      let resp = await axios.get(`/api/getCidForAssignment.php`, {
+        params: {
+          doenetId,
+          latestAttemptOverrides: false,
+          publicOnly: true,
+          userCanViewSourceOnly: true,
+        },
+      });
 
       let activityCid;
 
@@ -58,7 +71,9 @@ export default function EditorViewer() {
         if (resp.data.cid) {
           setErrMsg(`Error loading activity: ${resp.data.message}`);
         } else {
-          setErrMsg(`Error loading activity: public content with public source not found`);
+          setErrMsg(
+            `Error loading activity: public content with public source not found`,
+          );
         }
         return;
       } else {
@@ -68,9 +83,11 @@ export default function EditorViewer() {
       let activityDefinition;
 
       try {
-        activityDefinition = await retrieveTextFileForCid(activityCid, "doenet");
-      }
-      catch (e) {
+        activityDefinition = await retrieveTextFileForCid(
+          activityCid,
+          "doenet",
+        );
+      } catch (e) {
         setErrMsg(`Error loading activity: activity file not found`);
         return;
       }
@@ -83,7 +100,6 @@ export default function EditorViewer() {
 
       let activityJSON = parseResult.activityJSON;
 
-
       setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
 
       if (errMsg) {
@@ -91,16 +107,14 @@ export default function EditorViewer() {
       }
 
       document.title = `${resp.data.label} - Doenet`;
-    }
+    };
 
-    setTitle()
-      .catch(console.error)
+    setTitle().catch(console.error);
 
     return () => {
       document.title = prevTitle;
-    }
-
-  }, [doenetId])
+    };
+  }, [doenetId]);
 
   useEffect(() => {
     // Keep track of scroll position when clicked on a link
@@ -110,73 +124,83 @@ export default function EditorViewer() {
     let foundNewInPrevious = false;
 
     if (currentLocationKey.current !== location.key) {
-      if (location.state?.previousScrollPosition !== undefined && currentLocationKey.current) {
-        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
+      if (
+        location.state?.previousScrollPosition !== undefined &&
+        currentLocationKey.current
+      ) {
+        previousLocations.current[
+          currentLocationKey.current
+        ].lastScrollPosition = location.state.previousScrollPosition;
       }
 
       if (previousLocations.current[location.key]) {
         foundNewInPrevious = true;
 
-        if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
-          document.getElementById('mainPanel').scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+        if (
+          previousLocations.current[location.key]?.lastScrollPosition !==
+          undefined
+        ) {
+          document
+            .getElementById("mainPanel")
+            .scroll({
+              top: previousLocations.current[location.key].lastScrollPosition,
+            });
         }
       }
-
 
       previousLocations.current[location.key] = { ...location };
       currentLocationKey.current = location.key;
     }
-
-
-  }, [location])
-
+  }, [location]);
 
   useEffect(() => {
     const mainPanel = document.getElementById("mainPanel");
     setScrollableContainer(mainPanel);
-  }, [])
+  }, []);
 
+  let initDoenetML = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (pageCid) => {
+        const doenetML = await retrieveTextFileForCid(pageCid, "doenet");
 
-  let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageCid) => {
-
-    const doenetML = await retrieveTextFileForCid(pageCid, "doenet");
-
-    set(updateTextEditorDoenetMLAtom, doenetML);
-    set(textEditorDoenetMLAtom, doenetML)
-    set(viewerDoenetMLAtom, doenetML)
-  }, [])
-
+        set(updateTextEditorDoenetMLAtom, doenetML);
+        set(textEditorDoenetMLAtom, doenetML);
+        set(viewerDoenetMLAtom, doenetML);
+      },
+    [],
+  );
 
   useEffect(() => {
     if (pageCid) {
-      initDoenetML(pageCid)
+      initDoenetML(pageCid);
     }
     return () => {
       setEditorInit("");
-    }
+    };
   }, [pageCid]);
 
-
-  useEventListener("keydown", e => {
-    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+  useEventListener("keydown", (e) => {
+    if (
+      e.keyCode === 83 &&
+      (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)
+    ) {
       e.preventDefault();
       updateViewer();
     }
   });
 
-
   if (errMsg) {
     return <h1>{errMsg}</h1>;
   }
 
-
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
 
-
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
+    const cleanGeneratedVariant = JSON.parse(
+      JSON.stringify(generatedVariantInfo),
+    );
     setVariantPanel({
       index: cleanGeneratedVariant.index,
       allPossibleVariants,
@@ -196,31 +220,32 @@ export default function EditorViewer() {
     return null;
   }
 
-  return <PageViewer
-    key={`pageViewer${refreshNumber}`}
-    doenetML={viewerDoenetML}
-    flags={{
-      showCorrectness: true,
-      readOnly: false,
-      solutionDisplayMode: solutionDisplayMode,
-      showFeedback: true,
-      showHints: true,
-      autoSubmit: false,
-      allowLoadState: false,
-      allowSaveState: false,
-      allowLocalState: false,
-      allowSaveSubmissions: false,
-      allowSaveEvents: false
-    }}
-    doenetId={doenetId}
-    attemptNumber={attemptNumber}
-    generatedVariantCallback={variantCallback} //TODO:Replace
-    requestedVariantIndex={variantInfo.index}
-    setIsInErrorState={setIsInErrorState}
-    pageIsActive={true}
-  />
+  return (
+    <PageViewer
+      key={`pageViewer${refreshNumber}`}
+      doenetML={viewerDoenetML}
+      flags={{
+        showCorrectness: true,
+        readOnly: false,
+        solutionDisplayMode: solutionDisplayMode,
+        showFeedback: true,
+        showHints: true,
+        autoSubmit: false,
+        allowLoadState: false,
+        allowSaveState: false,
+        allowLocalState: false,
+        allowSaveSubmissions: false,
+        allowSaveEvents: false,
+      }}
+      doenetId={doenetId}
+      attemptNumber={attemptNumber}
+      generatedVariantCallback={variantCallback} //TODO:Replace
+      requestedVariantIndex={variantInfo.index}
+      setIsInErrorState={setIsInErrorState}
+      pageIsActive={true}
+    />
+  );
 }
-
 
 function findFirstPageCidFromCompiledActivity(orderObj) {
   if (!orderObj?.content) {
@@ -244,5 +269,4 @@ function findFirstPageCidFromCompiledActivity(orderObj) {
   }
 
   return null; // didn't find any pages
-
 }

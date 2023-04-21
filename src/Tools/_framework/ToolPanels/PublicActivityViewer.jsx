@@ -1,17 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ActivityViewer from '../../../Viewer/ActivityViewer';
-import {
-  useRecoilValue,
-} from 'recoil';
-import {
-  searchParamAtomFamily,
-} from '../NewToolRoot';
+import React, { useEffect, useRef, useState } from "react";
+import ActivityViewer from "../../../Viewer/ActivityViewer";
+import { useRecoilValue } from "recoil";
+import { searchParamAtomFamily } from "../NewToolRoot";
 
-import axios from 'axios';
+import axios from "axios";
 
 export default function Public(props) {
   // console.log(">>>===Content")
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const [cid, setCid] = useState(null);
 
   const [errMsg, setErrMsg] = useState(null);
@@ -20,12 +16,10 @@ export default function Public(props) {
     const prevTitle = document.title;
 
     const setTitle = async () => {
-
       // determine cid
-      let resp = await axios.get(
-        `/api/getCidForAssignment.php`,
-        { params: { doenetId, latestAttemptOverrides: false, publicOnly: true } },
-      );
+      let resp = await axios.get(`/api/getCidForAssignment.php`, {
+        params: { doenetId, latestAttemptOverrides: false, publicOnly: true },
+      });
 
       if (!resp.data.success || !resp.data.cid) {
         setCid(null);
@@ -38,28 +32,23 @@ export default function Public(props) {
         setCid(resp.data.cid);
         setErrMsg(null);
         document.title = `${resp.data.label} - Doenet`;
-
       }
+    };
 
-    }
-
-    setTitle()
-      .catch(console.error);
+    setTitle().catch(console.error);
 
     return () => {
       document.title = prevTitle;
-    }
-  }, doenetId)
+    };
+  }, doenetId);
 
   if (errMsg) {
     return <h1>{errMsg}</h1>;
   }
 
-
   if (!cid) {
     return null;
   }
-
 
   return (
     <>
@@ -70,7 +59,7 @@ export default function Public(props) {
         flags={{
           showCorrectness: true,
           readOnly: false,
-          solutionDisplayMode: 'button',
+          solutionDisplayMode: "button",
           showFeedback: true,
           showHints: true,
           autoSubmit: false,

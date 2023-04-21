@@ -1,15 +1,15 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { useLoaderData, useOutletContext } from 'react-router';
-import styled from 'styled-components';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useLoaderData, useOutletContext } from "react-router";
+import styled from "styled-components";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 // import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-import PageViewer from '../../../Viewer/PageViewer';
+import PageViewer from "../../../Viewer/PageViewer";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
-} from '../../../_sharedRecoil/PageViewerRecoil';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { Carousel } from '../../../_reactComponents/PanelHeaderComponents/Carousel';
+} from "../../../_sharedRecoil/PageViewerRecoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import {
   Box,
   Center,
@@ -19,19 +19,19 @@ import {
   Link,
   Image,
   Tooltip,
-} from '@chakra-ui/react';
-import { HiOutlineMail } from 'react-icons/hi';
-import { BsGithub, BsDiscord } from 'react-icons/bs';
+} from "@chakra-ui/react";
+import { HiOutlineMail } from "react-icons/hi";
+import { BsGithub, BsDiscord } from "react-icons/bs";
 // import { Link } from 'react-router-dom';
 // import RouterLogo from '../RouterLogo';
 
 export async function loader() {
-  const response = await fetch('/api/loadPromotedContent.php');
+  const response = await fetch("/api/loadPromotedContent.php");
   const data = await response.json();
   return data;
 }
 
-const HomeIntroVideo = lazy(() => import('./HomeIntroVideo'));
+const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
 
 const CarouselSection = styled.div`
   display: flex;
@@ -119,11 +119,11 @@ function Heading(props) {
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100px',
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100px",
       }}
     >
       <Text fontSize="24px" fontWeight="700">
@@ -182,14 +182,14 @@ export function Home() {
             value="See Inside"
             onClick={() =>
               window.open(
-                'https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0',
-                '_blank',
+                "https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0",
+                "_blank",
               )
             }
           />
         </Box>
-        <Suspense fallback={'Loading...'}>
-          {' '}
+        <Suspense fallback={"Loading..."}>
+          {" "}
           {/* Does this lazy loading do anything? */}
           <HomeIntroVideo />
         </Suspense>
@@ -211,21 +211,21 @@ export function Home() {
 
       <div
         style={{
-          padding: '20px 10px 60px 10px',
-          margin: '0px',
-          justifyContent: 'center',
-          alignItems: 'center',
-          textAlign: 'center',
-          background: 'var(--lightBlue)',
+          padding: "20px 10px 60px 10px",
+          margin: "0px",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          background: "var(--lightBlue)",
         }}
       >
         <div
           style={{
-            textAlign: 'Left',
-            maxWidth: '800px',
-            display: 'inline-block',
-            marginLeft: '3em',
-            marginRight: '3em',
+            textAlign: "Left",
+            maxWidth: "800px",
+            display: "inline-block",
+            marginLeft: "3em",
+            marginRight: "3em",
           }}
         >
           <Text fontSize="16px">Immediate feedback in class</Text>
@@ -238,7 +238,7 @@ export function Home() {
             Open-ended response
           </Text>
           <Text fontSize="12px" marginLeft="10px">
-            Try our open-ended response example! ({' '}
+            Try our open-ended response example! ({" "}
             <a
               rel="noreferrer"
               target="_blank"
@@ -251,9 +251,9 @@ export function Home() {
 
           <div
             style={{
-              background: 'var(--canvas)',
-              padding: '20px 0px 20px 0px',
-              marginTop: '10px',
+              background: "var(--canvas)",
+              padding: "20px 0px 20px 0px",
+              marginTop: "10px",
             }}
           >
             <PageViewer
@@ -315,7 +315,7 @@ export function Home() {
         </Flex>
         <Text as="div" fontSize="14px" maxWidth="750px" textAlign="center">
           <Text>
-            This work is licensed under a{' '}
+            This work is licensed under a{" "}
             <Link
               color="doenet.mainBlue"
               href="http://creativecommons.org/licenses/by/4.0/"
@@ -329,7 +329,7 @@ export function Home() {
           DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions or
           recommendations expressed in this material are those of the author(s)
           and do not necessarily reflect the views of the National Science
-          Foundation.{' '}
+          Foundation.{" "}
         </Text>
       </Center>
     </>

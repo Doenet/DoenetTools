@@ -1,27 +1,27 @@
-import React, { useCallback, useState } from 'react';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
-import { peopleByCourseId } from '../../../_reactComponents/Course/CourseActions';
-import { AddUserWithOptions } from '../../../_reactComponents/Course/SettingComponents';
-import styled from 'styled-components';
-import Measure from 'react-measure';
-import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+import React, { useCallback, useState } from "react";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import { useRecoilState, useRecoilValue } from "recoil";
+import Checkbox from "../../../_reactComponents/PanelHeaderComponents/Checkbox";
+import { peopleByCourseId } from "../../../_reactComponents/Course/CourseActions";
+import { AddUserWithOptions } from "../../../_reactComponents/Course/SettingComponents";
+import styled from "styled-components";
+import Measure from "react-measure";
+import { RoleDropdown } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import {
   csvPeopleProcess,
   entriesAtom,
   headersAtom,
   processAtom,
   validHeaders,
-} from '../Menus/LoadPeople';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+} from "../Menus/LoadPeople";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
-  display: ${(props) => (props.flex ? 'flex' : 'block')};
-  align-items: ${(props) => props.flex && 'center'};
+  display: ${(props) => (props.flex ? "flex" : "block")};
+  align-items: ${(props) => props.flex && "center"};
   gap: 4px;
 `;
 const CheckboxLabelText = styled.span`
@@ -32,7 +32,7 @@ const CheckboxLabelText = styled.span`
 export default function People() {
   // console.log('>>>===People');
 
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {
     recoilUnWithdraw,
     recoilWithdraw,
@@ -64,7 +64,7 @@ export default function People() {
 
   if (process === csvPeopleProcess.PREVIEW) {
     return (
-      <div style={{ padding: '8px' }}>
+      <div style={{ padding: "8px" }}>
         <h2>Preview CSV People</h2>
         <RoleDropdown
           label="Assigned Role"
@@ -128,7 +128,7 @@ export default function People() {
   }
 
   return (
-    <div style={{ padding: '8px' }}>
+    <div style={{ padding: "8px" }}>
       <h2>Add Person</h2>
       <AddUserWithOptions courseId={courseId} />
       <h2>Current People</h2>
@@ -145,7 +145,7 @@ export default function People() {
         </InputWrapper>
       ) : null}
       <PeopleTabelHeader
-        columnLabels={['Name', 'Email', 'Role', 'Date Added']}
+        columnLabels={["Name", "Email", "Role", "Date Added"]}
         numberOfVisibleColumns={numberOfVisibleColumns}
         setNumberOfVisibleColumns={setNumberOfVisibleColumns}
       />
@@ -163,7 +163,7 @@ export default function People() {
             const columnsJSX = [
               email,
               <RoleDropdown
-                key={'role'}
+                key={"role"}
                 valueRoleId={roleId}
                 onChange={({ value: newRoleId }) => {
                   modifyUserRole(email, newRoleId, () => {});
@@ -172,11 +172,13 @@ export default function People() {
               />,
               dateEnrolled,
               <Button
-                key={'withdraw'}
-                value={withdrew === '0' ? 'Withdraw' : 'Enroll'}
-                data-test={withdrew === '0' ? `Withdraw ${email}` : `Enroll ${email}`}
+                key={"withdraw"}
+                value={withdrew === "0" ? "Withdraw" : "Enroll"}
+                data-test={
+                  withdrew === "0" ? `Withdraw ${email}` : `Enroll ${email}`
+                }
                 onClick={(e) => {
-                  if (withdrew === '0') {
+                  if (withdrew === "0") {
                     withDrawLearners(e, email);
                   } else {
                     enrollLearners(e, email);
@@ -184,7 +186,7 @@ export default function People() {
                 }}
               />,
             ];
-            if (!showWithdrawn && withdrew === '1') return null;
+            if (!showWithdrawn && withdrew === "1") return null;
             return (
               <PeopleTableRow
                 key={email}
@@ -196,7 +198,7 @@ export default function People() {
           },
         )}
       </div>
-      
+
       {peopleTableData.length === 0 ? (
         <p>No Students are currently enrolled in the course</p>
       ) : null}
@@ -268,34 +270,34 @@ function PeopleTabelHeader({
           ref={measureRef}
           className="noselect nooutline"
           style={{
-            padding: '8px',
-            border: '0px',
-            borderBottom: '1px solid var(--canvastext)',
-            maxWidth: '850px',
-            margin: '0px',
+            padding: "8px",
+            border: "0px",
+            borderBottom: "1px solid var(--canvastext)",
+            maxWidth: "850px",
+            margin: "0px",
           }}
         >
           <div
             style={{
-              display: 'grid',
+              display: "grid",
               gridTemplateColumns: columnsCSS,
-              gridTemplateRows: '1fr',
-              alignContent: 'center',
-              gap: '4px',
+              gridTemplateRows: "1fr",
+              alignContent: "center",
+              gap: "4px",
             }}
           >
             <span>{columnLabels[0]}</span>
             {numberOfVisibleColumns >= 2 && columnLabels[1] ? (
-              <span style={{ textAlign: 'center' }}>{columnLabels[1]}</span>
+              <span style={{ textAlign: "center" }}>{columnLabels[1]}</span>
             ) : null}
             {numberOfVisibleColumns >= 3 && columnLabels[2] ? (
-              <span style={{ textAlign: 'center' }}>{columnLabels[2]}</span>
+              <span style={{ textAlign: "center" }}>{columnLabels[2]}</span>
             ) : null}
             {numberOfVisibleColumns >= 4 && columnLabels[3] ? (
-              <span style={{ textAlign: 'center' }}>{columnLabels[3]}</span>
+              <span style={{ textAlign: "center" }}>{columnLabels[3]}</span>
             ) : null}
             {numberOfVisibleColumns >= 5 && columnLabels[4] ? (
-              <span style={{ textAlign: 'center' }}>{columnLabels[4]}</span>
+              <span style={{ textAlign: "center" }}>{columnLabels[4]}</span>
             ) : null}
           </div>
         </div>
@@ -311,34 +313,34 @@ function PeopleTableRow({ numberOfVisibleColumns, label, columnsJSX = [] }) {
       className="navigationRow noselect nooutline"
       style={{
         // cursor: 'pointer',
-        padding: '8px',
-        border: '0px',
-        borderBottom: '2px solid var(--canvastext)',
-        backgroundColor: 'var(--canvas)',
-        color: 'var(--canvastext)',
-        width: 'auto',
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid var(--canvastext)",
+        backgroundColor: "var(--canvas)",
+        color: "var(--canvastext)",
+        width: "auto",
         // marginLeft: marginSize,
-        maxWidth: '850px',
+        maxWidth: "850px",
       }}
     >
       <div
         style={{
-          display: 'grid',
+          display: "grid",
           gridTemplateColumns: columnsCSS,
-          gridTemplateRows: '1fr',
-          alignContent: 'center',
-          gap: '4px',
+          gridTemplateRows: "1fr",
+          alignContent: "center",
+          gap: "4px",
         }}
       >
         <span className="navigationColumn1">
           <p
             style={{
-              display: 'inline',
-              margin: '0px',
+              display: "inline",
+              margin: "0px",
             }}
           >
-            <span style={{ marginLeft: '4px' }} data-test="rowLabel">
-              {label}{' '}
+            <span style={{ marginLeft: "4px" }} data-test="rowLabel">
+              {label}{" "}
             </span>
           </p>
         </span>
@@ -347,7 +349,7 @@ function PeopleTableRow({ numberOfVisibleColumns, label, columnsJSX = [] }) {
             <span
               key={idx}
               className={`navigationColumn${idx + 1}`}
-              style={{ textAlign: 'left' }}
+              style={{ textAlign: "left" }}
             >
               {value}
             </span>
@@ -369,23 +371,23 @@ function PreviewTableRow({ numberOfVisibleColumns, entryData, headers }) {
       className="navigationRow noselect nooutline"
       style={{
         // cursor: 'pointer',
-        padding: '8px',
-        border: '0px',
-        borderBottom: '2px solid var(--canvastext)',
-        backgroundColor: 'var(--canvas)',
-        color: 'var(--canvastext)',
-        width: 'auto',
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid var(--canvastext)",
+        backgroundColor: "var(--canvas)",
+        color: "var(--canvastext)",
+        width: "auto",
         // marginLeft: marginSize,
-        maxWidth: '850px',
+        maxWidth: "850px",
       }}
     >
       <div
         style={{
-          display: 'grid',
+          display: "grid",
           gridTemplateColumns: columnsCSS,
-          gridTemplateRows: '1fr',
-          alignContent: 'center',
-          gap: '4px',
+          gridTemplateRows: "1fr",
+          alignContent: "center",
+          gap: "4px",
         }}
       >
         {columnsJSX.map((value, idx) =>
@@ -393,7 +395,7 @@ function PreviewTableRow({ numberOfVisibleColumns, entryData, headers }) {
             <span
               key={idx}
               className={`navigationColumn${idx + 1}`}
-              style={{ textAlign: idx + 1 > 1 ? 'center' : 'left' }}
+              style={{ textAlign: idx + 1 > 1 ? "center" : "left" }}
             >
               {value}
             </span>

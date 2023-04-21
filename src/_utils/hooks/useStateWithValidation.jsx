@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 export default function useStateWithValidation(validationFunc, initialValue) {
   const [state, setState] = useState(initialValue);
@@ -7,7 +7,7 @@ export default function useStateWithValidation(validationFunc, initialValue) {
   const onChange = useCallback(
     (nextState) => {
       const value =
-        typeof nextState === 'function' ? nextState(state) : nextState;
+        typeof nextState === "function" ? nextState(state) : nextState;
       setState(value);
       setIsValid(validationFunc(value));
     },

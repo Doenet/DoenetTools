@@ -37,11 +37,13 @@ export const BreadcrumbProvider = ({ children }) => {
       unsubscribe() {
         const index = listernersRef.current.findIndex((l) => l === listener);
         listernersRef.current.splice(index, 1);
-      }
+      },
     };
   }, []);
   return (
-    <BreadcrumbContext.Provider value={{ addItem, removeItem, clearItems, subscribe }}>
+    <BreadcrumbContext.Provider
+      value={{ addItem, removeItem, clearItems, subscribe }}
+    >
       {children}
     </BreadcrumbContext.Provider>
   );

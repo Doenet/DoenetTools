@@ -1,28 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
-import axios from 'axios';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import { useToast, toastType } from '../Toast.jsx';
-import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+import React, { useState, useEffect, useRef } from "react";
+import Cookies from "js-cookie"; // import Textinput from "../imports/Textinput";
+import axios from "axios";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
+import { useToast, toastType } from "../Toast.jsx";
+import Checkbox from "../../../_reactComponents/PanelHeaderComponents/Checkbox";
 
 export default function SignIn(props) {
-  let [email, setEmail] = useState('');
-  let [nineCode, setNineCode] = useState('');
+  let [email, setEmail] = useState("");
+  let [nineCode, setNineCode] = useState("");
   let [maxAge, setMaxAge] = useState(0); //'2147483647' sec
 
-  let [signInStage, setSignInStage] = useState('init');
+  let [signInStage, setSignInStage] = useState("init");
   let [isSentEmail, setIsSentEmail] = useState(false);
-  let [deviceName, setDeviceName] = useState('');
+  let [deviceName, setDeviceName] = useState("");
   let [sendEmailAlert, setSendEmailAlert] = useState(false);
   let [signInAlert, setSignInAlert] = useState(false);
   let [validEmail, setValidEmail] = useState(false);
   let [validCode, setValidCode] = useState(false);
   let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
   let [signInDisabled, setSignInDisabled] = useState(true);
-  let [firstName, setFirstName] = useState('');
-  let [lastName, setLastName] = useState('');
-  let [jwtLink, setJwtLink] = useState('');
+  let [firstName, setFirstName] = useState("");
+  let [lastName, setLastName] = useState("");
+  let [jwtLink, setJwtLink] = useState("");
 
   // console.log('signInStage', signInStage);
 
@@ -50,7 +50,7 @@ export default function SignIn(props) {
       setSignInDisabled(false);
       setValidCode(true);
       setSignInAlert(false);
-    } else if (nineCode === '') {
+    } else if (nineCode === "") {
       setSignInDisabled(true);
       setValidCode(false);
       setSignInAlert(false);
@@ -68,13 +68,13 @@ export default function SignIn(props) {
   });
 
   //If already signed in go to course
-  if (Object.keys(jwt).includes('JWT_JS')) {
+  if (Object.keys(jwt).includes("JWT_JS")) {
     axios
-      .get('/api/loadProfile.php', { params: {} })
+      .get("/api/loadProfile.php", { params: {} })
       .then((resp) => {
         // if (resp.data.success === '1') {
-        localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
-        location.href = '/';
+        localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
+        location.href = "/";
         // navigate('/'); //Not sure why this doesn't work
         // navigate('/course');
         //   location.href = '/#/course';
@@ -124,7 +124,7 @@ export default function SignIn(props) {
   //   )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
   // }
 
-  if (signInStage === 'check code') {
+  if (signInStage === "check code") {
     //Ask Server for data which matches email address
 
     const data = {
@@ -136,20 +136,20 @@ export default function SignIn(props) {
       params: data,
     };
     axios
-      .get('/api/checkCredentials.php', payload)
+      .get("/api/checkCredentials.php", payload)
       .then((resp) => {
         if (resp.data.success) {
-          let newAccount = '1';
+          let newAccount = "1";
           if (resp.data.existed) {
-            newAccount = '0';
+            newAccount = "0";
           }
-          let stay = '0';
+          let stay = "0";
           if (maxAge > 0) {
-            stay = '1';
+            stay = "1";
           }
 
           if (resp.data.hasFullName == 0) {
-            setSignInStage('Need Name Entered');
+            setSignInStage("Need Name Entered");
             setJwtLink(
               `/api/jwt.php?emailaddress=${encodeURIComponent(
                 email,
@@ -168,42 +168,42 @@ export default function SignIn(props) {
 
           // // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
         } else {
-          if (resp.data.reason === 'Code expired') {
-            setSignInStage('Code expired');
-          } else if (resp.data.reason === 'Invalid Code') {
-            setSignInStage('enter code');
-            toast('Invalid code. Please try again.', toastType.ERROR);
+          if (resp.data.reason === "Code expired") {
+            setSignInStage("Code expired");
+          } else if (resp.data.reason === "Invalid Code") {
+            setSignInStage("enter code");
+            toast("Invalid code. Please try again.", toastType.ERROR);
           }
         }
       })
       .catch((error) => {
         console.error(error);
       });
-    setSignInStage('Loading');
+    setSignInStage("Loading");
 
     return null;
   }
 
-  if (signInStage === 'Need Name Entered') {
+  if (signInStage === "Need Name Entered") {
     return (
       <div>
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            margin: '20',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            margin: "20",
           }}
         >
-          <h2 style={{ textAlign: 'center' }}>
+          <h2 style={{ textAlign: "center" }}>
             Please enter your first and last name.
           </h2>
           <div
-            style={{ display: 'flex', flexDirection: 'column', rowGap: '10px' }}
+            style={{ display: "flex", flexDirection: "column", rowGap: "10px" }}
           >
             <div>
-              First Name:{' '}
+              First Name:{" "}
               <input
                 type="text"
                 value={firstName}
@@ -213,7 +213,7 @@ export default function SignIn(props) {
               />
             </div>
             <div>
-              Last Name:{' '}
+              Last Name:{" "}
               <input
                 type="text"
                 value={lastName}
@@ -223,11 +223,11 @@ export default function SignIn(props) {
               />
             </div>
             <Button
-              disabled={firstName == '' || lastName == ''}
+              disabled={firstName == "" || lastName == ""}
               value="Submit"
               onClick={() => {
                 axios
-                  .get('/api/saveUsersName.php', {
+                  .get("/api/saveUsersName.php", {
                     params: { firstName, lastName, email },
                   })
                   .then((resp) => {
@@ -241,39 +241,39 @@ export default function SignIn(props) {
     );
   }
 
-  if (signInStage === 'Loading') {
+  if (signInStage === "Loading") {
     return (
       <div>
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            margin: '20',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            margin: "20",
           }}
         >
-          <h2 style={{ textAlign: 'center' }}>Signing in...</h2>
+          <h2 style={{ textAlign: "center" }}>Signing in...</h2>
         </div>
       </div>
     );
   }
 
-  if (signInStage === 'Code expired') {
+  if (signInStage === "Code expired") {
     return (
       <div
         style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: '20',
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          margin: "20",
         }}
       >
-        <h2 style={{ textAlign: 'center' }}>Code Expired</h2>
+        <h2 style={{ textAlign: "center" }}>Code Expired</h2>
         <Button
           onClick={() => {
-            location.href = '/signin';
+            location.href = "/signin";
           }}
           value="Restart Signin"
         ></Button>
@@ -281,9 +281,9 @@ export default function SignIn(props) {
     );
   }
 
-  if (signInStage === 'enter code' || signInStage === 'Invalid Code') {
+  if (signInStage === "enter code" || signInStage === "Invalid Code") {
     if (!isSentEmail) {
-      const phpUrl = '/api/sendSignInEmail.php';
+      const phpUrl = "/api/sendSignInEmail.php";
       const data = {
         emailaddress: email,
       };
@@ -294,7 +294,7 @@ export default function SignIn(props) {
         .get(phpUrl, payload)
         .then((resp) => {
           setDeviceName(resp.data.deviceName);
-          let cookieSettingsObj = { path: '/', sameSite: 'strict' };
+          let cookieSettingsObj = { path: "/", sameSite: "strict" };
           if (maxAge > 0) {
             cookieSettingsObj.maxAge = maxAge;
           }
@@ -307,10 +307,10 @@ export default function SignIn(props) {
       setIsSentEmail(true);
     }
 
-    let heading = <h2 style={{ textAlign: 'center' }}>Email Sent!</h2>;
-    if (signInStage === 'Invalid Code') {
+    let heading = <h2 style={{ textAlign: "center" }}>Email Sent!</h2>;
+    if (signInStage === "Invalid Code") {
       heading = (
-        <h2 style={{ textAlign: 'center' }}>Invalid Code. Try again.</h2>
+        <h2 style={{ textAlign: "center" }}>Invalid Code. Try again.</h2>
       );
     }
 
@@ -318,19 +318,19 @@ export default function SignIn(props) {
       <div style={props.style}>
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            margin: '20',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            margin: "20",
           }}
         >
           {heading}
-          <div style={{ weight: 'bold', fontSize: '14px' }}>
+          <div style={{ weight: "bold", fontSize: "14px" }}>
             Device Name: {deviceName}
           </div>
           <div>
-            <p style={{ fontSize: '14px' }}>
+            <p style={{ fontSize: "14px" }}>
               Check your email for a code to complete sign in.
             </p>
           </div>
@@ -347,12 +347,12 @@ export default function SignIn(props) {
                 // Basically trying to make it so the valid/invalid email is detected when the cursor is still within the textfield
 
                 // if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && validCode) {
-                if (e.key === 'Enter' && validCode) {
-                  setSignInStage('check code');
+                if (e.key === "Enter" && validCode) {
+                  setSignInStage("check code");
                   // } else if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && !validCode) {
-                } else if (e.key === 'Enter' && !validCode) {
+                } else if (e.key === "Enter" && !validCode) {
                   toast(
-                    'Invalid code format. Please enter 9 digits.',
+                    "Invalid code format. Please enter 9 digits.",
                     toastType.ERROR,
                   );
                 }
@@ -360,7 +360,7 @@ export default function SignIn(props) {
               onBlur={() => {
                 if (!validCode && !signInAlert) {
                   toast(
-                    'Invalid code format. Please enter 9 digits.',
+                    "Invalid code format. Please enter 9 digits.",
                     toastType.ERROR,
                   );
                 }
@@ -374,7 +374,7 @@ export default function SignIn(props) {
             disabled={signInDisabled}
             onClick={() => {
               if (validCode) {
-                setSignInStage('check code');
+                setSignInStage("check code");
               }
             }}
             dataTest="signInButton"
@@ -385,7 +385,7 @@ export default function SignIn(props) {
     );
   }
 
-  if (signInStage === 'init') {
+  if (signInStage === "init") {
     let stay = 0;
     if (maxAge > 0) {
       stay = 1;
@@ -394,23 +394,23 @@ export default function SignIn(props) {
       <div style={props.style}>
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '20',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "20",
           }}
         >
           <img
-            style={{ width: '250px', height: '250px' }}
+            style={{ width: "250px", height: "250px" }}
             alt="Doenet Logo"
-            src={'/Doenet_Logo_Frontpage.png'}
+            src={"/Doenet_Logo_Frontpage.png"}
           />
           <div>
-            <p style={{ marginLeft: '2px' }}>
+            <p style={{ marginLeft: "2px" }}>
               <Textfield
                 dataTest="email input"
                 label="Email Address:"
@@ -420,16 +420,16 @@ export default function SignIn(props) {
                 alert={sendEmailAlert}
                 onKeyDown={(e) => {
                   validateEmail(email);
-                  if (e.key === 'Enter' && validEmail) {
-                    setSignInStage('enter code');
-                  } else if (e.key === 'Enter' && !validEmail) {
-                    toast('Invalid email. Please try again.', toastType.ERROR);
+                  if (e.key === "Enter" && validEmail) {
+                    setSignInStage("enter code");
+                  } else if (e.key === "Enter" && !validEmail) {
+                    toast("Invalid email. Please try again.", toastType.ERROR);
                   }
                 }}
                 onBlur={() => {
                   validateEmail(email);
                   if (!validEmail && !sendEmailAlert) {
-                    toast('Invalid email. Please try again.', toastType.ERROR);
+                    toast("Invalid email. Please try again.", toastType.ERROR);
                   }
                 }}
                 onChange={(e) => {
@@ -437,7 +437,7 @@ export default function SignIn(props) {
                 }}
               ></Textfield>
             </p>
-            <p style={{ fontSize: '14px' }}>
+            <p style={{ fontSize: "14px" }}>
               <Checkbox
                 checked={stay}
                 onClick={(e) => {
@@ -449,14 +449,14 @@ export default function SignIn(props) {
                     setMaxAge(0);
                   }
                 }}
-              />{' '}
+              />{" "}
               Stay Logged In
             </p>
             <Button
               disabled={sendEmailDisabled}
               onClick={() => {
                 if (validEmail) {
-                  setSignInStage('enter code');
+                  setSignInStage("enter code");
                 }
               }}
               dataTest="sendEmailButton"
@@ -472,17 +472,17 @@ export default function SignIn(props) {
     <div style={props.style}>
       <div
         style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: '20',
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          margin: "20",
         }}
       >
-        <h2 style={{ textAlign: 'center' }}>Loading...</h2>
+        <h2 style={{ textAlign: "center" }}>Loading...</h2>
       </div>
     </div>
   );

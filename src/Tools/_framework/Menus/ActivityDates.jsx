@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   // useRecoilState,
   useRecoilCallback,
   useRecoilValue,
-} from 'recoil';
+} from "recoil";
 
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { useActivity } from '../../../_reactComponents/Activity/ActivityActions';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
+import { searchParamAtomFamily } from "../NewToolRoot";
+import { useActivity } from "../../../_reactComponents/Activity/ActivityActions";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import { courseIdAtom } from "../../../_reactComponents/Course/CourseActions";
 import {
   AssignedDate,
   AssignTo,
@@ -32,18 +32,16 @@ import {
   ShowSolutionInGradebook,
   TimeLimit,
   TotalPointsOrPercent,
-} from '../../../_reactComponents/Activity/SettingComponents';
-
+} from "../../../_reactComponents/Activity/SettingComponents";
 
 export default function ActivityDates() {
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const courseId = useRecoilValue(courseIdAtom);
- 
+
   return (
     <>
       <AssignmentSettings doenetId={doenetId} courseId={courseId} />
     </>
-
   );
 }
 export function AssignmentSettings({ doenetId, courseId }) {
@@ -63,9 +61,9 @@ export function AssignmentSettings({ doenetId, courseId }) {
   const sharedProps = {
     courseId,
     doenetId,
-    editable: canModifyActivitySettings ?? '0',
+    editable: canModifyActivitySettings ?? "0",
   };
-  if (canViewActivitySettings === '1') {
+  if (canViewActivitySettings === "1") {
     return (
       <>
         {/* <AssignTo {...sharedProps} />
@@ -100,7 +98,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
   //default JSX
   let nAttemptsAllowed = numberOfAttemptsAllowed;
   if (nAttemptsAllowed === null) {
-    nAttemptsAllowed = 'unlimited';
+    nAttemptsAllowed = "unlimited";
   }
   let timeLimitJSX = null;
   if (timeLimit !== null) {
@@ -108,7 +106,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
   }
   let assignedDateJSX = null;
   if (assignedDate !== null) {
-    assignedDateJSX = <p style={{content: "\A"}}>Assigned: {assignedDate}</p>;
+    assignedDateJSX = <p style={{ content: "A" }}>Assigned: {assignedDate}</p>;
   }
   let dueDateJSX = <p>No Due Date</p>;
   if (dueDate !== null) {

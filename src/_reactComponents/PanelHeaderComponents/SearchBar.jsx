@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Icon,
   Button,
@@ -6,10 +6,10 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightAddon,
-} from '@chakra-ui/react';
-import { IoSearchSharp } from 'react-icons/io5';
+} from "@chakra-ui/react";
+import { IoSearchSharp } from "react-icons/io5";
 
-export default function Searchbar({ name = 'q', defaultValue, dataTest }) {
+export default function Searchbar({ name = "q", defaultValue, dataTest }) {
   return (
     <>
       <InputGroup borderLeftRadius={5} size="sm">

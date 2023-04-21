@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from "react";
 import {
   atomFamily,
   selectorFamily,
@@ -6,32 +6,32 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
-} from 'recoil';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { nanoid } from 'nanoid';
-import { folderDictionaryFilterSelector } from '../../../_reactComponents/Drive/NewDrive';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { searchParamAtomFamily } from '../NewToolRoot';
+} from "recoil";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { nanoid } from "nanoid";
+import { folderDictionaryFilterSelector } from "../../../_reactComponents/Drive/NewDrive";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import { searchParamAtomFamily } from "../NewToolRoot";
 import {
   fileByContentId,
   itemHistoryAtom,
-} from '../ToolHandlers/CourseToolHandler';
-import axios from 'axios';
-import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants';
-import { itemType } from '../../../_reactComponents/Sockets';
+} from "../ToolHandlers/CourseToolHandler";
+import axios from "axios";
+import { returnAllPossibleVariants } from "../../../Core/utils/returnAllPossibleVariants";
+import { itemType } from "../../../_reactComponents/Sockets";
 import {
   serializedComponentsReplacer,
   serializedComponentsReviver,
-} from '../../../Core/utils/serializedStateProcessing';
-import { csvGroups } from '../Menus/GroupSettings';
+} from "../../../Core/utils/serializedStateProcessing";
+import { csvGroups } from "../Menus/GroupSettings";
 
 export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
-    searchParamAtomFamily('path'),
-  ).split(':');
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+    searchParamAtomFamily("path"),
+  ).split(":");
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const [availableEntries, setAvailableEntries] = useState([]);
   const [assignedEntries, setAssignedEntries] = useState([]);
 
@@ -45,13 +45,13 @@ export default function CollectionEditor() {
           );
           let cid = null;
           for (const version in versionHistory?.named) {
-            if (versionHistory?.named[version]?.isReleased === '1') {
+            if (versionHistory?.named[version]?.isReleased === "1") {
               cid = versionHistory.named[version].cid;
               break;
             }
           }
           let response = await snapshot.getPromise(fileByContentId(cid));
-          if (typeof response === 'object') {
+          if (typeof response === "object") {
             response = response.data;
           }
           returnAllPossibleVariants({
@@ -105,7 +105,7 @@ export default function CollectionEditor() {
         folderInfoObj.contentsDictionary[key].itemType === itemType.DOENETML
       ) {
         const { doenetId, isReleased } = folderInfoObj.contentsDictionary[key];
-        if (isReleased == '1') {
+        if (isReleased == "1") {
           initEntryByDoenetId(doenetId);
           entries.push(
             <Suspense key={key}>
@@ -127,7 +127,7 @@ export default function CollectionEditor() {
     return (
       <div
         style={{
-          padding: '8px',
+          padding: "8px",
         }}
       >
         <p>
@@ -140,20 +140,28 @@ export default function CollectionEditor() {
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: '4px',
-        maxWidth: '850px',
-        margin: '10px 20px',
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "4px",
+        maxWidth: "850px",
+        margin: "10px 20px",
       }}
     >
       {assignedEntries}
       <div
-        style={{ height: '10px', background: 'var(--canvastext)', borderRadius: '4px' }}
+        style={{
+          height: "10px",
+          background: "var(--canvastext)",
+          borderRadius: "4px",
+        }}
       ></div>
       {availableEntries}
       <div
-        style={{ height: '10px', background: 'var(--canvastext)', borderRadius: '4px' }}
+        style={{
+          height: "10px",
+          background: "var(--canvastext)",
+          borderRadius: "4px",
+        }}
       ></div>
       <GroupsVerificationTable doenetId={doenetId} />
     </div>
@@ -161,19 +169,19 @@ export default function CollectionEditor() {
 }
 
 const possibleVariantsByDoenetId = atomFamily({
-  key: 'possibleVariantsByDoenetId',
+  key: "possibleVariantsByDoenetId",
   default: [],
 });
 
 const entryInfoByDoenetId = atomFamily({
-  key: 'itemInfoByDoenetId',
+  key: "itemInfoByDoenetId",
   default: selectorFamily({
-    key: 'itemInfoByDoenetId/Default',
+    key: "itemInfoByDoenetId/Default",
     get:
       (doenetId) =>
       async ({ get }) => {
         try {
-          const resp = await axios.get('/api/findDriveIdFolderId.php', {
+          const resp = await axios.get("/api/findDriveIdFolderId.php", {
             params: { doenetId },
           });
           const folderInfo = await get(
@@ -183,7 +191,7 @@ const entryInfoByDoenetId = atomFamily({
             }),
           );
           console.log(
-            'Finfo',
+            "Finfo",
             folderInfo,
             folderInfo.contentsDictionaryByDoenetId[doenetId],
           );
@@ -197,18 +205,18 @@ const entryInfoByDoenetId = atomFamily({
 });
 
 const assignedEntiresInfo = atomFamily({
-  key: 'assignedEntiresInfo',
+  key: "assignedEntiresInfo",
   default: selectorFamily({
-    key: 'assignedEntiresInfo/Default',
+    key: "assignedEntiresInfo/Default",
     get: (doenetId) => async () => {
       try {
         if (doenetId) {
-          const resp = await axios.get('/api/loadCollection.php', {
+          const resp = await axios.get("/api/loadCollection.php", {
             params: { doenetId },
           });
           return resp.data.entries ?? [];
         } else {
-          console.warn('undefined doenetId in Collections Editor');
+          console.warn("undefined doenetId in Collections Editor");
           return [];
         }
       } catch (error) {
@@ -262,7 +270,7 @@ function CollectionEntry({
           //TODO: failure toast??
           const entryId = nanoid();
           axios
-            .post('/api/addCollectionEntry.php', {
+            .post("/api/addCollectionEntry.php", {
               doenetId: collectionDoenetId,
               entryId,
               entryDoenetId: doenetId,
@@ -292,7 +300,7 @@ function CollectionEntry({
         }}
         removeEntryFromAssignment={() => {
           axios
-            .post('/api/removeCollectionEntry.php', { entryId })
+            .post("/api/removeCollectionEntry.php", { entryId })
             .then(() => {
               //TODO: failure toast??
               setAssignedEntries((was) =>
@@ -305,7 +313,7 @@ function CollectionEntry({
         }}
         onVariantSelect={(newSelectedVariant) => {
           axios
-            .post('/api/updateCollectionEntryVariant.php', {
+            .post("/api/updateCollectionEntryVariant.php", {
               entryId,
               entryVariant: JSON.stringify(
                 { name: newSelectedVariant },
@@ -349,11 +357,11 @@ function CollectionEntryDisplayLine({
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'row',
-        background: 'var(--mainGray)',
-        borderRadius: '4px',
-        padding: '4px',
+        display: "flex",
+        flexDirection: "row",
+        background: "var(--mainGray)",
+        borderRadius: "4px",
+        padding: "4px",
       }}
     >
       <span style={{ flexGrow: 1 }}>{label}</span>
@@ -401,9 +409,9 @@ function GroupsVerificationTable({ doenetId }) {
   return (
     <div
       style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr 1fr',
-        gap: '8px',
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        gap: "8px",
       }}
     >
       {emailsByGroup?.map((group, idx) => {
@@ -412,10 +420,10 @@ function GroupsVerificationTable({ doenetId }) {
             <table
               key={idx}
               style={{
-                borderCollapse: 'collapse',
-                width: '100%',
-                borderRadius: '4px',
-                overflow: 'hidden',
+                borderCollapse: "collapse",
+                width: "100%",
+                borderRadius: "4px",
+                overflow: "hidden",
               }}
             >
               <thead>
@@ -423,10 +431,10 @@ function GroupsVerificationTable({ doenetId }) {
                   <th
                     colSpan={3}
                     style={{
-                      textAlign: 'center',
-                      backgroundColor: 'var(--mainBlue)',
-                      color: 'var(--canvas)',
-                      borderBottom: '2px solid var(--canvastext)',
+                      textAlign: "center",
+                      backgroundColor: "var(--mainBlue)",
+                      color: "var(--canvas)",
+                      borderBottom: "2px solid var(--canvastext)",
                     }}
                   >
                     Group {idx + 1}
@@ -434,29 +442,29 @@ function GroupsVerificationTable({ doenetId }) {
                 </tr>
                 <tr
                   style={{
-                    backgroundColor: 'var(--mainBlue)',
-                    color: 'var(--canvas)',
+                    backgroundColor: "var(--mainBlue)",
+                    color: "var(--canvas)",
                   }}
                 >
                   <th
                     style={{
-                      whiteSpace: 'nowrap',
-                      borderRight: '2px solid var(--canvastext)',
+                      whiteSpace: "nowrap",
+                      borderRight: "2px solid var(--canvastext)",
                     }}
                   >
                     First
                   </th>
                   <th
                     style={{
-                      whiteSpace: 'nowrap',
+                      whiteSpace: "nowrap",
                     }}
                   >
                     Last
                   </th>
                   <th
                     style={{
-                      whiteSpace: 'nowrap',
-                      borderLeft: '2px solid var(--canvastext)',
+                      whiteSpace: "nowrap",
+                      borderLeft: "2px solid var(--canvastext)",
                     }}
                   >
                     Email
@@ -466,13 +474,13 @@ function GroupsVerificationTable({ doenetId }) {
               <tbody>
                 {group.map((email, idz) => (
                   <tr key={email}>
-                    <td style={{ textAlign: 'center' }}>
+                    <td style={{ textAlign: "center" }}>
                       {namesByGroup[idx][idz].firstName}
                     </td>
-                    <td style={{ textAlign: 'center' }}>
+                    <td style={{ textAlign: "center" }}>
                       {namesByGroup[idx][idz].lastName}
                     </td>
-                    <td style={{ textAlign: 'center' }}>{email}</td>
+                    <td style={{ textAlign: "center" }}>{email}</td>
                   </tr>
                 ))}
               </tbody>

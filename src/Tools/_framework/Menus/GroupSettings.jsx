@@ -1,38 +1,38 @@
-import axios from 'axios';
-import {parse} from 'csv-parse';
-import React, { useEffect, useReducer, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import axios from "axios";
+import { parse } from "csv-parse";
+import React, { useEffect, useReducer, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import {
   atomFamily,
   useRecoilCallback,
   useRecoilValue,
   useResetRecoilState,
-} from 'recoil';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { toastType, useToast } from '../Toast';
+} from "recoil";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import CollapseSection from "../../../_reactComponents/PanelHeaderComponents/CollapseSection";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import { toastType, useToast } from "../Toast";
 
 function groupReducer(state, action) {
   switch (action.type) {
-    case 'mount':
+    case "mount":
       return { ...action.payload };
-    case 'min':
+    case "min":
       return {
         ...state,
         min: action.payload.min > 1 ? action.payload.min : 1,
         max: state.max < action.payload.min ? action.payload.min : state.max,
         pref: state.pref < action.payload.min ? action.payload.min : state.pref,
       };
-    case 'max':
+    case "max":
       return {
         ...state,
         min: state.min,
         max: state.min <= action.payload.max ? action.payload.max : state.max,
         pref: state.pref < action.payload.max ? action.payload.max : state.pref,
       };
-    case 'pref':
+    case "pref":
       return {
         ...state,
         pref:
@@ -40,9 +40,9 @@ function groupReducer(state, action) {
             ? action.payload.pref
             : state.pref,
       };
-    case 'preAssigned':
+    case "preAssigned":
       try {
-        axios.post('/api/updateGroupSettings.php', {
+        axios.post("/api/updateGroupSettings.php", {
           ...state,
           preAssigned: action.payload.preAssigned,
           doenetId: action.payload.doenetId,
@@ -51,11 +51,11 @@ function groupReducer(state, action) {
         console.error(error);
       }
       return { ...state, preAssigned: action.payload.preAssigned };
-    case 'isReleased':
+    case "isReleased":
       return { ...state, isReleased: action.payload.isReleased };
-    case 'save':
+    case "save":
       try {
-        axios.post('/api/updateGroupSettings.php', {
+        axios.post("/api/updateGroupSettings.php", {
           ...state,
           doenetId: action.payload.doenetId,
         });
@@ -64,7 +64,7 @@ function groupReducer(state, action) {
       }
       return state;
     default:
-      throw new Error('Invaild groupSettings dispach');
+      throw new Error("Invaild groupSettings dispach");
   }
 }
 
@@ -89,12 +89,12 @@ function shuffle(array) {
 }
 
 export const csvGroups = atomFamily({
-  key: 'csvGroups',
+  key: "csvGroups",
   default: { namesByGroup: [], emailsByGroup: [] },
 });
 
 export default function GroupSettings() {
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const { emailsByGroup } = useRecoilValue(csvGroups(doenetId));
   const reset = useResetRecoilState(csvGroups(doenetId));
   const addToast = useToast();
@@ -114,7 +114,7 @@ export default function GroupSettings() {
       try {
         const {
           data: { entries },
-        } = await axios.get('/api/loadCollection.php', {
+        } = await axios.get("/api/loadCollection.php", {
           params: { doenetId },
         });
         if (entries?.length > 0) {
@@ -122,16 +122,16 @@ export default function GroupSettings() {
           // [ [ 'id1', 'id2', 'id3'] , ['id4', 'id5', 'id6'], ['id7', 'id8', 'id9']]
           const shuffledEntries = shuffle(entries);
           const shuffledGroups = shuffle([...grouping]);
-          axios.post('/api/assignCollection.php', {
+          axios.post("/api/assignCollection.php", {
             doenetId,
             groups: JSON.stringify(shuffledGroups),
             entries: JSON.stringify(shuffledEntries),
           });
           //addToast('Collection has been assigned', toastType.SUCCESS);
-          dispach({ type: 'isReleased', payload: { isReleased: '1' } });
+          dispach({ type: "isReleased", payload: { isReleased: "1" } });
         } else {
           addToast(
-            'Please add at least one entry to the collection before assigning',
+            "Please add at least one entry to the collection before assigning",
             toastType.ERROR,
           );
         }
@@ -154,16 +154,16 @@ export default function GroupSettings() {
         reader.onabort = () => {};
         reader.onerror = () => {};
         reader.onload = () => {
-          parse(reader.result, { comment: '#' }, function (err, data) {
+          parse(reader.result, { comment: "#" }, function (err, data) {
             if (err) {
               console.error(err);
               addToast(`CSV invalid – Error: ${err}`, toastType.ERROR);
             } else {
               const headers = data.shift();
-              const emailColIdx = headers.indexOf('Email');
-              const groupColIdx = headers.indexOf('Group Number');
-              const firstNameIdx = headers.indexOf('First Name');
-              const lastNameIdx = headers.indexOf('Last Name');
+              const emailColIdx = headers.indexOf("Email");
+              const groupColIdx = headers.indexOf("Group Number");
+              const firstNameIdx = headers.indexOf("First Name");
+              const lastNameIdx = headers.indexOf("Last Name");
               const newCSVGroups = { namesByGroup: [], emailsByGroup: [] };
               if (emailColIdx === -1) {
                 addToast('File missing "Email" column header', toastType.ERROR);
@@ -184,8 +184,8 @@ export default function GroupSettings() {
                     studentData[emailColIdx],
                   );
                   newCSVGroups.namesByGroup[groupNumber].push({
-                    firstName: studentData[firstNameIdx] ?? '',
-                    lastName: studentData[lastNameIdx] ?? '',
+                    firstName: studentData[firstNameIdx] ?? "",
+                    lastName: studentData[lastNameIdx] ?? "",
                   });
                 }
               }
@@ -209,17 +209,17 @@ export default function GroupSettings() {
     let mounted = true;
     async function loadData(doenetId) {
       try {
-        const resp = await axios.get('/api/loadGroupSettings.php', {
+        const resp = await axios.get("/api/loadGroupSettings.php", {
           params: { doenetId },
         });
         if (mounted) {
-          dispach({ type: 'mount', payload: resp.data });
+          dispach({ type: "mount", payload: resp.data });
         }
       } catch (error) {
         console.error(error);
       }
     }
-    if (doenetId !== '') {
+    if (doenetId !== "") {
       loadData(doenetId);
     }
     return () => {
@@ -234,18 +234,18 @@ export default function GroupSettings() {
         Pre-Assigned Groups:
         <input
           type="checkbox"
-          checked={preAssigned === '1'}
-          value={preAssigned === '1'}
+          checked={preAssigned === "1"}
+          value={preAssigned === "1"}
           onChange={(e) => {
             dispach({
-              type: 'preAssigned',
-              payload: { preAssigned: e.target.checked ? '1' : '0', doenetId },
+              type: "preAssigned",
+              payload: { preAssigned: e.target.checked ? "1" : "0", doenetId },
             });
           }}
         />
       </label>
       <br />
-      {preAssigned === '1' ? (
+      {preAssigned === "1" ? (
         <div>
           <div key="drop" {...getRootProps()}>
             <input {...getInputProps()} />
@@ -290,7 +290,7 @@ export default function GroupSettings() {
               type="number"
               value={min}
               onChange={(e) => {
-                dispach({ type: 'min', payload: { min: e.target.value } });
+                dispach({ type: "min", payload: { min: e.target.value } });
               }}
             />
           </label>
@@ -302,7 +302,7 @@ export default function GroupSettings() {
               value={max}
               onChange={(e) => {
                 //TODO: this value acts oddly when clicking the inc/dec buttons
-                dispach({ type: 'max', payload: { max: e.target.value } });
+                dispach({ type: "max", payload: { max: e.target.value } });
               }}
             />
           </label>
@@ -313,7 +313,7 @@ export default function GroupSettings() {
               type="number"
               value={pref}
               onChange={(e) => {
-                dispach({ type: 'pref', payload: { pref: e.target.value } });
+                dispach({ type: "pref", payload: { pref: e.target.value } });
               }}
             />
           </label>
@@ -322,18 +322,18 @@ export default function GroupSettings() {
       )}
       <br />
       <ButtonGroup vertical>
-        {preAssigned === '1' ? null : (
+        {preAssigned === "1" ? null : (
           <Button
             width="menu"
             value="Save"
             onClick={() => {
-              dispach({ type: 'save', payload: { doenetId } });
+              dispach({ type: "save", payload: { doenetId } });
             }}
           />
         )}
         <Button
           alert
-          disabled={isReleased === '1'}
+          disabled={isReleased === "1"}
           width="menu"
           value="Assign Collection"
           onClick={() => {

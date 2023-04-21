@@ -1,11 +1,11 @@
-import axios from 'axios';
-import React, { useCallback, useRef, useState } from 'react';
-import { redirect, useLoaderData, useNavigate } from 'react-router';
-import { Form } from 'react-router-dom';
-import styled from 'styled-components';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useDropzone } from 'react-dropzone';
-import { FaFileImage } from 'react-icons/fa';
+import axios from "axios";
+import React, { useCallback, useRef, useState } from "react";
+import { redirect, useLoaderData, useNavigate } from "react-router";
+import { Form } from "react-router-dom";
+import styled from "styled-components";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { useDropzone } from "react-dropzone";
+import { FaFileImage } from "react-icons/fa";
 import {
   Card,
   Checkbox,
@@ -21,26 +21,26 @@ import {
   Thead,
   Tr,
   VStack,
-} from '@chakra-ui/react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { pageToolViewAtom } from '../NewToolRoot';
-import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+} from "@chakra-ui/react";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { pageToolViewAtom } from "../NewToolRoot";
+import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 
 export async function action({ request, params }) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const referrer = urlParams.get('referrer');
+  const referrer = urlParams.get("referrer");
 
   const formData = await request.formData();
   let updates = Object.fromEntries(formData);
 
-  let response = await axios.post('/api/updatePortfolioActivitySettings.php', {
+  let response = await axios.post("/api/updatePortfolioActivitySettings.php", {
     ...updates,
     doenetId: params.doenetId,
   });
   const portfolioCourseId = response?.data?.portfolioCourseId;
 
-  if (referrer == 'portfolioeditor') {
+  if (referrer == "portfolioeditor") {
     return redirect(
       `/portfolioeditor/${updates.doenetId}?tool=editor&doenetId=${updates.doenetId}&pageId=${updates.pageDoenetId}`,
     );
@@ -52,7 +52,7 @@ export async function action({ request, params }) {
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
-  const referrer = url.searchParams.get('referrer');
+  const referrer = url.searchParams.get("referrer");
 
   const response = await fetch(
     `/api/getPortfolioActivityData.php?doenetId=${params.doenetId}`,
@@ -64,7 +64,7 @@ export async function loader({ params, request }) {
 }
 
 export async function ErrorBoundry(whatdoIget) {
-  console.log('whatdoIget', whatdoIget);
+  console.log("whatdoIget", whatdoIget);
   return <p>Error</p>;
 }
 
@@ -113,18 +113,18 @@ export function PortfolioActivitySettings() {
   const { compileActivity, updateAssignItem } = useCourse(data.courseId);
   const [isMakePublic, setIsMakePublic] = useState(false);
   const [label, setLabel] = useState(data.label);
-  const [isPublic, setIsPublic] = useState(data.public == '1');
+  const [isPublic, setIsPublic] = useState(data.public == "1");
 
   let [imagePath, setImagePath] = useState(data.imagePath);
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
 
-  let navigateTo = useRef('');
+  let navigateTo = useRef("");
 
-  if (navigateTo.current != '') {
+  if (navigateTo.current != "") {
     const newHref = navigateTo.current;
-    navigateTo.current = '';
+    navigateTo.current = "";
     location.href = newHref;
   }
 
@@ -135,13 +135,13 @@ export function PortfolioActivitySettings() {
       if (files.length > 1) {
         success = false;
         //Should we just grab the first one and ignore the rest
-        console.log('Only one file upload allowed!');
+        console.log("Only one file upload allowed!");
       }
 
       //Only upload one batch at a time
       if (numberOfFilesUploading.current > 0) {
         console.log(
-          'Already uploading files.  Please wait before sending more.',
+          "Already uploading files.  Please wait before sending more.",
         );
         success = false;
       }
@@ -181,9 +181,9 @@ export function PortfolioActivitySettings() {
       reader.onload = () => {
         const uploadData = new FormData();
         // uploadData.append('file',file);
-        uploadData.append('file', image);
-        uploadData.append('doenetId', data.doenetId);
-        axios.post('/api/upload.php', uploadData).then(({ data }) => {
+        uploadData.append("file", image);
+        uploadData.append("doenetId", data.doenetId);
+        axios.post("/api/upload.php", uploadData).then(({ data }) => {
           // console.log("RESPONSE data>",data)
 
           //uploads are finished clear it out
@@ -330,20 +330,20 @@ export function PortfolioActivitySettings() {
               value="Cancel"
               onClick={(e) => {
                 e.preventDefault();
-                if (data.referrer == 'portfolioeditor') {
+                if (data.referrer == "portfolioeditor") {
                   navigateTo.current = `/portfolioeditor/${data.doenetId}?tool=editor&doenetId=${data.doenetId}&pageId=${data.pageDoenetId}`;
                 }
                 setRecoilPageToolView({
-                  page: 'portfolioeditor',
+                  page: "portfolioeditor",
                   optionalURLParam: data.doenetId,
-                  tool: 'editor',
-                  view: '',
+                  tool: "editor",
+                  view: "",
                   params: {
                     doenetId: data.doenetId,
                     pageId: data.pageDoenetId,
                   },
                 });
-                if (data.referrer !== 'portfolioeditor') {
+                if (data.referrer !== "portfolioeditor") {
                   navigate(-1);
                 }
               }}
@@ -377,7 +377,7 @@ export function PortfolioActivitySettings() {
                 }
 
                 let response = await axios.post(
-                  '/api/updatePortfolioActivitySettings.php',
+                  "/api/updatePortfolioActivitySettings.php",
                   {
                     label: label,
                     doenetId: data.doenetId,
@@ -387,17 +387,17 @@ export function PortfolioActivitySettings() {
                 );
                 const portfolioCourseId = response?.data?.portfolioCourseId;
 
-                if (data.referrer == 'portfolioeditor') {
+                if (data.referrer == "portfolioeditor") {
                   navigateTo.current = `/portfolioeditor/${data.doenetId}?tool=editor&doenetId=${data.doenetId}&pageId=${data.pageDoenetId}`;
                 } else {
                   navigateTo.current = `/portfolio/${portfolioCourseId}`;
                 }
                 //Need this even if its going to portfolio to refresh the component
                 setRecoilPageToolView({
-                  page: 'portfolioeditor',
+                  page: "portfolioeditor",
                   optionalURLParam: data.doenetId,
-                  tool: 'editor',
-                  view: '',
+                  tool: "editor",
+                  view: "",
                   params: {
                     doenetId: data.doenetId,
                     pageId: data.pageDoenetId,
