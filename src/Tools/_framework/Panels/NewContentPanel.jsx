@@ -1,22 +1,22 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import styled from 'styled-components';
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import styled from "styled-components";
 import {
   atom,
   selector,
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState,
-} from 'recoil';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGripLinesVertical } from '@fortawesome/free-solid-svg-icons';
+} from "recoil";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGripLinesVertical } from "@fortawesome/free-solid-svg-icons";
 
 const Wrapper = styled.div`
   grid-area: contentPanel;
   display: grid;
   grid-template:
-    'mainControls handle supportControls' ${(props) =>
+    "mainControls handle supportControls" ${(props) =>
       props.hasNoHeaderPanel === true ? 0 : 40}px
-    'mainPanel handle supportPanel' 1fr
+    "mainPanel handle supportPanel" 1fr
     / ${({ $proportion }) => `${$proportion}fr auto ${1 - $proportion}fr`};
   overflow: hidden;
   // border-radius: 4px;
@@ -38,12 +38,12 @@ const DragHandle = styled.div`
 `;
 
 export const panelsInfoAtom = atom({
-  key: 'panelsInfoAtom',
+  key: "panelsInfoAtom",
   default: { proportion: 0.5, isActive: false },
 });
 
 const panelProportionSelector = selector({
-  key: 'panelProportionSelector',
+  key: "panelProportionSelector",
   get: ({ get }) => {
     const info = get(panelsInfoAtom);
     return info.isActive ? info.proportion : 1;
@@ -72,7 +72,7 @@ export const useSupportDividerController = () => {
 };
 
 export const supportPanelHandleLeft = atom({
-  key: 'supportPanelHandleLeft',
+  key: "supportPanelHandleLeft",
   default: null,
 });
 

@@ -1,120 +1,120 @@
-import React from 'react';
+import React from "react";
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { RecoilRoot } from 'recoil';
-import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RecoilRoot } from "recoil";
+import { createRoot } from "react-dom/client";
 
-import ToolRoot from './Tools/_framework/NewToolRoot';
-import { MathJaxContext } from 'better-react-mathjax';
-import { mathjaxConfig } from './Core/utils/math';
-import DarkmodeController from './Tools/_framework/DarkmodeController';
+import ToolRoot from "./Tools/_framework/NewToolRoot";
+import { MathJaxContext } from "better-react-mathjax";
+import { mathjaxConfig } from "./Core/utils/math";
+import DarkmodeController from "./Tools/_framework/DarkmodeController";
 import {
   loader as communityLoader,
   action as communityAction,
   Community,
-} from './Tools/_framework/Paths/Community';
-import { loader as adminLoader, Admin } from './Tools/_framework/Paths/Admin';
+} from "./Tools/_framework/Paths/Community";
+import { loader as adminLoader, Admin } from "./Tools/_framework/Paths/Admin";
 import {
   loader as siteLoader,
   SiteHeader,
-} from './Tools/_framework/Paths/SiteHeader';
-import { loader as caroselLoader, Home } from './Tools/_framework/Paths/Home';
+} from "./Tools/_framework/Paths/SiteHeader";
+import { loader as caroselLoader, Home } from "./Tools/_framework/Paths/Home";
 import {
   loader as portfolioActivitySettingsLoader,
   action as portfolioActivitySettingsAction,
   ErrorBoundry as portfolioActivitySettingsError,
   PortfolioActivitySettings,
-} from './Tools/_framework/Paths/PortfolioActivitySettings';
+} from "./Tools/_framework/Paths/PortfolioActivitySettings";
 import {
   loader as portfolioLoader,
   action as portfolioAction,
   Portfolio,
-} from './Tools/_framework/Paths/Portfolio';
-import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
+} from "./Tools/_framework/Paths/Portfolio";
+import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap";
 import {
   loader as publicPortfolioLoader,
   PublicPortfolio,
-} from './Tools/_framework/Paths/PublicPortfolio';
+} from "./Tools/_framework/Paths/PublicPortfolio";
 import {
   loader as portfolioActivityViewerLoader,
   action as portfolioActivityViewerAction,
   PortfolioActivityViewer,
-} from './Tools/_framework/Paths/PortfolioActivityViewer';
-import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+} from "./Tools/_framework/Paths/PortfolioActivityViewer";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
-} from './Tools/_framework/Panels/NewSupportPanel';
+} from "./Tools/_framework/Panels/NewSupportPanel";
 
-import '@fontsource/jost';
+import "@fontsource/jost";
 
 const theme = extendTheme({
   fonts: {
-    body: 'Jost',
+    body: "Jost",
   },
   textStyles: {
     primary: {
-      fontFamily: 'Jost',
+      fontFamily: "Jost",
     },
   },
   colors: {
     doenet: {
-      mainBlue: '#1a5a99',
-      lightBlue: '#b8d2ea',
-      solidLightBlue: '#8fb8de',
-      mainGray: '#e3e3e3',
-      donutBody: '#eea177',
-      donutTopping: '#6d4445',
-      mainRed: '#c1292e',
-      lightRed: '#eab8b8',
-      mainGreen: '#459152',
-      canvas: '#ffffff',
-      canvastext: '#000000',
-      lightGreen: '#a6f19f',
-      lightYellow: '#f5ed85',
-      whiteBlankLink: '#6d4445',
-      mainYellow: '#94610a',
-      mainPurple: '#4a03d9',
+      mainBlue: "#1a5a99",
+      lightBlue: "#b8d2ea",
+      solidLightBlue: "#8fb8de",
+      mainGray: "#e3e3e3",
+      donutBody: "#eea177",
+      donutTopping: "#6d4445",
+      mainRed: "#c1292e",
+      lightRed: "#eab8b8",
+      mainGreen: "#459152",
+      canvas: "#ffffff",
+      canvastext: "#000000",
+      lightGreen: "#a6f19f",
+      lightYellow: "#f5ed85",
+      whiteBlankLink: "#6d4445",
+      mainYellow: "#94610a",
+      mainPurple: "#4a03d9",
     },
   },
   components: {
     Button: {
       baseStyle: {
-        fontWeight: 'normal',
-        letterSpacing: '.5px',
+        fontWeight: "normal",
+        letterSpacing: ".5px",
         _focus: {
-          outline: '2px solid #2D5994',
-          outlineOffset: '2px',
+          outline: "2px solid #2D5994",
+          outlineOffset: "2px",
         },
         _disabled: {
-          bg: '#E2E2E2',
-          color: 'black',
-          cursor: 'none',
+          bg: "#E2E2E2",
+          color: "black",
+          cursor: "none",
         },
       },
       variants: {
         // We can override existing variants
         solid: {
-          bg: 'doenet.mainBlue',
-          color: 'white',
+          bg: "doenet.mainBlue",
+          color: "white",
           _hover: {
-            bg: 'doenet.solidLightBlue',
-            color: 'black',
+            bg: "doenet.solidLightBlue",
+            color: "black",
           },
         },
         outline: {
-          borderColor: '#2D5994',
+          borderColor: "#2D5994",
           _hover: {
-            bg: 'solidLightBlue',
+            bg: "solidLightBlue",
           },
         },
         ghost: {
           _hover: {
-            bg: 'solidLightBlue',
+            bg: "solidLightBlue",
           },
         },
         link: {
-          color: 'solidLightBlue',
+          color: "solidLightBlue",
         },
       },
     },
@@ -123,7 +123,7 @@ const theme = extendTheme({
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     loader: siteLoader,
     element: (
       <ChakraProvider theme={theme}>
@@ -132,7 +132,7 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: '/',
+        path: "/",
         loader: caroselLoader,
         element: (
           <DarkmodeController>
@@ -149,7 +149,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'community',
+        path: "community",
         loader: communityLoader,
         action: communityAction,
         // action: communitySearchAction,
@@ -160,7 +160,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'admin',
+        path: "admin",
         loader: adminLoader,
         // sharing an action with the community page is somewhat intentional
         // as it shows cards and admins have the same actions that they can perform
@@ -175,7 +175,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'portfolio/:courseId',
+        path: "portfolio/:courseId",
         loader: portfolioLoader,
         action: portfolioAction,
         element: (
@@ -185,7 +185,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'publicportfolio/:courseId',
+        path: "publicportfolio/:courseId",
         loader: publicPortfolioLoader,
         element: (
           <ChakraProvider theme={theme}>
@@ -194,7 +194,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/portfolioviewer/:doenetId',
+        path: "/portfolioviewer/:doenetId",
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
         element: (
@@ -215,7 +215,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: '/portfolio/:doenetId/settings',
+    path: "/portfolio/:doenetId/settings",
     loader: portfolioActivitySettingsLoader,
     action: portfolioActivitySettingsAction,
     ErrorBoundary: portfolioActivitySettingsError,
@@ -226,7 +226,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/portfolioeditor/:doenetId',
+    path: "/portfolioeditor/:doenetId",
     loader: portfolioEditorMenuCapLoader,
     // action: portfolioEditorSupportPanelAction,
     // errorElement: <div>Error!</div>,
@@ -243,7 +243,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/public',
+    path: "/public",
     loader: editorSupportPanelLoader,
     action: editorSupportPanelAction,
     // errorElement: <div>Error!</div>,
@@ -260,7 +260,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '*',
+    path: "*",
     // errorElement: <div>Error!</div>,
     element: (
       <DarkmodeController>
@@ -276,7 +276,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
     <RouterProvider router={router} />

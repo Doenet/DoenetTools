@@ -43,7 +43,7 @@
 }
 
 .switch-visual::before {
-  content: '';
+  content: "";
   height: 1em;
   width: 1em;
   left: 0;

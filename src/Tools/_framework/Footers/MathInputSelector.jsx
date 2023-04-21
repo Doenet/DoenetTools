@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, Suspense } from 'react';
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import {
   atom,
   useRecoilState,
@@ -6,29 +6,29 @@ import {
   atomFamily,
   selectorFamily,
   useRecoilValueLoadable,
-} from 'recoil';
+} from "recoil";
 
 export const focusedMathField = atom({
-  key: 'focusedMathField',
+  key: "focusedMathField",
   default: () => {},
 });
 
 export const focusedMathFieldReturn = atom({
-  key: 'focusedMathFieldReturn',
+  key: "focusedMathFieldReturn",
   default: () => {},
 });
 
 export const palletRef = atom({
-  key: 'palletRef',
+  key: "palletRef",
   default: null,
 });
 
 export const handleRef = atom({
-  key: 'handleRef',
+  key: "handleRef",
   default: null,
 });
 
 export const footerPanelToggle = atom({
-  key: 'footerPanelToggle',
+  key: "footerPanelToggle",
   default: true,
 });

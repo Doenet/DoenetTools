@@ -11,6 +11,6 @@ export const useWillUnmount = (callback) => {
     () => () => {
       callbackRef.current();
     },
-    []
+    [],
   );
 };

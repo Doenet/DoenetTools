@@ -1,20 +1,20 @@
-import React from 'react';
-import { searchParamAtomFamily } from '../NewToolRoot';
+import React from "react";
+import { searchParamAtomFamily } from "../NewToolRoot";
 import {
   assignmentData,
   gradeCategories,
   overviewData,
-} from '../ToolPanels/Gradebook';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useRecoilValue, useRecoilCallback } from 'recoil';
+} from "../ToolPanels/Gradebook";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { useRecoilValue, useRecoilCallback } from "recoil";
 import {
   coursePermissionsAndSettingsByCourseId,
   courseRolePermissionsByCourseIdRoleId,
   peopleByCourseId,
-} from '../../../_reactComponents/Course/CourseActions';
+} from "../../../_reactComponents/Course/CourseActions";
 
 export default function GradeDownload() {
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const download = useRecoilCallback(
     ({ snapshot }) =>
       async (courseId) => {
@@ -30,8 +30,8 @@ export default function GradeDownload() {
         );
 
         let studentInfo = {};
-        let headingsCSV = 'Name,Email,External Id,Section,Withdrew,';
-        let possiblePointsCSV = 'Possible Points,,,,,';
+        let headingsCSV = "Name,Email,External Id,Section,Withdrew,";
+        let possiblePointsCSV = "Possible Points,,,,,";
         for (const {
           userId,
           email,
@@ -45,14 +45,14 @@ export default function GradeDownload() {
           const { isIncludedInGradebook } = await snapshot.getPromise(
             courseRolePermissionsByCourseIdRoleId({ courseId, roleId }),
           );
-          if (isIncludedInGradebook !== '1') continue;
+          if (isIncludedInGradebook !== "1") continue;
 
           const studentName = `${firstName} ${lastName}`.replaceAll('"', '""');
 
           studentInfo[userId] = {
             courseTotal: 0,
             csv: `"${studentName}",${email},${externalId},${section},${
-              withdrew === '1' ? 'X' : ''
+              withdrew === "1" ? "X" : ""
             },`,
           };
         }
@@ -85,7 +85,7 @@ export default function GradeDownload() {
               '"',
               '""',
             );
-            headingsCSV += `"${assignmentLabel}"` + ',';
+            headingsCSV += `"${assignmentLabel}"` + ",";
 
             let possiblepoints =
               assignments?.[doenetId]?.totalPointsOrPercent * 1;
@@ -97,7 +97,7 @@ export default function GradeDownload() {
               let credit = overview[userId]?.assignments?.[doenetId];
               if (
                 credit === null &&
-                assignments?.[doenetId]?.isGloballyAssigned === '0'
+                assignments?.[doenetId]?.isGloballyAssigned === "0"
               ) {
                 studentInfo[userId].csv = `${studentInfo[userId].csv},`;
                 continue;
@@ -145,7 +145,7 @@ export default function GradeDownload() {
             studentInfo[userId].courseTotal += categoryScore;
           }
         }
-        headingsCSV += 'Course Total';
+        headingsCSV += "Course Total";
         possiblePointsCSV = `${possiblePointsCSV}${courseTotalPossiblePoints}`;
 
         csvText = `${headingsCSV}\n${possiblePointsCSV}`;
@@ -153,12 +153,12 @@ export default function GradeDownload() {
           csvText = `${csvText}\n${studentInfo[userId].csv}${studentInfo[userId].courseTotal}`;
         }
 
-        var element = document.createElement('a');
+        var element = document.createElement("a");
         element.setAttribute(
-          'href',
-          'data:text/plain;charset=utf-8, ' + encodeURIComponent(csvText),
+          "href",
+          "data:text/plain;charset=utf-8, " + encodeURIComponent(csvText),
         );
-        element.setAttribute('download', filename);
+        element.setAttribute("download", filename);
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);

@@ -692,7 +692,7 @@ export default class Graph extends BlockComponent {
         let aspectRatioFromAxisScales =
           dependencyValues.identicalAxisScales &&
           dependencyValues.aspectRatioAttr === null;
-          // || !Number.isFinite(dependencyValues.aspectRatioAttr.stateValues.value)
+        // || !Number.isFinite(dependencyValues.aspectRatioAttr.stateValues.value)
 
         return {
           setValue: { aspectRatioFromAxisScales },

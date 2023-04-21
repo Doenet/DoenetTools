@@ -5,7 +5,7 @@ import SwiperCore, {
   Keyboard,
   Mousewheel,
   Pagination,
-  A11y
+  A11y,
 } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -19,7 +19,7 @@ import "./Carousel.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 
@@ -34,7 +34,7 @@ function Card({ text }) {
         flexDirection: "column",
         height: "180px",
         border: "2px solid #949494",
-        borderRadius: "6px"
+        borderRadius: "6px",
       }}
     >
       <div
@@ -45,7 +45,7 @@ function Card({ text }) {
           width: "100%",
           height: "128px",
           background: "#121212",
-          borderRadius: "5px 5px 0px 0px"
+          borderRadius: "5px 5px 0px 0px",
         }}
       >
         Image here
@@ -54,7 +54,7 @@ function Card({ text }) {
         style={{
           height: "54px",
           width: "100%",
-          color: "black"
+          color: "black",
         }}
       >
         {text}
@@ -90,18 +90,18 @@ export function Carousel() {
     clickable: true,
     renderBullet: function (index, className) {
       return `<span class="${className}" ></span>`;
-    }
+    },
   };
 
   const keyboard = {
-    enabled: true
+    enabled: true,
     // onlyInViewport: false
   };
 
   const mousewheel = {
     forceToAxis: true,
     // sensitivity: 100,
-    thresholdDelta: 6
+    thresholdDelta: 6,
     // thresholdTime: 1000,
   };
 
@@ -110,7 +110,7 @@ export function Carousel() {
       <div
         style={{
           display: "flex",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <div
@@ -121,7 +121,7 @@ export function Carousel() {
             minWidth: "320px",
             maxWidth: "1000px",
             width: "80%",
-            textAlign: "center"
+            textAlign: "center",
             // display:"flex",
             // flexDirection:"column",
             // justifyContent:"center",
@@ -216,7 +216,6 @@ export function Carousel() {
                              <Card text="Slide 12" />
                            </SwiperSlide>  */}
             {/* </Swiper> */}
-
             {/* <button
          onClick={() => {
            // swiperElRef.current.swiper.
@@ -232,7 +231,7 @@ export function Carousel() {
          }}
        >
          4
-       </button> */ }
+       </button> */}
             <RightChevron
               icon={faChevronRight}
               onClick={() => {
@@ -250,4 +249,3 @@ export function Carousel() {
   //   <RightChevron icon={faChevronRight} />
   // </div>
 }
-

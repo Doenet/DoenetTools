@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { RecoilRoot } from 'recoil';
+import React, { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 
-import ToolRoot from '../_framework/NewToolRoot';
-import { MathJaxContext } from 'better-react-mathjax';
-import { mathjaxConfig } from '../../Core/utils/math';
-import DarkmodeController from '../_framework/DarkmodeController';
+import ToolRoot from "../_framework/NewToolRoot";
+import { MathJaxContext } from "better-react-mathjax";
+import { mathjaxConfig } from "../../Core/utils/math";
+import DarkmodeController from "../_framework/DarkmodeController";
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
     <Router>
@@ -29,5 +29,5 @@ root.render(
         />
       </Routes>
     </Router>
-  </RecoilRoot>
+  </RecoilRoot>,
 );

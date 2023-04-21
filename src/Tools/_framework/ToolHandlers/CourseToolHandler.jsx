@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   atom,
   selector,
   atomFamily,
   selectorFamily,
   useRecoilCallback,
-} from 'recoil';
-import axios from 'axios';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useToast, toastType } from '@Toast';
+} from "recoil";
+import axios from "axios";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useToast, toastType } from "@Toast";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { faClipboard } from '@fortawesome/free-regular-svg-icons';
+import { faClipboard } from "@fortawesome/free-regular-svg-icons";
 
-import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { loadAssignmentSelector } from "../../../_reactComponents/Drive/NewDrive";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 
 export const itemHistoryAtom = atomFamily({
-  key: 'itemHistoryAtom',
+  key: "itemHistoryAtom",
   default: selectorFamily({
-    key: 'itemHistoryAtom/Default',
+    key: "itemHistoryAtom/Default",
     get: (doenetId) => async () => {
       let draft = {};
       let named = [];
@@ -36,10 +36,10 @@ export const itemHistoryAtom = atomFamily({
 
       draft = data.versions[0];
       for (let version of data.versions) {
-        if (version.isDraft === '1') {
+        if (version.isDraft === "1") {
           continue;
         }
-        if (version.isNamed === '1') {
+        if (version.isNamed === "1") {
           named.push(version);
           continue;
         }
@@ -51,14 +51,14 @@ export const itemHistoryAtom = atomFamily({
 });
 
 export const drivecardSelectedNodesAtom = atom({
-  key: 'drivecardSelectedNodesAtom',
+  key: "drivecardSelectedNodesAtom",
   default: [],
 });
 
 export const assignmentDictionary = atomFamily({
-  key: 'assignmentDictionary',
+  key: "assignmentDictionary",
   default: selectorFamily({
-    key: 'assignmentDictionary/Default',
+    key: "assignmentDictionary/Default",
     get:
       (driveIditemIddoenetIdparentFolderId) =>
       async ({ get }, instructions) => {
@@ -87,7 +87,7 @@ export const assignmentDictionary = atomFamily({
   }),
 });
 export let assignmentDictionarySelector = selectorFamily({
-  key: 'assignmentDictionarySelector',
+  key: "assignmentDictionarySelector",
   get:
     (driveIditemIddoenetIdparentFolderId) =>
     ({ get }) => {
@@ -97,15 +97,15 @@ export let assignmentDictionarySelector = selectorFamily({
 
 export function buildTimestamp() {
   const dt = new Date();
-  return `${dt.getFullYear().toString().padStart(2, '0')}-${(dt.getMonth() + 1)
+  return `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1)
     .toString()
-    .padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt
+    .padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt
     .getHours()
     .toString()
-    .padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt
+    .padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt
     .getSeconds()
     .toString()
-    .padStart(2, '0')}`;
+    .padStart(2, "0")}`;
 }
 
 export function ClipboardLinkButtons(props) {
@@ -123,7 +123,7 @@ export function ClipboardLinkButtons(props) {
   if (props.doenetId) {
     linkData.push(`doenetId=${props.doenetId}`);
   }
-  let embedLink = `<copy uri="doenet:${linkData.join('&')}" />`;
+  let embedLink = `<copy uri="doenet:${linkData.join("&")}" />`;
 
   // if (!props.cid){
   //   console.error("Component only handles cid at this point")
@@ -136,7 +136,7 @@ export function ClipboardLinkButtons(props) {
       <ButtonGroup>
         <CopyToClipboard
           onCopy={() =>
-            addToast('Link copied to clipboard!', toastType.SUCCESS)
+            addToast("Link copied to clipboard!", toastType.SUCCESS)
           }
           text={link}
         >
@@ -150,7 +150,7 @@ export function ClipboardLinkButtons(props) {
 
         <CopyToClipboard
           onCopy={() =>
-            addToast('Embed link copied to clipboard!', toastType.SUCCESS)
+            addToast("Embed link copied to clipboard!", toastType.SUCCESS)
           }
           text={embedLink}
         >
@@ -165,7 +165,7 @@ export function ClipboardLinkButtons(props) {
           icon={<FontAwesomeIcon icon={faExternalLinkAlt} />}
           value="visit"
           disabled={props.disabled}
-          onClick={() => window.open(link, '_blank')}
+          onClick={() => window.open(link, "_blank")}
         />
       </ButtonGroup>
       {/* <button onClick={
@@ -194,8 +194,8 @@ export function RenameVersionControl(props) {
               newHistory.named.splice(i, 1, newVersion);
             }
           }
-          let newDBVersion = { ...newVersion, isNewTitle: '1', doenetId };
-          axios.post('/api/saveNewVersion.php', newDBVersion);
+          let newDBVersion = { ...newVersion, isNewTitle: "1", doenetId };
+          axios.post("/api/saveNewVersion.php", newDBVersion);
           // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
           return newHistory;
         });
@@ -227,7 +227,7 @@ export function RenameVersionControl(props) {
         setCurrentTitle(e.target.value);
       }}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+        if (e.key === "Enter") {
           renameIfChanged();
         }
       }}

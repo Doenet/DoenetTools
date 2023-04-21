@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { useRecoilCallback } from 'recoil';
-import { toastType, useToast } from '../../Tools/_framework/Toast';
-import { fileByPageId } from '../../_reactComponents/Course/CourseActions';
-import { textEditorDoenetMLAtom } from '../../_sharedRecoil/EditorViewerRecoil';
+import axios from "axios";
+import { useRecoilCallback } from "recoil";
+import { toastType, useToast } from "../../Tools/_framework/Toast";
+import { fileByPageId } from "../../_reactComponents/Course/CourseActions";
+import { textEditorDoenetMLAtom } from "../../_sharedRecoil/EditorViewerRecoil";
 
 export function useSaveDraft() {
   const addToast = useToast();
@@ -23,7 +23,7 @@ export function useSaveDraft() {
           };
           const {
             data: { success, message },
-          } = await axios.post('/api/saveDoenetML.php', params);
+          } = await axios.post("/api/saveDoenetML.php", params);
 
           if (!success) throw new Error(message);
 
