@@ -136,14 +136,6 @@ function Heading(props) {
   );
 }
 
-const Main = styled.main`
-  margin-top: 40px;
-  /* padding: 20px; */
-  overflow-y: scroll;
-  height: 100vh;
-  margin: 0;
-`;
-
 export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
@@ -173,184 +165,173 @@ export function Home() {
 
   return (
     <>
-      <Main>
-        <Heading
-          heading="Create Content"
-          subheading="Quickly create interactive activities"
-        />
-        <CreateContentSection>
-          <Box
-            width="260px"
-            display="flex"
-            flexDirection="column"
-            rowGap="15px"
-          >
-            <Text color="white" fontSize="16pt">
-              Introducing DoenetML
-            </Text>
-            <Text color="white" fontSize="10pt">
-              DoenetML is the markup language we&apos;ve created to let you
-              focus on the meaning of the elements you wish to create.
-            </Text>
-            <Button
-              value="See Inside"
-              onClick={() =>
-                window.open(
-                  'https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0',
-                  '_blank',
-                )
-              }
-            />
-          </Box>
-          <Suspense fallback={'Loading...'}>
-            {' '}
-            {/* Does this lazy loading do anything? */}
-            <HomeIntroVideo />
-          </Suspense>
-        </CreateContentSection>
+      <Heading
+        heading="Create Content"
+        subheading="Quickly create interactive activities"
+      />
+      <CreateContentSection>
+        <Box width="260px" display="flex" flexDirection="column" rowGap="15px">
+          <Text color="white" fontSize="16pt">
+            Introducing DoenetML
+          </Text>
+          <Text color="white" fontSize="10pt">
+            DoenetML is the markup language we&apos;ve created to let you focus
+            on the meaning of the elements you wish to create.
+          </Text>
+          <Button
+            value="See Inside"
+            onClick={() =>
+              window.open(
+                'https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0',
+                '_blank',
+              )
+            }
+          />
+        </Box>
+        <Suspense fallback={'Loading...'}>
+          {' '}
+          {/* Does this lazy loading do anything? */}
+          <HomeIntroVideo />
+        </Suspense>
+      </CreateContentSection>
 
-        <Heading
-          heading="Explore"
-          subheading="Interact with our existing content"
-        />
+      <Heading
+        heading="Explore"
+        subheading="Interact with our existing content"
+      />
 
-        <CarouselSection>
-          <Carousel title="Doenet Team Favorites" data={favorites} />
-        </CarouselSection>
+      <CarouselSection>
+        <Carousel title="Doenet Team Favorites" data={favorites} />
+      </CarouselSection>
 
-        <Heading
-          heading="Learn"
-          subheading="Designed for the In-Person Classroom"
-        />
+      <Heading
+        heading="Learn"
+        subheading="Designed for the In-Person Classroom"
+      />
 
+      <div
+        style={{
+          padding: '20px 10px 60px 10px',
+          margin: '0px',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+          background: 'var(--lightBlue)',
+        }}
+      >
         <div
           style={{
-            padding: '20px 10px 60px 10px',
-            margin: '0px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            textAlign: 'center',
-            background: 'var(--lightBlue)',
+            textAlign: 'Left',
+            maxWidth: '800px',
+            display: 'inline-block',
+            marginLeft: '3em',
+            marginRight: '3em',
           }}
         >
+          <Text fontSize="16px">Immediate feedback in class</Text>
+          <Text fontSize="12px" marginLeft="10px">
+            One benefit of using Doenet during in-class activities is the
+            immediate feedback students receive even before an instructor can
+            come by their group.
+          </Text>
+          <Text fontSize="16px" marginTop="10px">
+            Open-ended response
+          </Text>
+          <Text fontSize="12px" marginLeft="10px">
+            Try our open-ended response example! ({' '}
+            <a
+              rel="noreferrer"
+              target="_blank"
+              href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
+            >
+              See source
+            </a>
+            )
+          </Text>
+
           <div
             style={{
-              textAlign: 'Left',
-              maxWidth: '800px',
-              display: 'inline-block',
-              marginLeft: '3em',
-              marginRight: '3em',
+              background: 'var(--canvas)',
+              padding: '20px 0px 20px 0px',
+              marginTop: '10px',
             }}
           >
-            <Text fontSize="16px">Immediate feedback in class</Text>
-            <Text fontSize="12px" marginLeft="10px">
-              One benefit of using Doenet during in-class activities is the
-              immediate feedback students receive even before an instructor can
-              come by their group.
-            </Text>
-            <Text fontSize="16px" marginTop="10px">
-              Open-ended response
-            </Text>
-            <Text fontSize="12px" marginLeft="10px">
-              Try our open-ended response example! ({' '}
-              <a
-                rel="noreferrer"
-                target="_blank"
-                href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
-              >
-                See source
-              </a>
-              )
-            </Text>
-
-            <div
-              style={{
-                background: 'var(--canvas)',
-                padding: '20px 0px 20px 0px',
-                marginTop: '10px',
+            <PageViewer
+              key={`HPpageViewer`}
+              doenetML={doenetML}
+              flags={{
+                showCorrectness: true,
+                solutionDisplayMode: true,
+                showFeedback: true,
+                showHints: true,
+                autoSubmit: false,
+                allowLoadState: false,
+                allowSaveState: false,
+                allowLocalState: false,
+                allowSaveSubmissions: false,
+                allowSaveEvents: false,
               }}
-            >
-              <PageViewer
-                key={`HPpageViewer`}
-                doenetML={doenetML}
-                flags={{
-                  showCorrectness: true,
-                  solutionDisplayMode: true,
-                  showFeedback: true,
-                  showHints: true,
-                  autoSubmit: false,
-                  allowLoadState: false,
-                  allowSaveState: false,
-                  allowLocalState: false,
-                  allowSaveSubmissions: false,
-                  allowSaveEvents: false,
-                }}
-                // doenetId={doenetId}
-                attemptNumber={1}
-                generatedVariantCallback={variantCallback} //TODO:Replace
-                requestedVariantIndex={variantInfo.index}
-                // setIsInErrorState={setIsInErrorState}
-                pageIsActive={true}
-              />
-            </div>
+              // doenetId={doenetId}
+              attemptNumber={1}
+              generatedVariantCallback={variantCallback} //TODO:Replace
+              requestedVariantIndex={variantInfo.index}
+              // setIsInErrorState={setIsInErrorState}
+              pageIsActive={true}
+            />
           </div>
         </div>
-        <Center
-          width="100%"
-          backgroundColor="doenet.mainGray"
-          color="doenet.canvastext"
-          padding="20px 40px"
-          display="flex"
-          flexDirection="column"
-          p="10px"
-          pb="100px"
-        >
-          <Flex columnGap="10px" m="10px">
-            <Link href="mailto:info@doenet.org">
-              <Tooltip label="mailto:info@doenet.org">
-                <IconButton
-                  size="sm"
-                  fontSize="16pt"
-                  icon={<HiOutlineMail />}
-                />
-              </Tooltip>
-            </Link>
+      </div>
+      <Center
+        width="100%"
+        backgroundColor="doenet.mainGray"
+        color="doenet.canvastext"
+        padding="20px 40px"
+        display="flex"
+        flexDirection="column"
+        p="10px"
+        pb="100px"
+      >
+        <Flex columnGap="10px" m="10px">
+          <Link href="mailto:info@doenet.org">
+            <Tooltip label="mailto:info@doenet.org">
+              <IconButton size="sm" fontSize="16pt" icon={<HiOutlineMail />} />
+            </Tooltip>
+          </Link>
 
-            <Link href="https://github.com/Doenet/">
-              <Tooltip label="Doenet Github">
-                <IconButton size="sm" fontSize="16pt" icon={<BsGithub />} />
-              </Tooltip>
-            </Link>
-            <Link href="https://discord.gg/PUduwtKJ5h">
-              <Tooltip label="Doenet Discord">
-                <IconButton size="sm" fontSize="16pt" icon={<BsDiscord />} />
-              </Tooltip>
-            </Link>
+          <Link href="https://github.com/Doenet/">
+            <Tooltip label="Doenet Github">
+              <IconButton size="sm" fontSize="16pt" icon={<BsGithub />} />
+            </Tooltip>
+          </Link>
+          <Link href="https://discord.gg/PUduwtKJ5h">
+            <Tooltip label="Doenet Discord">
+              <IconButton size="sm" fontSize="16pt" icon={<BsDiscord />} />
+            </Tooltip>
+          </Link>
 
-            <Link href="http://creativecommons.org/licenses/by/4.0/">
-              <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+          <Link href="http://creativecommons.org/licenses/by/4.0/">
+            <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+          </Link>
+        </Flex>
+        <Text as="div" fontSize="14px" maxWidth="750px" textAlign="center">
+          <Text>
+            This work is licensed under a{' '}
+            <Link
+              color="doenet.mainBlue"
+              href="http://creativecommons.org/licenses/by/4.0/"
+            >
+              Creative Commons Attribution 4.0 International License
             </Link>
-          </Flex>
-          <Text as="div" fontSize="14px" maxWidth="750px" textAlign="center">
-            <Text>
-              This work is licensed under a{' '}
-              <Link
-                color="doenet.mainBlue"
-                href="http://creativecommons.org/licenses/by/4.0/"
-              >
-                Creative Commons Attribution 4.0 International License
-              </Link>
-            </Text>
-            Doenet is a collaborative project involving the University of
-            Minnesota, the Ohio State University, and Cornell University, with
-            support from the National Science Foundation (DUE-1915294,
-            DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
-            or recommendations expressed in this material are those of the
-            author(s) and do not necessarily reflect the views of the National
-            Science Foundation.{' '}
           </Text>
-        </Center>
-      </Main>
+          Doenet is a collaborative project involving the University of
+          Minnesota, the Ohio State University, and Cornell University, with
+          support from the National Science Foundation (DUE-1915294,
+          DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions or
+          recommendations expressed in this material are those of the author(s)
+          and do not necessarily reflect the views of the National Science
+          Foundation.{' '}
+        </Text>
+      </Center>
     </>
   );
 }
