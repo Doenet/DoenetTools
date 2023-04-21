@@ -656,7 +656,9 @@ export function Community() {
                     </Wrap>
                   </span>
                 ) : (
-                  <Carousel title={groupName} data={group} />
+                  <div>
+                    <Carousel title={groupName} data={group} />
+                  </div>
                 )}
               </>
             );
