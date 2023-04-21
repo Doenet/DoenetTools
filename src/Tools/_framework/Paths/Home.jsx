@@ -165,7 +165,6 @@ export function Home() {
 
   return (
     <>
-      {/* <Box overflowY="scroll" margin="0" height="100%"> */}
       <Heading
         heading="Create Content"
         subheading="Quickly create interactive activities"
@@ -333,7 +332,6 @@ export function Home() {
           Foundation.{' '}
         </Text>
       </Center>
-      {/* </Box> */}
     </>
   );
 }

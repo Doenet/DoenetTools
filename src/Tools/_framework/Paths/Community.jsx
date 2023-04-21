@@ -104,14 +104,12 @@ export async function loader({ request }) {
 
 function Heading(props) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100px',
-      }}
+    <Flex
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      height="100px"
+      flexShrink={0}
     >
       <Text fontSize="24px" fontWeight="700">
         {props.heading}
@@ -119,21 +117,9 @@ function Heading(props) {
       <Text fontSize="16px" fontWeight="700">
         {props.subheading}
       </Text>
-    </div>
+    </Flex>
   );
 }
-
-const CarouselSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 60px 10px 200px 10px;
-  margin: 0px;
-  row-gap: 45px;
-  align-items: center;
-  text-align: center;
-  background: var(--mainGray);
-  height: calc(100% + 400px);
-`;
 
 export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -525,8 +511,7 @@ export function Community() {
   }
 
   return (
-    <>
-      {/* <Box overflowY="scroll" margin="0" height="100%"> */}
+    <Flex flexDirection="column" height="100%">
       <Flex
         flexDirection="column"
         p={4}
@@ -546,8 +531,17 @@ export function Community() {
         </Box>
       </Flex>
       <Heading heading="Community Public Content" />
-
-      <CarouselSection>
+      <Box
+        display="flex"
+        flexDirection="column"
+        padding="60px 10px 200px 10px"
+        margin="0px"
+        rowGap="45px"
+        alignItems="center"
+        textAlign="center"
+        background="var(--mainGray)"
+        flex="1"
+      >
         {isAdmin ? (
           <Text>
             You are logged in as an admin and can manage these lists, they will
@@ -661,8 +655,7 @@ export function Community() {
               </>
             );
           })}
-      </CarouselSection>
-      {/* </Box> */}
-    </>
+      </Box>
+    </Flex>
   );
 }

@@ -69,18 +69,6 @@ const BarMenu = styled.div`
   column-gap: 20px;
 `;
 
-const TopContainer = styled.div`
-  display: grid;
-  grid-template-rows: 40px auto;
-`;
-
-//Minimal container.  The idea is the Outlet should provide its own layout.
-const ContentContainer = styled.main`
-  grid-row: 2 / 3;
-  margin: 0;
-  overflow-y: scroll;
-`;
-
 function MenuItem({ to, children, dataTest }) {
   return (
     <StyledMenuItem
@@ -152,7 +140,12 @@ export function SiteHeader(props) {
 
   return (
     <>
-      <TopContainer>
+      <Box
+        display="grid"
+        gridTemplateRows="40px auto"
+        width="100vw"
+        height="100vh"
+      >
         <Box
           as="header"
           gridRow="1 / 2"
@@ -214,10 +207,10 @@ export function SiteHeader(props) {
           <SignInButtonContainer>{signInButton}</SignInButtonContainer>
         </Box>
 
-        <ContentContainer>
+        <Box as="main" gridRow="2 / 3" margin="0" overflowY="scroll">
           <Outlet context={{ signedIn: data.signedIn }} />
-        </ContentContainer>
-      </TopContainer>
+        </Box>
+      </Box>
     </>
   );
 }
