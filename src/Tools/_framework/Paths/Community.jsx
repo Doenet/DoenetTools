@@ -248,7 +248,7 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
     </>
   );
 }
-
+ 
 export function Community() {
   const { carouselData, q, searchResults, carouselGroups, isAdmin } =
     useLoaderData();
