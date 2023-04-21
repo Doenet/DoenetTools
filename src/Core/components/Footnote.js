@@ -1,4 +1,4 @@
-import InlineComponent from './abstract/InlineComponent';
+import InlineComponent from "./abstract/InlineComponent";
 
 export default class Footnote extends InlineComponent {
   static componentType = "footnote";
@@ -6,19 +6,16 @@ export default class Footnote extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "inlines",
-      componentTypes: ["_inline"]
-    }]
-
+    return [
+      {
+        group: "inlines",
+        componentTypes: ["_inline"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.text = {
@@ -33,11 +30,10 @@ export default class Footnote extends InlineComponent {
           childGroups: ["inlines"],
           variableNames: ["text"],
           variablesOptional: true,
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
-
-        let text = ""
+        let text = "";
         for (let child of dependencyValues.inlineChildren) {
           if (typeof child !== "object") {
             text += child.toString();
@@ -49,8 +45,8 @@ export default class Footnote extends InlineComponent {
         }
 
         return { setValue: { text } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.footnoteTag = {
       public: true,
@@ -62,18 +58,16 @@ export default class Footnote extends InlineComponent {
       returnDependencies: () => ({
         footnoteCounter: {
           dependencyType: "counter",
-          counterName: "footnote"
-        }
+          counterName: "footnote",
+        },
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { footnoteTag: String(dependencyValues.footnoteCounter) }
-        }
-      }
-    }
+          setValue: { footnoteTag: String(dependencyValues.footnoteCounter) },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

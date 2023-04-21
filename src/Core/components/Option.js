@@ -1,4 +1,4 @@
-import Group from './Group';
+import Group from "./Group";
 
 export default class Option extends Group {
   static componentType = "option";
@@ -12,14 +12,13 @@ export default class Option extends Group {
       createStateVariable: "selectForVariants",
       defaultValue: [],
       public: true,
-    }
+    };
     attributes.selectWeight = {
       createComponentOfType: "number",
       createStateVariable: "selectWeight",
       defaultValue: 1,
       public: true,
-    }
+    };
     return attributes;
   }
-
 }

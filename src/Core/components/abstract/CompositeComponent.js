@@ -1,4 +1,4 @@
-import BaseComponent from './BaseComponent';
+import BaseComponent from "./BaseComponent";
 
 export default class CompositeComponent extends BaseComponent {
   constructor(args) {
@@ -11,9 +11,7 @@ export default class CompositeComponent extends BaseComponent {
   static rendererType = undefined;
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.replacements = {
       returnDependencies: () => ({
@@ -22,10 +20,9 @@ export default class CompositeComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { replacements: dependencyValues.replacements }
-      })
-    }
-
+        setValue: { replacements: dependencyValues.replacements },
+      }),
+    };
 
     stateVariableDefinitions.recursiveReplacements = {
       returnDependencies: () => ({
@@ -35,9 +32,11 @@ export default class CompositeComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { recursiveReplacements: dependencyValues.recursiveReplacements }
-      })
-    }
+        setValue: {
+          recursiveReplacements: dependencyValues.recursiveReplacements,
+        },
+      }),
+    };
 
     stateVariableDefinitions.fullRecursiveReplacements = {
       returnDependencies: () => ({
@@ -48,9 +47,11 @@ export default class CompositeComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { fullRecursiveReplacements: dependencyValues.recursiveReplacements }
-      })
-    }
+        setValue: {
+          fullRecursiveReplacements: dependencyValues.recursiveReplacements,
+        },
+      }),
+    };
 
     return stateVariableDefinitions;
   }
@@ -58,9 +59,8 @@ export default class CompositeComponent extends BaseComponent {
   // This function is called by Core.js in expandCompositeComponent
   // See that invocation for documentation
   static createSerializedReplacements() {
-    return { replacements: [] }
+    return { replacements: [] };
   }
-
 
   // This function is called by Core.js in updateCompositeReplacements
   // See that invocation for documentation
@@ -91,16 +91,14 @@ export default class CompositeComponent extends BaseComponent {
 
   // }
 
-
   // The array replacements contains the components that are substituted for the composite
   // and become the children of the composite's parent instead of the composite itself.
   // Note: components do not set this variable directly.
-  // Instead, core will create the replacements array based on the information given by 
+  // Instead, core will create the replacements array based on the information given by
   // the static function createSerializedReplacements.
   // Core will also change the replacements array based on the instructions returned by
   // the static function calculateReplacementChanges.
   replacements = [];
-
 
   // The integer replacementsToWithhold is the number of replacements at the end of the replacements array
   // that are ignored when inserting replacements as children to composite's parent.
@@ -113,9 +111,7 @@ export default class CompositeComponent extends BaseComponent {
   // the static function calculateReplacementChanges.
   replacementsToWithhold = 0;
 
-
   get allPotentialRendererTypes() {
-
     let allPotentialRendererTypes = super.allPotentialRendererTypes;
 
     // we still recurse to all children, even though was skipped at base component
@@ -142,8 +138,5 @@ export default class CompositeComponent extends BaseComponent {
     }
 
     return allPotentialRendererTypes;
-
   }
-
-
 }

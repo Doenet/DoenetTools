@@ -1,4 +1,4 @@
-import GraphicalComponent from './abstract/GraphicalComponent';
+import GraphicalComponent from "./abstract/GraphicalComponent";
 
 export default class RegionHalfPlane extends GraphicalComponent {
   static componentType = "regionHalfPlane";
@@ -14,7 +14,6 @@ export default class RegionHalfPlane extends GraphicalComponent {
       public: true,
     };
 
-
     attributes.boundaryValue = {
       createComponentOfType: "number",
       createStateVariable: "boundaryValue",
@@ -29,40 +28,33 @@ export default class RegionHalfPlane extends GraphicalComponent {
       public: true,
     };
 
-
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         horizontal: {
           dependencyType: "stateVariable",
-          variableName: "horizontal"
+          variableName: "horizontal",
         },
         boundaryValue: {
           dependencyType: "stateVariable",
-          variableName: "boundaryValue"
+          variableName: "boundaryValue",
         },
         greaterThan: {
           dependencyType: "stateVariable",
-          variableName: "greaterThan"
+          variableName: "greaterThan",
         },
       }),
       definition({ dependencyValues }) {
-
         let value = dependencyValues.boundaryValue;
-
 
         return {
           setValue: {
             nearestPoint: function ({ variables, scales }) {
-
               if (!Number.isFinite(value)) {
                 return {};
               }
@@ -104,15 +96,12 @@ export default class RegionHalfPlane extends GraphicalComponent {
                   }
                 }
               }
-            }
-          }
-        }
-      }
-    }
-
+            },
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
-
 }

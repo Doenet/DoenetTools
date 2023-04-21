@@ -1,4 +1,4 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export default class BlockQuote extends BlockComponent {
   constructor(args) {
@@ -7,19 +7,18 @@ export default class BlockQuote extends BlockComponent {
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
   static componentType = "blockQuote";
   static rendererType = "blockQuote";
   static renderChildren = true;
 
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -29,9 +28,8 @@ export default class BlockQuote extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
 }

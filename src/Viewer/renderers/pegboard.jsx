@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import { BASE_LAYER_OFFSET, BoardContext } from './graph';
-import me from 'math-expressions';
+import React, { useContext, useEffect, useState, useRef } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { BASE_LAYER_OFFSET, BoardContext } from "./graph";
+import me from "math-expressions";
 
 export default React.memo(function Pegboard(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } =
+    useDoenetRender(props);
 
   Pegboard.ignoreActionsWithoutCore = () => true;
 
@@ -44,13 +45,10 @@ export default React.memo(function Pegboard(props) {
     //On unmount
     return () => {
       deletePegboardJXG();
-    }
-  }, [])
-
-
+    };
+  }, []);
 
   function createPegboardJXG() {
-
     let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
     let xind1 = (xmin - xoffset.current) / dx.current;
@@ -66,26 +64,33 @@ export default React.memo(function Pegboard(props) {
 
     previousBounds.current = [minXind, maxXind, minYind, maxYind];
 
-    if (Number.isFinite(minXind) && Number.isFinite(maxXind) && Number.isFinite(minYind) && Number.isFinite(maxYind)) {
-
+    if (
+      Number.isFinite(minXind) &&
+      Number.isFinite(maxXind) &&
+      Number.isFinite(minYind) &&
+      Number.isFinite(maxYind)
+    ) {
       let pegs = [];
 
       for (let yind = minYind; yind <= maxYind; yind++) {
         let y = yind * SVs.dy + SVs.yoffset;
         let row = [];
         for (let xind = minXind; xind <= maxXind; xind++) {
-          row.push(board.create('point', [xind * SVs.dx + SVs.xoffset, y], jsxPointAttributes.current));
+          row.push(
+            board.create(
+              "point",
+              [xind * SVs.dx + SVs.xoffset, y],
+              jsxPointAttributes.current,
+            ),
+          );
         }
         pegs.push(row);
       }
 
       pegboardJXG.current = pegs;
-
     }
 
-
-    board.on('boundingbox', () => {
-
+    board.on("boundingbox", () => {
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
       let xind1 = (xmin - xoffset.current) / dx.current;
@@ -101,38 +106,42 @@ export default React.memo(function Pegboard(props) {
 
       let [prevXmin, prevXmax, prevYmin, prevYmax] = previousBounds.current;
 
-      if (minXind !== prevXmin || maxXind !== prevXmax || minYind !== prevYmin || maxYind !== prevYmax) {
-
-        recalculatePegboard(minXind, maxXind, minYind, maxYind)
+      if (
+        minXind !== prevXmin ||
+        maxXind !== prevXmax ||
+        minYind !== prevYmin ||
+        maxYind !== prevYmax
+      ) {
+        recalculatePegboard(minXind, maxXind, minYind, maxYind);
       }
-
-    })
+    });
   }
 
   function deletePegboardJXG() {
     if (pegboardJXG.current !== null) {
       for (let row of pegboardJXG.current) {
         for (let point of row) {
-          board.removeObject(point)
+          board.removeObject(point);
         }
       }
     }
 
     pegboardJXG.current = null;
-
   }
 
-
   function recalculatePegboard(minXind, maxXind, minYind, maxYind) {
-
     if (pegboardJXG.current === null) {
       return createPegboardJXG();
     }
 
-    if (!Number.isFinite(minXind) || !Number.isFinite(maxXind) || !Number.isFinite(minYind) || !Number.isFinite(maxYind)) {
+    if (
+      !Number.isFinite(minXind) ||
+      !Number.isFinite(maxXind) ||
+      !Number.isFinite(minYind) ||
+      !Number.isFinite(maxYind)
+    ) {
       return deletePegboardJXG();
     }
-
 
     let [prevXmin, prevXmax, prevYmin, prevYmax] = previousBounds.current;
 
@@ -146,7 +155,6 @@ export default React.memo(function Pegboard(props) {
       let y = (i + minYind) * dy.current + yoffset.current;
 
       for (let j = 0; j < Math.min(nCols, prevNcols); j++) {
-
         let x = (j + minXind) * dx.current + xoffset.current;
 
         row[j].coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
@@ -157,12 +165,12 @@ export default React.memo(function Pegboard(props) {
       if (prevNcols > nCols) {
         for (let j = nCols; j < prevNcols; j++) {
           let point = row.pop();
-          board.removeObject(point)
+          board.removeObject(point);
         }
       } else if (prevNcols < nCols) {
         for (let j = prevNcols; j < nCols; j++) {
           let x = (j + minXind) * dx.current + xoffset.current;
-          row.push(board.create('point', [x, y], jsxPointAttributes.current));
+          row.push(board.create("point", [x, y], jsxPointAttributes.current));
         }
       }
     }
@@ -172,7 +180,7 @@ export default React.memo(function Pegboard(props) {
         let row = pegboardJXG.current.pop();
         for (let j = 0; j < prevNcols; j++) {
           let point = row.pop();
-          board.removeObject(point)
+          board.removeObject(point);
         }
       }
     } else if (prevNrows < nRows) {
@@ -181,7 +189,7 @@ export default React.memo(function Pegboard(props) {
         let y = (i + minYind) * dy.current + yoffset.current;
         for (let j = 0; j < nCols; j++) {
           let x = (j + minXind) * dx.current + xoffset.current;
-          row.push(board.create('point', [x, y], jsxPointAttributes.current));
+          row.push(board.create("point", [x, y], jsxPointAttributes.current));
         }
         pegboardJXG.current.push(row);
       }
@@ -209,7 +217,7 @@ export default React.memo(function Pegboard(props) {
       let minYind = me.math.round(Math.min(yind1, yind2) + 1);
       let maxYind = me.math.round(Math.max(yind1, yind2) - 1);
 
-      recalculatePegboard(minXind, maxXind, minYind, maxYind)
+      recalculatePegboard(minXind, maxXind, minYind, maxYind);
 
       let firstPeg = pegboardJXG.current[0]?.[0];
       if (firstPeg) {
@@ -220,15 +228,12 @@ export default React.memo(function Pegboard(props) {
           for (let row of pegboardJXG.current) {
             for (let peg of row) {
               peg.setAttribute({ layer });
-
             }
           }
         }
       }
-
     }
   }
 
   return null;
-
-})
+});

@@ -1,17 +1,16 @@
-import { cesc, cesc2 } from '../../../../src/_utils/url';
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
-describe('Label Tag Tests', function () {
-
+describe("Label Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
-  })
-
-  it('label in graph, text and math', () => {
+  it("label in graph, text and math", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <graph >
       <label anchor="$anchorCoords1" name="label1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1">Hello <m>\\frac{\\partial f}{\\partial x}</m></label>
@@ -58,102 +57,146 @@ describe('Label Tag Tests', function () {
     <p name="pContent2">Content 2: $label2</p>
     <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
 
-    ` }, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,3)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,0)");
 
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
-    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
-    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
-    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
-    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
-    cy.get(cesc("#\\/pContent1")).should('contain.text', 'Content 1: Hello ∂f∂x')
-    cy.get(cesc("#\\/pContent1") + " .mjx-mrow").eq(0).should('have.text', '∂f∂x')
-    cy.get(cesc("#\\/pContent2")).should('contain.text', 'Content 2: Bye ∫baf(x)dx')
-    cy.get(cesc("#\\/pContent2") + " .mjx-mrow").eq(0).should('have.text', '∫baf(x)dx')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: upperright",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: center",
+    );
+    cy.get(cesc("#\\/positionFromAnchor1")).should("have.value", "1");
+    cy.get(cesc("#\\/positionFromAnchor2")).should("have.value", "9");
+    cy.get(cesc("#\\/pDraggable1")).should("have.text", "Draggable 1: true");
+    cy.get(cesc("#\\/pDraggable2")).should("have.text", "Draggable 2: true");
+    cy.get(cesc("#\\/pContent1")).should(
+      "contain.text",
+      "Content 1: Hello ∂f∂x",
+    );
+    cy.get(cesc("#\\/pContent1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∂f∂x");
+    cy.get(cesc("#\\/pContent2")).should(
+      "contain.text",
+      "Content 2: Bye ∫baf(x)dx",
+    );
+    cy.get(cesc("#\\/pContent2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∫baf(x)dx");
 
-
-    cy.log("move labels by dragging")
+    cy.log("move labels by dragging");
 
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label1",
-        args: { x: -2, y: 3 }
-      })
+        args: { x: -2, y: 3 },
+      });
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label2",
-        args: { x: 4, y: -5 }
-      })
-    })
+        args: { x: 4, y: -5 },
+      });
+    });
 
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow").should(
+      "contain.text",
+      "(4,−5)",
+    );
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−2,3)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,−5)");
 
+    cy.log("move labels by entering coordinates");
 
-    cy.log("move labels by entering coordinates")
+    cy.get(cesc("#\\/anchorCoords1") + " textarea").type(
+      "{home}{shift+end}{backspace}(6,7){enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/anchorCoords2") + " textarea").type(
+      "{home}{shift+end}{backspace}(8,9){enter}",
+      { force: true },
+    );
 
-    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow").should("contain.text", "(8,9)");
 
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(8,9)");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.log("change position from anchor");
+    cy.get(cesc("#\\/positionFromAnchor1")).select("lowerLeft");
+    cy.get(cesc("#\\/positionFromAnchor2")).select("lowerRight");
 
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: lowerleft",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: lowerright",
+    );
 
-    cy.log('change position from anchor');
-    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
-    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
+    cy.log("make not draggable");
 
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/draggable1")).click();
+    cy.get(cesc("#\\/draggable2")).click();
+    cy.get(cesc("#\\/pDraggable1")).should("have.text", "Draggable 1: false");
+    cy.get(cesc("#\\/pDraggable2")).should("have.text", "Draggable 2: false");
 
-
-    cy.log('make not draggable')
-
-    cy.get(cesc('#\\/draggable1')).click();
-    cy.get(cesc('#\\/draggable2')).click();
-    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
-    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
-
-
-    cy.log('cannot move labels by dragging')
+    cy.log("cannot move labels by dragging");
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label1",
-        args: { x: -10, y: -9 }
-      })
+        args: { x: -10, y: -9 },
+      });
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label2",
-        args: { x: -8, y: -7 }
-      })
-    })
+        args: { x: -8, y: -7 },
+      });
+    });
 
     // since nothing will change, wait for boolean input to change to know core has responded
     cy.get(cesc("#\\/bi")).click();
-    cy.get(cesc("#\\/b")).should('have.text', 'true');
+    cy.get(cesc("#\\/b")).should("have.text", "true");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(8,9)");
+  });
 
-
-  })
-
-  it('label in graph, just text', () => {
+  it("label in graph, just text", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <graph >
       <label anchor="$anchorCoords1" name="label1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1">Hello</label>
@@ -200,100 +243,134 @@ describe('Label Tag Tests', function () {
     <p name="pContent2">Content 2: $label2</p>
     <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
 
-    ` }, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,3)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,0)");
 
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
-    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
-    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
-    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
-    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
-    cy.get(cesc("#\\/pContent1")).should('have.text', 'Content 1: Hello')
-    cy.get(cesc("#\\/pContent2")).should('have.text', 'Content 2: Bye')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: upperright",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: center",
+    );
+    cy.get(cesc("#\\/positionFromAnchor1")).should("have.value", "1");
+    cy.get(cesc("#\\/positionFromAnchor2")).should("have.value", "9");
+    cy.get(cesc("#\\/pDraggable1")).should("have.text", "Draggable 1: true");
+    cy.get(cesc("#\\/pDraggable2")).should("have.text", "Draggable 2: true");
+    cy.get(cesc("#\\/pContent1")).should("have.text", "Content 1: Hello");
+    cy.get(cesc("#\\/pContent2")).should("have.text", "Content 2: Bye");
 
-
-    cy.log("move labels by dragging")
+    cy.log("move labels by dragging");
 
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label1",
-        args: { x: -2, y: 3 }
-      })
+        args: { x: -2, y: 3 },
+      });
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label2",
-        args: { x: 4, y: -5 }
-      })
-    })
+        args: { x: 4, y: -5 },
+      });
+    });
 
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow").should(
+      "contain.text",
+      "(4,−5)",
+    );
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−2,3)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,−5)");
 
+    cy.log("move labels by entering coordinates");
 
-    cy.log("move labels by entering coordinates")
+    cy.get(cesc("#\\/anchorCoords1") + " textarea").type(
+      "{home}{shift+end}{backspace}(6,7){enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/anchorCoords2") + " textarea").type(
+      "{home}{shift+end}{backspace}(8,9){enter}",
+      { force: true },
+    );
 
-    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow").should("contain.text", "(8,9)");
 
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(8,9)");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.log("change position from anchor");
+    cy.get(cesc("#\\/positionFromAnchor1")).select("lowerLeft");
+    cy.get(cesc("#\\/positionFromAnchor2")).select("lowerRight");
 
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: lowerleft",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: lowerright",
+    );
 
-    cy.log('change position from anchor');
-    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
-    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
+    cy.log("make not draggable");
 
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/draggable1")).click();
+    cy.get(cesc("#\\/draggable2")).click();
+    cy.get(cesc("#\\/pDraggable1")).should("have.text", "Draggable 1: false");
+    cy.get(cesc("#\\/pDraggable2")).should("have.text", "Draggable 2: false");
 
-
-    cy.log('make not draggable')
-
-    cy.get(cesc('#\\/draggable1')).click();
-    cy.get(cesc('#\\/draggable2')).click();
-    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
-    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
-
-
-    cy.log('cannot move labels by dragging')
+    cy.log("cannot move labels by dragging");
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label1",
-        args: { x: -10, y: -9 }
-      })
+        args: { x: -10, y: -9 },
+      });
       win.callAction1({
         actionName: "moveLabel",
         componentName: "/label2",
-        args: { x: -8, y: -7 }
-      })
-    })
+        args: { x: -8, y: -7 },
+      });
+    });
 
     // since nothing will change, wait for boolean input to change to know core has responded
     cy.get(cesc("#\\/bi")).click();
-    cy.get(cesc("#\\/b")).should('have.text', 'true');
+    cy.get(cesc("#\\/b")).should("have.text", "true");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(8,9)");
+  });
 
-
-  })
-
-  it('label in graph, handle bad anchor coordinates', () => {
+  it("label in graph, handle bad anchor coordinates", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <graph >
@@ -305,37 +382,50 @@ describe('Label Tag Tests', function () {
     <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="x" /></p>
     
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'x')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
 
+    cy.log("give good anchor coords");
 
-    cy.log("give good anchor coords")
+    cy.get(cesc("#\\/anchorCoords1") + " textarea").type(
+      "{home}{shift+end}{backspace}(6,7){enter}",
+      { force: true },
+    );
 
-    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow").should("contain.text", "(6,7)");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(6,7)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.log("give bad anchor coords again");
 
-    cy.log("give bad anchor coords again")
+    cy.get(cesc("#\\/anchorCoords1") + " textarea").type(
+      "{home}{shift+end}{backspace}q{enter}",
+      { force: true },
+    );
 
-    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}q{enter}", { force: true })
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow").should("contain.text", "q");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', 'q')
-
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', 'q')
-
-
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "q");
   });
 
-  it('color label via style', () => {
+  it("color label via style", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <setup>
       <styleDefinitions>
         <styleDefinition styleNumber="2" textColor="green" />
@@ -355,90 +445,154 @@ describe('Label Tag Tests', function () {
       $variable_style
     </graph>
 
-    ` }, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/tsd_no_style")).should("have.text", "black");
+    cy.get(cesc("#\\/tc_no_style")).should("have.text", "black");
+    cy.get(cesc("#\\/bc_no_style")).should("have.text", "none");
 
-    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/tsd_fixed_style")).should("have.text", "green");
+    cy.get(cesc("#\\/tc_fixed_style")).should("have.text", "green");
+    cy.get(cesc("#\\/bc_fixed_style")).should("have.text", "none");
 
-    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/tsd_variable_style")).should("have.text", "black");
+    cy.get(cesc("#\\/tc_variable_style")).should("have.text", "black");
+    cy.get(cesc("#\\/bc_variable_style")).should("have.text", "none");
 
+    cy.get(cesc("#\\/no_style")).should("have.css", "color", "rgb(0, 0, 0)");
+    cy.get(cesc("#\\/no_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
-    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc("#\\/fixed_style")).should(
+      "have.css",
+      "color",
+      "rgb(0, 128, 0)",
+    );
+    cy.get(cesc("#\\/fixed_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
-    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
-
-    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc("#\\/variable_style")).should(
+      "have.css",
+      "color",
+      "rgb(0, 0, 0)",
+    );
+    cy.get(cesc("#\\/variable_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
     // TODO: how to test color in graph
 
+    cy.get(cesc("#\\/sn") + " textarea").type("{end}{backspace}2{enter}", {
+      force: true,
+    });
 
-    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get(cesc("#\\/tsd_variable_style")).should("have.text", "green");
+    cy.get(cesc("#\\/tc_variable_style")).should("have.text", "green");
+    cy.get(cesc("#\\/bc_variable_style")).should("have.text", "none");
 
-    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/tsd_no_style")).should("have.text", "black");
+    cy.get(cesc("#\\/tc_no_style")).should("have.text", "black");
+    cy.get(cesc("#\\/bc_no_style")).should("have.text", "none");
 
-    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/tsd_fixed_style")).should("have.text", "green");
+    cy.get(cesc("#\\/tc_fixed_style")).should("have.text", "green");
+    cy.get(cesc("#\\/bc_fixed_style")).should("have.text", "none");
 
-    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/no_style")).should("have.css", "color", "rgb(0, 0, 0)");
+    cy.get(cesc("#\\/no_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
-    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc("#\\/fixed_style")).should(
+      "have.css",
+      "color",
+      "rgb(0, 128, 0)",
+    );
+    cy.get(cesc("#\\/fixed_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
-    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc("#\\/variable_style")).should(
+      "have.css",
+      "color",
+      "rgb(0, 128, 0)",
+    );
+    cy.get(cesc("#\\/variable_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
-    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(cesc("#\\/sn") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
 
+    cy.get(cesc("#\\/tsd_variable_style")).should(
+      "have.text",
+      "red with a blue background",
+    );
+    cy.get(cesc("#\\/tc_variable_style")).should("have.text", "red");
+    cy.get(cesc("#\\/bc_variable_style")).should("have.text", "blue");
 
+    cy.get(cesc("#\\/tsd_no_style")).should("have.text", "black");
+    cy.get(cesc("#\\/tc_no_style")).should("have.text", "black");
+    cy.get(cesc("#\\/bc_no_style")).should("have.text", "none");
 
-    cy.get(cesc('#\\/sn') + ' textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(cesc("#\\/tsd_fixed_style")).should("have.text", "green");
+    cy.get(cesc("#\\/tc_fixed_style")).should("have.text", "green");
+    cy.get(cesc("#\\/bc_fixed_style")).should("have.text", "none");
 
-    cy.get(cesc('#\\/tsd_variable_style')).should('have.text', 'red with a blue background');
-    cy.get(cesc('#\\/tc_variable_style')).should('have.text', 'red');
-    cy.get(cesc('#\\/bc_variable_style')).should('have.text', 'blue');
+    cy.get(cesc("#\\/no_style")).should("have.css", "color", "rgb(0, 0, 0)");
+    cy.get(cesc("#\\/no_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
-    cy.get(cesc('#\\/tsd_no_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/tc_no_style')).should('have.text', 'black');
-    cy.get(cesc('#\\/bc_no_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/fixed_style")).should(
+      "have.css",
+      "color",
+      "rgb(0, 128, 0)",
+    );
+    cy.get(cesc("#\\/fixed_style")).should(
+      "have.css",
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
 
-    cy.get(cesc('#\\/tsd_fixed_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/tc_fixed_style')).should('have.text', 'green');
-    cy.get(cesc('#\\/bc_fixed_style')).should('have.text', 'none');
+    cy.get(cesc("#\\/variable_style")).should(
+      "have.css",
+      "color",
+      "rgb(255, 0, 0)",
+    );
+    cy.get(cesc("#\\/variable_style")).should(
+      "have.css",
+      "background-color",
+      "rgb(0, 0, 255)",
+    );
+  });
 
-    cy.get(cesc('#\\/no_style')).should('have.css', 'color', 'rgb(0, 0, 0)');
-    cy.get(cesc('#\\/no_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
-
-    cy.get(cesc('#\\/fixed_style')).should('have.css', 'color', 'rgb(0, 128, 0)');
-    cy.get(cesc('#\\/fixed_style')).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
-
-    cy.get(cesc('#\\/variable_style')).should('have.css', 'color', 'rgb(255, 0, 0)');
-    cy.get(cesc('#\\/variable_style')).should('have.css', 'background-color', 'rgb(0, 0, 255)');
-
-
-
-  })
-
-  it('label copied by plain macro, but not value, reflects style and anchor position', () => {
+  it("label copied by plain macro, but not value, reflects style and anchor position", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <setup>
       <styleDefinitions>
         <styleDefinition styleNumber="2" textColor="green" />
@@ -474,10 +628,13 @@ describe('Label Tag Tests', function () {
 
     <p name="p2">$m1.value $m2.value</p>
 
-    ` }, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -491,105 +648,153 @@ describe('Label Tag Tests', function () {
       let m1dName = stateVariables["/p2"].activeChildren[0].componentName;
       let m2dName = stateVariables["/p2"].activeChildren[2].componentName;
 
-      let m1cAnchor = '#' + cesc2(m1cName) + " .mjx-mrow";
-      let m2cAnchor = '#' + cesc2(m2cName) + " .mjx-mrow";
-      let m1dAnchor = '#' + cesc2(m1dName) + " .mjx-mrow";
-      let m2dAnchor = '#' + cesc2(m2dName) + " .mjx-mrow";
+      let m1cAnchor = "#" + cesc2(m1cName) + " .mjx-mrow";
+      let m2cAnchor = "#" + cesc2(m2cName) + " .mjx-mrow";
+      let m1dAnchor = "#" + cesc2(m1dName) + " .mjx-mrow";
+      let m2dAnchor = "#" + cesc2(m2dName) + " .mjx-mrow";
 
-      cy.get(m1cAnchor).eq(0).should('have.text', 'x2')
-      cy.get(m1dAnchor).eq(0).should('have.text', 'x2')
-      cy.get(m2cAnchor).eq(0).should('have.text', 'x3')
-      cy.get(m2dAnchor).eq(0).should('have.text', 'x3')
+      cy.get(m1cAnchor).eq(0).should("have.text", "x2");
+      cy.get(m1dAnchor).eq(0).should("have.text", "x2");
+      cy.get(m2cAnchor).eq(0).should("have.text", "x3");
+      cy.get(m2dAnchor).eq(0).should("have.text", "x3");
 
-      cy.get(m1cAnchor).should('have.css', 'color', 'rgb(0, 128, 0)');
-      cy.get(m1dAnchor).should('have.css', 'color', 'rgb(0, 0, 0)');
-      cy.get(m2cAnchor).should('have.css', 'color', 'rgb(255, 0, 0)');
-      cy.get(m2dAnchor).should('have.css', 'color', 'rgb(0, 0, 0)');
+      cy.get(m1cAnchor).should("have.css", "color", "rgb(0, 128, 0)");
+      cy.get(m1dAnchor).should("have.css", "color", "rgb(0, 0, 0)");
+      cy.get(m2cAnchor).should("have.css", "color", "rgb(255, 0, 0)");
+      cy.get(m2dAnchor).should("have.css", "color", "rgb(0, 0, 0)");
 
-      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
-      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)')
-      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc("#\\/m1coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
+      cy.get(cesc("#\\/m2coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(3,4)");
+      cy.get(cesc("#\\/m1acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
+      cy.get(cesc("#\\/m2acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(3,4)");
+      cy.get(cesc("#\\/m1bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
+      cy.get(cesc("#\\/m2bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
 
-
-
-      cy.log("move first labels")
+      cy.log("move first labels");
       cy.window().then(async (win) => {
         win.callAction1({
           actionName: "moveLabel",
           componentName: "/m1",
-          args: { x: -2, y: 3 }
-        })
+          args: { x: -2, y: 3 },
+        });
         win.callAction1({
           actionName: "moveLabel",
           componentName: "/m2",
-          args: { x: 4, y: -5 }
-        })
-      })
+          args: { x: 4, y: -5 },
+        });
+      });
 
-      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').should('contain.text', '(4,−5)')
+      cy.get(cesc("#\\/m2coords") + " .mjx-mrow").should(
+        "contain.text",
+        "(4,−5)",
+      );
 
-      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
-      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
-      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc("#\\/m1coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−2,3)");
+      cy.get(cesc("#\\/m2coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(4,−5)");
+      cy.get(cesc("#\\/m1acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−2,3)");
+      cy.get(cesc("#\\/m2acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(4,−5)");
+      cy.get(cesc("#\\/m1bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
+      cy.get(cesc("#\\/m2bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
 
-
-      cy.log("move second labels")
+      cy.log("move second labels");
       cy.window().then(async (win) => {
         win.callAction1({
           actionName: "moveLabel",
           componentName: m1aName,
-          args: { x: 7, y: 1 }
-        })
+          args: { x: 7, y: 1 },
+        });
         win.callAction1({
           actionName: "moveLabel",
           componentName: m2aName,
-          args: { x: -8, y: 2 }
-        })
-      })
+          args: { x: -8, y: 2 },
+        });
+      });
 
-      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').should('contain.text', '(−8,2)')
+      cy.get(cesc("#\\/m2coords") + " .mjx-mrow").should(
+        "contain.text",
+        "(−8,2)",
+      );
 
-      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
-      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+      cy.get(cesc("#\\/m1coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(7,1)");
+      cy.get(cesc("#\\/m2coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−8,2)");
+      cy.get(cesc("#\\/m1acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(7,1)");
+      cy.get(cesc("#\\/m2acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−8,2)");
+      cy.get(cesc("#\\/m1bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
+      cy.get(cesc("#\\/m2bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
 
-
-      cy.log("move third labels")
+      cy.log("move third labels");
       cy.window().then(async (win) => {
         win.callAction1({
           actionName: "moveLabel",
           componentName: m1bName,
-          args: { x: -6, y: 3 }
-        })
+          args: { x: -6, y: 3 },
+        });
         win.callAction1({
           actionName: "moveLabel",
           componentName: m2bName,
-          args: { x: -5, y: -4 }
-        })
-      })
+          args: { x: -5, y: -4 },
+        });
+      });
 
-      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').should('contain.text', '(−5,−4)')
+      cy.get(cesc("#\\/m2bcoords") + " .mjx-mrow").should(
+        "contain.text",
+        "(−5,−4)",
+      );
 
-      cy.get(cesc('#\\/m1coords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get(cesc('#\\/m2coords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get(cesc('#\\/m1acoords') + ' .mjx-mrow').eq(0).should('have.text', '(7,1)')
-      cy.get(cesc('#\\/m2acoords') + ' .mjx-mrow').eq(0).should('have.text', '(−8,2)')
-      cy.get(cesc('#\\/m1bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(−6,3)')
-      cy.get(cesc('#\\/m2bcoords') + ' .mjx-mrow').eq(0).should('have.text', '(−5,−4)')
-
-
-
-    })
-  })
-
-
+      cy.get(cesc("#\\/m1coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(7,1)");
+      cy.get(cesc("#\\/m2coords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−8,2)");
+      cy.get(cesc("#\\/m1acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(7,1)");
+      cy.get(cesc("#\\/m2acoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−8,2)");
+      cy.get(cesc("#\\/m1bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−6,3)");
+      cy.get(cesc("#\\/m2bcoords") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(−5,−4)");
+    });
+  });
 });

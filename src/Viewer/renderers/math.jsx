@@ -1,19 +1,19 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
-import useDoenetRender from '../useDoenetRenderer';
+import React, { useContext, useEffect, useRef } from "react";
+import { BoardContext, TEXT_LAYER_OFFSET } from "./graph";
+import useDoenetRender from "../useDoenetRenderer";
 import { MathJax } from "better-react-mathjax";
-import me from 'math-expressions';
-import { useRecoilValue } from 'recoil';
-import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
-import { textRendererStyle } from '../../Core/utils/style';
-import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
-import { cesc } from '../../_utils/url';
+import me from "math-expressions";
+import { useRecoilValue } from "recoil";
+import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { textRendererStyle } from "../../Core/utils/style";
+import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
+import { cesc } from "../../_utils/url";
 
 export default React.memo(function MathComponent(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } =
+    useDoenetRender(props);
 
   MathComponent.ignoreActionsWithoutCore = () => true;
-
 
   let mathJXG = useRef(null);
   let anchorPointJXG = useRef(null);
@@ -41,7 +41,6 @@ export default React.memo(function MathComponent(props) {
 
   const darkMode = useRecoilValue(darkModeAtom);
 
-
   useEffect(() => {
     //On unmount
     return () => {
@@ -50,24 +49,26 @@ export default React.memo(function MathComponent(props) {
       }
 
       if (board) {
-        board.off('move', boardMoveHandler);
+        board.off("move", boardMoveHandler);
       }
-
-    }
-  }, [])
-
+    };
+  }, []);
 
   useEffect(() => {
     if (board) {
-      board.on('move', boardMoveHandler)
+      board.on("move", boardMoveHandler);
     }
-  }, [board])
-
+  }, [board]);
 
   function createMathJXG() {
-
-    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
-    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+    let textColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.textColorDarkMode
+        : SVs.selectedStyle.textColor;
+    let backgroundColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.backgroundColorDarkMode
+        : SVs.selectedStyle.backgroundColor;
 
     let cssStyle = ``;
     if (backgroundColor) {
@@ -90,40 +91,40 @@ export default React.memo(function MathComponent(props) {
       parse: false,
     };
 
-
     let newAnchorPointJXG;
 
     try {
       let anchor = me.fromAst(SVs.anchor);
       let anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
 
       if (!Number.isFinite(anchorCoords[0])) {
         anchorCoords[0] = 0;
-        jsxMathAttributes['visible'] = false;
+        jsxMathAttributes["visible"] = false;
       }
       if (!Number.isFinite(anchorCoords[1])) {
         anchorCoords[1] = 0;
-        jsxMathAttributes['visible'] = false;
+        jsxMathAttributes["visible"] = false;
       }
 
-      newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
-
-
+      newAnchorPointJXG = board.create("point", anchorCoords, {
+        visible: false,
+      });
     } catch (e) {
-      jsxMathAttributes['visible'] = false;
-      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
+      jsxMathAttributes["visible"] = false;
+      newAnchorPointJXG = board.create("point", [0, 0], { visible: false });
     }
 
     jsxMathAttributes.anchor = newAnchorPointJXG;
 
-    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+      SVs.positionFromAnchor,
+    );
     jsxMathAttributes.anchorx = anchorx;
     jsxMathAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
-
 
     let beginDelim, endDelim;
     if (SVs.renderMode === "inline") {
@@ -144,10 +145,14 @@ export default React.memo(function MathComponent(props) {
       endDelim = "\\)";
     }
 
-    let newMathJXG = board.create('text', [0, 0, beginDelim + SVs.latex + endDelim], jsxMathAttributes);
+    let newMathJXG = board.create(
+      "text",
+      [0, 0, beginDelim + SVs.latex + endDelim],
+      jsxMathAttributes,
+    );
     newMathJXG.isDraggable = !fixLocation.current;
 
-    newMathJXG.on('down', function (e) {
+    newMathJXG.on("down", function (e) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
@@ -156,66 +161,63 @@ export default React.memo(function MathComponent(props) {
       if (!fixed.current) {
         callAction({
           action: actions.mathFocused,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
-
     });
 
-    newMathJXG.on('hit', function (e) {
+    newMathJXG.on("hit", function (e) {
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
       callAction({
         action: actions.mathFocused,
-        args: { name }   // send name so get original name if adapted
+        args: { name }, // send name so get original name if adapted
       });
     });
 
-    newMathJXG.on('up', function (e) {
+    newMathJXG.on("up", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveMath,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
+          },
         });
         dragged.current = false;
       } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.mathClicked,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
       pointerIsDown.current = false;
-
     });
 
-    newMathJXG.on('keyfocusout', function (e) {
+    newMathJXG.on("keyfocusout", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveMath,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
-        })
+          },
+        });
         dragged.current = false;
       }
-    })
+    });
 
-    newMathJXG.on('drag', function (e) {
-
+    newMathJXG.on("drag", function (e) {
       let viaPointer = e.type === "pointermove";
 
       //Protect against very small unintended drags
-      if (!viaPointer ||
-        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        !viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         dragged.current = true;
       }
-
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newMathJXG.size[0] / board.unitX;
@@ -226,13 +228,13 @@ export default React.memo(function MathComponent(props) {
 
       let offsetx = 0;
       if (anchorx === "middle") {
-        offsetx = -width / 2
+        offsetx = -width / 2;
       } else if (anchorx === "right") {
         offsetx = -width;
       }
       let offsety = 0;
       if (anchory === "middle") {
-        offsety = -height / 2
+        offsety = -height / 2;
       } else if (anchory === "top") {
         offsety = -height;
       }
@@ -242,9 +244,7 @@ export default React.memo(function MathComponent(props) {
       let yminAdjusted = ymin + 0.04 * (ymax - ymin) - offsety - height;
       let ymaxAdjusted = ymax - 0.04 * (ymax - ymin) - offsety;
 
-
       if (viaPointer) {
-
         // the reason we calculate point position with this algorithm,
         // rather than using .X() and .Y() directly
         // is that attributes .X() and .Y() are affected by the
@@ -255,21 +255,28 @@ export default React.memo(function MathComponent(props) {
         // (as dragging uses the mouse location)
         // TODO: find an example where need this this additional complexity
         var o = board.origin.scrCoords;
-        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-          - o[1]) / board.unitX;
+        calculatedX.current =
+          (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) /
+          board.unitX;
 
-        calculatedY.current = (o[2] -
-          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-          / board.unitY;
+        calculatedY.current =
+          (o[2] - (pointAtDown.current[2] + e.y - pointerAtDown.current[1])) /
+          board.unitY;
       } else {
-
-        calculatedX.current = newAnchorPointJXG.X() + newMathJXG.relativeCoords.usrCoords[1];
-        calculatedY.current = newAnchorPointJXG.Y() + newMathJXG.relativeCoords.usrCoords[2];
-
+        calculatedX.current =
+          newAnchorPointJXG.X() + newMathJXG.relativeCoords.usrCoords[1];
+        calculatedY.current =
+          newAnchorPointJXG.Y() + newMathJXG.relativeCoords.usrCoords[2];
       }
 
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
-      calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
+      calculatedX.current = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, calculatedX.current),
+      );
+      calculatedY.current = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, calculatedY.current),
+      );
 
       callAction({
         action: actions.moveMath,
@@ -278,16 +285,17 @@ export default React.memo(function MathComponent(props) {
           y: calculatedY.current,
           transient: true,
           skippable: true,
-        }
+        },
       });
 
       newMathJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
-
+      newAnchorPointJXG.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionFromCore.current,
+      );
     });
 
-    newMathJXG.on('keydown', function (e) {
-
+    newMathJXG.on("keydown", function (e) {
       if (e.key === "Enter") {
         if (dragged.current) {
           callAction({
@@ -295,17 +303,16 @@ export default React.memo(function MathComponent(props) {
             args: {
               x: calculatedX.current,
               y: calculatedY.current,
-            }
-          })
+            },
+          });
           dragged.current = false;
         }
         callAction({
           action: actions.mathClicked,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
-    })
-
+    });
 
     mathJXG.current = newMathJXG;
     anchorPointJXG.current = newAnchorPointJXG;
@@ -316,22 +323,21 @@ export default React.memo(function MathComponent(props) {
     // and, especially for displayed math, the drag handlers may not be called
     // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
     setTimeout(() => {
-
       if (mathJXG.current) {
         mathJXG.current.needsUpdate = true;
-        mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
+        mathJXG.current.setText(beginDelim + SVs.latex + endDelim);
         mathJXG.current.update();
         board.updateRenderer();
       }
-
-    }, 1000)
+    }, 1000);
   }
 
   function boardMoveHandler(e) {
     if (pointerIsDown.current) {
       //Protect against very small unintended move
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         pointerMovedSinceDown.current = true;
       }
@@ -339,12 +345,12 @@ export default React.memo(function MathComponent(props) {
   }
 
   function deleteMathJXG() {
-    mathJXG.current.off('drag');
-    mathJXG.current.off('down');
-    mathJXG.current.off('hit');
-    mathJXG.current.off('up');
-    mathJXG.current.off('keyfocusout');
-    mathJXG.current.off('keydown');
+    mathJXG.current.off("drag");
+    mathJXG.current.off("down");
+    mathJXG.current.off("hit");
+    mathJXG.current.off("up");
+    mathJXG.current.off("keyfocusout");
+    mathJXG.current.off("keydown");
     board.removeObject(mathJXG.current);
     mathJXG.current = null;
   }
@@ -355,21 +361,22 @@ export default React.memo(function MathComponent(props) {
       let anchor = me.fromAst(SVs.anchor);
       anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
     } catch (e) {
       anchorCoords = [NaN, NaN];
     }
 
     lastPositionFromCore.current = anchorCoords;
 
-
     if (mathJXG.current === null) {
       createMathJXG();
     } else {
-
       mathJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      anchorPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, anchorCoords);
+      anchorPointJXG.current.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        anchorCoords,
+      );
 
       let beginDelim, endDelim;
       if (SVs.renderMode === "inline") {
@@ -390,20 +397,23 @@ export default React.memo(function MathComponent(props) {
         endDelim = "\\)";
       }
 
-
-      mathJXG.current.setText(beginDelim + SVs.latex + endDelim)
+      mathJXG.current.setText(beginDelim + SVs.latex + endDelim);
 
       let visible = !SVs.hidden;
 
-      if (Number.isFinite(anchorCoords[0]) && Number.isFinite(anchorCoords[1])) {
-        let actuallyChangedVisibility = mathJXG.current.visProp["visible"] !== visible;
+      if (
+        Number.isFinite(anchorCoords[0]) &&
+        Number.isFinite(anchorCoords[1])
+      ) {
+        let actuallyChangedVisibility =
+          mathJXG.current.visProp["visible"] !== visible;
         mathJXG.current.visProp["visible"] = visible;
         mathJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          mathJXG.current.setAttribute({ visible })
+          mathJXG.current.setAttribute({ visible });
         }
       } else {
         mathJXG.current.visProp["visible"] = false;
@@ -417,8 +427,14 @@ export default React.memo(function MathComponent(props) {
         mathJXG.current.setAttribute({ layer });
       }
 
-      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
-      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let textColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.textColorDarkMode
+          : SVs.selectedStyle.textColor;
+      let backgroundColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.backgroundColorDarkMode
+          : SVs.selectedStyle.backgroundColor;
       let cssStyle = ``;
       if (backgroundColor) {
         cssStyle += `background-color: ${backgroundColor}`;
@@ -435,7 +451,6 @@ export default React.memo(function MathComponent(props) {
         mathJXG.current.visProp.highlightcssstyle = cssStyle;
       }
 
-
       mathJXG.current.visProp.highlight = !fixLocation.current;
       mathJXG.current.visProp.fixed = fixed.current;
       mathJXG.current.isDraggable = !fixLocation.current;
@@ -443,7 +458,9 @@ export default React.memo(function MathComponent(props) {
       mathJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+          SVs.positionFromAnchor,
+        );
         mathJXG.current.visProp.anchorx = anchorx;
         mathJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
@@ -458,8 +475,7 @@ export default React.memo(function MathComponent(props) {
       board.updateRenderer();
     }
 
-    return <a name={id} />
-
+    return <a name={id} />;
   }
 
   // not in board
@@ -467,7 +483,6 @@ export default React.memo(function MathComponent(props) {
   if (SVs.hidden) {
     return null;
   }
-
 
   let beginDelim, endDelim;
   if (SVs.renderMode === "inline") {
@@ -496,27 +511,25 @@ export default React.memo(function MathComponent(props) {
   // instead, we want to be able to put the mathInput inside mathjax
   // This is just a stopgap solution that works in a few simple cases!!!
 
-
   // Note: when a component type gets switched, sometimes state variables change before renderer
   // so protect against case where the latexWithInputChildren is gone but renderer is still math
   if (!SVs.latexWithInputChildren) {
     return null;
   }
 
-  let latexOrInputChildren = SVs.latexWithInputChildren.map(
-    x => typeof x === "number" ? this.children[x] : beginDelim + x + endDelim
-  )
+  let latexOrInputChildren = SVs.latexWithInputChildren.map((x) =>
+    typeof x === "number" ? this.children[x] : beginDelim + x + endDelim,
+  );
 
-  let anchors = [
-    <a name={id} key={id} />
-  ];
+  let anchors = [<a name={id} key={id} />];
   if (SVs.mrowChildNames) {
-    anchors.push(...SVs.mrowChildNames.map(x => {
-      let rowId = cesc(x);
-      return <a name={rowId} key={rowId} id={rowId} />
-    }))
+    anchors.push(
+      ...SVs.mrowChildNames.map((x) => {
+        let rowId = cesc(x);
+        return <a name={rowId} key={rowId} id={rowId} />;
+      }),
+    );
   }
-
 
   let style = textRendererStyle(darkMode, SVs.selectedStyle);
 
@@ -525,14 +538,45 @@ export default React.memo(function MathComponent(props) {
   // so hard coded the only two cases using so far: with 1 or 2 entries
 
   if (latexOrInputChildren.length === 0) {
-    return <>{anchors}<span id={id} style={style}></span></>
-
+    return (
+      <>
+        {anchors}
+        <span id={id} style={style}></span>
+      </>
+    );
   } else if (latexOrInputChildren.length === 1) {
-    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
-
+    return (
+      <>
+        {anchors}
+        <span id={id} style={style}>
+          <MathJax hideUntilTypeset={"first"} inline dynamic>
+            {latexOrInputChildren[0]}
+          </MathJax>
+        </span>
+      </>
+    );
   } else if (latexOrInputChildren.length === 2) {
-    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
+    return (
+      <>
+        {anchors}
+        <span id={id} style={style}>
+          <MathJax hideUntilTypeset={"first"} inline dynamic>
+            {latexOrInputChildren[0]}
+            {latexOrInputChildren[1]}
+          </MathJax>
+        </span>
+      </>
+    );
   } else {
-    return <>{anchors}<span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
+    return (
+      <>
+        {anchors}
+        <span id={id} style={style}>
+          <MathJax hideUntilTypeset={"first"} inline dynamic>
+            {latexOrInputChildren[0]}
+          </MathJax>
+        </span>
+      </>
+    );
   }
-})
+});

@@ -1,5 +1,5 @@
-import MathComponent from '../Math';
-import me from 'math-expressions';
+import MathComponent from "../Math";
+import me from "math-expressions";
 
 export default class MathOperator extends MathComponent {
   static componentType = "_mathOperator";
@@ -31,62 +31,60 @@ export default class MathOperator extends MathComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let breakStringsIntoMathsBySpaces = function ({ matchedChildren }) {
-
       // break any string by white space and wrap pieces with math or number
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (typeof c === "string") {
           return [
             ...a,
-            ...c.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
+            ...c
+              .split(/\s+/)
+              .filter((s) => s)
+              .map((s) => ({
                 componentType: Number.isFinite(Number(s)) ? "number" : "math",
-                children: [s]
-              }))
-          ]
+                children: [s],
+              })),
+          ];
         } else {
-          return [...a, c]
+          return [...a, c];
         }
       }, []);
 
       return {
         success: true,
         newChildren: newChildren,
-      }
-    }
-
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoMathsBySpaces
+      replacementFunction: breakStringsIntoMathsBySpaces,
     });
 
     return sugarInstructions;
-
   }
-
 
   static returnChildGroups() {
-
-    return [{
-      group: "maths",
-      componentTypes: ["math"]
-    }, {
-      group: "numbers",
-      componentTypes: ["number"]
-    }, {
-      group: "mathLists",
-      componentTypes: ["mathList"]
-    }, {
-      group: "numberLists",
-      componentTypes: ["numberList"]
-    }]
-
+    return [
+      {
+        group: "maths",
+        componentTypes: ["math"],
+      },
+      {
+        group: "numbers",
+        componentTypes: ["number"],
+      },
+      {
+        group: "mathLists",
+        componentTypes: ["mathList"],
+      },
+      {
+        group: "numberLists",
+        componentTypes: ["numberList"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.displayDigits = {
@@ -100,43 +98,48 @@ export default class MathOperator extends MathComponent {
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         mathLikeChildren: {
           dependencyType: "child",
           childGroups: ["maths", "numbers", "mathLists", "numberLists"],
-          variableNames: ["displayDigits"]
-        }
+          variableNames: ["displayDigits"],
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDigitsAttr !== null) {
           return {
             setValue: {
-              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
-            }
-          }
-        } else if (dependencyValues.displayDecimalsAttr === null
-          && dependencyValues.mathLikeChildren.length === 1
-          && !(usedDefault.mathLikeChildren[0] && usedDefault.mathLikeChildren[0].displayDigits)
+              displayDigits:
+                dependencyValues.displayDigitsAttr.stateValues.value,
+            },
+          };
+        } else if (
+          dependencyValues.displayDecimalsAttr === null &&
+          dependencyValues.mathLikeChildren.length === 1 &&
+          !(
+            usedDefault.mathLikeChildren[0] &&
+            usedDefault.mathLikeChildren[0].displayDigits
+          )
         ) {
           // have to check to exclude case where have displayDecimals attribute
           // because otherwise a non-default displayDigits will win over displayDecimals
           return {
             setValue: {
-              displayDigits: dependencyValues.mathLikeChildren[0].stateValues.displayDigits
-            }
+              displayDigits:
+                dependencyValues.mathLikeChildren[0].stateValues.displayDigits,
+            },
           };
         } else {
-          return { useEssentialOrDefaultValue: { displayDigits: true } }
+          return { useEssentialOrDefaultValue: { displayDigits: true } };
         }
-
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.displayDecimals = {
       public: true,
@@ -149,35 +152,41 @@ export default class MathOperator extends MathComponent {
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         mathLikeChildren: {
           dependencyType: "child",
           childGroups: ["maths", "numbers", "mathLists", "numberLists"],
-          variableNames: ["displayDecimals"]
-        }
+          variableNames: ["displayDecimals"],
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDecimalsAttr !== null) {
           return {
             setValue: {
-              displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
-            }
-          }
-        } else if (dependencyValues.mathLikeChildren.length === 1
-          && !(usedDefault.mathLikeChildren[0] && usedDefault.mathLikeChildren[0].displayDecimals)
+              displayDecimals:
+                dependencyValues.displayDecimalsAttr.stateValues.value,
+            },
+          };
+        } else if (
+          dependencyValues.mathLikeChildren.length === 1 &&
+          !(
+            usedDefault.mathLikeChildren[0] &&
+            usedDefault.mathLikeChildren[0].displayDecimals
+          )
         ) {
           return {
             setValue: {
-              displayDecimals: dependencyValues.mathLikeChildren[0].stateValues.displayDecimals
-            }
+              displayDecimals:
+                dependencyValues.mathLikeChildren[0].stateValues
+                  .displayDecimals,
+            },
           };
         } else {
-          return { useEssentialOrDefaultValue: { displayDecimals: true } }
+          return { useEssentialOrDefaultValue: { displayDecimals: true } };
         }
-
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.displaySmallAsZero = {
       public: true,
@@ -190,35 +199,41 @@ export default class MathOperator extends MathComponent {
         displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         mathLikeChildren: {
           dependencyType: "child",
           childGroups: ["maths", "numbers", "mathLists", "numberLists"],
-          variableNames: ["displaySmallAsZero"]
-        }
+          variableNames: ["displaySmallAsZero"],
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
-              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
-            }
-          }
-        } else if (dependencyValues.mathLikeChildren.length === 1
-          && !(usedDefault.mathLikeChildren[0] && usedDefault.mathLikeChildren[0].displaySmallAsZero)
+              displaySmallAsZero:
+                dependencyValues.displaySmallAsZeroAttr.stateValues.value,
+            },
+          };
+        } else if (
+          dependencyValues.mathLikeChildren.length === 1 &&
+          !(
+            usedDefault.mathLikeChildren[0] &&
+            usedDefault.mathLikeChildren[0].displaySmallAsZero
+          )
         ) {
           return {
             setValue: {
-              displaySmallAsZero: dependencyValues.mathLikeChildren[0].stateValues.displaySmallAsZero
-            }
+              displaySmallAsZero:
+                dependencyValues.mathLikeChildren[0].stateValues
+                  .displaySmallAsZero,
+            },
           };
         } else {
-          return { useEssentialOrDefaultValue: { displaySmallAsZero: true } }
+          return { useEssentialOrDefaultValue: { displaySmallAsZero: true } };
         }
-
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.padZeros = {
       public: true,
@@ -231,45 +246,49 @@ export default class MathOperator extends MathComponent {
         padZerosAttr: {
           dependencyType: "attributeComponent",
           attributeName: "padZeros",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         mathLikeChildren: {
           dependencyType: "child",
           childGroups: ["maths", "numbers", "mathLists", "numberLists"],
-          variableNames: ["padZeros"]
-        }
+          variableNames: ["padZeros"],
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.padZerosAttr !== null) {
           return {
             setValue: {
-              padZeros: dependencyValues.padZerosAttr.stateValues.value
-            }
-          }
-        } else if (dependencyValues.mathLikeChildren.length === 1
-          && !(usedDefault.mathLikeChildren[0] && usedDefault.mathLikeChildren[0].padZeros)
+              padZeros: dependencyValues.padZerosAttr.stateValues.value,
+            },
+          };
+        } else if (
+          dependencyValues.mathLikeChildren.length === 1 &&
+          !(
+            usedDefault.mathLikeChildren[0] &&
+            usedDefault.mathLikeChildren[0].padZeros
+          )
         ) {
           return {
             setValue: {
-              padZeros: dependencyValues.mathLikeChildren[0].stateValues.padZeros
-            }
+              padZeros:
+                dependencyValues.mathLikeChildren[0].stateValues.padZeros,
+            },
           };
         } else {
-          return { useEssentialOrDefaultValue: { padZeros: true } }
+          return { useEssentialOrDefaultValue: { padZeros: true } };
         }
-
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.isNumericOperator = {
       returnDependencies: () => ({
         forceNumeric: {
           dependencyType: "stateVariable",
-          variableName: "forceNumeric"
+          variableName: "forceNumeric",
         },
         forceSymbolic: {
           dependencyType: "stateVariable",
-          variableName: "forceSymbolic"
+          variableName: "forceSymbolic",
         },
         mathChildren: {
           dependencyType: "child",
@@ -289,23 +308,26 @@ export default class MathOperator extends MathComponent {
           isNumericOperator = true;
         } else if (dependencyValues.forceSymbolic) {
           isNumericOperator = false;
-        } else if (dependencyValues.mathChildren.length === 0 && dependencyValues.mathListChildren.length === 0) {
+        } else if (
+          dependencyValues.mathChildren.length === 0 &&
+          dependencyValues.mathListChildren.length === 0
+        ) {
           isNumericOperator = true;
         } else {
-
           // have math children and aren't forced to be numeric or symbolic
           // will be numeric only if have all math children are numbers
-          isNumericOperator = dependencyValues.mathChildren.every(
-            x => x.stateValues.isNumber
-          )
-            && dependencyValues.mathListChildren.every(
-              x => x.stateValues.maths.every(y => Number.isFinite(y.tree))
+          isNumericOperator =
+            dependencyValues.mathChildren.every(
+              (x) => x.stateValues.isNumber,
+            ) &&
+            dependencyValues.mathListChildren.every((x) =>
+              x.stateValues.maths.every((y) => Number.isFinite(y.tree)),
             );
         }
 
-        return { setValue: { isNumericOperator } }
-      }
-    }
+        return { setValue: { isNumericOperator } };
+      },
+    };
 
     delete stateVariableDefinitions.codePre;
     delete stateVariableDefinitions.expressionWithCodes;
@@ -315,23 +337,27 @@ export default class MathOperator extends MathComponent {
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { mathOperator: x => me.fromAst('\uff3f') } })
-    }
+      definition: () => ({
+        setValue: { mathOperator: (x) => me.fromAst("\uff3f") },
+      }),
+    };
 
     stateVariableDefinitions.numericOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { numericOperator: x => me.fromAst('\uff3f') } })
-    }
+      definition: () => ({
+        setValue: { numericOperator: (x) => me.fromAst("\uff3f") },
+      }),
+    };
 
     stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { inverseMathOperator: null } })
-    }
+      definition: () => ({ setValue: { inverseMathOperator: null } }),
+    };
 
     stateVariableDefinitions.inverseNumericOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { inverseNumericOperator: null } })
-    }
+      definition: () => ({ setValue: { inverseNumericOperator: null } }),
+    };
 
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
@@ -343,161 +369,198 @@ export default class MathOperator extends MathComponent {
         },
         isNumericOperator: {
           dependencyType: "stateVariable",
-          variableName: "isNumericOperator"
+          variableName: "isNumericOperator",
         },
         mathOperator: {
           dependencyType: "stateVariable",
-          variableName: "mathOperator"
+          variableName: "mathOperator",
         },
         numericOperator: {
           dependencyType: "stateVariable",
-          variableName: "numericOperator"
+          variableName: "numericOperator",
         },
         inverseMathOperator: {
           dependencyType: "stateVariable",
-          variableName: "inverseMathOperator"
+          variableName: "inverseMathOperator",
         },
         inverseNumericOperator: {
           dependencyType: "stateVariable",
-          variableName: "inverseNumericOperator"
-        }
+          variableName: "inverseNumericOperator",
+        },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
         if (dependencyValues.mathNumberChildren.length === 0) {
           return {
-            setValue: { unnormalizedValue: me.fromAst('\uff3f') }
-          }
+            setValue: { unnormalizedValue: me.fromAst("\uff3f") },
+          };
         } else if (dependencyValues.isNumericOperator) {
           let inputs = [];
           for (let child of dependencyValues.mathNumberChildren) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "number"
-            })) {
-              inputs.push(child.stateValues.value)
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "math"
-            })) {
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "number",
+              })
+            ) {
+              inputs.push(child.stateValues.value);
+            } else if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "math",
+              })
+            ) {
               let value = child.stateValues.value.evaluate_to_constant();
               inputs.push(value);
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "numberList"
-            })) {
-              inputs.push(...child.stateValues.numbers)
+            } else if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "numberList",
+              })
+            ) {
+              inputs.push(...child.stateValues.numbers);
             } else {
               // mathLIst
-              let values = child.stateValues.maths.map(x => {
+              let values = child.stateValues.maths.map((x) => {
                 let value = x.evaluate_to_constant();
                 if (!Number.isFinite(value)) {
                   value = NaN;
                 }
                 return value;
-              })
+              });
               inputs.push(...values);
             }
           }
 
           return {
             setValue: {
-              unnormalizedValue: me.fromAst(dependencyValues.numericOperator(inputs))
-            }
-          }
-
+              unnormalizedValue: me.fromAst(
+                dependencyValues.numericOperator(inputs),
+              ),
+            },
+          };
         } else {
-
           let inputs = [];
           for (let child of dependencyValues.mathNumberChildren) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "number"
-            })) {
-              inputs.push(me.fromAst(child.stateValues.value))
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "math"
-            })) {
-              inputs.push(child.stateValues.value)
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "numberList"
-            })) {
-              inputs.push(...child.stateValues.numbers.map(x => me.fromAst(x)))
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "number",
+              })
+            ) {
+              inputs.push(me.fromAst(child.stateValues.value));
+            } else if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "math",
+              })
+            ) {
+              inputs.push(child.stateValues.value);
+            } else if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "numberList",
+              })
+            ) {
+              inputs.push(
+                ...child.stateValues.numbers.map((x) => me.fromAst(x)),
+              );
             } else {
               // mathList
-              inputs.push(...child.stateValues.maths)
+              inputs.push(...child.stateValues.maths);
             }
           }
 
           return {
             setValue: {
-              unnormalizedValue: dependencyValues.mathOperator(inputs)
-            }
-          }
+              unnormalizedValue: dependencyValues.mathOperator(inputs),
+            },
+          };
         }
-
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, componentInfoObjects }) {
-
+      inverseDefinition: function ({
+        desiredStateVariableValues,
+        dependencyValues,
+        componentInfoObjects,
+      }) {
         if (dependencyValues.mathNumberChildren.length === 0) {
-          return { success: false }
+          return { success: false };
         } else if (dependencyValues.isNumericOperator) {
-
           if (dependencyValues.inverseNumericOperator) {
             let inputs = [];
             let canBeModified = [];
             let inputToChildIndex = [];
-            for (let [childInd, child] of dependencyValues.mathNumberChildren.entries()) {
-              if (componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: child.componentType,
-                baseComponentType: "number"
-              })) {
-                inputs.push(child.stateValues.value)
+            for (let [
+              childInd,
+              child,
+            ] of dependencyValues.mathNumberChildren.entries()) {
+              if (
+                componentInfoObjects.isInheritedComponentType({
+                  inheritedComponentType: child.componentType,
+                  baseComponentType: "number",
+                })
+              ) {
+                inputs.push(child.stateValues.value);
                 canBeModified.push(child.stateValues.canBeModified);
                 inputToChildIndex.push(childInd);
-              } else if (componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: child.componentType,
-                baseComponentType: "math"
-              })) {
+              } else if (
+                componentInfoObjects.isInheritedComponentType({
+                  inheritedComponentType: child.componentType,
+                  baseComponentType: "math",
+                })
+              ) {
                 let value = child.stateValues.value.evaluate_to_constant();
                 inputs.push(value);
                 canBeModified.push(child.stateValues.canBeModified);
                 inputToChildIndex.push(childInd);
-              } else if (componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: child.componentType,
-                baseComponentType: "numberList"
-              })) {
-                inputs.push(...child.stateValues.numbers)
-                canBeModified.push(...Array(child.stateValues.numbers.length).fill(child.stateValues.canBeModified));
+              } else if (
+                componentInfoObjects.isInheritedComponentType({
+                  inheritedComponentType: child.componentType,
+                  baseComponentType: "numberList",
+                })
+              ) {
+                inputs.push(...child.stateValues.numbers);
+                canBeModified.push(
+                  ...Array(child.stateValues.numbers.length).fill(
+                    child.stateValues.canBeModified,
+                  ),
+                );
                 if (child.stateValues.numbers.length === 1) {
-                  inputToChildIndex.push(childInd)
+                  inputToChildIndex.push(childInd);
                 } else {
                   // TODO: invert entries of numberlist that isn't length 1?
-                  inputToChildIndex.push(...Array(child.stateValues.numbers.length).fill(NaN));
+                  inputToChildIndex.push(
+                    ...Array(child.stateValues.numbers.length).fill(NaN),
+                  );
                 }
               } else {
                 // mathList
-                let values = child.stateValues.maths.map(x => {
+                let values = child.stateValues.maths.map((x) => {
                   let value = x.evaluate_to_constant();
                   return value;
-                })
+                });
                 inputs.push(...values);
-                canBeModified.push(...Array(child.stateValues.maths.length).fill(child.stateValues.canBeModified));
+                canBeModified.push(
+                  ...Array(child.stateValues.maths.length).fill(
+                    child.stateValues.canBeModified,
+                  ),
+                );
                 if (child.stateValues.maths.length === 1) {
-                  inputToChildIndex.push(childInd)
+                  inputToChildIndex.push(childInd);
                 } else {
                   // TODO: invert entries of mathlist that isn't length 1?
-                  inputToChildIndex.push(...Array(child.stateValues.maths.length).fill(NaN));
+                  inputToChildIndex.push(
+                    ...Array(child.stateValues.maths.length).fill(NaN),
+                  );
                 }
               }
             }
             let results = dependencyValues.inverseNumericOperator({
-              desiredValue: desiredStateVariableValues.unnormalizedValue.evaluate_to_constant(),
+              desiredValue:
+                desiredStateVariableValues.unnormalizedValue.evaluate_to_constant(),
               inputs,
               canBeModified,
-              desiredMathValue: desiredStateVariableValues.unnormalizedValue
-            })
+              desiredMathValue: desiredStateVariableValues.unnormalizedValue,
+            });
 
             if (results.success) {
               let childIndex = inputToChildIndex[results.inputNumber];
@@ -507,82 +570,108 @@ export default class MathOperator extends MathComponent {
 
                 let child = dependencyValues.mathNumberChildren[childIndex];
 
-                if (componentInfoObjects.isInheritedComponentType({
-                  inheritedComponentType: child.componentType,
-                  baseComponentType: "numberList"
-                })) {
+                if (
+                  componentInfoObjects.isInheritedComponentType({
+                    inheritedComponentType: child.componentType,
+                    baseComponentType: "numberList",
+                  })
+                ) {
                   variableIndex = 2;
                   // if had childIndex, must have been just one number
-                  desiredValue = { 0: desiredValue }
-                } else if (componentInfoObjects.isInheritedComponentType({
-                  inheritedComponentType: child.componentType,
-                  baseComponentType: "mathList"
-                })) {
+                  desiredValue = { 0: desiredValue };
+                } else if (
+                  componentInfoObjects.isInheritedComponentType({
+                    inheritedComponentType: child.componentType,
+                    baseComponentType: "mathList",
+                  })
+                ) {
                   variableIndex = 1;
                   // if had childIndex, must have been just one math
-                  desiredValue = { 0: desiredValue }
+                  desiredValue = { 0: desiredValue };
                 }
                 return {
                   success: true,
-                  instructions: [{
-                    setDependency: "mathNumberChildren",
-                    desiredValue,
-                    childIndex,
-                    variableIndex
-                  }]
-                }
+                  instructions: [
+                    {
+                      setDependency: "mathNumberChildren",
+                      desiredValue,
+                      childIndex,
+                      variableIndex,
+                    },
+                  ],
+                };
               } else {
-                return { success: false }
+                return { success: false };
               }
             } else {
-              return { success: false }
+              return { success: false };
             }
-
           } else {
-            return { success: false }
+            return { success: false };
           }
-
         } else if (dependencyValues.inverseMathOperator) {
-
           let inputs = [];
           let canBeModified = [];
           let inputToChildIndex = [];
-          for (let [childInd, child] of dependencyValues.mathNumberChildren.entries()) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "number"
-            })) {
-              inputs.push(me.fromAst(child.stateValues.value))
+          for (let [
+            childInd,
+            child,
+          ] of dependencyValues.mathNumberChildren.entries()) {
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "number",
+              })
+            ) {
+              inputs.push(me.fromAst(child.stateValues.value));
               canBeModified.push(child.stateValues.canBeModified);
               inputToChildIndex.push(childInd);
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "math"
-            })) {
-              inputs.push(child.stateValues.value)
+            } else if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "math",
+              })
+            ) {
+              inputs.push(child.stateValues.value);
               canBeModified.push(child.stateValues.canBeModified);
               inputToChildIndex.push(childInd);
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "numberList"
-            })) {
-              inputs.push(...child.stateValues.numbers.map(x => me.fromAst(x)))
-              canBeModified.push(...Array(child.stateValues.numbers.length).fill(child.stateValues.canBeModified));
+            } else if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "numberList",
+              })
+            ) {
+              inputs.push(
+                ...child.stateValues.numbers.map((x) => me.fromAst(x)),
+              );
+              canBeModified.push(
+                ...Array(child.stateValues.numbers.length).fill(
+                  child.stateValues.canBeModified,
+                ),
+              );
               if (child.stateValues.numbers.length === 1) {
-                inputToChildIndex.push(childInd)
+                inputToChildIndex.push(childInd);
               } else {
                 // TODO: invert entries of numberlist that isn't length 1?
-                inputToChildIndex.push(...Array(child.stateValues.numbers.length).fill(NaN));
+                inputToChildIndex.push(
+                  ...Array(child.stateValues.numbers.length).fill(NaN),
+                );
               }
             } else {
               // mathList
-              inputs.push(...child.stateValues.maths)
-              canBeModified.push(...Array(child.stateValues.maths.length).fill(child.stateValues.canBeModified));
+              inputs.push(...child.stateValues.maths);
+              canBeModified.push(
+                ...Array(child.stateValues.maths.length).fill(
+                  child.stateValues.canBeModified,
+                ),
+              );
               if (child.stateValues.maths.length === 1) {
-                inputToChildIndex.push(childInd)
+                inputToChildIndex.push(childInd);
               } else {
                 // TODO: invert entries of mathlist that isn't length 1?
-                inputToChildIndex.push(...Array(child.stateValues.maths.length).fill(NaN));
+                inputToChildIndex.push(
+                  ...Array(child.stateValues.maths.length).fill(NaN),
+                );
               }
             }
           }
@@ -590,8 +679,8 @@ export default class MathOperator extends MathComponent {
           let results = dependencyValues.inverseMathOperator({
             desiredValue: desiredStateVariableValues.unnormalizedValue,
             inputs,
-            canBeModified
-          })
+            canBeModified,
+          });
 
           if (results.success) {
             let childIndex = inputToChildIndex[results.inputNumber];
@@ -601,44 +690,48 @@ export default class MathOperator extends MathComponent {
 
               let child = dependencyValues.mathNumberChildren[childIndex];
 
-              if (componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: child.componentType,
-                baseComponentType: "numberList"
-              })) {
+              if (
+                componentInfoObjects.isInheritedComponentType({
+                  inheritedComponentType: child.componentType,
+                  baseComponentType: "numberList",
+                })
+              ) {
                 variableIndex = 2;
                 // if had childIndex, must have been just one number
-                desiredValue = { 0: desiredValue }
-              } else if (componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: child.componentType,
-                baseComponentType: "mathList"
-              })) {
+                desiredValue = { 0: desiredValue };
+              } else if (
+                componentInfoObjects.isInheritedComponentType({
+                  inheritedComponentType: child.componentType,
+                  baseComponentType: "mathList",
+                })
+              ) {
                 variableIndex = 1;
                 // if had childIndex, must have been just one math
-                desiredValue = { 0: desiredValue }
+                desiredValue = { 0: desiredValue };
               }
 
               return {
                 success: true,
-                instructions: [{
-                  setDependency: "mathNumberChildren",
-                  desiredValue,
-                  childIndex,
-                  variableIndex
-                }]
-              }
+                instructions: [
+                  {
+                    setDependency: "mathNumberChildren",
+                    desiredValue,
+                    childIndex,
+                    variableIndex,
+                  },
+                ],
+              };
             } else {
-              return { success: false }
+              return { success: false };
             }
           } else {
-            return { success: false }
+            return { success: false };
           }
-
         } else {
-          return { success: false }
+          return { success: false };
         }
-      }
-    }
-
+      },
+    };
 
     // create new version on canBeModified that is true only if
     // there is just one child or child list component that can be modified
@@ -656,7 +749,7 @@ export default class MathOperator extends MathComponent {
         mathNumberChildren: {
           dependencyType: "child",
           childGroups: ["maths", "numbers"],
-          variableNames: ["canBeModified"]
+          variableNames: ["canBeModified"],
         },
         mathNumberListChildren: {
           dependencyType: "child",
@@ -665,47 +758,55 @@ export default class MathOperator extends MathComponent {
         },
         isNumericOperator: {
           dependencyType: "stateVariable",
-          variableName: "isNumericOperator"
+          variableName: "isNumericOperator",
         },
         inverseMathOperator: {
           dependencyType: "stateVariable",
-          variableName: "mathOperator"
+          variableName: "mathOperator",
         },
         inverseNumericOperator: {
           dependencyType: "stateVariable",
-          variableName: "inverseNumericOperator"
-        }
+          variableName: "inverseNumericOperator",
+        },
       }),
       definition: function ({ dependencyValues }) {
-        let canBeModified = dependencyValues.modifyIndirectly
-          && !dependencyValues.fixed
-          && Boolean(
-            dependencyValues.isNumericOperator ?
-              dependencyValues.inverseNumericOperator :
-              dependencyValues.inverseMathOperator
-          )
+        let canBeModified =
+          dependencyValues.modifyIndirectly &&
+          !dependencyValues.fixed &&
+          Boolean(
+            dependencyValues.isNumericOperator
+              ? dependencyValues.inverseNumericOperator
+              : dependencyValues.inverseMathOperator,
+          );
 
         if (canBeModified) {
           // TODO: if there are no children, canBeModified may be incorrectly set to true
           // But, we include this exception so that canBeModified is not set to false
           // in macros, where children aren't copied
-          if (dependencyValues.mathNumberChildren.length + dependencyValues.mathNumberListChildren.length > 0) {
-            let nModifiable = dependencyValues.mathNumberChildren.filter(x => x.stateValues.canBeModified).length +
-              dependencyValues.mathNumberListChildren.reduce((a, c) => a + c.stateValues.nComponents, 0)
+          if (
+            dependencyValues.mathNumberChildren.length +
+              dependencyValues.mathNumberListChildren.length >
+            0
+          ) {
+            let nModifiable =
+              dependencyValues.mathNumberChildren.filter(
+                (x) => x.stateValues.canBeModified,
+              ).length +
+              dependencyValues.mathNumberListChildren.reduce(
+                (a, c) => a + c.stateValues.nComponents,
+                0,
+              );
 
             if (nModifiable !== 1) {
               canBeModified = false;
             }
           }
-
         }
 
-        return { setValue: { canBeModified } }
-      }
-    }
-
+        return { setValue: { canBeModified } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
 }

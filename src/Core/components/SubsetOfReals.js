@@ -1,9 +1,10 @@
-import MathComponent from './Math';
-import subsets, { buildSubsetFromMathExpression } from '../utils/subset-of-reals';
-import { renameStateVariable } from '../utils/stateVariables';
-import me from 'math-expressions';
+import MathComponent from "./Math";
+import subsets, {
+  buildSubsetFromMathExpression,
+} from "../utils/subset-of-reals";
+import { renameStateVariable } from "../utils/stateVariables";
+import me from "math-expressions";
 export default class SubsetOfReals extends MathComponent {
-
   static componentType = "subsetOfReals";
   static rendererType = "math";
 
@@ -18,7 +19,7 @@ export default class SubsetOfReals extends MathComponent {
       createComponentOfType: "variable",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
-    }
+    };
 
     attributes.displayMode = {
       createComponentOfType: "text",
@@ -26,49 +27,45 @@ export default class SubsetOfReals extends MathComponent {
       defaultValue: "intervals",
       public: true,
       toLowerCase: true,
-      validValues: ["intervals", "inequalities"]
+      validValues: ["intervals", "inequalities"],
     };
-
 
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     // rename unnormalizedValue to unnormalizedValuePreliminary
     renameStateVariable({
       stateVariableDefinitions,
       oldName: "unnormalizedValue",
-      newName: "unnormalizedValuePreliminary"
+      newName: "unnormalizedValuePreliminary",
     });
 
-    stateVariableDefinitions.value.shadowingInstructions.createComponentOfType = "math";
+    stateVariableDefinitions.value.shadowingInstructions.createComponentOfType =
+      "math";
 
     stateVariableDefinitions.haveSingleSubsetChild = {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
-          childGroups: ["maths"]
-        }
+          childGroups: ["maths"],
+        },
       }),
       definition({ dependencyValues, componentInfoObjects }) {
+        let haveSingleSubsetChild =
+          dependencyValues.mathChildren.length === 1 &&
+          dependencyValues.mathChildren.filter((child) =>
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "subsetOfReals",
+            }),
+          ).length === 1;
 
-        let haveSingleSubsetChild = 
-        dependencyValues.mathChildren.length === 1 &&
-        dependencyValues.mathChildren.filter(child =>
-          componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "subsetOfReals"
-          })
-        ).length === 1;
-
-        return { setValue: { haveSingleSubsetChild } }
-      }
-    }
+        return { setValue: { haveSingleSubsetChild } };
+      },
+    };
 
     stateVariableDefinitions.subsetValue = {
       stateVariablesDeterminingDependencies: ["haveSingleSubsetChild"],
@@ -76,30 +73,29 @@ export default class SubsetOfReals extends MathComponent {
         let dependencies = {
           haveSingleSubsetChild: {
             dependencyType: "stateVariable",
-            variableName: "haveSingleSubsetChild"
+            variableName: "haveSingleSubsetChild",
           },
-        }
+        };
 
         if (stateValues.haveSingleSubsetChild) {
           dependencies.subsetChild = {
             dependencyType: "child",
             childGroups: ["maths"],
-            variableNames: ["subsetValue"]
-          }
+            variableNames: ["subsetValue"],
+          };
         } else {
           dependencies.unnormalizedValuePreliminary = {
             dependencyType: "stateVariable",
-            variableName: "unnormalizedValuePreliminary"
+            variableName: "unnormalizedValuePreliminary",
           };
           dependencies.variable = {
             dependencyType: "stateVariable",
-            variableName: "variable"
+            variableName: "variable",
           };
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-
         let subsetValue;
 
         if (dependencyValues.haveSingleSubsetChild) {
@@ -107,123 +103,149 @@ export default class SubsetOfReals extends MathComponent {
         } else {
           subsetValue = buildSubsetFromMathExpression(
             dependencyValues.unnormalizedValuePreliminary,
-            dependencyValues.variable
-          )
+            dependencyValues.variable,
+          );
         }
 
-        return { setValue: { subsetValue } }
+        return { setValue: { subsetValue } };
       },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
-
+      async inverseDefinition({
+        desiredStateVariableValues,
+        dependencyValues,
+        stateValues,
+      }) {
         if (dependencyValues.haveSingleSubsetChild) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "subsetChild",
-              desiredValue: desiredStateVariableValues.subsetValue,
-              childIndex: 0,
-              variableIndex: 0
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "subsetChild",
+                desiredValue: desiredStateVariableValues.subsetValue,
+                childIndex: 0,
+                variableIndex: 0,
+              },
+            ],
+          };
         } else {
-
           let mathExpression = mathExpressionFromSubsetValue({
             subsetValue: desiredStateVariableValues.subsetValue,
             variable: dependencyValues.variable,
-            displayMode: await stateValues.displayMode
-          })
+            displayMode: await stateValues.displayMode,
+          });
 
           return {
             success: true,
-            instructions: [{
-              setDependency: "unnormalizedValuePreliminary",
-              desiredValue: mathExpression
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "unnormalizedValuePreliminary",
+                desiredValue: mathExpression,
+              },
+            ],
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
         subsetValue: {
           dependencyType: "stateVariable",
-          variableName: "subsetValue"
+          variableName: "subsetValue",
         },
         displayMode: {
           dependencyType: "stateVariable",
-          variableName: "displayMode"
+          variableName: "displayMode",
         },
         variable: {
           dependencyType: "stateVariable",
-          variableName: "variable"
+          variableName: "variable",
         },
       }),
       definition({ dependencyValues }) {
-
         let unnormalizedValue = mathExpressionFromSubsetValue(dependencyValues);
 
-        return { setValue: { unnormalizedValue } }
-
-
+        return { setValue: { unnormalizedValue } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let subsetValue = buildSubsetFromMathExpression(
           desiredStateVariableValues.unnormalizedValue,
-          dependencyValues.variable
-        )
+          dependencyValues.variable,
+        );
 
         return {
           success: true,
-          instructions: [{
-            setDependency: "subsetValue",
-            desiredValue: subsetValue
-          }]
-        }
-
-      }
-    }
+          instructions: [
+            {
+              setDependency: "subsetValue",
+              desiredValue: subsetValue,
+            },
+          ],
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }
 
 function mathExpressionFromSubsetValue({
-  subsetValue, variable, displayMode = "intervals"
+  subsetValue,
+  variable,
+  displayMode = "intervals",
 }) {
-
   function subsetToMath(subset) {
-
     if (subset === null) {
-      return '\uff3f';
+      return "\uff3f";
     }
 
     if (displayMode === "intervals") {
       if (subset.closedInterval) {
-        return ["interval", ["tuple", subset.left, subset.right], ["tuple", true, true]];
+        return [
+          "interval",
+          ["tuple", subset.left, subset.right],
+          ["tuple", true, true],
+        ];
       } else if (subset.openClosedInterval) {
-        return ["interval", ["tuple", subset.left, subset.right], ["tuple", false, true]];
+        return [
+          "interval",
+          ["tuple", subset.left, subset.right],
+          ["tuple", false, true],
+        ];
       } else if (subset.closedOpenInterval) {
-        return ["interval", ["tuple", subset.left, subset.right], ["tuple", true, false]];
+        return [
+          "interval",
+          ["tuple", subset.left, subset.right],
+          ["tuple", true, false],
+        ];
       } else {
         return subset.toMathExpression().tree;
       }
     } else {
       if (subset.closedInterval) {
-        return ["lts", ["tuple", subset.left, variable, subset.right], ["tuple", false, false]];
+        return [
+          "lts",
+          ["tuple", subset.left, variable, subset.right],
+          ["tuple", false, false],
+        ];
       } else if (subset.openClosedInterval) {
         if (subset.left === -Infinity) {
           return ["le", variable, subset.right];
         } else {
-          return ["lts", ["tuple", subset.left, variable, subset.right], ["tuple", true, false]];
+          return [
+            "lts",
+            ["tuple", subset.left, variable, subset.right],
+            ["tuple", true, false],
+          ];
         }
       } else if (subset.closedOpenInterval) {
         if (subset.right === Infinity) {
           return ["ge", variable, subset.left];
         } else {
-          return ["lts", ["tuple", subset.left, variable, subset.right], ["tuple", false, true]];
+          return [
+            "lts",
+            ["tuple", subset.left, variable, subset.right],
+            ["tuple", false, true],
+          ];
         }
       } else if (subset instanceof subsets.OpenInterval) {
         if (subset.left === -Infinity) {
@@ -231,33 +253,37 @@ function mathExpressionFromSubsetValue({
         } else if (subset.right === Infinity) {
           return [">", variable, subset.left];
         } else {
-          return ["lts", ["tuple", subset.left, variable, subset.right], ["tuple", true, true]];
+          return [
+            "lts",
+            ["tuple", subset.left, variable, subset.right],
+            ["tuple", true, true],
+          ];
         }
       } else if (subset instanceof subsets.Singleton) {
-        return ['=', variable, subset.element];
+        return ["=", variable, subset.element];
       } else if (subset.isEmpty()) {
-        return ['in', variable, '∅'];
+        return ["in", variable, "∅"];
       } else if (subset instanceof subsets.RealLine) {
-        return ['in', variable, 'R'];
+        return ["in", variable, "R"];
       } else {
         return null;
       }
     }
   }
 
-
   let expression;
 
   // merge any singletons to create closed intervals
   if (subsetValue instanceof subsets.Union) {
-    let singletons = subsetValue.subsets
-      .filter(x => x instanceof subsets.Singleton);
+    let singletons = subsetValue.subsets.filter(
+      (x) => x instanceof subsets.Singleton,
+    );
 
-    let intervals = subsetValue.subsets
-      .filter(x => x instanceof subsets.OpenInterval);
+    let intervals = subsetValue.subsets.filter(
+      (x) => x instanceof subsets.OpenInterval,
+    );
 
     for (let ind1 = 0; ind1 < singletons.length; ind1++) {
-
       let x = singletons[ind1].element;
 
       for (let ind2 = 0; ind2 < intervals.length; ind2++) {
@@ -271,7 +297,7 @@ function mathExpressionFromSubsetValue({
             interval = {
               left: interval.left,
               right: interval.right,
-              closedOpenInterval: true
+              closedOpenInterval: true,
             };
             intervals.splice(ind2, 1, interval);
           }
@@ -286,7 +312,7 @@ function mathExpressionFromSubsetValue({
             interval = {
               left: interval.left,
               right: interval.right,
-              openClosedInterval: true
+              openClosedInterval: true,
             };
             intervals.splice(ind2, 1, interval);
           }
@@ -295,13 +321,15 @@ function mathExpressionFromSubsetValue({
           // break;
         }
       }
-
     }
 
-
     let mathSubsets = [...intervals, ...singletons]
-      .sort((a, b) => (a.left === undefined ? a.element : a.left) - (b.left === undefined ? b.element : b.left))
-      .map(x => subsetToMath(x));
+      .sort(
+        (a, b) =>
+          (a.left === undefined ? a.element : a.left) -
+          (b.left === undefined ? b.element : b.left),
+      )
+      .map((x) => subsetToMath(x));
 
     if (mathSubsets.length > 1) {
       if (displayMode === "intervals") {
@@ -312,7 +340,6 @@ function mathExpressionFromSubsetValue({
     } else {
       expression = me.fromAst(mathSubsets[0]);
     }
-
   } else {
     expression = me.fromAst(subsetToMath(subsetValue));
   }

@@ -1,8 +1,19 @@
-import BlockComponent from './abstract/BlockComponent';
-import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities, widthFractions, percentWidthsBySize } from '../utils/size';
-import me from 'math-expressions';
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
-import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
+import BlockComponent from "./abstract/BlockComponent";
+import {
+  orderedPercentWidthMidpoints,
+  orderedWidthMidpoints,
+  widthsBySize,
+  sizePossibilities,
+  widthFractions,
+  percentWidthsBySize,
+} from "../utils/size";
+import me from "math-expressions";
+import { returnSelectedStyleStateVariableDefinition } from "../utils/style";
+import {
+  moveGraphicalObjectWithAnchorAction,
+  returnAnchorAttributes,
+  returnAnchorStateVariableDefinition,
+} from "../utils/graphical";
 
 export default class Image extends BlockComponent {
   constructor(args) {
@@ -14,7 +25,6 @@ export default class Image extends BlockComponent {
       imageClicked: this.imageClicked.bind(this),
       imageFocused: this.imageFocused.bind(this),
     });
-
   }
   static componentType = "image";
 
@@ -32,7 +42,7 @@ export default class Image extends BlockComponent {
       defaultValue: "medium",
       toLowerCase: true,
       validValues: sizePossibilities,
-    }
+    };
     attributes.aspectRatio = {
       createComponentOfType: "number",
     };
@@ -49,7 +59,7 @@ export default class Image extends BlockComponent {
       defaultValue: "block",
       forRenderer: true,
       public: true,
-    }
+    };
 
     attributes.horizontalAlign = {
       createComponentOfType: "text",
@@ -59,13 +69,13 @@ export default class Image extends BlockComponent {
       defaultValue: "center",
       forRenderer: true,
       public: true,
-    }
+    };
     attributes.description = {
       createComponentOfType: "text",
       createStateVariable: "description",
       defaultValue: "",
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.source = {
       createComponentOfType: "text",
@@ -94,7 +104,7 @@ export default class Image extends BlockComponent {
       createStateVariable: "draggable",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.layer = {
@@ -102,10 +112,10 @@ export default class Image extends BlockComponent {
       createStateVariable: "layer",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
-    Object.assign(attributes, returnAnchorAttributes())
+    Object.assign(attributes, returnAnchorAttributes());
 
     attributes.rotate = {
       createComponentOfType: "number",
@@ -113,13 +123,12 @@ export default class Image extends BlockComponent {
       defaultValue: 0,
       public: true,
       forRenderer: true,
-    }
+    };
 
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
@@ -128,41 +137,39 @@ export default class Image extends BlockComponent {
     let anchorDefinition = returnAnchorStateVariableDefinition();
     Object.assign(stateVariableDefinitions, anchorDefinition);
 
-
     stateVariableDefinitions.size = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "text",
       },
       returnDependencies: () => ({
         specifiedSize: {
           dependencyType: "stateVariable",
-          variableName: "specifiedSize"
+          variableName: "specifiedSize",
         },
         specifiedWidth: {
           dependencyType: "stateVariable",
-          variableName: "specifiedWidth"
+          variableName: "specifiedWidth",
         },
         graphAncestor: {
           dependencyType: "ancestor",
           componentType: "graph",
-          variableNames: ["xscale"]
+          variableNames: ["xscale"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        const defaultSize = 'medium';
+        const defaultSize = "medium";
 
         if (!usedDefault.specifiedSize) {
           return {
-            setValue: { size: dependencyValues.specifiedSize }
-          }
+            setValue: { size: dependencyValues.specifiedSize },
+          };
         } else if (!usedDefault.specifiedWidth) {
-
           let componentSize = dependencyValues.specifiedWidth;
           if (componentSize === null) {
             return {
-              setValue: { size: defaultSize }
-            }
+              setValue: { size: defaultSize },
+            };
           }
 
           let { isAbsolute, size: widthSize } = componentSize;
@@ -173,62 +180,65 @@ export default class Image extends BlockComponent {
 
             if (dependencyValues.graphAncestor) {
               let xscale = dependencyValues.graphAncestor.stateValues.xscale;
-              midpoints = orderedPercentWidthMidpoints.map(x => x / 100 * xscale)
+              midpoints = orderedPercentWidthMidpoints.map(
+                (x) => (x / 100) * xscale,
+              );
             } else {
-              midpoints = orderedWidthMidpoints
+              midpoints = orderedWidthMidpoints;
             }
 
             for (let [ind, pixels] of midpoints.entries()) {
               if (widthSize <= pixels) {
                 size = sizePossibilities[ind];
-                break
+                break;
               }
             }
             if (!size) {
-              size = defaultSize
+              size = defaultSize;
             }
           } else {
             for (let [ind, percent] of orderedPercentWidthMidpoints.entries()) {
               if (widthSize <= percent) {
                 size = sizePossibilities[ind];
-                break
+                break;
               }
             }
             if (!size) {
-              size = defaultSize
+              size = defaultSize;
             }
           }
           return {
-            setValue: { size }
-          }
+            setValue: { size },
+          };
         } else {
           return {
-            setValue: { size: defaultSize }
-          }
+            setValue: { size: defaultSize },
+          };
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setDependency: "specifiedSize",
-            desiredValue: desiredStateVariableValues.size
-          }]
-        }
-      }
-
-    }
+          instructions: [
+            {
+              setDependency: "specifiedSize",
+              desiredValue: desiredStateVariableValues.size,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.width = {
       public: true,
       forRenderer: true,
       shadowingInstructions: {
-        createComponentOfType: "_componentSize"
+        createComponentOfType: "_componentSize",
       },
       returnDependencies: () => ({
         specifiedSize: {
           dependencyType: "stateVariable",
-          variableName: "specifiedSize"
+          variableName: "specifiedSize",
         },
         size: {
           dependencyType: "stateVariable",
@@ -236,29 +246,30 @@ export default class Image extends BlockComponent {
         },
         specifiedWidth: {
           dependencyType: "stateVariable",
-          variableName: "specifiedWidth"
+          variableName: "specifiedWidth",
         },
         graphAncestor: {
           dependencyType: "ancestor",
           componentType: "graph",
-          variableNames: ["xscale"]
+          variableNames: ["xscale"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        const defaultSize = 'medium';
+        const defaultSize = "medium";
 
         if (dependencyValues.graphAncestor) {
-
           let xscale = dependencyValues.graphAncestor.stateValues.xscale;
           if (!usedDefault.specifiedSize) {
             return {
               setValue: {
                 // width: { isAbsolute: true, size: percentWidthsBySize[dependencyValues.size] / 100 * xscale }
-                width: { isAbsolute: false, size: percentWidthsBySize[dependencyValues.size] }
-              }
-            }
+                width: {
+                  isAbsolute: false,
+                  size: percentWidthsBySize[dependencyValues.size],
+                },
+              },
+            };
           } else if (!usedDefault.specifiedWidth) {
-
             let componentSize = dependencyValues.specifiedWidth;
 
             let width;
@@ -270,67 +281,80 @@ export default class Image extends BlockComponent {
               // }
             } else {
               // width = { isAbsolute: true, size: percentWidthsBySize[defaultSize] / 100 * xscale };
-              width = { isAbsolute: false, size: percentWidthsBySize[defaultSize] };
+              width = {
+                isAbsolute: false,
+                size: percentWidthsBySize[defaultSize],
+              };
             }
 
             return {
-              setValue: { width }
-            }
-
+              setValue: { width },
+            };
           } else {
             return {
               setValue: {
                 // width: { isAbsolute: true, size: percentWidthsBySize[defaultSize] / 100 * xscale }
-                width: { isAbsolute: false, size: percentWidthsBySize[defaultSize] }
-              }
-            }
+                width: {
+                  isAbsolute: false,
+                  size: percentWidthsBySize[defaultSize],
+                },
+              },
+            };
           }
-
         } else {
           // if don't have a graph ancestor
           // then width is determined just by the size
 
-          let width = { isAbsolute: true, size: widthsBySize[dependencyValues.size] }
+          let width = {
+            isAbsolute: true,
+            size: widthsBySize[dependencyValues.size],
+          };
 
           return {
-            setValue: { width }
-          }
+            setValue: { width },
+          };
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setDependency: "specifiedWidth",
-            desiredValue: desiredStateVariableValues.width
-          }]
-        }
-      }
-
-    }
+          instructions: [
+            {
+              setDependency: "specifiedWidth",
+              desiredValue: desiredStateVariableValues.width,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.widthForGraph = {
       forRenderer: true,
       returnDependencies: () => ({
         width: {
           dependencyType: "stateVariable",
-          variableName: "width"
+          variableName: "width",
         },
         graphAncestor: {
           dependencyType: "ancestor",
           componentType: "graph",
-          variableNames: ["xscale"]
+          variableNames: ["xscale"],
         },
       }),
       definition({ dependencyValues }) {
         let widthForGraph = dependencyValues.width;
         if (dependencyValues.graphAncestor && !widthForGraph.isAbsolute) {
-          widthForGraph = { isAbsolute: true, size: widthForGraph.size / 100 * dependencyValues.graphAncestor.stateValues.xscale }
+          widthForGraph = {
+            isAbsolute: true,
+            size:
+              (widthForGraph.size / 100) *
+              dependencyValues.graphAncestor.stateValues.xscale,
+          };
         }
 
         return { setValue: { widthForGraph } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.aspectRatio = {
       public: true,
@@ -338,14 +362,14 @@ export default class Image extends BlockComponent {
       hasEssential: true,
       defaultValue: null,
       shadowingInstructions: {
-        createComponentOfType: "number"
+        createComponentOfType: "number",
       },
       returnDependencies: () => ({
         aspectRatioAttr: {
           dependencyType: "attributeComponent",
           attributeName: "aspectRatio",
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.aspectRatioAttr !== null) {
@@ -354,24 +378,26 @@ export default class Image extends BlockComponent {
             aspectRatio = null;
           }
           return {
-            setValue: { aspectRatio }
-          }
+            setValue: { aspectRatio },
+          };
         } else {
           return {
-            useEssentialOrDefaultValue: { aspectRatio: true }
-          }
+            useEssentialOrDefaultValue: { aspectRatio: true },
+          };
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.aspectRatioAttr !== null) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "aspectRatioAttr",
-              desiredValue: desiredStateVariableValues.aspectRatio,
-              variableIndex: 0
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "aspectRatioAttr",
+                desiredValue: desiredStateVariableValues.aspectRatio,
+                variableIndex: 0,
+              },
+            ],
+          };
         } else {
           let aspectRatio = desiredStateVariableValues.aspectRatio;
           if (!(aspectRatio > 0)) {
@@ -379,14 +405,16 @@ export default class Image extends BlockComponent {
           }
           return {
             success: true,
-            instructions: [{
-              setEssentialValue: "aspectRatio",
-              value: aspectRatio
-            }]
-          }
+            instructions: [
+              {
+                setEssentialValue: "aspectRatio",
+                value: aspectRatio,
+              },
+            ],
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.cid = {
       forRenderer: true,
@@ -398,12 +426,13 @@ export default class Image extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.source ||
+        if (
+          !dependencyValues.source ||
           dependencyValues.source.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            setValue: { cid: null }
-          }
+            setValue: { cid: null },
+          };
         }
 
         let cid = null;
@@ -418,21 +447,29 @@ export default class Image extends BlockComponent {
     };
 
     return stateVariableDefinitions;
-
   }
 
-  async moveImage({ x, y, z, transient, actionId,
-    sourceInformation = {}, skipRendererUpdate = false
+  async moveImage({
+    x,
+    y,
+    z,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-
     return await moveGraphicalObjectWithAnchorAction({
-      x, y, z, transient, actionId,
-      sourceInformation, skipRendererUpdate,
+      x,
+      y,
+      z,
+      transient,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       componentName: this.componentName,
       componentType: this.componentType,
-      coreFunctions: this.coreFunctions
-    })
-
+      coreFunctions: this.coreFunctions,
+    });
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -442,41 +479,46 @@ export default class Image extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
 
-  async imageClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
-
-    if (! await this.stateValues.fixed) {
+  async imageClicked({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
       await this.coreFunctions.triggerChainedActions({
         triggeringAction: "click",
-        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        componentName: name, // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      })
+      });
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
 
-  async imageFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
-
-    if (! await this.stateValues.fixed) {
+  async imageFocused({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
       await this.coreFunctions.triggerChainedActions({
         triggeringAction: "focus",
-        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        componentName: name, // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      })
+      });
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
-
 }

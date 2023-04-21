@@ -1,63 +1,72 @@
-import { cesc } from '../../../../src/_utils/url';
+import { cesc } from "../../../../src/_utils/url";
 
-
-describe('Single Character Tag Tests', function () {
-
+describe("Single Character Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest')
+    cy.visit("/src/Tools/cypressTest");
+  });
 
-  })
-
-
-  it('dashes', () => {
+  it("dashes", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   1 <ndash/> 2 <mdash/> that's it
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-
 
     // Note these dashes are different unicode even though they display the same here
-    cy.get(cesc('#\\/_document1')).should('contain.text', "1 – 2 — that's it")
+    cy.get(cesc("#\\/_document1")).should("contain.text", "1 – 2 — that's it");
+  });
 
-  })
-
-  it('nbsp', () => {
+  it("nbsp", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
    act<nbsp/>like<nbsp/>one<nbsp/>word
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_document1')).should('contain.text', "act\u00a0like\u00a0one\u00a0word")
+    cy.get(cesc("#\\/_document1")).should(
+      "contain.text",
+      "act\u00a0like\u00a0one\u00a0word",
+    );
+  });
 
-  })
-
-  it('ellipsis', () => {
+  it("ellipsis", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
    we could do that<ellipsis/>
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_document1')).should('contain.text', "we could do that…")
+    cy.get(cesc("#\\/_document1")).should("contain.text", "we could do that…");
+  });
 
-  })
-
-  it('unmatched quotes', () => {
+  it("unmatched quotes", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
    <rq/><lq/><rsq/><lsq/>
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_document1')).should('contain.text', "”“’‘")
-
-  })
-
-})
+    cy.get(cesc("#\\/_document1")).should("contain.text", "”“’‘");
+  });
+});

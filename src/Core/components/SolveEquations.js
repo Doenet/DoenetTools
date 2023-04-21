@@ -1,6 +1,6 @@
-import InlineComponent from './abstract/InlineComponent';
-import me from 'math-expressions';
-import { normalizeMathExpression, returnNVariables } from '../utils/math';
+import InlineComponent from "./abstract/InlineComponent";
+import me from "math-expressions";
+import { normalizeMathExpression, returnNVariables } from "../utils/math";
 // import nerdamer from 'nerdamer'
 // import 'nerdamer/Algebra.js'
 // import 'nerdamer/Calculus.js'
@@ -10,13 +10,12 @@ export default class SolveEquations extends InlineComponent {
   static componentType = "solveEquations";
   static rendererType = undefined;
 
-
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
     attributes.variables = {
-      createComponentOfType: "variables"
-    }
+      createComponentOfType: "variables",
+    };
 
     attributes.nDiscretizationPoints = {
       createComponentOfType: "number",
@@ -29,72 +28,75 @@ export default class SolveEquations extends InlineComponent {
       createComponentOfType: "number",
       createStateVariable: "minVar",
       defaultValue: null,
-    }
+    };
 
     attributes.maxVar = {
       createComponentOfType: "number",
       createStateVariable: "maxVar",
       defaultValue: null,
-    }
+    };
 
     return attributes;
   }
-
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
     let wrapStringsAndMacros = function ({ matchedChildren }) {
-
       // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
-        typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
-      )) {
-        return { success: false }
+      if (
+        !matchedChildren.every(
+          (child) =>
+            typeof child === "string" ||
+            (child.doenetAttributes && child.doenetAttributes.createdFromMacro),
+        )
+      ) {
+        return { success: false };
       }
 
       // don't apply to a single macro
-      if (matchedChildren.length === 1 &&
+      if (
+        matchedChildren.length === 1 &&
         typeof matchedChildren[0] !== "string"
       ) {
-        return { success: false }
+        return { success: false };
       }
 
       return {
         success: true,
-        newChildren: [{
-          componentType: "math",
-          children: matchedChildren
-        }],
-      }
-
-    }
+        newChildren: [
+          {
+            componentType: "math",
+            children: matchedChildren,
+          },
+        ],
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: wrapStringsAndMacros
+      replacementFunction: wrapStringsAndMacros,
     });
 
     return sugarInstructions;
-
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "maths",
-      componentTypes: ["math"]
-    }, {
-      group: "strings",
-      componentTypes: ["string"]
-    }]
-
+    return [
+      {
+        group: "maths",
+        componentTypes: ["math"],
+      },
+      {
+        group: "strings",
+        componentTypes: ["string"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions({ numerics }) {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
+    let stateVariableDefinitions = super.returnStateVariableDefinitions({
+      numerics,
+    });
 
     stateVariableDefinitions.variables = {
       isArray: true,
@@ -121,61 +123,71 @@ export default class SolveEquations extends InlineComponent {
           },
         };
 
-        return { globalDependencies }
+        return { globalDependencies };
       },
-      arrayDefinitionByKey({ globalDependencyValues, arraySize, arrayKeys, usedDefault }) {
+      arrayDefinitionByKey({
+        globalDependencyValues,
+        arraySize,
+        arrayKeys,
+        usedDefault,
+      }) {
         let variablesSpecified = [];
         if (globalDependencyValues.variablesAttr !== null) {
-          variablesSpecified = globalDependencyValues.variablesAttr.stateValues.variables;
+          variablesSpecified =
+            globalDependencyValues.variablesAttr.stateValues.variables;
         }
         return {
           setValue: {
-            variables: returnNVariables(arraySize[0], variablesSpecified)
-          }
-        }
-      }
-    }
+            variables: returnNVariables(arraySize[0], variablesSpecified),
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.variable = {
       isAlias: true,
-      targetVariableName: "variable1"
+      targetVariableName: "variable1",
     };
-
 
     stateVariableDefinitions.allSolutions = {
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "child",
           childGroups: ["maths"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         variables: {
           dependencyType: "stateVariable",
-          variableName: "variables"
+          variableName: "variables",
         },
         minVar: {
           dependencyType: "stateVariable",
-          variableName: "minVar"
+          variableName: "minVar",
         },
         maxVar: {
           dependencyType: "stateVariable",
-          variableName: "maxVar"
+          variableName: "maxVar",
         },
         nDiscretizationPoints: {
           dependencyType: "stateVariable",
-          variableName: "nDiscretizationPoints"
-        }
+          variableName: "nDiscretizationPoints",
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.mathChild.length === 0) {
-          return { setValue: { allSolutions: [] } }
+          return { setValue: { allSolutions: [] } };
         }
 
         let expression = dependencyValues.mathChild[0].stateValues.value;
 
-
-        if (!(Array.isArray(expression.tree) && expression.tree.length === 3 && expression.tree[0] === "=")) {
-          return { setValue: { allSolutions: [] } }
+        if (
+          !(
+            Array.isArray(expression.tree) &&
+            expression.tree.length === 3 &&
+            expression.tree[0] === "="
+          )
+        ) {
+          return { setValue: { allSolutions: [] } };
         }
 
         let minVar = dependencyValues.minVar;
@@ -205,7 +217,6 @@ export default class SolveEquations extends InlineComponent {
         //     originalSolutions.push(sol)
         //   }
 
-
         //   for (let sol of originalSolutions) {
         //     let numericalVal = sol.evaluate_to_constant();
 
@@ -233,25 +244,26 @@ export default class SolveEquations extends InlineComponent {
 
         // }
 
-
         // if (numericalSolutions.length > 0 || nonNumericalSolutions.length === 0) {
         //   // verify numerical solutions
         //   // try finding additional numerical solutions
 
         let numericalSolutions = [];
 
-
-        let varName = dependencyValues.variables[0].subscripts_to_strings().tree;
-        let formula = me.fromAst(['+', expression.tree[1], ["-", expression.tree[2]]])
+        let varName =
+          dependencyValues.variables[0].subscripts_to_strings().tree;
+        let formula = me
+          .fromAst(["+", expression.tree[1], ["-", expression.tree[2]]])
           .subscripts_to_strings();
         let f_base = formula.f();
-        let f = x => f_base({ [varName]: x });
+        let f = (x) => f_base({ [varName]: x });
 
-        let f_symbolic = (x) => normalizeMathExpression({
-          value: formula.substitute({ [varName]: x }).strings_to_subscripts(),
-          simplify: true,
-          expand: true
-        }).evaluate_to_constant();
+        let f_symbolic = (x) =>
+          normalizeMathExpression({
+            value: formula.substitute({ [varName]: x }).strings_to_subscripts(),
+            simplify: true,
+            expand: true,
+          }).evaluate_to_constant();
 
         let f_or_nan = function (x) {
           try {
@@ -259,7 +271,7 @@ export default class SolveEquations extends InlineComponent {
           } catch (e) {
             return NaN;
           }
-        }
+        };
 
         let f_or_symbolic = function (x) {
           try {
@@ -272,7 +284,7 @@ export default class SolveEquations extends InlineComponent {
               return NaN;
             }
           }
-        }
+        };
 
         if (!Number.isFinite(minVar)) {
           // if (originalNumerical.length > 0) {
@@ -290,7 +302,7 @@ export default class SolveEquations extends InlineComponent {
         }
 
         if (minVar > maxVar) {
-          return { setValue: { allSolutions: [] } }
+          return { setValue: { allSolutions: [] } };
         }
 
         // let boundaryPoints = [minVar, ...originalNumerical, maxVar];
@@ -298,9 +310,7 @@ export default class SolveEquations extends InlineComponent {
 
         let testPoints = [minVar];
 
-
         for (let ind = 0; ind < boundaryPoints.length - 1; ind++) {
-
           let bot = boundaryPoints[ind];
           let top = boundaryPoints[ind + 1];
 
@@ -311,15 +321,15 @@ export default class SolveEquations extends InlineComponent {
             testPoints.push(bot + step * delta);
           }
           testPoints.push(top);
-
         }
 
         // add extra point to beginning and end
         // to better estimate behavior at boundary
         let newFirst = 2 * testPoints[0] - testPoints[1];
-        let newLast = 2 * testPoints[testPoints.length - 1] - testPoints[testPoints.length - 2];
+        let newLast =
+          2 * testPoints[testPoints.length - 1] -
+          testPoints[testPoints.length - 2];
         testPoints = [newFirst, ...testPoints, newLast];
-
 
         let f_points = testPoints.map(f_or_symbolic);
 
@@ -361,17 +371,14 @@ export default class SolveEquations extends InlineComponent {
 
               if (![thisX, lastX].includes(finiteX)) {
                 testPoints.splice(ind, 0, finiteX);
-                f_points.splice(ind, 0, f_or_nan(finiteX))
+                f_points.splice(ind, 0, f_or_nan(finiteX));
               }
-
             }
-
           }
 
           lastX = thisX;
           lastF = thisF;
         }
-
 
         numericalSolutions = [];
 
@@ -381,7 +388,6 @@ export default class SolveEquations extends InlineComponent {
         if (lastF === 0) {
           numericalSolutions.push(lastX);
         }
-
 
         for (let ind = 1; ind < testPoints.length; ind++) {
           let thisX = testPoints[ind];
@@ -398,25 +404,26 @@ export default class SolveEquations extends InlineComponent {
               let originalLastX = lastX;
               let originalLastF = lastF;
 
-
               if (lastF * nextF > 0) {
                 // didn't switch signs, look for smaller interval where switched signs
                 for (let j = 0; j < 10; j++) {
-                  lastX = (0.1 * lastX + 0.9 * thisX);
-                  nextX = (0.1 * nextX + 0.9 * thisX);
+                  lastX = 0.1 * lastX + 0.9 * thisX;
+                  nextX = 0.1 * nextX + 0.9 * thisX;
 
-                  lastF = f_or_nan(lastX)
-                  nextF = f_or_nan(nextX)
+                  lastF = f_or_nan(lastX);
+                  nextF = f_or_nan(nextX);
 
                   if (lastF * nextF < 0) {
                     // now switches signs,
                     // which means it switches signs again when get to original interval
                     if (lastF * originalLastF < 0) {
-                      numericalSolutions.push(numerics.fzero(f_or_nan, [originalLastX, lastX]));
+                      numericalSolutions.push(
+                        numerics.fzero(f_or_nan, [originalLastX, lastX]),
+                      );
                       numericalSolutions.push(thisX);
                     } else {
                       if (!numericalSolutions.includes(thisX)) {
-                        numericalSolutions.push(thisX)
+                        numericalSolutions.push(thisX);
                       }
                       // use the slightly larger values of x
                       // for the current x so that will find zero on next loop
@@ -425,9 +432,7 @@ export default class SolveEquations extends InlineComponent {
                     }
                     addedExactZero = true;
                     break;
-
                   }
-
                 }
               }
             }
@@ -435,77 +440,73 @@ export default class SolveEquations extends InlineComponent {
             if (!addedExactZero && !numericalSolutions.includes(thisX)) {
               numericalSolutions.push(thisX);
             }
-
           } else if (thisF * lastF < 0) {
             numericalSolutions.push(numerics.fzero(f_or_nan, [lastX, thisX]));
           } else if (lastF !== 0) {
-
             // if not last point, check if is a local min or max
             // that could cross zero if large enough
             if (ind < testPoints.length - 1) {
               let nextX = testPoints[ind + 1];
               let nextF = f_points[ind + 1];
 
-              if ((lastF - thisF) * (nextF - thisF) > 0 && (
-                (thisF > 0 && lastF > thisF) || (thisF < 0 && lastF < thisF)
-              )) {
-
+              if (
+                (lastF - thisF) * (nextF - thisF) > 0 &&
+                ((thisF > 0 && lastF > thisF) || (thisF < 0 && lastF < thisF))
+              ) {
                 // get better estimate of local extremum
                 let fFlip;
                 if (lastF > thisF) {
                   fFlip = f_or_nan;
                 } else {
-                  fFlip = x => -f_or_nan(x);
+                  fFlip = (x) => -f_or_nan(x);
                 }
 
                 // use high precision to find minimum
                 // to increase likelihood we'll hit zero
-                let res = numerics.fminbr(fFlip, [lastX, nextX], undefined, 1E-10);
+                let res = numerics.fminbr(
+                  fFlip,
+                  [lastX, nextX],
+                  undefined,
+                  1e-10,
+                );
 
                 if (res.success) {
-
                   let extremumX = res.x;
                   let extremumF = f_or_nan(extremumX);
 
-
                   if (extremumF * lastF < 0) {
                     // we now flipped signs
-                    numericalSolutions.push(numerics.fzero(f_or_nan, [lastX, extremumX]));
+                    numericalSolutions.push(
+                      numerics.fzero(f_or_nan, [lastX, extremumX]),
+                    );
 
                     // use the extremum values of x
                     // for the current x so that will find zero on next loop
                     thisX = extremumX;
                     thisF = extremumF;
-
                   } else if (extremumF === 0) {
                     numericalSolutions.push(extremumX);
                   }
                 }
-
               }
-
             }
-
           }
 
           lastX = thisX;
           lastF = thisF;
-
-
         }
 
-
         // since added extra points outside range, filter out any extra solutions
-        numericalSolutions = numericalSolutions.filter(x => x >= minVar && x <= maxVar);
+        numericalSolutions = numericalSolutions.filter(
+          (x) => x >= minVar && x <= maxVar,
+        );
 
-        let allSolutions = numericalSolutions.map(x => me.fromAst(x))
+        let allSolutions = numericalSolutions.map((x) => me.fromAst(x));
         // allSolutions.push(...nonNumericalSolutions)
 
-
-        return { setValue: { allSolutions } }
-
-      }
-    }
+        return { setValue: { allSolutions } };
+      },
+    };
 
     stateVariableDefinitions.numberSolutions = {
       public: true,
@@ -515,14 +516,15 @@ export default class SolveEquations extends InlineComponent {
       returnDependencies: () => ({
         allSolutions: {
           dependencyType: "stateVariable",
-          variableName: "allSolutions"
-        }
+          variableName: "allSolutions",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { numberSolutions: dependencyValues.allSolutions.length } };
-      }
-    }
-
+        return {
+          setValue: { numberSolutions: dependencyValues.allSolutions.length },
+        };
+      },
+    };
 
     stateVariableDefinitions.solutions = {
       public: true,
@@ -544,31 +546,23 @@ export default class SolveEquations extends InlineComponent {
         let globalDependencies = {
           allSolutions: {
             dependencyType: "stateVariable",
-            variableName: "allSolutions"
-          }
-        }
+            variableName: "allSolutions",
+          },
+        };
 
-        return { globalDependencies }
-
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
-
         let solutions = {};
 
         for (let key = 0; key < globalDependencyValues.__array_size[0]; key++) {
           solutions[key] = globalDependencyValues.allSolutions[key];
         }
 
-        return { setValue: { solutions } }
-      }
-    }
-
-
+        return { setValue: { solutions } };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
-
 }
