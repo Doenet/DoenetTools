@@ -78,6 +78,7 @@ const TopContainer = styled.div`
 const ContentContainer = styled.main`
   grid-row: 2 / 3;
   margin: 0;
+  overflow-y: scroll;
 `;
 
 function MenuItem({ to, children, dataTest }) {
@@ -101,7 +102,7 @@ function MenuItem({ to, children, dataTest }) {
 export function SiteHeader(props) {
   let data = useLoaderData();
   const isAdmin = data?.isAdmin;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);

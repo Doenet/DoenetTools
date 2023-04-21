@@ -34,8 +34,6 @@ import { Form, useFetcher } from 'react-router-dom';
 import { RiEmotionSadLine } from 'react-icons/ri';
 import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
 import AuthorCard from '../../../_reactComponents/PanelHeaderComponents/AuthorCard';
-import { ComponentListOfListsWithSelectableType } from '../../../Core/components/abstract/ComponentWithSelectableType';
-import { HiOutlineLockClosed } from 'react-icons/hi';
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -134,6 +132,7 @@ const CarouselSection = styled.div`
   align-items: center;
   text-align: center;
   background: var(--mainGray);
+  height: calc(100% + 400px);
 `;
 
 export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
@@ -527,6 +526,7 @@ export function Community() {
 
   return (
     <>
+      {/* <Box overflowY="scroll" margin="0" height="100%"> */}
       <Flex
         flexDirection="column"
         p={4}
@@ -662,6 +662,7 @@ export function Community() {
             );
           })}
       </CarouselSection>
+      {/* </Box> */}
     </>
   );
 }
