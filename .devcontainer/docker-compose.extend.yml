@@ -20,18 +20,24 @@ services:
     #   dockerfile: .devcontainer/Dockerfile
     image: lyanthropos/doenet_dev
     volumes:
-      # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
+      # mount daemon for docker in docker control
       - /var/run/docker.sock:/var/run/docker.sock
+      # mount in auth sock for ssh support
       - /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock
       # mount local files
       - ./:/home/node/workspace
+      # named volume for linux node modules
       - node_modules:/home/node/workspace/node_modules
+      # Persist VS Code extensions between rebuilds
+      # - vscode-extensions:/root/.vscode-server/extensions
+      # mount ssh configuration
       - ~/.ssh:/.ssh
     networks:
       - dev_net
     environment:
       - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
       - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
+      - NODE_OPTIONS=--max-old-space-size=4098
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     cap_add:
       - SYS_PTRACE

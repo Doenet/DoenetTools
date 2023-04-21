@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
 import me from 'math-expressions';
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 
 export default class Label extends InlineComponent {
   constructor(args) {
@@ -8,11 +9,12 @@ export default class Label extends InlineComponent {
 
     Object.assign(this.actions, {
       moveLabel: this.moveLabel.bind(this),
+      labelClicked: this.labelClicked.bind(this),
+      labelFocused: this.labelFocused.bind(this),
     });
 
   }
   static componentType = "label";
-  static renderChildren = true;
   static rendererType = "label";
 
   static includeBlankStringChildren = true;
@@ -20,6 +22,8 @@ export default class Label extends InlineComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "valueShadow";
 
+  static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -44,21 +48,9 @@ export default class Label extends InlineComponent {
       forRenderer: true
     };
 
-    attributes.anchor = {
-      createComponentOfType: "point",
-    }
 
-    attributes.positionFromAnchor = {
-      createComponentOfType: "text",
-      createStateVariable: "positionFromAnchor",
-      defaultValue: "center",
-      public: true,
-      forRenderer: true,
-      toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
+    Object.assign(attributes, returnAnchorAttributes())
 
-    attributes.styleNumber.defaultValue = 0;
 
     return attributes;
   }
@@ -77,8 +69,14 @@ export default class Label extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
-
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
 
     stateVariableDefinitions.valueShadow = {
       hasEssential: true,
@@ -166,14 +164,14 @@ export default class Label extends InlineComponent {
         variableName: "latex",
         public: true,
         shadowingInstructions: {
-          createComponentOfType: "text"
+          createComponentOfType: "latex"
         },
       }, {
         variableName: "value",
         public: true,
         forRenderer: true,
         shadowingInstructions: {
-          createComponentOfType: "label",
+          createComponentOfType: this.componentType,
           addStateVariablesShadowingStateVariables: {
             hasLatex: {
               stateVariableToShadow: "hasLatex",
@@ -392,56 +390,6 @@ export default class Label extends InlineComponent {
 
     }
 
-    stateVariableDefinitions.anchor = {
-      defaultValue: me.fromText("(0,0)"),
-      public: true,
-      forRenderer: true,
-      hasEssential: true,
-      shadowingInstructions: {
-        createComponentOfType: "point"
-      },
-      returnDependencies: () => ({
-        anchorAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "anchor",
-          variableNames: ["coords"],
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.anchorAttr) {
-          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
-        } else {
-          return { useEssentialOrDefaultValue: { anchor: true } }
-        }
-      },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
-        if (dependencyValues.anchorAttr) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "anchorAttr",
-              desiredValue: desiredStateVariableValues.anchor,
-              variableIndex: 0,
-            }]
-          }
-        } else {
-          return {
-            success: true,
-            instructions: [{
-              setEssentialValue: "anchor",
-              value: desiredStateVariableValues.anchor
-            }]
-          }
-        }
-
-      }
-    }
 
     return stateVariableDefinitions;
 
@@ -453,52 +401,46 @@ export default class Label extends InlineComponent {
   async moveLabel({ x, y, z, transient, actionId,
     sourceInformation = {}, skipRendererUpdate = false
   }) {
-    let components = ["vector"];
-    if (x !== undefined) {
-      components[1] = x;
-    }
-    if (y !== undefined) {
-      components[2] = y;
-    }
-    if (z !== undefined) {
-      components[3] = z;
-    }
-    if (transient) {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
-        transient,
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
+
+  }
+
+  async labelClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      });
-    } else {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "anchor",
-          value: me.fromAst(components),
-        }],
+      })
+    }
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async labelFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-        event: {
-          verb: "interacted",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            x, y, z
-          }
-        }
-      });
+      })
     }
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

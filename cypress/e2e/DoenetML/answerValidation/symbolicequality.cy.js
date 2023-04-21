@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc , cesc2} from '../../../../src/_utils/url';
 
 describe('Symbolic equality tests', function () {
 
@@ -44,37 +36,37 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc2('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc2('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -194,23 +186,23 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.log("Submit exact answer")
       cy.get(mathinputAnchor).type('1x-0y+-3s{enter}', { force: true });
@@ -317,23 +309,23 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.log("Submit exact answer")
       cy.get(mathinputAnchor).type('1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}', { force: true });
@@ -440,23 +432,23 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.log("Submit exact answer")
       cy.get(mathinputAnchor).type('1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}', { force: true });
@@ -552,23 +544,23 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.log("Submit exact answer")
       cy.get(mathinputAnchor).type('6x^2{rightArrow} -3x +8x-4 + (2x-3)(4-x){enter}', { force: true });
@@ -663,23 +655,23 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc2('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc2('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.log("Submit exact answer")
       cy.get(mathinputAnchor).type('(2x-3)(4-x) + sin(x)^2{rightArrow}+cos(x)^2{rightArrow}{enter}', { force: true });
@@ -739,21 +731,21 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -815,34 +807,34 @@ describe('Symbolic equality tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
-      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
-      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
-      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
-      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputAnchor = cesc2('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc2('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc2('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+      let mathinput2Anchor = cesc2('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc2('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc2('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+      let mathinput3Anchor = cesc2('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc2('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc2('#' + mathinput3Name + '_correct');
+      let mathinput3IncorrectAnchor = cesc2('#' + mathinput3Name + '_incorrect');
 
 
       let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
-      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
-      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
-      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
-      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+      let mathinput4Anchor = cesc2('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc2('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc2('#' + mathinput4Name + '_correct');
+      let mathinput4IncorrectAnchor = cesc2('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');

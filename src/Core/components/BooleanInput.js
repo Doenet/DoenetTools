@@ -1,12 +1,15 @@
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
 import { returnLabelStateVariableDefinitions } from '../utils/label';
 import Input from './abstract/Input';
+import me from 'math-expressions';
 
 export default class BooleanInput extends Input {
   constructor(args) {
     super(args);
 
     Object.assign(this.actions, {
-      updateBoolean: this.updateBoolean.bind(this)
+      updateBoolean: this.updateBoolean.bind(this),
+      moveInput: this.moveInput.bind(this),
     });
 
     this.externalActions = {};
@@ -57,6 +60,17 @@ export default class BooleanInput extends Input {
     attributes.bindValueTo = {
       createComponentOfType: "boolean"
     };
+
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    Object.assign(attributes, returnAnchorAttributes())
+
     return attributes;
   }
 
@@ -75,8 +89,10 @@ export default class BooleanInput extends Input {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let labelDefinitions = returnLabelStateVariableDefinitions();
-
     Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
 
     stateVariableDefinitions.value = {
       public: true,
@@ -208,6 +224,21 @@ export default class BooleanInput extends Input {
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
+  }
+
+
+  async moveInput({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
+
   }
 
 }

@@ -156,7 +156,7 @@ describe('Activity Settings Test', function () {
 
     cy.wait(500) //TODO: need the UI to let us know this was successful
     cy.task('queryDb', `SELECT jsonDefinition FROM course_content WHERE doenetId="${doenetId}"`).then((result) => {
-      expect(result[0].jsonDefinition).to.contains(`"itemWeights": [${itemWeights}]`)
+      expect(result[0].jsonDefinition.itemWeights).eqls([itemWeights])
     })
   })
 

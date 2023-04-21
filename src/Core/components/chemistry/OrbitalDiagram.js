@@ -14,6 +14,7 @@ export default class OrbitalDiagram extends BlockComponent {
   static componentType = "orbitalDiagram";
 
   static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -67,7 +68,7 @@ export default class OrbitalDiagram extends BlockComponent {
       defaultValue: [{ orbitalText: "", boxes: [] }],
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "orbitalDiagram",
+        createComponentOfType: this.componentType,
       },
       forRenderer: true,
       returnDependencies: () => ({

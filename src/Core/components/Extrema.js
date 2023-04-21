@@ -330,6 +330,7 @@ export class Extrema extends BaseComponent {
     stateVariableDefinitions[extremaClass.componentType] = {
       isArray: true,
       nDimensions: 2,
+      isLocation: true,
       entryPrefixes: [
         extremaClass.componentTypeSingular,
         extremaClass.componentTypeSingular + "Locations",

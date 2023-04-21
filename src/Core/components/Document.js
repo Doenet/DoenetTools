@@ -96,6 +96,8 @@ export default class Document extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // Note: style definition state variables allow one to redefine the style
+    // via styledefinitions inside a setup in the document
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
 
@@ -663,6 +665,12 @@ export default class Document extends BaseComponent {
       definition({ dependencyValues }) {
         return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
       }
+    }
+
+    stateVariableDefinitions.containerTag = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { containerTag: "div" } })
     }
 
     return stateVariableDefinitions;

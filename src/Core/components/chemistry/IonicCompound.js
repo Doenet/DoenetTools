@@ -1,5 +1,6 @@
 import InlineComponent from '../abstract/InlineComponent';
 import me from 'math-expressions';
+import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../../utils/style';
 
 
 export default class IonicCompound extends InlineComponent {
@@ -37,6 +38,12 @@ export default class IonicCompound extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
 
     stateVariableDefinitions.ionicCompound = {
@@ -107,18 +114,18 @@ export default class IonicCompound extends InlineComponent {
       definition({ dependencyValues }) {
         let tree;
 
-        if(dependencyValues.ionicCompound) {
+        if (dependencyValues.ionicCompound) {
           tree = [];
-          for(let piece of dependencyValues.ionicCompound) {
+          for (let piece of dependencyValues.ionicCompound) {
             let pieceTree = piece.symbol;
-            if(piece.count > 1) {
+            if (piece.count > 1) {
               pieceTree = ["_", pieceTree, piece.count]
             }
             tree.push(pieceTree)
           }
-          if(tree.length > 1) {
+          if (tree.length > 1) {
             tree = ["*", ...tree];
-          } else if(tree.length === 1) {
+          } else if (tree.length === 1) {
             tree = tree[0];
           } else {
             tree = "\uff3f";
@@ -133,6 +140,10 @@ export default class IonicCompound extends InlineComponent {
     }
 
     stateVariableDefinitions.latex = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "latex"
+      },
       additionalStateVariablesDefined: [{
         variableName: "latexWithInputChildren",
         forRenderer: true,
@@ -146,11 +157,11 @@ export default class IonicCompound extends InlineComponent {
       definition({ dependencyValues }) {
         let latex;
 
-        if(dependencyValues.ionicCompound) {
+        if (dependencyValues.ionicCompound) {
           latex = "";
-          for(let piece of dependencyValues.ionicCompound) {
+          for (let piece of dependencyValues.ionicCompound) {
             latex += `\\text{${piece.symbol}}`;
-            if(piece.count > 1) {
+            if (piece.count > 1) {
               latex += `_{${piece.count}}`
             }
           }

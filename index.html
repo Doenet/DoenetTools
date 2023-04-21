@@ -5,21 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doenet</title>
     <link rel="shortcut icon" href="/favicon.ico" />
-    <script
-      type="text/javascript"
-      charset="UTF-8"
-      src="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraphcore.js"
-    ></script>
     <link
       rel="stylesheet"
       type="text/css"
-      href="https://cdn.jsdelivr.net/npm/jsxgraph@1.4.3/distrib/jsxgraph.css"
+      href="https://cdn.jsdelivr.net/npm/jsxgraph@1.5.0/distrib/jsxgraph.css"
     />
     <script src="https://www.youtube.com/iframe_api"></script>
     <script
-      type="module"
-      src="./src/Media/geogebra/scripts/deployggb.js"
+      type="text/javascript"
+      src="/geogebra/scripts/deployggb.js"
     ></script>
+    <script src="https://cdn.jsdelivr.net/gh/ericnograles/browser-image-resizer@2.4.0/dist/index.js"></script>
     <!-- <link rel="stylesheet" type="text/css" href="/src/css/handsontable.full.css" /> -->
 
     <!-- <link
@@ -112,6 +108,7 @@
         --lightBlue: hsl(209, 54%, 82%);
         --solidLightBlue: #1a5a99;
         --mainGray: #a9a9a9;
+        --mediumGray: #949494;
         --donutBody: #eea177;
         --donutTopping: #6d4445;
         --mainBorder: 2px solid white;
@@ -126,6 +123,75 @@
         --whiteBlankLink: #a9abe5;
         --mainYellow: #efab34;
         --mainPurple: #4a03d9;
+      }
+      body {
+        margin: 0;
+      }
+      .doenet-viewer {
+        font-family: 'Open Sans' !important;
+        color: var(--canvastext);
+      }
+      .doenet-viewer h1 {
+        font-size: 2em;
+        font-weight: bold;
+      }
+      .doenet-viewer h2 {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+      }
+      .doenet-viewer h3 {
+        font-size: 1.17em;
+        font-weight: bold;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+      }
+      .doenet-viewer h4 {
+        font-weight: bold;
+        margin-block-start: 1.33em;
+        margin-block-end: 1.33em;
+      }
+      .doenet-viewer h5 {
+        font-size: 0.83em;
+        font-weight: bold;
+        margin-block-start: 1.67em;
+        margin-block-end: 1.67em;
+      }
+      .doenet-viewer p {
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+      }
+      .doenet-viewer input {
+        box-sizing: content-box;
+        padding: 2px 1px;
+      }
+      .doenet-viewer ul,
+      .doenet-viewer ol {
+        padding-inline-start: 40px;
+      }
+      div.jxgbox input {
+        border-width: 2px;
+      }
+      div.jxgbox button {
+        margin: 0;
+        border-radius: var(--mainBorderRadius);
+        border-width: 2px;
+        border-color: var(--mainBlue);
+        border-style: solid;
+        padding: 1px 6px;
+        background-color: var(--mainBlue);
+        color: white;
+      }
+      div.jxgbox button:hover {
+        background-color: var(--lightBlue);
+        color: black;
+        border-color: var(--lightBlue);
+      }
+      div.jxgbox input[type='checkbox'] {
+        margin: 3px 3px 3px 4px;
+        height: 18px;
+        width: 18px;
       }
     </style>
   </head>

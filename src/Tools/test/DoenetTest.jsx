@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
 import PageViewer from '../../Viewer/PageViewer.jsx';
-import { plainText as testActivityDefinition } from './testActivityDefinition.doenet';
-import { plainText as testCodeDoenetML } from './testCode.doenet';
+import testActivityDefinition from './testActivityDefinition.doenet?raw';
+import testCodeDoenetML from './testCode.doenet?raw';
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from '../../Core/utils/math.js';
 import { useRecoilState } from 'recoil';
@@ -30,7 +30,6 @@ function Test() {
     readOnly: false,
     showFeedback: true,
     showHints: true,
-    bundledCore: false,
     allowLoadState: false,
     allowSaveState: false,
     allowLocalState: false,
@@ -57,7 +56,6 @@ function Test() {
 
   const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
 
-  const [bundledCore, setBundledCore] = useState(testSettings.bundledCore);
   const [allowLoadState, setAllowLoadState] = useState(testSettings.allowLoadState);
   const [allowSaveState, setAllowSaveState] = useState(testSettings.allowSaveState);
   const [allowLocalState, setAllowLocalState] = useState(testSettings.allowLocalState);
@@ -248,17 +246,6 @@ function Test() {
           }
         } />Dark Mode</label>
       </div>
-      <hr />
-      <div>
-        <label> <input type='checkbox' checked={bundledCore} onChange={
-          () => {
-            testSettings.bundledCore = !testSettings.bundledCore;
-            localStorage.setItem("test settings", JSON.stringify(testSettings))
-            setBundledCore(was => !was)
-            setUpdateNumber(was => was + 1)
-          }
-        } />Bundled Core</label>
-      </div>
     </div>
   }
 
@@ -286,7 +273,6 @@ function Test() {
       }}
       attemptNumber={attemptNumber}
       requestedVariantIndex={requestedVariantIndex.current}
-      unbundledCore={!bundledCore}
       doenetId="doenetIdFromTest"
       pageIsActive={true}
     />
@@ -312,7 +298,6 @@ function Test() {
       }}
       attemptNumber={attemptNumber}
       requestedVariantIndex={requestedVariantIndex.current}
-      unbundledCore={!bundledCore}
       doenetId="doenetIdFromTest"
       paginate={paginate}
     />

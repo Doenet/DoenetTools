@@ -133,6 +133,11 @@ export class MatrixInput extends Input {
       defaultValue: false,
       public: true,
     }
+    attributes.minComponentWidth = {
+      createComponentOfType: "integer",
+      createStateVariable: "minComponentWidth",
+      defaultValue: 0,
+    }
 
     return attributes;
   }
@@ -2230,6 +2235,25 @@ export default class MatrixComponentInput extends BaseComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.minWidth = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        matrixInputAncestor: {
+          dependencyType: "ancestor",
+          componentType: "matrixInput",
+          variableNames: ["minComponentWidth"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.matrixInputAncestor) {
+          return { setValue: { minWidth: dependencyValues.matrixInputAncestor.stateValues.minComponentWidth } }
+        }
+        else {
+          return { setValue: { minWidth: 0 } }
+        }
+      }
+    }
 
     // matrixComponentInput should be created as a replacement from matrixInputRow
     // and given rowInd and colInd in the essential state

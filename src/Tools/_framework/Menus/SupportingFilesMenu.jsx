@@ -296,7 +296,7 @@ export default function SupportingFilesMenu(props){
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   let uploadProgressJSX = uploadProgress.map((info)=>{
-    return <div>{info.fileName} - {info.progressPercent}%</div>
+    return <div key={`${info.fileName}`}>{info.fileName} - {info.progressPercent}%</div>
   })
 
   let uploadingSection = null;
@@ -344,7 +344,7 @@ export default function SupportingFilesMenu(props){
     // }
     
     supportFilesJSX.push(
-    <div>
+    <div key={`${cid}`}>
       <div>
         <span style={{width:'116px'}}>asFileName:</span>
         <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/>
@@ -380,7 +380,7 @@ export default function SupportingFilesMenu(props){
     //Checkbox for hasHeader attr hasHeader={T/F} default is true Also in DB
     
     supportFilesJSX.push(
-    <div>
+    <div key={`${cid}`}>
       <div>
         <span style={{width:'116px'}}>fileName: <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/></span>
         

@@ -13,6 +13,7 @@ export default class Parabola extends Curve {
     };
     attributes.vertex = {
       createComponentOfType: "point",
+      isLocation: true,
       createStateVariable: "prescribedVertex",
       defaultValue: null,
     }
@@ -90,6 +91,7 @@ export default class Parabola extends Curve {
     stateVariableDefinitions.aShadow = {
       defaultValue: 1,
       hasEssential: true,
+      isLocation: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -136,6 +138,7 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -442,6 +445,7 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.a = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
@@ -1058,6 +1062,7 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.vertex = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {

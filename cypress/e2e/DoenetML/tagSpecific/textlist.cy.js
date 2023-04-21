@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('TextList Tag Tests', function () {
 
@@ -38,11 +30,11 @@ describe('TextList Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', '')
-    cy.get('#\\/_p2').should('have.text', 'a, b, c')
-    cy.get('#\\/_p3').should('have.text', 'hello, a, b, c, bye, a, b, c')
-    cy.get('#\\/_p4').should('have.text', 'hello, a, b, c, bye, a')
-    cy.get('#\\/_p5').should('have.text', 'hello, a, b, c, bye, a, b, c')
+    cy.get(cesc('#\\/_p1')).should('have.text', '')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'a, b, c')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'hello, a, b, c, bye, a, b, c')
+    cy.get(cesc('#\\/_p4')).should('have.text', 'hello, a, b, c, bye, a')
+    cy.get(cesc('#\\/_p5')).should('have.text', 'hello, a, b, c, bye, a, b, c')
 
 
   })
@@ -78,20 +70,20 @@ describe('TextList Tag Tests', function () {
       ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', 'a, q, r, h, b, u, v, i, j')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'a, q, r, h, b, u, v, i, j')
 
-    cy.get("#\\/_textinput1_input").should('have.value', 'a')
-    cy.get("#\\/_textinput2_input").should('have.value', 'q')
-    cy.get("#\\/_textinput3_input").should('have.value', 'r')
-    cy.get("#\\/_textinput4_input").should('have.value', 'h')
-    cy.get("#\\/_textinput5_input").should('have.value', 'b')
-    cy.get("#\\/_textinput6_input").should('have.value', 'u')
-    cy.get("#\\/_textinput7_input").should('have.value', 'v')
-    cy.get("#\\/_textinput8_input").should('have.value', 'i')
-    cy.get("#\\/_textinput9_input").should('have.value', 'j')
+    cy.get(cesc("#\\/_textinput1_input")).should('have.value', 'a')
+    cy.get(cesc("#\\/_textinput2_input")).should('have.value', 'q')
+    cy.get(cesc("#\\/_textinput3_input")).should('have.value', 'r')
+    cy.get(cesc("#\\/_textinput4_input")).should('have.value', 'h')
+    cy.get(cesc("#\\/_textinput5_input")).should('have.value', 'b')
+    cy.get(cesc("#\\/_textinput6_input")).should('have.value', 'u')
+    cy.get(cesc("#\\/_textinput7_input")).should('have.value', 'v')
+    cy.get(cesc("#\\/_textinput8_input")).should('have.value', 'i')
+    cy.get(cesc("#\\/_textinput9_input")).should('have.value', 'j')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -123,29 +115,29 @@ describe('TextList Tag Tests', function () {
 
     cy.log('change values')
 
-    cy.get("#\\/_textinput1_input").clear().type("1{enter}")
-    cy.get("#\\/_textinput2_input").clear().type("2{enter}")
-    cy.get("#\\/_textinput3_input").clear().type("3{enter}")
-    cy.get("#\\/_textinput4_input").clear().type("4{enter}")
-    cy.get("#\\/_textinput5_input").clear().type("5{enter}")
-    cy.get("#\\/_textinput6_input").clear().type("6{enter}")
-    cy.get("#\\/_textinput7_input").clear().type("7{enter}")
-    cy.get("#\\/_textinput8_input").clear().type("8{enter}")
-    cy.get("#\\/_textinput9_input").clear().type("9{enter}")
+    cy.get(cesc("#\\/_textinput1_input")).clear().type("1{enter}")
+    cy.get(cesc("#\\/_textinput2_input")).clear().type("2{enter}")
+    cy.get(cesc("#\\/_textinput3_input")).clear().type("3{enter}")
+    cy.get(cesc("#\\/_textinput4_input")).clear().type("4{enter}")
+    cy.get(cesc("#\\/_textinput5_input")).clear().type("5{enter}")
+    cy.get(cesc("#\\/_textinput6_input")).clear().type("6{enter}")
+    cy.get(cesc("#\\/_textinput7_input")).clear().type("7{enter}")
+    cy.get(cesc("#\\/_textinput8_input")).clear().type("8{enter}")
+    cy.get(cesc("#\\/_textinput9_input")).clear().type("9{enter}")
 
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
+    cy.get(cesc('#\\/_p1')).should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
 
-    cy.get("#\\/_textinput1_input").should('have.value', '1')
-    cy.get("#\\/_textinput2_input").should('have.value', '2')
-    cy.get("#\\/_textinput3_input").should('have.value', '3')
-    cy.get("#\\/_textinput4_input").should('have.value', '4')
-    cy.get("#\\/_textinput5_input").should('have.value', '5')
-    cy.get("#\\/_textinput6_input").should('have.value', '6')
-    cy.get("#\\/_textinput7_input").should('have.value', '7')
-    cy.get("#\\/_textinput8_input").should('have.value', '8')
-    cy.get("#\\/_textinput9_input").should('have.value', '9')
+    cy.get(cesc("#\\/_textinput1_input")).should('have.value', '1')
+    cy.get(cesc("#\\/_textinput2_input")).should('have.value', '2')
+    cy.get(cesc("#\\/_textinput3_input")).should('have.value', '3')
+    cy.get(cesc("#\\/_textinput4_input")).should('have.value', '4')
+    cy.get(cesc("#\\/_textinput5_input")).should('have.value', '5')
+    cy.get(cesc("#\\/_textinput6_input")).should('have.value', '6')
+    cy.get(cesc("#\\/_textinput7_input")).should('have.value', '7')
+    cy.get(cesc("#\\/_textinput8_input")).should('have.value', '8')
+    cy.get(cesc("#\\/_textinput9_input")).should('have.value', '9')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -189,10 +181,10 @@ describe('TextList Tag Tests', function () {
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_boolean1').should('have.text', 'true')
+    cy.get(cesc('#\\/_boolean1')).should('have.text', 'true')
 
   })
 
@@ -212,18 +204,18 @@ describe('TextList Tag Tests', function () {
       ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/_p1').should('have.text', 'a, b, c, d, e')
-      cy.get('#\\/_p2').should('have.text', 'a, b, c')
-      cy.get('#\\/_p3').should('have.text', 'a, b, c, d, e')
+      cy.get(cesc('#\\/_p1')).should('have.text', 'a, b, c, d, e')
+      cy.get(cesc('#\\/_p2')).should('have.text', 'a, b, c')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'a, b, c, d, e')
 
-      cy.get('#\\/_p4').should('have.text', 'a, b, c')
-      cy.get('#\\/_p5').should('have.text', 'a, b, c, d')
-      cy.get('#\\/_p6').should('have.text', 'a, b, c, d, e')
+      cy.get(cesc('#\\/_p4')).should('have.text', 'a, b, c')
+      cy.get(cesc('#\\/_p5')).should('have.text', 'a, b, c, d')
+      cy.get(cesc('#\\/_p6')).should('have.text', 'a, b, c, d, e')
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
@@ -252,13 +244,13 @@ describe('TextList Tag Tests', function () {
       ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/_p1').should('have.text', 'a, b')
-      cy.get('#\\/_p2').should('have.text', 'a, b, c, d, e')
+      cy.get(cesc('#\\/_p1')).should('have.text', 'a, b')
+      cy.get(cesc('#\\/_p2')).should('have.text', 'a, b, c, d, e')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -268,9 +260,9 @@ describe('TextList Tag Tests', function () {
     })
 
     cy.log("clear first maxnum")
-    cy.get('#\\/mn1 textarea').type("{end}{backspace}", { force: true }).blur();
-    cy.get('#\\/_p1').should('have.text', 'a, b, c, d, e')
-    cy.get('#\\/_p2').should('have.text', 'a, b, c, d, e')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("{end}{backspace}", { force: true }).blur();
+    cy.get(cesc('#\\/_p1')).should('have.text', 'a, b, c, d, e')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'a, b, c, d, e')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -280,9 +272,9 @@ describe('TextList Tag Tests', function () {
 
 
     cy.log("number in second maxnum")
-    cy.get('#\\/mn2 textarea').type("3{enter}", { force: true });
-    cy.get('#\\/_p2').should('have.text', 'a, b, c')
-    cy.get('#\\/_p1').should('have.text', 'a, b, c, d, e')
+    cy.get(cesc('#\\/mn2') + ' textarea').type("3{enter}", { force: true });
+    cy.get(cesc('#\\/_p2')).should('have.text', 'a, b, c')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'a, b, c, d, e')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -292,9 +284,9 @@ describe('TextList Tag Tests', function () {
 
 
     cy.log("number in first maxnum")
-    cy.get('#\\/mn1 textarea').type("4{enter}", { force: true });
-    cy.get('#\\/_p1').should('have.text', 'a, b, c, d')
-    cy.get('#\\/_p2').should('have.text', 'a, b, c')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('have.text', 'a, b, c, d')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'a, b, c')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -304,9 +296,9 @@ describe('TextList Tag Tests', function () {
 
 
     cy.log("change number in first maxnum")
-    cy.get('#\\/mn1 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/_p1').should('have.text', 'a')
-    cy.get('#\\/_p2').should('have.text', 'a, b, c')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('have.text', 'a')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'a, b, c')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

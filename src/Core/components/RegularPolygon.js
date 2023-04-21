@@ -10,12 +10,12 @@ export default class RegularPolygon extends Polygon {
     let attributes = super.createAttributesObject();
 
     attributes.nVertices = {
-      createComponentOfType: "number",
-      createStateVariable: "nVertices",
-      defaultValue: 3,
-      public: true,
-      forRenderer: true,
+      createComponentOfType: "integer",
     };
+
+    attributes.nSides = {
+      createComponentOfType: "integer",
+    }
 
     // Note: vertices is already an attribute from polygon
 
@@ -69,7 +69,6 @@ export default class RegularPolygon extends Polygon {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    delete stateVariableDefinitions.nVertices;
 
     let styleDescriptionWithNounDeps = stateVariableDefinitions.styleDescriptionWithNoun.returnDependencies();
     styleDescriptionWithNounDeps.nSides = {
@@ -89,6 +88,76 @@ export default class RegularPolygon extends Polygon {
 
       return { setValue: { styleDescriptionWithNoun } }
     }
+
+
+    stateVariableDefinitions.nVertices = {
+      isLocation: true,
+      hasEssential: true,
+      defaultValue: 3,
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      returnDependencies: () => ({
+        nVerticesAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nVertices",
+          variableNames: ["value"]
+        },
+        nSidesAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nSides",
+          variableNames: ["value"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.nVerticesAttr) {
+          return { setValue: { nVertices: dependencyValues.nVerticesAttr.stateValues.value } }
+        } else if (dependencyValues.nSidesAttr) {
+          return { setValue: { nVertices: dependencyValues.nSidesAttr.stateValues.value } }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { nVertices: true }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.nVerticesAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "nVerticesAttr",
+              desiredValue: desiredStateVariableValues.nVertices,
+              variableIndex: 0,
+            }]
+          }
+        } else if (dependencyValues.nSidesAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "nSidesAttr",
+              desiredValue: desiredStateVariableValues.nVertices,
+              variableIndex: 0,
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "nVertices",
+              value: desiredStateVariableValues.nVertices
+            }]
+          }
+        }
+      }
+    }
+    
+
+    stateVariableDefinitions.nSides = {
+      isAlias: true,
+      targetVariableName: "nVertices"
+    };
 
     stateVariableDefinitions.nVerticesSpecified = {
 
@@ -111,6 +180,7 @@ export default class RegularPolygon extends Polygon {
 
     stateVariableDefinitions.essentialDirection = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["essentialVertexX"],
       defaultValueByArrayKey: () => 0,
       hasEssential: true,
@@ -183,6 +253,7 @@ export default class RegularPolygon extends Polygon {
 
     stateVariableDefinitions.specifiedCenter = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["specifiedCenterX"],
       returnArraySizeDependencies: () => ({
         haveSpecifiedCenter: {
@@ -257,6 +328,7 @@ export default class RegularPolygon extends Polygon {
 
     stateVariableDefinitions.essentialCenter = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["essentialCenterX"],
       defaultValueByArrayKey: () => 0,
       hasEssential: true,
@@ -306,6 +378,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedCircumradius = {
+      isLocation: true,
       returnDependencies() {
         return {
           circumradiusAttr: {
@@ -370,6 +443,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedInradius = {
+      isLocation: true,
       returnDependencies() {
         return {
           inradiusAttr: {
@@ -426,6 +500,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedSideLength = {
+      isLocation: true,
       returnDependencies() {
         return {
           sideLengthAttr: {
@@ -464,6 +539,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedPerimeter = {
+      isLocation: true,
       returnDependencies() {
         return {
           perimeterAttr: {
@@ -502,6 +578,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.specifiedArea = {
+      isLocation: true,
       returnDependencies() {
         return {
           areaAttr: {
@@ -540,6 +617,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.essentialCircumradius = {
+      isLocation: true,
       hasEssential: true,
       defaultValue: 1,
       returnDependencies: () => ({}),
@@ -560,6 +638,7 @@ export default class RegularPolygon extends Polygon {
     // because we currently can't use additionalStateVariablesDefined with arrays
     // unless all state variables are arrays of the same size
     stateVariableDefinitions.centerComponents = {
+      isLocation: true,
       additionalStateVariablesDefined: ["directionWithRadius"],
       returnDependencies: () => ({
         nVertices: {
@@ -922,6 +1001,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.vertices = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
@@ -1181,6 +1261,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.center = {
+      isLocation: true,
       public: true,
       isArray: true,
       entryPrefixes: ["centerX"],
@@ -1254,6 +1335,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.circumradius = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1321,6 +1403,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.inradius = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1370,6 +1453,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.sideLength = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1413,6 +1497,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.perimeter = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1456,6 +1541,7 @@ export default class RegularPolygon extends Polygon {
 
 
     stateVariableDefinitions.area = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1501,12 +1587,6 @@ export default class RegularPolygon extends Polygon {
     }
 
 
-
-
-    stateVariableDefinitions.nSides = {
-      isAlias: true,
-      targetVariableName: "nVertices"
-    };
 
     return stateVariableDefinitions;
   }

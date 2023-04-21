@@ -25,27 +25,28 @@
   // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
   "shutdownAction": "stopCompose",
 
-  // Uncomment the next line to run commands after the container is created - for example installing curl.
   "initializeCommand": "docker compose -f docker-compose.yml -f .devcontainer/docker-compose.extend.yml down",
+  // Uncomment the next line to run commands after the container is created - for example installing curl.
   "postCreateCommand": "npm install && npx vite optimize",
-  // "postStartCommand": "",
+
+  "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" },
 
   // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "root",
   "customizations": {
     "vscode": {
       "extensions": [
-		"dbaeumer.vscode-eslint",
-		"ms-azuretools.vscode-docker",
-		"esbenp.prettier-vscode",
-		"styled-components.vscode-styled-components",
-		"meganrogge.template-string-converter",
-		"GitHub.vscode-pull-request-github",
-		"eamodio.gitlens",
-		"DotJoshJohnson.xml",
-		"wix.vscode-import-cost",
-		"bmewburn.vscode-intelephense-client"
-	],
+        "dbaeumer.vscode-eslint",
+        "ms-azuretools.vscode-docker",
+        "esbenp.prettier-vscode",
+        "styled-components.vscode-styled-components",
+        "meganrogge.template-string-converter",
+        "GitHub.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "DotJoshJohnson.xml",
+        "wix.vscode-import-cost",
+        "bmewburn.vscode-intelephense-client"
+      ],
       "settings": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",

@@ -1,4 +1,7 @@
+import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 import Input from './abstract/Input';
+import me from 'math-expressions';
 
 export default class Textinput extends Input {
   constructor(args) {
@@ -6,7 +9,8 @@ export default class Textinput extends Input {
 
     Object.assign(this.actions, {
       updateImmediateValue: this.updateImmediateValue.bind(this),
-      updateValue: this.updateValue.bind(this)
+      updateValue: this.updateValue.bind(this),
+      moveInput: this.moveInput.bind(this),
     });
 
 
@@ -44,13 +48,6 @@ export default class Textinput extends Input {
       defaultValue: "",
       public: true,
     };
-    attributes.size = {
-      createComponentOfType: "number",
-      createStateVariable: "size",
-      defaultValue: 10,
-      forRenderer: true,
-      public: true,
-    };
     attributes.bindValueTo = {
       createComponentOfType: "text"
     };
@@ -64,10 +61,6 @@ export default class Textinput extends Input {
     };
     attributes.width = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "width",
-      defaultValue: { size: 600, isAbsolute: true },
-      forRenderer: true,
-      public: true,
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
@@ -76,13 +69,98 @@ export default class Textinput extends Input {
       forRenderer: true,
       public: true,
     };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+
+    Object.assign(attributes, returnAnchorAttributes());
+
     return attributes;
   }
 
 
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+    Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
+    stateVariableDefinitions.width = {
+      forRenderer: true,
+      hasEssential: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
+      returnDependencies: () => ({
+        widthAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "width",
+          variableNames: ["componentSize"],
+        },
+        expanded: {
+          dependencyType: "stateVariable",
+          variableName: "expanded"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.widthAttr) {
+          return {
+            setValue: { width: dependencyValues.widthAttr.stateValues.componentSize }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              width: {
+                defaultValue: { size: dependencyValues.expanded ? 600 : 100, isAbsolute: true }
+              }
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.widthAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "widthAttr",
+              desiredValue: desiredStateVariableValues.width
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setEssentialValue: "width",
+              value: desiredStateVariableValues.width
+            }]
+          }
+        }
+      }
+    }
 
     stateVariableDefinitions.value = {
       public: true,
@@ -319,6 +397,20 @@ export default class Textinput extends Input {
     }
 
     this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+  async moveInput({ x, y, z, transient, actionId,
+    sourceInformation = {}, skipRendererUpdate = false,
+  }) {
+
+    return await moveGraphicalObjectWithAnchorAction({
+      x, y, z, transient, actionId,
+      sourceInformation, skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions
+    })
 
   }
 

@@ -1,4 +1,6 @@
 import { createFunctionFromDefinition } from "../../../../src/Core/utils/function";
+import { cesc } from '../../../../src/_utils/url';
+
 
 describe('Parameterized Curve Tag Tests', function () {
 
@@ -20,7 +22,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -53,7 +55,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -87,7 +89,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -119,7 +121,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -151,7 +153,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -182,7 +184,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -219,7 +221,7 @@ describe('Parameterized Curve Tag Tests', function () {
     </graph>
     `}, "*");
     });
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -257,7 +259,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -294,7 +296,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -331,7 +333,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -368,7 +370,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -406,7 +408,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -439,7 +441,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -472,7 +474,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -507,7 +509,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -551,7 +553,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -591,8 +593,8 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
-    cy.get("#\\/m1 .mjx-mrow").should('contain.text', "2")
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.get(cesc("#\\/m1") + " .mjx-mrow").should('contain.text', "2")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -606,8 +608,8 @@ describe('Parameterized Curve Tag Tests', function () {
       expect(f2(3)).eq(27 - 2);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-3{enter}", { force: true });
-    cy.get("#\\/m1 .mjx-mrow").should('contain.text', "−3")
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}-3{enter}", { force: true });
+    cy.get(cesc("#\\/m1") + " .mjx-mrow").should('contain.text', "−3")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_curve1"].stateValues.parMin).eq(-10);
@@ -646,7 +648,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {
@@ -683,8 +685,8 @@ describe('Parameterized Curve Tag Tests', function () {
       expect(y).closeTo(Math.sin(-4), 1E-3);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}-1{enter}", { force: true })
-    cy.get("#\\/m1").should('contain.text', "−1")
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type("{end}{backspace}{backspace}-1{enter}", { force: true })
+    cy.get(cesc("#\\/m1")).should('contain.text', "−1")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/_point1'].stateValues.xs[0];
@@ -706,8 +708,8 @@ describe('Parameterized Curve Tag Tests', function () {
       expect(y).closeTo(Math.sin(4), 1E-3);
     })
 
-    cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}1{enter}", { force: true })
-    cy.get("#\\/m2").should('contain.text', "1")
+    cy.get(cesc("#\\/_mathinput2") + " textarea").type("{end}{backspace}1{enter}", { force: true })
+    cy.get(cesc("#\\/m2")).should('contain.text', "1")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/_point1'].stateValues.xs[0];
@@ -742,7 +744,7 @@ describe('Parameterized Curve Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  //wait for window to load
 
 
     cy.window().then(async (win) => {

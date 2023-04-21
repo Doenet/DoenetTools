@@ -10,7 +10,7 @@ export default class Circle extends Curve {
     Object.assign(this.actions, {
       moveCircle: this.moveCircle.bind(this),
       circleClicked: this.circleClicked.bind(this),
-      mouseDownOnCircle: this.mouseDownOnCircle.bind(this),
+      circleFocused: this.circleFocused.bind(this),
     });
 
   }
@@ -341,6 +341,7 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -534,6 +535,7 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.prescribedCenter = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["prescribedCenterX"],
       returnArraySizeDependencies: () => ({
         havePrescribedCenter: {
@@ -613,6 +615,7 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.prescribedRadius = {
       defaultValue: null,
+      isLocation: true,
       returnDependencies: () => ({
         radiusAttr: {
           dependencyType: "attributeComponent",
@@ -1061,6 +1064,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.essentialRadius = {
       defaultValue: 1,
       hasEssential: true,
+      isLocation: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -1323,6 +1327,7 @@ export default class Circle extends Curve {
     }
 
     stateVariableDefinitions.essentialCenter = {
+      isLocation: true,
       isArray: true,
       entryPrefixes: ["essentialCenterX"],
       hasEssential: true,
@@ -1685,6 +1690,7 @@ export default class Circle extends Curve {
       // send to renderer just so it can try to preserve original angles
       // when dragging circle based on points with constraints
       forRenderer: true,
+      isLocation: true,
       defaultValue: [],
       hasEssential: true,
       doNotShadowEssential: true,
@@ -1744,6 +1750,7 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.radius = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
       },
@@ -1932,6 +1939,7 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.diameter = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
       },
@@ -1961,6 +1969,7 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.center = {
       forRenderer: true,
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
@@ -2444,29 +2453,33 @@ export default class Circle extends Curve {
 
   }
 
-  async circleClicked({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async circleClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnCircle({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async circleFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: this.componentName,
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

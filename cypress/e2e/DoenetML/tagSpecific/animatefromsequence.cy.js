@@ -1,3 +1,5 @@
+import { cesc } from '../../../../src/_utils/url';
+
 describe('AnimateFromSequence Tag Tests', function () {
 
   beforeEach(() => {
@@ -22,10 +24,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').should('have.text', '1')
-    cy.get('#\\/a2').should('have.text', '1')
+    cy.get(cesc('#\\/a')).should('have.text', '1')
+    cy.get(cesc('#\\/a2')).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -36,31 +38,31 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/a').should('have.text', '2')
-    cy.get('#\\/a2').should('have.text', '2')
-    cy.get('#\\/a').should('have.text', '3')
-    cy.get('#\\/a2').should('have.text', '3')
-    cy.get('#\\/a').should('have.text', '4')
-    cy.get('#\\/a2').should('have.text', '4')
-    cy.get('#\\/a').should('have.text', '5')
-    cy.get('#\\/a2').should('have.text', '5')
-    cy.get('#\\/a').should('have.text', '6')
-    cy.get('#\\/a2').should('have.text', '6')
-    cy.get('#\\/a').should('have.text', '7')
-    cy.get('#\\/a2').should('have.text', '7')
-    cy.get('#\\/a').should('have.text', '8')
-    cy.get('#\\/a2').should('have.text', '8')
-    cy.get('#\\/a').should('have.text', '9')
-    cy.get('#\\/a2').should('have.text', '9')
-    cy.get('#\\/a').should('have.text', '10')
-    cy.get('#\\/a2').should('have.text', '10')
-    cy.get('#\\/a').should('have.text', '1')
-    cy.get('#\\/a2').should('have.text', '1')
-    cy.get('#\\/a').should('have.text', '2')
-    cy.get('#\\/a2').should('have.text', '2')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/a')).should('have.text', '2')
+    cy.get(cesc('#\\/a2')).should('have.text', '2')
+    cy.get(cesc('#\\/a')).should('have.text', '3')
+    cy.get(cesc('#\\/a2')).should('have.text', '3')
+    cy.get(cesc('#\\/a')).should('have.text', '4')
+    cy.get(cesc('#\\/a2')).should('have.text', '4')
+    cy.get(cesc('#\\/a')).should('have.text', '5')
+    cy.get(cesc('#\\/a2')).should('have.text', '5')
+    cy.get(cesc('#\\/a')).should('have.text', '6')
+    cy.get(cesc('#\\/a2')).should('have.text', '6')
+    cy.get(cesc('#\\/a')).should('have.text', '7')
+    cy.get(cesc('#\\/a2')).should('have.text', '7')
+    cy.get(cesc('#\\/a')).should('have.text', '8')
+    cy.get(cesc('#\\/a2')).should('have.text', '8')
+    cy.get(cesc('#\\/a')).should('have.text', '9')
+    cy.get(cesc('#\\/a2')).should('have.text', '9')
+    cy.get(cesc('#\\/a')).should('have.text', '10')
+    cy.get(cesc('#\\/a2')).should('have.text', '10')
+    cy.get(cesc('#\\/a')).should('have.text', '1')
+    cy.get(cesc('#\\/a2')).should('have.text', '1')
+    cy.get(cesc('#\\/a')).should('have.text', '2')
+    cy.get(cesc('#\\/a2')).should('have.text', '2')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -68,7 +70,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 2 or 3
-    cy.get('#\\/a').contains(/2|3/)
+    cy.get(cesc('#\\/a')).contains(/2|3/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -79,8 +81,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/a').should('have.text', `${lastValue}`)
-      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a')).should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a2')).should('have.text', `${lastValue}`)
 
     })
 
@@ -103,10 +105,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').should('have.text', '1')
-    cy.get('#\\/a2').should('have.text', '1')
+    cy.get(cesc('#\\/a')).should('have.text', '1')
+    cy.get(cesc('#\\/a2')).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -117,33 +119,33 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/a').should('have.text', '2')
-    cy.get('#\\/a2').should('have.text', '2')
-    cy.get('#\\/a').should('have.text', '3')
-    cy.get('#\\/a2').should('have.text', '3')
-    cy.get('#\\/a').should('have.text', '4')
-    cy.get('#\\/a2').should('have.text', '4')
-    cy.get('#\\/a').should('have.text', '5')
-    cy.get('#\\/a2').should('have.text', '5')
-    cy.get('#\\/a').should('have.text', '6')
-    cy.get('#\\/a2').should('have.text', '6')
-    cy.get('#\\/a').should('have.text', '7')
-    cy.get('#\\/a2').should('have.text', '7')
-    cy.get('#\\/a').should('have.text', '8')
-    cy.get('#\\/a2').should('have.text', '8')
-    cy.get('#\\/a').should('have.text', '9')
-    cy.get('#\\/a2').should('have.text', '9')
-    cy.get('#\\/a').should('have.text', '10')
-    cy.get('#\\/a2').should('have.text', '10')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/a')).should('have.text', '2')
+    cy.get(cesc('#\\/a2')).should('have.text', '2')
+    cy.get(cesc('#\\/a')).should('have.text', '3')
+    cy.get(cesc('#\\/a2')).should('have.text', '3')
+    cy.get(cesc('#\\/a')).should('have.text', '4')
+    cy.get(cesc('#\\/a2')).should('have.text', '4')
+    cy.get(cesc('#\\/a')).should('have.text', '5')
+    cy.get(cesc('#\\/a2')).should('have.text', '5')
+    cy.get(cesc('#\\/a')).should('have.text', '6')
+    cy.get(cesc('#\\/a2')).should('have.text', '6')
+    cy.get(cesc('#\\/a')).should('have.text', '7')
+    cy.get(cesc('#\\/a2')).should('have.text', '7')
+    cy.get(cesc('#\\/a')).should('have.text', '8')
+    cy.get(cesc('#\\/a2')).should('have.text', '8')
+    cy.get(cesc('#\\/a')).should('have.text', '9')
+    cy.get(cesc('#\\/a2')).should('have.text', '9')
+    cy.get(cesc('#\\/a')).should('have.text', '10')
+    cy.get(cesc('#\\/a2')).should('have.text', '10')
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       return stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/a').should('have.text', '10')
-    cy.get('#\\/a2').should('have.text', '10')
+    cy.get(cesc('#\\/a')).should('have.text', '10')
+    cy.get(cesc('#\\/a2')).should('have.text', '10')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -172,10 +174,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').should('have.text', 'z')
-    cy.get('#\\/a2').should('have.text', 'z')
+    cy.get(cesc('#\\/a')).should('have.text', 'z')
+    cy.get(cesc('#\\/a2')).should('have.text', 'z')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -187,8 +189,8 @@ describe('AnimateFromSequence Tag Tests', function () {
     })
 
     cy.log('advance at most one when click twice')
-    cy.get(`#\\/b`).click();
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -197,7 +199,7 @@ describe('AnimateFromSequence Tag Tests', function () {
       return (lastValue === "z" || lastValue === "w") && stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/a').contains(/w|z/)
+    cy.get(cesc('#\\/a')).contains(/w|z/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -208,35 +210,35 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/a2'].stateValues.value).eq(lastValue);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue === "z" ? 8 : 7);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
-      cy.get('#\\/a').should('have.text', lastValue)
-      cy.get('#\\/a2').should('have.text', lastValue)
+      cy.get(cesc('#\\/a')).should('have.text', lastValue)
+      cy.get(cesc('#\\/a2')).should('have.text', lastValue)
 
     })
 
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/a').should('have.text', 't')
-    cy.get('#\\/a2').should('have.text', 't')
-    cy.get('#\\/a').should('have.text', 'q')
-    cy.get('#\\/a2').should('have.text', 'q')
-    cy.get('#\\/a').should('have.text', 'n')
-    cy.get('#\\/a2').should('have.text', 'n')
-    cy.get('#\\/a').should('have.text', 'k')
-    cy.get('#\\/a2').should('have.text', 'k')
-    cy.get('#\\/a').should('have.text', 'h')
-    cy.get('#\\/a2').should('have.text', 'h')
-    cy.get('#\\/a').should('have.text', 'e')
-    cy.get('#\\/a2').should('have.text', 'e')
-    cy.get('#\\/a').should('have.text', 'z')
-    cy.get('#\\/a2').should('have.text', 'z')
-    cy.get('#\\/a').should('have.text', 'w')
-    cy.get('#\\/a2').should('have.text', 'w')
-    cy.get('#\\/a').should('have.text', 't')
-    cy.get('#\\/a2').should('have.text', 't')
-    cy.get('#\\/a').should('have.text', 'q')
-    cy.get('#\\/a2').should('have.text', 'q')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/a')).should('have.text', 't')
+    cy.get(cesc('#\\/a2')).should('have.text', 't')
+    cy.get(cesc('#\\/a')).should('have.text', 'q')
+    cy.get(cesc('#\\/a2')).should('have.text', 'q')
+    cy.get(cesc('#\\/a')).should('have.text', 'n')
+    cy.get(cesc('#\\/a2')).should('have.text', 'n')
+    cy.get(cesc('#\\/a')).should('have.text', 'k')
+    cy.get(cesc('#\\/a2')).should('have.text', 'k')
+    cy.get(cesc('#\\/a')).should('have.text', 'h')
+    cy.get(cesc('#\\/a2')).should('have.text', 'h')
+    cy.get(cesc('#\\/a')).should('have.text', 'e')
+    cy.get(cesc('#\\/a2')).should('have.text', 'e')
+    cy.get(cesc('#\\/a')).should('have.text', 'z')
+    cy.get(cesc('#\\/a2')).should('have.text', 'z')
+    cy.get(cesc('#\\/a')).should('have.text', 'w')
+    cy.get(cesc('#\\/a2')).should('have.text', 'w')
+    cy.get(cesc('#\\/a')).should('have.text', 't')
+    cy.get(cesc('#\\/a2')).should('have.text', 't')
+    cy.get(cesc('#\\/a')).should('have.text', 'q')
+    cy.get(cesc('#\\/a2')).should('have.text', 'q')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -244,7 +246,7 @@ describe('AnimateFromSequence Tag Tests', function () {
       return stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/a').contains(/q|n/)
+    cy.get(cesc('#\\/a')).contains(/q|n/)
 
 
     cy.window().then(async (win) => {
@@ -256,8 +258,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue === "q" ? 5 : 4);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/a').should('have.text', lastValue)
-      cy.get('#\\/a2').should('have.text', lastValue)
+      cy.get(cesc('#\\/a')).should('have.text', lastValue)
+      cy.get(cesc('#\\/a2')).should('have.text', lastValue)
 
     })
 
@@ -279,10 +281,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').should('have.text', 'z')
-    cy.get('#\\/a2').should('have.text', 'z')
+    cy.get(cesc('#\\/a')).should('have.text', 'z')
+    cy.get(cesc('#\\/a2')).should('have.text', 'z')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -293,29 +295,29 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/a').should('have.text', 'w')
-    cy.get('#\\/a2').should('have.text', 'w')
-    cy.get('#\\/a').should('have.text', 't')
-    cy.get('#\\/a2').should('have.text', 't')
-    cy.get('#\\/a').should('have.text', 'q')
-    cy.get('#\\/a2').should('have.text', 'q')
-    cy.get('#\\/a').should('have.text', 'n')
-    cy.get('#\\/a2').should('have.text', 'n')
-    cy.get('#\\/a').should('have.text', 'k')
-    cy.get('#\\/a2').should('have.text', 'k')
-    cy.get('#\\/a').should('have.text', 'h')
-    cy.get('#\\/a2').should('have.text', 'h')
-    cy.get('#\\/a').should('have.text', 'e')
-    cy.get('#\\/a2').should('have.text', 'e')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/a')).should('have.text', 'w')
+    cy.get(cesc('#\\/a2')).should('have.text', 'w')
+    cy.get(cesc('#\\/a')).should('have.text', 't')
+    cy.get(cesc('#\\/a2')).should('have.text', 't')
+    cy.get(cesc('#\\/a')).should('have.text', 'q')
+    cy.get(cesc('#\\/a2')).should('have.text', 'q')
+    cy.get(cesc('#\\/a')).should('have.text', 'n')
+    cy.get(cesc('#\\/a2')).should('have.text', 'n')
+    cy.get(cesc('#\\/a')).should('have.text', 'k')
+    cy.get(cesc('#\\/a2')).should('have.text', 'k')
+    cy.get(cesc('#\\/a')).should('have.text', 'h')
+    cy.get(cesc('#\\/a2')).should('have.text', 'h')
+    cy.get(cesc('#\\/a')).should('have.text', 'e')
+    cy.get(cesc('#\\/a2')).should('have.text', 'e')
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       return stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/a').should('have.text', 'e')
-    cy.get('#\\/a2').should('have.text', 'e')
+    cy.get(cesc('#\\/a')).should('have.text', 'e')
+    cy.get(cesc('#\\/a2')).should('have.text', 'e')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -344,10 +346,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').should('have.text', '-600')
-    cy.get('#\\/a2').should('have.text', '-600')
+    cy.get(cesc('#\\/a')).should('have.text', '-600')
+    cy.get(cesc('#\\/a2')).should('have.text', '-600')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -358,8 +360,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -368,7 +370,7 @@ describe('AnimateFromSequence Tag Tests', function () {
       return (lastValue === -600 || lastValue === -500) && stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/a').contains(/-600|-500/)
+    cy.get(cesc('#\\/a')).contains(/-600|-500/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -378,53 +380,53 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/a2'].stateValues.value).eq(lastValue);
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue === -600 ? 3 : 4);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
-      cy.get('#\\/a').should('have.text', `${lastValue}`)
-      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a')).should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a2')).should('have.text', `${lastValue}`)
 
 
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/a').should('have.text', '-100')
-    cy.get('#\\/a2').should('have.text', '-100')
-    cy.get('#\\/a').should('have.text', '100')
-    cy.get('#\\/a2').should('have.text', '100')
-    cy.get('#\\/a').should('have.text', '500')
-    cy.get('#\\/a2').should('have.text', '500')
-    cy.get('#\\/a').should('have.text', '600')
-    cy.get('#\\/a2').should('have.text', '600')
-    cy.get('#\\/a').should('have.text', '900')
-    cy.get('#\\/a2').should('have.text', '900')
-    cy.get('#\\/a').should('have.text', '1000')
-    cy.get('#\\/a2').should('have.text', '1000')
-    cy.get('#\\/a').should('have.text', '900')
-    cy.get('#\\/a2').should('have.text', '900')
-    cy.get('#\\/a').should('have.text', '600')
-    cy.get('#\\/a2').should('have.text', '600')
-    cy.get('#\\/a').should('have.text', '500')
-    cy.get('#\\/a2').should('have.text', '500')
-    cy.get('#\\/a').should('have.text', '100')
-    cy.get('#\\/a2').should('have.text', '100')
-    cy.get('#\\/a').should('have.text', '-100')
-    cy.get('#\\/a2').should('have.text', '-100')
-    cy.get('#\\/a').should('have.text', '-500')
-    cy.get('#\\/a2').should('have.text', '-500')
-    cy.get('#\\/a').should('have.text', '-600')
-    cy.get('#\\/a2').should('have.text', '-600')
-    cy.get('#\\/a').should('have.text', '-900')
-    cy.get('#\\/a2').should('have.text', '-900')
-    cy.get('#\\/a').should('have.text', '-1000')
-    cy.get('#\\/a2').should('have.text', '-1000')
-    cy.get('#\\/a').should('have.text', '-900')
-    cy.get('#\\/a2').should('have.text', '-900')
-    cy.get('#\\/a').should('have.text', '-600')
-    cy.get('#\\/a2').should('have.text', '-600')
-    cy.get('#\\/a').should('have.text', '-500')
-    cy.get('#\\/a2').should('have.text', '-500')
-    cy.get('#\\/a').should('have.text', '-100')
-    cy.get('#\\/a2').should('have.text', '-100')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/a')).should('have.text', '-100')
+    cy.get(cesc('#\\/a2')).should('have.text', '-100')
+    cy.get(cesc('#\\/a')).should('have.text', '100')
+    cy.get(cesc('#\\/a2')).should('have.text', '100')
+    cy.get(cesc('#\\/a')).should('have.text', '500')
+    cy.get(cesc('#\\/a2')).should('have.text', '500')
+    cy.get(cesc('#\\/a')).should('have.text', '600')
+    cy.get(cesc('#\\/a2')).should('have.text', '600')
+    cy.get(cesc('#\\/a')).should('have.text', '900')
+    cy.get(cesc('#\\/a2')).should('have.text', '900')
+    cy.get(cesc('#\\/a')).should('have.text', '1000')
+    cy.get(cesc('#\\/a2')).should('have.text', '1000')
+    cy.get(cesc('#\\/a')).should('have.text', '900')
+    cy.get(cesc('#\\/a2')).should('have.text', '900')
+    cy.get(cesc('#\\/a')).should('have.text', '600')
+    cy.get(cesc('#\\/a2')).should('have.text', '600')
+    cy.get(cesc('#\\/a')).should('have.text', '500')
+    cy.get(cesc('#\\/a2')).should('have.text', '500')
+    cy.get(cesc('#\\/a')).should('have.text', '100')
+    cy.get(cesc('#\\/a2')).should('have.text', '100')
+    cy.get(cesc('#\\/a')).should('have.text', '-100')
+    cy.get(cesc('#\\/a2')).should('have.text', '-100')
+    cy.get(cesc('#\\/a')).should('have.text', '-500')
+    cy.get(cesc('#\\/a2')).should('have.text', '-500')
+    cy.get(cesc('#\\/a')).should('have.text', '-600')
+    cy.get(cesc('#\\/a2')).should('have.text', '-600')
+    cy.get(cesc('#\\/a')).should('have.text', '-900')
+    cy.get(cesc('#\\/a2')).should('have.text', '-900')
+    cy.get(cesc('#\\/a')).should('have.text', '-1000')
+    cy.get(cesc('#\\/a2')).should('have.text', '-1000')
+    cy.get(cesc('#\\/a')).should('have.text', '-900')
+    cy.get(cesc('#\\/a2')).should('have.text', '-900')
+    cy.get(cesc('#\\/a')).should('have.text', '-600')
+    cy.get(cesc('#\\/a2')).should('have.text', '-600')
+    cy.get(cesc('#\\/a')).should('have.text', '-500')
+    cy.get(cesc('#\\/a2')).should('have.text', '-500')
+    cy.get(cesc('#\\/a')).should('have.text', '-100')
+    cy.get(cesc('#\\/a2')).should('have.text', '-100')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -432,7 +434,7 @@ describe('AnimateFromSequence Tag Tests', function () {
       return stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/a').contains(/-100|100/)
+    cy.get(cesc('#\\/a')).contains(/-100|100/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -443,8 +445,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue === -100 ? 5 : 6);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/a').should('have.text', `${lastValue}`)
-      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a')).should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a2')).should('have.text', `${lastValue}`)
 
     })
 
@@ -469,10 +471,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/pa').should('have.text', 'value: 89.8')
-    cy.get('#\\/pa2').should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 89.8')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -483,8 +485,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -492,8 +494,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       return Math.abs(lastValue - 89.8) < 1E-12 && stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/pa').should('have.text', 'value: 89.8')
-    cy.get('#\\/pa2').should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 89.8')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -504,17 +506,17 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/pa').should('have.text', 'value: 89.8')
-    cy.get('#\\/pa2').should('have.text', 'value: 89.8')
-    cy.get('#\\/pa').should('have.text', 'value: 89.9')
-    cy.get('#\\/pa2').should('have.text', 'value: 89.9')
-    cy.get('#\\/pa').should('have.text', 'value: 90')
-    cy.get('#\\/pa2').should('have.text', 'value: 90')
-    cy.get('#\\/pa').should('have.text', 'value: 90.1')
-    cy.get('#\\/pa2').should('have.text', 'value: 90.1')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 89.9')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 89.9')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 90')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 90')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 90.1')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 90.1')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -523,8 +525,8 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
 
-    cy.get('#\\/pa').should('have.text', 'value: 90.1')
-    cy.get('#\\/pa2').should('have.text', 'value: 90.1')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 90.1')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 90.1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -536,12 +538,12 @@ describe('AnimateFromSequence Tag Tests', function () {
     })
 
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/pa').should('have.text', 'value: 90.1')
-    cy.get('#\\/pa2').should('have.text', 'value: 90.1')
-    cy.get('#\\/pa').should('have.text', 'value: 90.2')
-    cy.get('#\\/pa2').should('have.text', 'value: 90.2')
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 90.1')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 90.1')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 90.2')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 90.2')
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -568,8 +570,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pa').should('have.text', 'value: 33.4')
-    cy.get('#\\/pa2').should('have.text', 'value: 33.4')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 33.4')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 33.4')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -581,14 +583,14 @@ describe('AnimateFromSequence Tag Tests', function () {
     })
 
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/pa').should('have.text', 'value: 33.4')
-    cy.get('#\\/pa2').should('have.text', 'value: 33.4')
-    cy.get('#\\/pa').should('have.text', 'value: 33.5')
-    cy.get('#\\/pa2').should('have.text', 'value: 33.5')
-    cy.get('#\\/pa').should('have.text', 'value: 33.6')
-    cy.get('#\\/pa2').should('have.text', 'value: 33.6')
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 33.4')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 33.4')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 33.5')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 33.5')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 33.6')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 33.6')
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -624,14 +626,14 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/pa').should('have.text', 'value: 64.5')
-    cy.get('#\\/pa2').should('have.text', 'value: 64.5')
-    cy.get('#\\/pa').should('have.text', 'value: 64.6')
-    cy.get('#\\/pa2').should('have.text', 'value: 64.6')
-    cy.get('#\\/pa').should('have.text', 'value: 64.7')
-    cy.get('#\\/pa2').should('have.text', 'value: 64.7')
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 64.5')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 64.5')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 64.6')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 64.6')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 64.7')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 64.7')
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -640,8 +642,8 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
 
-    cy.get('#\\/pa').should('have.text', 'value: 64.7')
-    cy.get('#\\/pa2').should('have.text', 'value: 64.7')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 64.7')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 64.7')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -674,20 +676,20 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/pa').should('have.text', 'value: 89.8')
-    cy.get('#\\/pa2').should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 89.8')
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/pa').should('have.text', 'value: 89.8')
-    cy.get('#\\/pa2').should('have.text', 'value: 89.8')
-    cy.get('#\\/pa').should('have.text', 'value: 89.9')
-    cy.get('#\\/pa2').should('have.text', 'value: 89.9')
-    cy.get('#\\/pa').should('have.text', 'value: 90')
-    cy.get('#\\/pa2').should('have.text', 'value: 90')
-    cy.get('#\\/pa').should('have.text', 'value: 90.1')
-    cy.get('#\\/pa2').should('have.text', 'value: 90.1')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 89.8')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 89.9')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 89.9')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 90')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 90')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 90.1')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 90.1')
 
     cy.log(`change value on with first slider`)
     cy.window().then(async (win) => {
@@ -698,12 +700,12 @@ describe('AnimateFromSequence Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pa').should('have.text', 'value: 33.4')
-    cy.get('#\\/pa2').should('have.text', 'value: 33.4')
-    cy.get('#\\/pa').should('have.text', 'value: 33.5')
-    cy.get('#\\/pa2').should('have.text', 'value: 33.5')
-    cy.get('#\\/pa').should('have.text', 'value: 33.6')
-    cy.get('#\\/pa2').should('have.text', 'value: 33.6')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 33.4')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 33.4')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 33.5')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 33.5')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 33.6')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 33.6')
 
     cy.log(`change value on with second slider`)
     cy.window().then(async (win) => {
@@ -714,13 +716,13 @@ describe('AnimateFromSequence Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/pa').should('have.text', 'value: 4.5')
-    cy.get('#\\/pa2').should('have.text', 'value: 4.5')
-    cy.get('#\\/pa').should('have.text', 'value: 4.6')
-    cy.get('#\\/pa2').should('have.text', 'value: 4.6')
-    cy.get('#\\/pa').should('have.text', 'value: 4.7')
-    cy.get('#\\/pa2').should('have.text', 'value: 4.7')
-    cy.get(`#\\/b`).click();
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 4.5')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 4.5')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 4.6')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 4.6')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 4.7')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 4.7')
+    cy.get(cesc(`#\\/b`)).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -728,8 +730,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       return stateVariables['/x'].stateValues.animationOn === false;
     }))
 
-    cy.get('#\\/pa').should('have.text', 'value: 4.7')
-    cy.get('#\\/pa2').should('have.text', 'value: 4.7')
+    cy.get(cesc('#\\/pa')).should('have.text', 'value: 4.7')
+    cy.get(cesc('#\\/pa2')).should('have.text', 'value: 4.7')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -762,10 +764,10 @@ describe('AnimateFromSequence Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/cad').should('have.text', 'increase')
-    cy.get('#\\/anmode_input').should('have.value', 'increase')
+    cy.get(cesc('#\\/cad')).should('have.text', 'increase')
+    cy.get(cesc('#\\/anmode_input')).should('have.value', 'increase')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -774,10 +776,10 @@ describe('AnimateFromSequence Tag Tests', function () {
     })
 
 
-    cy.get('#\\/anmode_input').clear().type('decrease{enter}')
+    cy.get(cesc('#\\/anmode_input')).clear().type('decrease{enter}')
 
-    cy.get('#\\/cad').should('have.text', 'decrease')
-    cy.get('#\\/anmode_input').should('have.value', 'decrease')
+    cy.get(cesc('#\\/cad')).should('have.text', 'decrease')
+    cy.get(cesc('#\\/anmode_input')).should('have.value', 'decrease')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -795,7 +797,7 @@ describe('AnimateFromSequence Tag Tests', function () {
       }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -803,8 +805,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       return stateVariables["/anmode"];
     }))
 
-    cy.get('#\\/cad').should('have.text', 'decrease')
-    cy.get('#\\/anmode_input').should('have.value', 'decrease')
+    cy.get(cesc('#\\/cad')).should('have.text', 'decrease')
+    cy.get(cesc('#\\/anmode_input')).should('have.value', 'decrease')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -839,10 +841,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').should('have.text', '1')
-    cy.get('#\\/a2').should('have.text', '1')
+    cy.get(cesc('#\\/a')).should('have.text', '1')
+    cy.get(cesc('#\\/a2')).should('have.text', '1')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -853,33 +855,33 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get('#\\/start_button').click();
-    cy.get('#\\/a').should('have.text', '2')
-    cy.get('#\\/a2').should('have.text', '2')
-    cy.get('#\\/a').should('have.text', '3')
-    cy.get('#\\/a2').should('have.text', '3')
-    cy.get('#\\/a').should('have.text', '4')
-    cy.get('#\\/a2').should('have.text', '4')
-    cy.get('#\\/a').should('have.text', '5')
-    cy.get('#\\/a2').should('have.text', '5')
+    cy.get(cesc('#\\/start_button')).click();
+    cy.get(cesc('#\\/a')).should('have.text', '2')
+    cy.get(cesc('#\\/a2')).should('have.text', '2')
+    cy.get(cesc('#\\/a')).should('have.text', '3')
+    cy.get(cesc('#\\/a2')).should('have.text', '3')
+    cy.get(cesc('#\\/a')).should('have.text', '4')
+    cy.get(cesc('#\\/a2')).should('have.text', '4')
+    cy.get(cesc('#\\/a')).should('have.text', '5')
+    cy.get(cesc('#\\/a2')).should('have.text', '5')
 
-    cy.get('#\\/start_button').click();
-    cy.get('#\\/a').should('have.text', '6')
-    cy.get('#\\/a2').should('have.text', '6')
-    cy.get('#\\/a').should('have.text', '7')
-    cy.get('#\\/a2').should('have.text', '7')
-    cy.get('#\\/a').should('have.text', '8')
-    cy.get('#\\/a2').should('have.text', '8')
-    cy.get('#\\/a').should('have.text', '9')
-    cy.get('#\\/a2').should('have.text', '9')
-    cy.get('#\\/a').should('have.text', '10')
-    cy.get('#\\/a2').should('have.text', '10')
-    cy.get('#\\/a').should('have.text', '1')
-    cy.get('#\\/a2').should('have.text', '1')
-    cy.get('#\\/a').should('have.text', '2')
-    cy.get('#\\/a2').should('have.text', '2')
+    cy.get(cesc('#\\/start_button')).click();
+    cy.get(cesc('#\\/a')).should('have.text', '6')
+    cy.get(cesc('#\\/a2')).should('have.text', '6')
+    cy.get(cesc('#\\/a')).should('have.text', '7')
+    cy.get(cesc('#\\/a2')).should('have.text', '7')
+    cy.get(cesc('#\\/a')).should('have.text', '8')
+    cy.get(cesc('#\\/a2')).should('have.text', '8')
+    cy.get(cesc('#\\/a')).should('have.text', '9')
+    cy.get(cesc('#\\/a2')).should('have.text', '9')
+    cy.get(cesc('#\\/a')).should('have.text', '10')
+    cy.get(cesc('#\\/a2')).should('have.text', '10')
+    cy.get(cesc('#\\/a')).should('have.text', '1')
+    cy.get(cesc('#\\/a2')).should('have.text', '1')
+    cy.get(cesc('#\\/a')).should('have.text', '2')
+    cy.get(cesc('#\\/a2')).should('have.text', '2')
 
-    cy.get('#\\/stop_button').click();
+    cy.get(cesc('#\\/stop_button')).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -887,7 +889,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 2 or 3
-    cy.get('#\\/a').contains(/2|3/)
+    cy.get(cesc('#\\/a')).contains(/2|3/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -898,10 +900,10 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/a').should('have.text', `${lastValue}`)
-      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a')).should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a2')).should('have.text', `${lastValue}`)
 
-      cy.get('#\\/stop_button').click();
+      cy.get(cesc('#\\/stop_button')).click();
 
 
       cy.waitUntil(() => cy.window().then(async (win) => {
@@ -909,23 +911,23 @@ describe('AnimateFromSequence Tag Tests', function () {
         return stateVariables['/x'].stateValues.animationOn === false;
       }))
 
-      cy.get('#\\/a').should('have.text', `${lastValue}`)
-      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a')).should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a2')).should('have.text', `${lastValue}`)
 
     })
 
 
-    cy.get('#\\/toggle_button').click();
-    cy.get('#\\/a').should('have.text', '4')
-    cy.get('#\\/a2').should('have.text', '4')
-    cy.get('#\\/a').should('have.text', '5')
-    cy.get('#\\/a2').should('have.text', '5')
-    cy.get('#\\/a').should('have.text', '6')
-    cy.get('#\\/a2').should('have.text', '6')
-    cy.get('#\\/a').should('have.text', '7')
-    cy.get('#\\/a2').should('have.text', '7')
+    cy.get(cesc('#\\/toggle_button')).click();
+    cy.get(cesc('#\\/a')).should('have.text', '4')
+    cy.get(cesc('#\\/a2')).should('have.text', '4')
+    cy.get(cesc('#\\/a')).should('have.text', '5')
+    cy.get(cesc('#\\/a2')).should('have.text', '5')
+    cy.get(cesc('#\\/a')).should('have.text', '6')
+    cy.get(cesc('#\\/a2')).should('have.text', '6')
+    cy.get(cesc('#\\/a')).should('have.text', '7')
+    cy.get(cesc('#\\/a2')).should('have.text', '7')
 
-    cy.get('#\\/toggle_button').click();
+    cy.get(cesc('#\\/toggle_button')).click();
 
 
     cy.waitUntil(() => cy.window().then(async (win) => {
@@ -934,7 +936,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 7 or 8
-    cy.get('#\\/a').contains(/7|8/)
+    cy.get(cesc('#\\/a')).contains(/7|8/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -945,8 +947,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/a').should('have.text', `${lastValue}`)
-      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a')).should('have.text', `${lastValue}`)
+      cy.get(cesc('#\\/a2')).should('have.text', `${lastValue}`)
 
 
     })
@@ -980,18 +982,18 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_number1').should('have.text', '1')
-    cy.get('#\\/_number2').should('have.text', '2')
-    cy.get('#\\/_number3').should('have.text', '3')
-    cy.get('#\\/n1').should('have.text', '1')
-    cy.get('#\\/n2').should('have.text', '2')
-    cy.get('#\\/n3').should('have.text', '3')
-    cy.get('#\\/c2\\/_number1').should('have.text', '1')
-    cy.get('#\\/c2\\/_number2').should('have.text', '2')
-    cy.get('#\\/c2\\/_number3').should('have.text', '3')
-    cy.get('#\\/plist').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/_number2')).should('have.text', '2')
+    cy.get(cesc('#\\/_number3')).should('have.text', '3')
+    cy.get(cesc('#\\/n1')).should('have.text', '1')
+    cy.get(cesc('#\\/n2')).should('have.text', '2')
+    cy.get(cesc('#\\/n3')).should('have.text', '3')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '2')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '3')
+    cy.get(cesc('#\\/plist')).should('have.text', '1, 2, 3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1009,42 +1011,42 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/_number1').should('have.text', '2')
-    cy.get('#\\/n1').should('have.text', '2')
-    cy.get('#\\/c2\\/_number1').should('have.text', '2')
-    cy.get('#\\/_number1').should('have.text', '3')
-    cy.get('#\\/n1').should('have.text', '3')
-    cy.get('#\\/c2\\/_number1').should('have.text', '3')
-    cy.get('#\\/_number1').should('have.text', '4')
-    cy.get('#\\/n1').should('have.text', '4')
-    cy.get('#\\/c2\\/_number1').should('have.text', '4')
-    cy.get('#\\/_number1').should('have.text', '5')
-    cy.get('#\\/n1').should('have.text', '5')
-    cy.get('#\\/c2\\/_number1').should('have.text', '5')
-    cy.get('#\\/_number1').should('have.text', '6')
-    cy.get('#\\/n1').should('have.text', '6')
-    cy.get('#\\/c2\\/_number1').should('have.text', '6')
-    cy.get('#\\/_number1').should('have.text', '7')
-    cy.get('#\\/n1').should('have.text', '7')
-    cy.get('#\\/c2\\/_number1').should('have.text', '7')
-    cy.get('#\\/_number1').should('have.text', '8')
-    cy.get('#\\/n1').should('have.text', '8')
-    cy.get('#\\/c2\\/_number1').should('have.text', '8')
-    cy.get('#\\/_number1').should('have.text', '9')
-    cy.get('#\\/n1').should('have.text', '9')
-    cy.get('#\\/c2\\/_number1').should('have.text', '9')
-    cy.get('#\\/_number1').should('have.text', '10')
-    cy.get('#\\/n1').should('have.text', '10')
-    cy.get('#\\/c2\\/_number1').should('have.text', '10')
-    cy.get('#\\/_number1').should('have.text', '1')
-    cy.get('#\\/n1').should('have.text', '1')
-    cy.get('#\\/c2\\/_number1').should('have.text', '1')
-    cy.get('#\\/_number1').should('have.text', '2')
-    cy.get('#\\/n1').should('have.text', '2')
-    cy.get('#\\/c2\\/_number1').should('have.text', '2')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/_number1')).should('have.text', '2')
+    cy.get(cesc('#\\/n1')).should('have.text', '2')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '2')
+    cy.get(cesc('#\\/_number1')).should('have.text', '3')
+    cy.get(cesc('#\\/n1')).should('have.text', '3')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '3')
+    cy.get(cesc('#\\/_number1')).should('have.text', '4')
+    cy.get(cesc('#\\/n1')).should('have.text', '4')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '4')
+    cy.get(cesc('#\\/_number1')).should('have.text', '5')
+    cy.get(cesc('#\\/n1')).should('have.text', '5')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '5')
+    cy.get(cesc('#\\/_number1')).should('have.text', '6')
+    cy.get(cesc('#\\/n1')).should('have.text', '6')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '6')
+    cy.get(cesc('#\\/_number1')).should('have.text', '7')
+    cy.get(cesc('#\\/n1')).should('have.text', '7')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '7')
+    cy.get(cesc('#\\/_number1')).should('have.text', '8')
+    cy.get(cesc('#\\/n1')).should('have.text', '8')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '8')
+    cy.get(cesc('#\\/_number1')).should('have.text', '9')
+    cy.get(cesc('#\\/n1')).should('have.text', '9')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '9')
+    cy.get(cesc('#\\/_number1')).should('have.text', '10')
+    cy.get(cesc('#\\/n1')).should('have.text', '10')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '10')
+    cy.get(cesc('#\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/n1')).should('have.text', '1')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/_number1')).should('have.text', '2')
+    cy.get(cesc('#\\/n1')).should('have.text', '2')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '2')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1052,7 +1054,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 2 or 3
-    cy.get('#\\/_number1').contains(/2|3/)
+    cy.get(cesc('#\\/_number1')).contains(/2|3/)
 
     let lastValue1;
 
@@ -1073,45 +1075,45 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/_number2').should('have.text', '2')
-      cy.get('#\\/_number3').should('have.text', '3')
-      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/n2').should('have.text', '2')
-      cy.get('#\\/n3').should('have.text', '3')
-      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/c2\\/_number2').should('have.text', '2')
-      cy.get('#\\/c2\\/_number3').should('have.text', '3')
-      cy.get('#\\/plist').should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/_number2')).should('have.text', '2')
+      cy.get(cesc('#\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/n1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/n2')).should('have.text', '2')
+      cy.get(cesc('#\\/n3')).should('have.text', '3')
+      cy.get(cesc('#\\/c2\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '2')
+      cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/plist')).should('have.text', `${lastValue1}, 2, 3`)
 
 
     })
 
     cy.log('Animate index 2');
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/_number2').should('have.text', '3')
-    cy.get('#\\/n2').should('have.text', '3')
-    cy.get('#\\/c2\\/_number2').should('have.text', '3')
-    cy.get('#\\/_number2').should('have.text', '4')
-    cy.get('#\\/n2').should('have.text', '4')
-    cy.get('#\\/c2\\/_number2').should('have.text', '4')
-    cy.get('#\\/_number2').should('have.text', '5')
-    cy.get('#\\/n2').should('have.text', '5')
-    cy.get('#\\/c2\\/_number2').should('have.text', '5')
-    cy.get('#\\/_number2').should('have.text', '6')
-    cy.get('#\\/n2').should('have.text', '6')
-    cy.get('#\\/c2\\/_number2').should('have.text', '6')
-    cy.get('#\\/_number2').should('have.text', '7')
-    cy.get('#\\/n2').should('have.text', '7')
-    cy.get('#\\/c2\\/_number2').should('have.text', '7')
-    cy.get('#\\/_number2').should('have.text', '8')
-    cy.get('#\\/n2').should('have.text', '8')
-    cy.get('#\\/c2\\/_number2').should('have.text', '8')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/_number2')).should('have.text', '3')
+    cy.get(cesc('#\\/n2')).should('have.text', '3')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '3')
+    cy.get(cesc('#\\/_number2')).should('have.text', '4')
+    cy.get(cesc('#\\/n2')).should('have.text', '4')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '4')
+    cy.get(cesc('#\\/_number2')).should('have.text', '5')
+    cy.get(cesc('#\\/n2')).should('have.text', '5')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '5')
+    cy.get(cesc('#\\/_number2')).should('have.text', '6')
+    cy.get(cesc('#\\/n2')).should('have.text', '6')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '6')
+    cy.get(cesc('#\\/_number2')).should('have.text', '7')
+    cy.get(cesc('#\\/n2')).should('have.text', '7')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '7')
+    cy.get(cesc('#\\/_number2')).should('have.text', '8')
+    cy.get(cesc('#\\/n2')).should('have.text', '8')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '8')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1119,7 +1121,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 9 or 0
-    cy.get('#\\/_number2').contains(/8|9/)
+    cy.get(cesc('#\\/_number2')).contains(/8|9/)
 
 
     let lastValue2;
@@ -1141,46 +1143,46 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/_number3').should('have.text', '3')
-      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/n2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/n3').should('have.text', '3')
-      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/c2\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/c2\\/_number3').should('have.text', '3')
-      cy.get('#\\/plist').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/n1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/n2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/n3')).should('have.text', '3')
+      cy.get(cesc('#\\/c2\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/c2\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/plist')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
 
 
     })
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/_number2').should('have.text', '10')
-    cy.get('#\\/n2').should('have.text', '10')
-    cy.get('#\\/c2\\/_number2').should('have.text', '10')
-    cy.get('#\\/_number2').should('have.text', '1')
-    cy.get('#\\/n2').should('have.text', '1')
-    cy.get('#\\/c2\\/_number2').should('have.text', '1')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/_number2')).should('have.text', '10')
+    cy.get(cesc('#\\/n2')).should('have.text', '10')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '10')
+    cy.get(cesc('#\\/_number2')).should('have.text', '1')
+    cy.get(cesc('#\\/n2')).should('have.text', '1')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '1')
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/_number3').should('have.text', '4')
-    cy.get('#\\/n3').should('have.text', '4')
-    cy.get('#\\/c2\\/_number3').should('have.text', '4')
-    cy.get('#\\/_number3').should('have.text', '5')
-    cy.get('#\\/n3').should('have.text', '5')
-    cy.get('#\\/c2\\/_number3').should('have.text', '5')
-    cy.get('#\\/_number3').should('have.text', '6')
-    cy.get('#\\/n3').should('have.text', '6')
-    cy.get('#\\/c2\\/_number3').should('have.text', '6')
-    cy.get('#\\/_number3').should('have.text', '7')
-    cy.get('#\\/n3').should('have.text', '7')
-    cy.get('#\\/c2\\/_number3').should('have.text', '7')
+    cy.get(cesc('#\\/_number3')).should('have.text', '4')
+    cy.get(cesc('#\\/n3')).should('have.text', '4')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '4')
+    cy.get(cesc('#\\/_number3')).should('have.text', '5')
+    cy.get(cesc('#\\/n3')).should('have.text', '5')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '5')
+    cy.get(cesc('#\\/_number3')).should('have.text', '6')
+    cy.get(cesc('#\\/n3')).should('have.text', '6')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '6')
+    cy.get(cesc('#\\/_number3')).should('have.text', '7')
+    cy.get(cesc('#\\/n3')).should('have.text', '7')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '7')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1188,10 +1190,10 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 7 or 8
-    cy.get('#\\/_number3').contains(/7|8/)
+    cy.get(cesc('#\\/_number3')).contains(/7|8/)
 
     // previous should have stopped at 1 or 2
-    cy.get('#\\/_number2').contains(/1|2/)
+    cy.get(cesc('#\\/_number2')).contains(/1|2/)
 
     let lastValue3;
 
@@ -1213,16 +1215,16 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/_number3').should('have.text', `${lastValue3}`)
-      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/n2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/n3').should('have.text', `${lastValue3}`)
-      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/c2\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/c2\\/_number3').should('have.text', `${lastValue3}`)
-      cy.get('#\\/plist').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/_number3')).should('have.text', `${lastValue3}`)
+      cy.get(cesc('#\\/n1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/n2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/n3')).should('have.text', `${lastValue3}`)
+      cy.get(cesc('#\\/c2\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/c2\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/c2\\/_number3')).should('have.text', `${lastValue3}`)
+      cy.get(cesc('#\\/plist')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
 
 
     })
@@ -1255,18 +1257,18 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_number1').should('have.text', '1')
-    cy.get('#\\/_number2').should('have.text', '2')
-    cy.get('#\\/_number3').should('have.text', '3')
-    cy.get('#\\/n1').should('have.text', '1')
-    cy.get('#\\/n2').should('have.text', '2')
-    cy.get('#\\/n3').should('have.text', '3')
-    cy.get('#\\/c2\\/_number1').should('have.text', '1')
-    cy.get('#\\/c2\\/_number2').should('have.text', '2')
-    cy.get('#\\/c2\\/_number3').should('have.text', '3')
-    cy.get('#\\/plist').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/_number2')).should('have.text', '2')
+    cy.get(cesc('#\\/_number3')).should('have.text', '3')
+    cy.get(cesc('#\\/n1')).should('have.text', '1')
+    cy.get(cesc('#\\/n2')).should('have.text', '2')
+    cy.get(cesc('#\\/n3')).should('have.text', '3')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '2')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '3')
+    cy.get(cesc('#\\/plist')).should('have.text', '1, 2, 3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1284,42 +1286,42 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/_number1').should('have.text', '2')
-    cy.get('#\\/n1').should('have.text', '2')
-    cy.get('#\\/c2\\/_number1').should('have.text', '2')
-    cy.get('#\\/_number1').should('have.text', '3')
-    cy.get('#\\/n1').should('have.text', '3')
-    cy.get('#\\/c2\\/_number1').should('have.text', '3')
-    cy.get('#\\/_number1').should('have.text', '4')
-    cy.get('#\\/n1').should('have.text', '4')
-    cy.get('#\\/c2\\/_number1').should('have.text', '4')
-    cy.get('#\\/_number1').should('have.text', '5')
-    cy.get('#\\/n1').should('have.text', '5')
-    cy.get('#\\/c2\\/_number1').should('have.text', '5')
-    cy.get('#\\/_number1').should('have.text', '6')
-    cy.get('#\\/n1').should('have.text', '6')
-    cy.get('#\\/c2\\/_number1').should('have.text', '6')
-    cy.get('#\\/_number1').should('have.text', '7')
-    cy.get('#\\/n1').should('have.text', '7')
-    cy.get('#\\/c2\\/_number1').should('have.text', '7')
-    cy.get('#\\/_number1').should('have.text', '8')
-    cy.get('#\\/n1').should('have.text', '8')
-    cy.get('#\\/c2\\/_number1').should('have.text', '8')
-    cy.get('#\\/_number1').should('have.text', '9')
-    cy.get('#\\/n1').should('have.text', '9')
-    cy.get('#\\/c2\\/_number1').should('have.text', '9')
-    cy.get('#\\/_number1').should('have.text', '10')
-    cy.get('#\\/n1').should('have.text', '10')
-    cy.get('#\\/c2\\/_number1').should('have.text', '10')
-    cy.get('#\\/_number1').should('have.text', '1')
-    cy.get('#\\/n1').should('have.text', '1')
-    cy.get('#\\/c2\\/_number1').should('have.text', '1')
-    cy.get('#\\/_number1').should('have.text', '2')
-    cy.get('#\\/n1').should('have.text', '2')
-    cy.get('#\\/c2\\/_number1').should('have.text', '2')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/_number1')).should('have.text', '2')
+    cy.get(cesc('#\\/n1')).should('have.text', '2')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '2')
+    cy.get(cesc('#\\/_number1')).should('have.text', '3')
+    cy.get(cesc('#\\/n1')).should('have.text', '3')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '3')
+    cy.get(cesc('#\\/_number1')).should('have.text', '4')
+    cy.get(cesc('#\\/n1')).should('have.text', '4')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '4')
+    cy.get(cesc('#\\/_number1')).should('have.text', '5')
+    cy.get(cesc('#\\/n1')).should('have.text', '5')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '5')
+    cy.get(cesc('#\\/_number1')).should('have.text', '6')
+    cy.get(cesc('#\\/n1')).should('have.text', '6')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '6')
+    cy.get(cesc('#\\/_number1')).should('have.text', '7')
+    cy.get(cesc('#\\/n1')).should('have.text', '7')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '7')
+    cy.get(cesc('#\\/_number1')).should('have.text', '8')
+    cy.get(cesc('#\\/n1')).should('have.text', '8')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '8')
+    cy.get(cesc('#\\/_number1')).should('have.text', '9')
+    cy.get(cesc('#\\/n1')).should('have.text', '9')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '9')
+    cy.get(cesc('#\\/_number1')).should('have.text', '10')
+    cy.get(cesc('#\\/n1')).should('have.text', '10')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '10')
+    cy.get(cesc('#\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/n1')).should('have.text', '1')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '1')
+    cy.get(cesc('#\\/_number1')).should('have.text', '2')
+    cy.get(cesc('#\\/n1')).should('have.text', '2')
+    cy.get(cesc('#\\/c2\\/_number1')).should('have.text', '2')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1327,7 +1329,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 2 or 3
-    cy.get('#\\/_number1').contains(/2|3/)
+    cy.get(cesc('#\\/_number1')).contains(/2|3/)
 
     let lastValue1;
 
@@ -1348,45 +1350,45 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/_number2').should('have.text', '2')
-      cy.get('#\\/_number3').should('have.text', '3')
-      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/n2').should('have.text', '2')
-      cy.get('#\\/n3').should('have.text', '3')
-      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/c2\\/_number2').should('have.text', '2')
-      cy.get('#\\/c2\\/_number3').should('have.text', '3')
-      cy.get('#\\/plist').should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/_number2')).should('have.text', '2')
+      cy.get(cesc('#\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/n1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/n2')).should('have.text', '2')
+      cy.get(cesc('#\\/n3')).should('have.text', '3')
+      cy.get(cesc('#\\/c2\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '2')
+      cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/plist')).should('have.text', `${lastValue1}, 2, 3`)
 
 
     })
 
     cy.log('Animate index 2');
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/_number2').should('have.text', '3')
-    cy.get('#\\/n2').should('have.text', '3')
-    cy.get('#\\/c2\\/_number2').should('have.text', '3')
-    cy.get('#\\/_number2').should('have.text', '4')
-    cy.get('#\\/n2').should('have.text', '4')
-    cy.get('#\\/c2\\/_number2').should('have.text', '4')
-    cy.get('#\\/_number2').should('have.text', '5')
-    cy.get('#\\/n2').should('have.text', '5')
-    cy.get('#\\/c2\\/_number2').should('have.text', '5')
-    cy.get('#\\/_number2').should('have.text', '6')
-    cy.get('#\\/n2').should('have.text', '6')
-    cy.get('#\\/c2\\/_number2').should('have.text', '6')
-    cy.get('#\\/_number2').should('have.text', '7')
-    cy.get('#\\/n2').should('have.text', '7')
-    cy.get('#\\/c2\\/_number2').should('have.text', '7')
-    cy.get('#\\/_number2').should('have.text', '8')
-    cy.get('#\\/n2').should('have.text', '8')
-    cy.get('#\\/c2\\/_number2').should('have.text', '8')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/_number2')).should('have.text', '3')
+    cy.get(cesc('#\\/n2')).should('have.text', '3')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '3')
+    cy.get(cesc('#\\/_number2')).should('have.text', '4')
+    cy.get(cesc('#\\/n2')).should('have.text', '4')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '4')
+    cy.get(cesc('#\\/_number2')).should('have.text', '5')
+    cy.get(cesc('#\\/n2')).should('have.text', '5')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '5')
+    cy.get(cesc('#\\/_number2')).should('have.text', '6')
+    cy.get(cesc('#\\/n2')).should('have.text', '6')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '6')
+    cy.get(cesc('#\\/_number2')).should('have.text', '7')
+    cy.get(cesc('#\\/n2')).should('have.text', '7')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '7')
+    cy.get(cesc('#\\/_number2')).should('have.text', '8')
+    cy.get(cesc('#\\/n2')).should('have.text', '8')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '8')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1394,7 +1396,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 9 or 0
-    cy.get('#\\/_number2').contains(/8|9/)
+    cy.get(cesc('#\\/_number2')).contains(/8|9/)
 
 
     let lastValue2;
@@ -1416,46 +1418,46 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/_number3').should('have.text', '3')
-      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/n2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/n3').should('have.text', '3')
-      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/c2\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/c2\\/_number3').should('have.text', '3')
-      cy.get('#\\/plist').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/n1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/n2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/n3')).should('have.text', '3')
+      cy.get(cesc('#\\/c2\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/c2\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '3')
+      cy.get(cesc('#\\/plist')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
 
 
     })
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/_number2').should('have.text', '10')
-    cy.get('#\\/n2').should('have.text', '10')
-    cy.get('#\\/c2\\/_number2').should('have.text', '10')
-    cy.get('#\\/_number2').should('have.text', '1')
-    cy.get('#\\/n2').should('have.text', '1')
-    cy.get('#\\/c2\\/_number2').should('have.text', '1')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/_number2')).should('have.text', '10')
+    cy.get(cesc('#\\/n2')).should('have.text', '10')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '10')
+    cy.get(cesc('#\\/_number2')).should('have.text', '1')
+    cy.get(cesc('#\\/n2')).should('have.text', '1')
+    cy.get(cesc('#\\/c2\\/_number2')).should('have.text', '1')
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/_number3').should('have.text', '4')
-    cy.get('#\\/n3').should('have.text', '4')
-    cy.get('#\\/c2\\/_number3').should('have.text', '4')
-    cy.get('#\\/_number3').should('have.text', '5')
-    cy.get('#\\/n3').should('have.text', '5')
-    cy.get('#\\/c2\\/_number3').should('have.text', '5')
-    cy.get('#\\/_number3').should('have.text', '6')
-    cy.get('#\\/n3').should('have.text', '6')
-    cy.get('#\\/c2\\/_number3').should('have.text', '6')
-    cy.get('#\\/_number3').should('have.text', '7')
-    cy.get('#\\/n3').should('have.text', '7')
-    cy.get('#\\/c2\\/_number3').should('have.text', '7')
+    cy.get(cesc('#\\/_number3')).should('have.text', '4')
+    cy.get(cesc('#\\/n3')).should('have.text', '4')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '4')
+    cy.get(cesc('#\\/_number3')).should('have.text', '5')
+    cy.get(cesc('#\\/n3')).should('have.text', '5')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '5')
+    cy.get(cesc('#\\/_number3')).should('have.text', '6')
+    cy.get(cesc('#\\/n3')).should('have.text', '6')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '6')
+    cy.get(cesc('#\\/_number3')).should('have.text', '7')
+    cy.get(cesc('#\\/n3')).should('have.text', '7')
+    cy.get(cesc('#\\/c2\\/_number3')).should('have.text', '7')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1463,10 +1465,10 @@ describe('AnimateFromSequence Tag Tests', function () {
     }))
 
     // should stop at 7 or 8
-    cy.get('#\\/_number3').contains(/7|8/)
+    cy.get(cesc('#\\/_number3')).contains(/7|8/)
 
     // previous should have stopped at 1 or 2
-    cy.get('#\\/_number2').contains(/1|2/)
+    cy.get(cesc('#\\/_number2')).contains(/1|2/)
 
     let lastValue3;
 
@@ -1488,16 +1490,16 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/_number3').should('have.text', `${lastValue3}`)
-      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/n2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/n3').should('have.text', `${lastValue3}`)
-      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
-      cy.get('#\\/c2\\/_number2').should('have.text', `${lastValue2}`)
-      cy.get('#\\/c2\\/_number3').should('have.text', `${lastValue3}`)
-      cy.get('#\\/plist').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/_number3')).should('have.text', `${lastValue3}`)
+      cy.get(cesc('#\\/n1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/n2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/n3')).should('have.text', `${lastValue3}`)
+      cy.get(cesc('#\\/c2\\/_number1')).should('have.text', `${lastValue1}`)
+      cy.get(cesc('#\\/c2\\/_number2')).should('have.text', `${lastValue2}`)
+      cy.get(cesc('#\\/c2\\/_number3')).should('have.text', `${lastValue3}`)
+      cy.get(cesc('#\\/plist')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
 
 
     })
@@ -1526,10 +1528,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/p1').should('have.text', '1, 2, 3')
-    cy.get('#\\/p2').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '1, 2, 3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1540,18 +1542,18 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/p1').should('have.text', '2, 2, 3')
-    cy.get('#\\/p2').should('have.text', '2, 2, 3')
-    cy.get('#\\/p1').should('have.text', '3, 2, 3')
-    cy.get('#\\/p2').should('have.text', '3, 2, 3')
-    cy.get('#\\/p1').should('have.text', '4, 2, 3')
-    cy.get('#\\/p2').should('have.text', '4, 2, 3')
-    cy.get('#\\/p1').should('have.text', '5, 2, 3')
-    cy.get('#\\/p2').should('have.text', '5, 2, 3')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/p1')).should('have.text', '2, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '2, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '3, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '3, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '4, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '4, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '5, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '5, 2, 3')
 
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1570,30 +1572,30 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 2, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 2, 3`)
 
 
     })
 
     cy.log('Animate index 2');
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get(`#\\/b`).click().then(() => {
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 3, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 3, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 4, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 4, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 5, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 5, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 6, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 6, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 7, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 7, 3`)
+    cy.get(cesc(`#\\/b`)).click().then(() => {
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 3, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 3, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 4, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 4, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 5, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 5, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 6, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 6, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 7, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 7, 3`)
     });
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1613,31 +1615,31 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
 
     })
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click().then(() => {
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 9, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 9, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 10, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 10, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 1, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 1, 3`)
+    cy.get(cesc(`#\\/b`)).click().then(() => {
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 9, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 9, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 10, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 10, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 1, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 1, 3`)
     })
 
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/n3').should('have.text', '4')
-    cy.get('#\\/n3').should('have.text', '5')
-    cy.get('#\\/n3').should('have.text', '6')
-    cy.get('#\\/n3').should('have.text', '7')
+    cy.get(cesc('#\\/n3')).should('have.text', '4')
+    cy.get(cesc('#\\/n3')).should('have.text', '5')
+    cy.get(cesc('#\\/n3')).should('have.text', '6')
+    cy.get(cesc('#\\/n3')).should('have.text', '7')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1659,8 +1661,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
 
 
     })
@@ -1689,10 +1691,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/p1').should('have.text', '1, 2, 3')
-    cy.get('#\\/p2').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '1, 2, 3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1703,18 +1705,18 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/p1').should('have.text', '2, 2, 3')
-    cy.get('#\\/p2').should('have.text', '2, 2, 3')
-    cy.get('#\\/p1').should('have.text', '3, 2, 3')
-    cy.get('#\\/p2').should('have.text', '3, 2, 3')
-    cy.get('#\\/p1').should('have.text', '4, 2, 3')
-    cy.get('#\\/p2').should('have.text', '4, 2, 3')
-    cy.get('#\\/p1').should('have.text', '5, 2, 3')
-    cy.get('#\\/p2').should('have.text', '5, 2, 3')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/p1')).should('have.text', '2, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '2, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '3, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '3, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '4, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '4, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '5, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '5, 2, 3')
 
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1733,30 +1735,30 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 2, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 2, 3`)
 
 
     })
 
     cy.log('Animate index 2');
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get(`#\\/b`).click().then(() => {
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 3, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 3, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 4, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 4, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 5, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 5, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 6, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 6, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 7, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 7, 3`)
+    cy.get(cesc(`#\\/b`)).click().then(() => {
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 3, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 3, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 4, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 4, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 5, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 5, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 6, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 6, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 7, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 7, 3`)
     });
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1776,31 +1778,31 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
 
     })
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click().then(() => {
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 9, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 9, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 10, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 10, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 1, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 1, 3`)
+    cy.get(cesc(`#\\/b`)).click().then(() => {
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 9, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 9, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 10, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 10, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 1, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 1, 3`)
     })
 
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/n3').should('have.text', '4')
-    cy.get('#\\/n3').should('have.text', '5')
-    cy.get('#\\/n3').should('have.text', '6')
-    cy.get('#\\/n3').should('have.text', '7')
+    cy.get(cesc('#\\/n3')).should('have.text', '4')
+    cy.get(cesc('#\\/n3')).should('have.text', '5')
+    cy.get(cesc('#\\/n3')).should('have.text', '6')
+    cy.get(cesc('#\\/n3')).should('have.text', '7')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1822,8 +1824,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
 
 
     })
@@ -1855,10 +1857,10 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/p1').should('have.text', '1, 2, 3')
-    cy.get('#\\/p2').should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '1, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '1, 2, 3')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1869,18 +1871,18 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
     })
 
-    cy.get(`#\\/b`).click();
-    cy.get('#\\/p1').should('have.text', '2, 2, 3')
-    cy.get('#\\/p2').should('have.text', '2, 2, 3')
-    cy.get('#\\/p1').should('have.text', '3, 2, 3')
-    cy.get('#\\/p2').should('have.text', '3, 2, 3')
-    cy.get('#\\/p1').should('have.text', '4, 2, 3')
-    cy.get('#\\/p2').should('have.text', '4, 2, 3')
-    cy.get('#\\/p1').should('have.text', '5, 2, 3')
-    cy.get('#\\/p2').should('have.text', '5, 2, 3')
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc('#\\/p1')).should('have.text', '2, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '2, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '3, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '3, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '4, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '4, 2, 3')
+    cy.get(cesc('#\\/p1')).should('have.text', '5, 2, 3')
+    cy.get(cesc('#\\/p2')).should('have.text', '5, 2, 3')
 
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1899,30 +1901,30 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 2, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 2, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 2, 3`)
 
 
     })
 
     cy.log('Animate index 2');
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
 
-    cy.get(`#\\/b`).click().then(() => {
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 3, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 3, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 4, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 4, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 5, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 5, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 6, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 6, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 7, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 7, 3`)
+    cy.get(cesc(`#\\/b`)).click().then(() => {
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 3, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 3, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 4, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 4, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 5, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 5, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 6, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 6, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 7, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 7, 3`)
     });
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1942,31 +1944,31 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, ${lastValue2}, 3`)
 
     })
 
     cy.log('Switch to animate index 3 while animating');
 
-    cy.get(`#\\/b`).click().then(() => {
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 9, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 9, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 10, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 10, 3`)
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, 1, 3`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, 1, 3`)
+    cy.get(cesc(`#\\/b`)).click().then(() => {
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 9, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 9, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 10, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 10, 3`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, 1, 3`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, 1, 3`)
     })
 
 
-    cy.get('#\\/ind textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/ind') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
 
-    cy.get('#\\/n3').should('have.text', '4')
-    cy.get('#\\/n3').should('have.text', '5')
-    cy.get('#\\/n3').should('have.text', '6')
-    cy.get('#\\/n3').should('have.text', '7')
+    cy.get(cesc('#\\/n3')).should('have.text', '4')
+    cy.get(cesc('#\\/n3')).should('have.text', '5')
+    cy.get(cesc('#\\/n3')).should('have.text', '6')
+    cy.get(cesc('#\\/n3')).should('have.text', '7')
 
-    cy.get(`#\\/b`).click();
+    cy.get(cesc(`#\\/b`)).click();
 
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1988,8 +1990,8 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
       expect(stateVariables['/x'].stateValues.animationOn).eq(false);
 
-      cy.get('#\\/p1').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
-      cy.get('#\\/p2').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/p1')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+      cy.get(cesc('#\\/p2')).should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
 
 
     })
@@ -2013,18 +2015,53 @@ describe('AnimateFromSequence Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get("#\\/isOn").should('have.text', 'true');
-    cy.get('#\\/t').should('have.text', '1');
-    cy.get('#\\/t').should('have.text', '2');
-    cy.get('#\\/t').should('have.text', '3');
-    cy.get("#\\/isOn").should('have.text', 'false');
+    cy.get(cesc("#\\/isOn")).should('have.text', 'true');
+    cy.get(cesc('#\\/t')).should('have.text', '1');
+    cy.get(cesc('#\\/t')).should('have.text', '2');
+    cy.get(cesc('#\\/t')).should('have.text', '3');
+    cy.get(cesc("#\\/isOn")).should('have.text', 'false');
 
     cy.wait(500);
 
-    cy.get('#\\/t').should('have.text', '3');
-    cy.get("#\\/isOn").should('have.text', 'false');
+    cy.get(cesc('#\\/t')).should('have.text', '3');
+    cy.get(cesc("#\\/isOn")).should('have.text', 'false');
 
   })
 
+
+  it("animate number adapted to math", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+
+  <p>value: <math name="a"><number>1</number></math></p>
+
+  <animateFromSequence name="x" animationMode='increase once' animationOn='$b' target='a' from="1" to="3" animationInterval='100' />
+
+  <booleaninput name="b" />
+  
+  <p>copy: <copy target="a" assignNames="a2" /></p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.get(cesc("#\\/a") + " .mjx-mrow").should("have.text", "1");
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("have.text", "1");
+
+    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc("#\\/a") + " .mjx-mrow").should("have.text", "2");
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("have.text", "2");
+    cy.get(cesc("#\\/a") + " .mjx-mrow").should("have.text", "3");
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("have.text", "3");
+
+
+  });
 
 });

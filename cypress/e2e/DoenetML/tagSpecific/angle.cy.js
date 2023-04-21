@@ -1,13 +1,5 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc } from '../../../../src/_utils/url';
 
 describe('Angle Tag Tests', function () {
 
@@ -36,12 +28,12 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
     })
 
@@ -51,15 +43,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables["/_angle1"].stateValues.points).eqls([[2, 2], [2, 4], [4, 2]])
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should('contain.text', '5.4')
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should('contain.text', '5.4')
 
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(7 * Math.PI / 4, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(7 * Math.PI / 4, 1E-6)
     })
 
@@ -69,15 +61,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables["/_angle1"].stateValues.points).eqls([[4, 4], [2, 4], [4, 2]])
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}0{enter}', { force: true });
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should('contain.text', '1.5')
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should('contain.text', '1.5')
 
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
     })
 
@@ -89,15 +81,15 @@ describe('Angle Tag Tests', function () {
     })
 
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}6{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}6{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should('contain.text', '4.7')
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should('contain.text', '4.7')
 
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
     })
 
@@ -133,12 +125,12 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(4, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(4, 1E-6)
     })
 
@@ -147,16 +139,16 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(4, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-3{enter}', { force: true });
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}7{enter}', { force: true });
-    cy.get('#\\/_mathinput3 textarea').type('{end}{backspace}{backspace}4{enter}', { force: true });
-    cy.get('#\\/_mathinput4 textarea').type('{end}{backspace}6{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}-3{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}7{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput3') + ' textarea').type('{end}{backspace}{backspace}4{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput4') + ' textarea').type('{end}{backspace}6{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should("have.text", "2")
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should("have.text", "2")
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2, 1E-6)
     })
 
@@ -165,16 +157,16 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(2, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}5{enter}', { force: true });
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}-3{enter}', { force: true });
-    cy.get('#\\/_mathinput3 textarea').type('{end}{backspace}3{enter}', { force: true });
-    cy.get('#\\/_mathinput4 textarea').type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}5{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}-3{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput3') + ' textarea').type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput4') + ' textarea').type('{end}{backspace}3{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should("have.text", "0")
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should("have.text", "0")
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(0, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(0, 1E-6)
     })
 
@@ -183,16 +175,16 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(0, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}{backspace}-1{enter}', { force: true });
-    cy.get('#\\/_mathinput3 textarea').type('{end}{backspace}pi/4{enter}', { force: true });
-    cy.get('#\\/_mathinput4 textarea').type('{end}{backspace}5pi/4{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}{backspace}-1{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput3') + ' textarea').type('{end}{backspace}pi/4{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput4') + ' textarea').type('{end}{backspace}5pi/4{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should("contain.text", "3.1")
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should("contain.text", "3.1")
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI, 1E-6)
     })
 
@@ -223,13 +215,13 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).eq("＿");
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).eq("＿");
     })
 
@@ -238,13 +230,13 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.radians).eq('\uff3f')
     })
 
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}0{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should("contain.text", "1.5")
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should("contain.text", "1.5")
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
     })
 
@@ -254,14 +246,14 @@ describe('Angle Tag Tests', function () {
     })
 
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}1{enter}', { force: true });
-    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#\\/_mathinput2') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
 
-    cy.get("#\\/angle2 .mjx-mrow").should("contain.text", "＿")
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2") + " .mjx-mrow").should("contain.text", "＿")
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).eq("＿");
     })
-    cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p1")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).eq("＿");
     })
 
@@ -289,12 +281,12 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get("#\\/angle2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/angle2")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(1, 1E-6)
     })
-    cy.get("#\\/radius2 .mjx-mrow").eq(0).should("have.text", "\uff3f")
+    cy.get(cesc("#\\/radius2") + " .mjx-mrow").eq(0).should("have.text", "\uff3f")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -302,36 +294,36 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.radius).eq('\uFF3F');
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('1{enter}', { force: true });
-    cy.get("#\\/radius2 .mjx-mrow").should("have.text", "1")
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('1{enter}', { force: true });
+    cy.get(cesc("#\\/radius2") + " .mjx-mrow").should("have.text", "1")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radius).eq(1);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}2{enter}', { force: true });
-    cy.get("#\\/radius2 .mjx-mrow").should("have.text", "2")
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc("#\\/radius2") + " .mjx-mrow").should("have.text", "2")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radius).eq(2);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-3{enter}', { force: true });
-    cy.get("#\\/radius2 .mjx-mrow").should("have.text", "−3")
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}-3{enter}', { force: true });
+    cy.get(cesc("#\\/radius2") + " .mjx-mrow").should("have.text", "−3")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables['/_angle1'].stateValues.radius).simplify().tree).eq(-3);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}x{enter}', { force: true });
-    cy.get("#\\/radius2 .mjx-mrow").should("have.text", "x")
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}{backspace}x{enter}', { force: true });
+    cy.get(cesc("#\\/radius2") + " .mjx-mrow").should("have.text", "x")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radius).eq('x');
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
-    cy.get("#\\/radius2 .mjx-mrow").should("have.text", "4")
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc("#\\/radius2") + " .mjx-mrow").should("have.text", "4")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radius).eq(4);
@@ -357,16 +349,16 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("＿")
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("＿")
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("＿")
     })
 
@@ -376,15 +368,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).eq('\uff3f')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('pi/4{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "0.7")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('pi/4{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "0.7")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(45, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
     })
 
@@ -394,15 +386,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(45, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}1{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("have.text", "1")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}1{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("have.text", "1")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(1, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(180 / Math.PI, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(1, 1E-6)
     })
 
@@ -412,15 +404,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(180 / Math.PI, 1E-12)
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}pi/3{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "1.0")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}pi/3{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "1.0")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 3, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(60, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI / 3, 1E-6)
     })
 
@@ -430,15 +422,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}2pi/3{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "2.0")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}2pi/3{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "2.0")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2 * Math.PI / 3, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(120, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2 * Math.PI / 3, 1E-6)
     })
 
@@ -448,15 +440,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(120, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}pi{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "3.1")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}pi{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "3.1")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(180, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI, 1E-6)
     })
 
@@ -466,15 +458,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(180, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("have.text", "4")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("have.text", "4")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(4, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(4 * 180 / Math.PI, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(4, 1E-6)
     })
 
@@ -484,15 +476,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(4 * 180 / Math.PI, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}3pi/2{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "4.7")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}3pi/2{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "4.7")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(270, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
     })
 
@@ -502,15 +494,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(270, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}11pi/6{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "5.7")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}11pi/6{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "5.7")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(11 * Math.PI / 6, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(330, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(11 * Math.PI / 6, 1E-6)
     })
 
@@ -520,15 +512,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(330, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}{backspace}2pi{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "6.2")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}{backspace}2pi{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "6.2")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2 * Math.PI, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(360, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2 * Math.PI, 1E-6)
     })
 
@@ -538,15 +530,15 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(360, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}2pi+0.00001{enter}', { force: true });
-    cy.get("#\\/alpha .mjx-mrow").should("contain.text", "0.000")
-    cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}{backspace}{backspace}2pi+0.00001{enter}', { force: true });
+    cy.get(cesc("#\\/alpha") + " .mjx-mrow").should("contain.text", "0.000")
+    cy.get(cesc("#\\/alpha")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(0.00001, 1E-6)
     })
-    cy.get("#\\/alphadeg").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/alphadeg")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(0.0018 / Math.PI, 1E-6)
     })
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/_p3")).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(0.00001, 1E-6)
     })
 
@@ -575,18 +567,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π2")
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -618,18 +610,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π2")
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -665,18 +657,18 @@ describe('Angle Tag Tests', function () {
 
     // TODO: once can simply ratios, check that 2*_angle2 is simplified correctly
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π2")
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -707,19 +699,19 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("α")
     })
 
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360απ")
     })
 
@@ -747,18 +739,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("α")
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360απ")
     })
 
@@ -786,19 +778,19 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("απ180")
     })
     // TODO: add once can simplify fractions
-    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq("απ90")
     // })
-    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq("απ90")
     // })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
     })
 
@@ -830,19 +822,19 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π2")
     })
 
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -871,7 +863,7 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     function angleFromPs(ps, reflex) {
       let angle = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
@@ -896,23 +888,23 @@ describe('Angle Tag Tests', function () {
 
     // should now be > pi if no modifications
 
-    cy.get('#\\/ra2').should('have.text', 'never');
-    cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+    cy.get(cesc('#\\/ra2')).should('have.text', 'never');
+    cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
       expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points, -1) * 1000))
     })
 
-    cy.get('#\\/ra_input').clear().type('allowed{enter}');
-    cy.get('#\\/ra2').should('have.text', 'allowed');
+    cy.get(cesc('#\\/ra_input')).clear().type('allowed{enter}');
+    cy.get(cesc('#\\/ra2')).should('have.text', 'allowed');
 
-    cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+    cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
       expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
     })
 
 
-    cy.get('#\\/ra_input').clear().type('always{enter}');
-    cy.get('#\\/ra2').should('have.text', 'always');
+    cy.get(cesc('#\\/ra_input')).clear().type('always{enter}');
+    cy.get(cesc('#\\/ra2')).should('have.text', 'always');
 
-    cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+    cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
       expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
     })
 
@@ -928,19 +920,19 @@ describe('Angle Tag Tests', function () {
       // should now be < pi if no modifications
 
 
-      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
         expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points, 1) * 1000))
       })
 
-      cy.get('#\\/ra_input').clear().type('never{enter}');
-      cy.get('#\\/ra2').should('have.text', 'never');
-      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      cy.get(cesc('#\\/ra_input')).clear().type('never{enter}');
+      cy.get(cesc('#\\/ra2')).should('have.text', 'never');
+      cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
         expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
       })
 
-      cy.get('#\\/ra_input').clear().type('allowed{enter}');
-      cy.get('#\\/ra2').should('have.text', 'allowed');
-      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      cy.get(cesc('#\\/ra_input')).clear().type('allowed{enter}');
+      cy.get(cesc('#\\/ra2')).should('have.text', 'allowed');
+      cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
         expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
       })
 
@@ -957,19 +949,19 @@ describe('Angle Tag Tests', function () {
       points[2] = [-1, -5]
       // should now be > pi if no modifications
 
-      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
         expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
       })
 
-      cy.get('#\\/ra_input').clear().type('never{enter}');
-      cy.get('#\\/ra2').should('have.text', 'never');
-      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      cy.get(cesc('#\\/ra_input')).clear().type('never{enter}');
+      cy.get(cesc('#\\/ra2')).should('have.text', 'never');
+      cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
         expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points, -1) * 1000))
       })
 
-      cy.get('#\\/ra_input').clear().type('always{enter}');
-      cy.get('#\\/ra2').should('have.text', 'always');
-      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      cy.get(cesc('#\\/ra_input')).clear().type('always{enter}');
+      cy.get(cesc('#\\/ra2')).should('have.text', 'always');
+      cy.get(cesc('#\\/alpha2') + ' .mjx-mrow').eq(0).invoke("text").then(text => {
         expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
       })
 
@@ -995,18 +987,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1039,18 +1031,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1075,18 +1067,18 @@ describe('Angle Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/A2') + ' .mjx-mrow').should('contain.text', '(1,7)')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1122,18 +1114,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π3')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("120")
     })
 
@@ -1158,19 +1150,19 @@ describe('Angle Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/A2') + ' .mjx-mrow').should('contain.text', '(1,7)')
 
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π3')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("120")
     })
 
@@ -1187,20 +1179,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired radians')
-    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
+    cy.get(cesc('#\\/desiredRadians') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
 
-    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', '2π5')
+    cy.get(cesc('#\\/desiredRadians2') + ' .mjx-mrow').should('contain.text', '2π5')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π5')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('4π5')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('4π5')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("144")
     })
 
@@ -1217,20 +1209,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired radians to variable')
-    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+    cy.get(cesc('#\\/desiredRadians') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
 
-    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', 'θ')
+    cy.get(cesc('#\\/desiredRadians2') + ' .mjx-mrow').should('contain.text', 'θ')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('θ')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2θ')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2θ')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360θπ")
     })
 
@@ -1265,19 +1257,19 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     // TODO: add when can simplify ratios
-    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('π2')
     // })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1302,19 +1294,19 @@ describe('Angle Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/A2') + ' .mjx-mrow').should('contain.text', '(1,7)')
 
     // TODO: add when can simplify ratios
-    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('π2')
     // })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1331,20 +1323,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired degrees')
-    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
+    cy.get(cesc('#\\/desiredDegrees') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
 
-    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', '180')
+    cy.get(cesc('#\\/desiredDegrees2') + ' .mjx-mrow').should('contain.text', '180')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360")
     })
 
@@ -1361,21 +1353,21 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired degrees to variable')
-    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+    cy.get(cesc('#\\/desiredDegrees') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
 
-    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', 'θ')
+    cy.get(cesc('#\\/desiredDegrees2') + ' .mjx-mrow').should('contain.text', 'θ')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('πθ180')
     })
     // TODO: uncomment when can simplify fractions
-    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('πθ90')
     // })
-    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('πθ90')
     // })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2θ")
     })
 
@@ -1408,18 +1400,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1449,18 +1441,18 @@ describe('Angle Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/A2') + ' .mjx-mrow').should('contain.text', '(1,7)')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1497,18 +1489,18 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π3')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("120")
     })
 
@@ -1538,19 +1530,19 @@ describe('Angle Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/A2') + ' .mjx-mrow').should('contain.text', '(1,7)')
 
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π3')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("120")
     })
 
@@ -1567,20 +1559,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired radians')
-    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
+    cy.get(cesc('#\\/desiredRadians') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
 
-    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', '2π5')
+    cy.get(cesc('#\\/desiredRadians2') + ' .mjx-mrow').should('contain.text', '2π5')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π5')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('4π5')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('4π5')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("144")
     })
 
@@ -1597,20 +1589,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired radians to variable')
-    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+    cy.get(cesc('#\\/desiredRadians') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
 
-    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', 'θ')
+    cy.get(cesc('#\\/desiredRadians2') + ' .mjx-mrow').should('contain.text', 'θ')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('θ')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2θ')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2θ')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360θπ")
     })
 
@@ -1646,19 +1638,19 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     // TODO: add when can simplify ratios
-    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('π2')
     // })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1688,19 +1680,19 @@ describe('Angle Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+    cy.get(cesc('#\\/A2') + ' .mjx-mrow').should('contain.text', '(1,7)')
 
     // TODO: add when can simplify ratios
-    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('π2')
     // })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1716,20 +1708,20 @@ describe('Angle Tag Tests', function () {
     })
 
     cy.log('change desired degrees')
-    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
+    cy.get(cesc('#\\/desiredDegrees') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
 
-    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', '180')
+    cy.get(cesc('#\\/desiredDegrees2') + ' .mjx-mrow').should('contain.text', '180')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360")
     })
 
@@ -1747,21 +1739,21 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired degrees to variable')
-    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+    cy.get(cesc('#\\/desiredDegrees') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
 
-    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', 'θ')
+    cy.get(cesc('#\\/desiredDegrees2') + ' .mjx-mrow').should('contain.text', 'θ')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('πθ180')
     })
     // TODO: uncomment when can simplify fractions
-    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('πθ90')
     // })
-    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('πθ90')
     // })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2θ")
     })
 
@@ -1796,18 +1788,18 @@ describe('Angle Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1825,20 +1817,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change line')
-    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
+    cy.get(cesc('#\\/equation') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
 
-    cy.get('#\\/equation2 .mjx-mrow').should('contain.text', 'y=−(12)x+3')
+    cy.get(cesc('#\\/equation2') + ' .mjx-mrow').should('contain.text', 'y=−(12)x+3')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -1877,18 +1869,18 @@ describe('Angle Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π3')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("120")
     })
 
@@ -1906,20 +1898,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change line')
-    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
+    cy.get(cesc('#\\/equation') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
 
-    cy.get('#\\/equation2 .mjx-mrow').should('contain.text', 'y=−(12)x+3')
+    cy.get(cesc('#\\/equation2') + ' .mjx-mrow').should('contain.text', 'y=−(12)x+3')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π3')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π3')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("120")
     })
 
@@ -1937,21 +1929,21 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired radians')
-    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
+    cy.get(cesc('#\\/desiredRadians') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
 
-    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', '2π5')
+    cy.get(cesc('#\\/desiredRadians2') + ' .mjx-mrow').should('contain.text', '2π5')
 
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π5')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('4π5')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('4π5')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("144")
     })
 
@@ -1970,20 +1962,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired radians to variable')
-    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+    cy.get(cesc('#\\/desiredRadians') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
 
-    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', 'θ')
+    cy.get(cesc('#\\/desiredRadians2') + ' .mjx-mrow').should('contain.text', 'θ')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('θ')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2θ')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2θ')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360θπ")
     })
 
@@ -2021,19 +2013,19 @@ describe('Angle Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     // TODO: add when can simplify ratios
-    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('π2')
     // })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -2051,21 +2043,21 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change line')
-    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
+    cy.get(cesc('#\\/equation') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
 
-    cy.get('#\\/equation2 .mjx-mrow').should('contain.text', 'y=−(12)x+3')
+    cy.get(cesc('#\\/equation2') + ' .mjx-mrow').should('contain.text', 'y=−(12)x+3')
 
     // TODO: add when can simplify ratios
-    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('π2')
     // })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("180")
     })
 
@@ -2083,20 +2075,20 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired degrees')
-    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
+    cy.get(cesc('#\\/desiredDegrees') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
 
-    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', '180')
+    cy.get(cesc('#\\/desiredDegrees2') + ' .mjx-mrow').should('contain.text', '180')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('π')
     })
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('2π')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("360")
     })
 
@@ -2115,21 +2107,21 @@ describe('Angle Tag Tests', function () {
 
 
     cy.log('change desired degrees to variable')
-    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+    cy.get(cesc('#\\/desiredDegrees') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
 
-    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', 'θ')
+    cy.get(cesc('#\\/desiredDegrees2') + ' .mjx-mrow').should('contain.text', 'θ')
 
-    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_angle1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq('πθ180')
     })
     // TODO: uncomment when can simplify fractions
-    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('πθ90')
     // })
-    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    // cy.get(cesc('#\\/_math2')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text).eq('πθ90')
     // })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math3')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2θ")
     })
 
@@ -2164,7 +2156,7 @@ describe('Angle Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2199,45 +2191,45 @@ describe('Angle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.393725823")
     })
-    cy.get('#\\/aDig5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDig5a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.3937")
     })
-    cy.get('#\\/aDec6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDec6a')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.393726")
     })
-    cy.get('#\\/aDig5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDig5b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.3937")
     })
-    cy.get('#\\/aDec6b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDec6b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.393726")
     })
-    cy.get('#\\/aDig5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDig5c')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.3937")
     })
-    cy.get('#\\/aDec6c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDec6c')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.393726")
     })
-    cy.get('#\\/aDig5d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDig5d')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.3937")
     })
-    cy.get('#\\/aDec6d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDec6d')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.393726")
     })
-    cy.get('#\\/aDig5e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDig5e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.3937")
     })
-    cy.get('#\\/aDec6e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDec6e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.393726")
     })
-    cy.get('#\\/aDig5f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDig5f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.3937")
     })
-    cy.get('#\\/aDec6f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/aDec6f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("1.393726")
     })
 
@@ -2265,7 +2257,7 @@ describe('Angle Tag Tests', function () {
 
     // TODO: How to check renderer itself?
 
-    cy.get('#\\/emphasize').should("have.text", "Emphasize right angle: true, false, false");
+    cy.get(cesc('#\\/emphasize')).should("have.text", "Emphasize right angle: true, false, false");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2274,12 +2266,12 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/a3'].stateValues.emphasizeRightAngle).eq(false);
     })
 
-    cy.get('#\\/bi1').click();
-    cy.get('#\\/bi2').click();
-    cy.get('#\\/bi3').click();
+    cy.get(cesc('#\\/bi1')).click();
+    cy.get(cesc('#\\/bi2')).click();
+    cy.get(cesc('#\\/bi3')).click();
 
 
-    cy.get('#\\/emphasize').should("have.text", "Emphasize right angle: false, true, true");
+    cy.get(cesc('#\\/emphasize')).should("have.text", "Emphasize right angle: false, true, true");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

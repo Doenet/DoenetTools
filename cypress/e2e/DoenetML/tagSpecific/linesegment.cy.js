@@ -1,13 +1,5 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 
 function nInDOM(n) {
@@ -24,8 +16,8 @@ async function testLineSegmentCopiedTwice({ x1, y1, x2, y2,
   point1InDomName = "/p1", point2InDomName = "/p2"
 }) {
 
-  cy.get(`#${cesc(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-  cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+  cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+  cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
@@ -44,8 +36,8 @@ async function testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2,
   point1InDomName = "/p1", point2InDomName = "/p2"
 }) {
 
-  cy.get(`#${cesc(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
-  cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+  cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+  cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
@@ -92,7 +84,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 1, y1 = 0;
     let x2 = 0, y2 = 0;
@@ -223,7 +215,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 1, y1 = 0;
     let x2 = 0, y2 = 0;
@@ -354,7 +346,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 3, y1 = -8;
     let x2 = 0, y2 = 0;
@@ -485,7 +477,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 0, y1 = 0;
     let x2 = 0, y2 = 0;
@@ -620,7 +612,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = 3, y1 = 5;
@@ -705,7 +697,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 3, y1 = 5;
     let x2 = -4, y2 = 9;
@@ -842,7 +834,7 @@ describe('LineSegment Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 3, y1 = -2;
     let x2 = 1, y2 = 5;
@@ -990,7 +982,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x1 = 2, y1 = 1;
     let x2 = -2, y2 = -5;
@@ -1116,10 +1108,10 @@ describe('LineSegment Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
-    cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(q,2)')
+    cy.get(cesc('#\\/p1') + ' .mjx-mrow').should('contain.text', '(q,2)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls(["q", 2]);
@@ -1127,9 +1119,9 @@ describe('LineSegment Tag Tests', function () {
     });
 
     cy.log('change point to be numeric');
-    cy.get('#\\/x textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/x') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
 
-    cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(5,2)')
+    cy.get(cesc('#\\/p1') + ' .mjx-mrow').should('contain.text', '(5,2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1180,16 +1172,16 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     async function checkLineSegments({ x11, y11, x12, y12, x2, y2 }) {
 
-      cy.get("#\\/x11 .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
-      cy.get("#\\/y11 .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
-      cy.get("#\\/x2 .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
-      cy.get("#\\/y2 .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
-      cy.get("#\\/x12 .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
-      cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
+      cy.get(cesc("#\\/x11") + " .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
+      cy.get(cesc("#\\/y11") + " .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
+      cy.get(cesc("#\\/x2") + " .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
+      cy.get(cesc("#\\/y2") + " .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
+      cy.get(cesc("#\\/x12") + " .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
+      cy.get(cesc("#\\/y12") + " .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1535,16 +1527,16 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     async function checkLineSegments({ x11, y11, x12, y12, x2, y2 }) {
 
-      cy.get("#\\/x11 .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
-      cy.get("#\\/y11 .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
-      cy.get("#\\/x2 .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
-      cy.get("#\\/y2 .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
-      cy.get("#\\/x12 .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
-      cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
+      cy.get(cesc("#\\/x11") + " .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
+      cy.get(cesc("#\\/y11") + " .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
+      cy.get(cesc("#\\/x2") + " .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
+      cy.get(cesc("#\\/y2") + " .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
+      cy.get(cesc("#\\/x12") + " .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
+      cy.get(cesc("#\\/y12") + " .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -1836,7 +1828,7 @@ describe('LineSegment Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b_input').check({ force: true });
+    cy.get(cesc('#\\/b_input')).check({ force: true });
 
 
     cy.window().then(async (win) => {
@@ -2098,11 +2090,11 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
 
-    cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+    cy.get(cesc('#\\/ep1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2124,7 +2116,7 @@ describe('LineSegment Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
+      cy.get(cesc('#\\/ep1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2168,7 +2160,7 @@ describe('LineSegment Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2198,7 +2190,7 @@ describe('LineSegment Tag Tests', function () {
       let p5y = -temp;
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2228,7 +2220,7 @@ describe('LineSegment Tag Tests', function () {
       let p5y = -temp;
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2260,11 +2252,11 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
 
-    cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+    cy.get(cesc('#\\/ep1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2286,7 +2278,7 @@ describe('LineSegment Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
+      cy.get(cesc('#\\/ep1a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2318,7 +2310,7 @@ describe('LineSegment Tag Tests', function () {
       let p5y = -temp;
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2339,7 +2331,7 @@ describe('LineSegment Tag Tests', function () {
       })
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(xorig)},${nInDOM(yorig)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(xorig)},${nInDOM(yorig)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2369,7 +2361,7 @@ describe('LineSegment Tag Tests', function () {
       let p5y = -temp;
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 1000) / 1000)},${nInDOM(Math.round(p5y * 1000) / 1000)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 1000) / 1000)},${nInDOM(Math.round(p5y * 1000) / 1000)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2399,7 +2391,7 @@ describe('LineSegment Tag Tests', function () {
       let p5y = -temp;
 
 
-      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+      cy.get(cesc('#\\/p3a') + ' .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2429,11 +2421,11 @@ describe('LineSegment Tag Tests', function () {
     });
 
     // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');
 
     cy.log(`point on line segment, close to origin`);
 
-    cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.00')
+    cy.get(cesc('#\\/P1a') + ' .mjx-mrow').should('contain.text', ',0.00')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2455,7 +2447,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: -100, y: 0.05 }
       })
 
-      cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.04')
+      cy.get(cesc('#\\/P1a') + ' .mjx-mrow').should('contain.text', ',0.04')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2475,7 +2467,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: -100, y: 0.1 }
       })
 
-      cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.05')
+      cy.get(cesc('#\\/P1a') + ' .mjx-mrow').should('contain.text', ',0.05')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         let x = (stateVariables['/P'].stateValues.xs)[0];
@@ -2507,7 +2499,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -2525,7 +2517,7 @@ describe('LineSegment Tag Tests', function () {
       expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
     })
 
@@ -2539,7 +2531,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: p1x, y: p1y }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2566,7 +2558,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: p2x, y: p2y }
       })
 
-      cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
+      cy.get(cesc("#\\/p2b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2593,7 +2585,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: p2x, y: p2y }
       })
 
-      cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
+      cy.get(cesc("#\\/p2b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2620,7 +2612,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: p1x, y: p1y }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2667,8 +2659,8 @@ describe('LineSegment Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2704,7 +2696,7 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2724,7 +2716,7 @@ describe('LineSegment Tag Tests', function () {
       expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
       expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
       expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)}`)
     })
 
     cy.log('move first line segment up and to the right')
@@ -2757,8 +2749,8 @@ describe('LineSegment Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2815,8 +2807,8 @@ describe('LineSegment Tag Tests', function () {
         }
       })
 
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
-      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get(cesc("#\\/p1b") + " .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2877,11 +2869,11 @@ describe('LineSegment Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     let x = 1, y = 2;
 
-    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2904,8 +2896,8 @@ describe('LineSegment Tag Tests', function () {
         args: { x }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2929,8 +2921,8 @@ describe('LineSegment Tag Tests', function () {
         args: { x: y }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2954,8 +2946,8 @@ describe('LineSegment Tag Tests', function () {
         args: { y }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -2979,8 +2971,8 @@ describe('LineSegment Tag Tests', function () {
         args: { y: x }
       })
 
-      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
-      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+      cy.get(cesc("#\\/p1") + " .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get(cesc("#\\/p2") + " .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3014,14 +3006,14 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
 
     let x1 = 1, y1 = 0;
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
-    cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+    cy.get(cesc("#\\/p11") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3046,7 +3038,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p11") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();;
@@ -3071,7 +3063,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get("#\\/p12 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p12") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3096,7 +3088,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get("#\\/p21 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc("#\\/p21") + " .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3121,7 +3113,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: x2, y: y2 }
       })
 
-      cy.get("#\\/p22 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+      cy.get(cesc("#\\/p22") + " .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3146,7 +3138,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get("#\\/p31 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+      cy.get(cesc("#\\/p31") + " .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3172,7 +3164,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: x3, y: y3 }
       })
 
-      cy.get("#\\/p32 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+      cy.get(cesc("#\\/p32") + " .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3204,30 +3196,30 @@ describe('LineSegment Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -3250,34 +3242,34 @@ describe('LineSegment Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
   });
 
@@ -3295,14 +3287,14 @@ describe('LineSegment Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 3, t1y = 4;
     let t2x = 7, t2y = -2;
     let m = (t1y - t2y) / (t1x - t2x);
 
-    cy.get('#\\/slope').should('contain.text', String(m))
+    cy.get(cesc('#\\/slope')).should('contain.text', String(m))
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3320,7 +3312,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: t1x, y: t1y }
       })
 
-      cy.get('#\\/slope').should('contain.text', '∞')
+      cy.get(cesc('#\\/slope')).should('contain.text', '∞')
 
     })
 
@@ -3341,7 +3333,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/slope').should('contain.text', String(m))
+      cy.get(cesc('#\\/slope')).should('contain.text', String(m))
 
     })
 
@@ -3369,16 +3361,16 @@ describe('LineSegment Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 3, t1y = 4;
     let t2x = 7, t2y = -2;
     let len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
 
-    cy.get('#\\/length').should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
-    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(3,4)');
-    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−2)');
+    cy.get(cesc('#\\/length')).should('contain.text', String(Math.round(len * 10 ** 9) / 10 ** 9))
+    cy.get(cesc('#\\/Ap') + ' .mjx-mrow').eq(0).should('have.text', '(3,4)');
+    cy.get(cesc('#\\/Bp') + ' .mjx-mrow').eq(0).should('have.text', '(7,−2)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3396,9 +3388,9 @@ describe('LineSegment Tag Tests', function () {
         args: { x: t1x, y: t1y }
       })
 
-      cy.get('#\\/length').should('contain.text', String(len))
-      cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,3)');
-      cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−2)');
+      cy.get(cesc('#\\/length')).should('contain.text', String(len))
+      cy.get(cesc('#\\/Ap') + ' .mjx-mrow').eq(0).should('have.text', '(7,3)');
+      cy.get(cesc('#\\/Bp') + ' .mjx-mrow').eq(0).should('have.text', '(7,−2)');
 
     })
 
@@ -3408,11 +3400,11 @@ describe('LineSegment Tag Tests', function () {
     })
 
 
-    cy.get('#\\/milength textarea').type("{end}{backspace}10{enter}", { force: true });
+    cy.get(cesc('#\\/milength') + ' textarea').type("{end}{backspace}10{enter}", { force: true });
 
-    cy.get('#\\/length').should('contain.text', '10')
-    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
-    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
+    cy.get(cesc('#\\/length')).should('contain.text', '10')
+    cy.get(cesc('#\\/Ap') + ' .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+    cy.get(cesc('#\\/Bp') + ' .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3421,13 +3413,13 @@ describe('LineSegment Tag Tests', function () {
 
 
     cy.log("ignore requested negative length");
-    cy.get('#\\/milength textarea').type("{end}{backspace}{backspace}-3{enter}", { force: true });
-    cy.get("#\\/bi").click();
-    cy.get('#\\/bi2').should('have.text', 'true');  // so know that core has responded to both requests
+    cy.get(cesc('#\\/milength') + ' textarea').type("{end}{backspace}{backspace}-3{enter}", { force: true });
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true');  // so know that core has responded to both requests
 
-    cy.get('#\\/length').should('contain.text', '10')
-    cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
-    cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
+    cy.get(cesc('#\\/length')).should('contain.text', '10')
+    cy.get(cesc('#\\/Ap') + ' .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+    cy.get(cesc('#\\/Bp') + ' .mjx-mrow').eq(0).should('have.text', '(7,−4.5)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3447,9 +3439,9 @@ describe('LineSegment Tag Tests', function () {
         args: { x: t2x, y: t2y }
       })
 
-      cy.get('#\\/length').should('contain.text', String(Math.round(len * 10 ** 8) / 10 ** 8))
-      cy.get('#\\/Ap .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
-      cy.get('#\\/Bp .mjx-mrow').eq(0).should('have.text', '(−9,5)');
+      cy.get(cesc('#\\/length')).should('contain.text', String(Math.round(len * 10 ** 8) / 10 ** 8))
+      cy.get(cesc('#\\/Ap') + ' .mjx-mrow').eq(0).should('have.text', '(7,5.5)');
+      cy.get(cesc('#\\/Bp') + ' .mjx-mrow').eq(0).should('have.text', '(−9,5)');
     })
 
     cy.window().then(async (win) => {
@@ -3468,7 +3460,7 @@ describe('LineSegment Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     cy.window().then(async (win) => {
@@ -3505,22 +3497,22 @@ describe('LineSegment Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
 
     // not sure what to test as don't know how to check renderer...
 
-    cy.get('#\\/pPos').should('have.text', 'Position: upperright')
-    cy.get('#\\/pLabel').should('contain.text', 'Label: line segment')
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: upperright')
+    cy.get(cesc('#\\/pLabel')).should('contain.text', 'Label: line segment')
 
-    cy.get('#\\/label_input').clear().type("nothing{enter}")
-    cy.get('#\\/pLabel').should('contain.text', 'Label: nothing')
+    cy.get(cesc('#\\/label_input')).clear().type("nothing{enter}")
+    cy.get(cesc('#\\/pLabel')).should('contain.text', 'Label: nothing')
 
-    cy.get('#\\/labelPos').select("upperLeft")
-    cy.get('#\\/pPos').should('have.text', 'Position: upperleft')
-    cy.get('#\\/labelPos').select("lowerRight")
-    cy.get('#\\/pPos').should('have.text', 'Position: lowerright')
-    cy.get('#\\/labelPos').select("lowerLeft")
-    cy.get('#\\/pPos').should('have.text', 'Position: lowerleft')
+    cy.get(cesc('#\\/labelPos')).select("upperLeft")
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: upperleft')
+    cy.get(cesc('#\\/labelPos')).select("lowerRight")
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: lowerright')
+    cy.get(cesc('#\\/labelPos')).select("lowerLeft")
+    cy.get(cesc('#\\/pPos')).should('have.text', 'Position: lowerleft')
 
   });
 
@@ -3538,10 +3530,10 @@ describe('LineSegment Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/ed2").should('have.text', 'false')
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'false')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3565,14 +3557,14 @@ describe('LineSegment Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/ed2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'false')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3596,14 +3588,14 @@ describe('LineSegment Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'false')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/ed2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'false')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3630,14 +3622,14 @@ describe('LineSegment Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/ed2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'false')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
 
     cy.window().then(async (win) => {
@@ -3651,8 +3643,8 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('only endpoints draggable')
 
-    cy.get('#\\/endpointsDraggable').click()
-    cy.get('#\\/ed2').should('have.text', 'true')
+    cy.get(cesc('#\\/endpointsDraggable')).click()
+    cy.get(cesc('#\\/ed2')).should('have.text', 'true')
 
 
     cy.log('can move single endpoint')
@@ -3668,13 +3660,13 @@ describe('LineSegment Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(4,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").should('contain.text', '(4,7)')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/ed2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'true')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(4,7)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3700,15 +3692,15 @@ describe('LineSegment Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'false')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/ed2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'true')
 
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(4,7)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3722,8 +3714,8 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('endpoints and line segment draggable')
 
-    cy.get('#\\/draggable').click()
-    cy.get('#\\/d2').should('have.text', 'true')
+    cy.get(cesc('#\\/draggable')).click()
+    cy.get(cesc('#\\/d2')).should('have.text', 'true')
 
 
     cy.log('can move first endpoint')
@@ -3739,13 +3731,13 @@ describe('LineSegment Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(−3,2)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").should('contain.text', '(−3,2)')
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/ed2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'true')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(−3,2)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(−3,2)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3769,13 +3761,13 @@ describe('LineSegment Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(−9,0)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").should('contain.text', '(−9,0)')
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/ed2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'true')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(−3,2)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(−9,0)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(−3,2)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(−9,0)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3800,15 +3792,15 @@ describe('LineSegment Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(3,8)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").should('contain.text', '(3,8)')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/ed2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'true')
 
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(3,8)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(8,10)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(8,10)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3821,8 +3813,8 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('polygon but not endpoints draggable')
 
-    cy.get('#\\/endpointsDraggable').click()
-    cy.get('#\\/ed2').should('have.text', 'false')
+    cy.get(cesc('#\\/endpointsDraggable')).click()
+    cy.get(cesc('#\\/ed2')).should('have.text', 'false')
 
 
     cy.log('cannot move first endpoint')
@@ -3838,15 +3830,15 @@ describe('LineSegment Tag Tests', function () {
     })
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/ed2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'false')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(3,8)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(8,10)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(8,10)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3870,15 +3862,15 @@ describe('LineSegment Tag Tests', function () {
     })
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'false')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/ed2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'false')
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(3,8)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(8,10)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(8,10)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3904,15 +3896,15 @@ describe('LineSegment Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pendpt .mjx-mrow").should('contain.text', '(−4,1)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").should('contain.text', '(−4,1)')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/ed2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/ed2")).should('have.text', 'false')
 
 
-    cy.get("#\\/pendpt .mjx-mrow").eq(0).should('have.text', '(−4,1)')
-    cy.get("#\\/pendpt .mjx-mrow").eq(2).should('have.text', '(9,−4)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(0).should('have.text', '(−4,1)')
+    cy.get(cesc("#\\/pendpt") + " .mjx-mrow").eq(2).should('have.text', '(9,−4)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3948,9 +3940,9 @@ describe('LineSegment Tag Tests', function () {
     });
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Line segment A is thick brown.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a dark red line segment.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin black line segment.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Line segment A is thick brown.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a dark red line segment.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin black line segment.');
 
     cy.log('set dark mode')
     cy.get('#testRunner_toggleControls').click();
@@ -3959,9 +3951,9 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.get('#\\/Adescrip').should('have.text', 'Line segment A is thick yellow.');
-    cy.get('#\\/Bdescrip').should('have.text', 'B is a light red line segment.');
-    cy.get('#\\/Cdescrip').should('have.text', 'C is a thin white line segment.');
+    cy.get(cesc('#\\/Adescrip')).should('have.text', 'Line segment A is thick yellow.');
+    cy.get(cesc('#\\/Bdescrip')).should('have.text', 'B is a light red line segment.');
+    cy.get(cesc('#\\/Cdescrip')).should('have.text', 'C is a thin white line segment.');
 
 
   });

@@ -29,17 +29,45 @@ export default React.memo(function List(props) {
   if (SVs.item) {
     return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility} requireContentsSize={false}><><a name={id} /><li id={id}>{children}</li></></VisibilitySensor>;
   } else if (SVs.numbered) {
-    let list_style = styleTypeByLevel.numbered[(SVs.level - 1) % styleTypeByLevel.numbered.length];
+    let list_style;
+    if (SVs.marker) {
+      if (SVs.marker[0] === "1") {
+        list_style = "decimal";
+      } else if (SVs.marker[0] === "a") {
+        list_style = "lower-alpha";
+      } else if (SVs.marker[0] === "i") {
+        list_style = "lower-roman";
+      } else if (SVs.marker[0] === "A") {
+        list_style = "upper-alpha";
+      } else if (SVs.marker[0] === "I") {
+        list_style = "upper-roman";
+      }
+    }
+    if (!list_style) {
+      list_style = styleTypeByLevel.numbered[(SVs.level - 1) % styleTypeByLevel.numbered.length];
+    }
     return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ol id={id} style={{ listStyleType: list_style }}><a name={id} />{children}</ol></></VisibilitySensor>;
   } else {
-    let list_style = styleTypeByLevel.unnumbered[(SVs.level - 1) % styleTypeByLevel.unnumbered.length];
+    let list_style;
+    if (SVs.marker) {
+      list_style = SVs.marker.toLowerCase();
+      if (!unnumberedStyles.includes(list_style)) {
+        list_style = null;
+      }
+    }
+    if (!list_style) {
+      list_style = styleTypeByLevel.unnumbered[(SVs.level - 1) % styleTypeByLevel.unnumbered.length];
+    }
     return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><><ul id={id} style={{ listStyleType: list_style }}><a name={id} />{children}</ul></></VisibilitySensor>;
   }
 
 })
 
+
+const unnumberedStyles = ["disc", "circle", "square"];
+
 const styleTypeByLevel = {
   numbered: ["decimal", "lower-alpha", "lower-roman", "upper-alpha", "upper-roman"],
-  unnumbered: ["disc", "circle", "square"],
+  unnumbered: unnumberedStyles,
 
 }

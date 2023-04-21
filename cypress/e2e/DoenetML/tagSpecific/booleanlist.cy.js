@@ -1,3 +1,6 @@
+import { cesc } from '../../../../src/_utils/url';
+
+
 describe('BooleanList Tag Tests', function () {
 
   beforeEach(() => {
@@ -26,10 +29,10 @@ describe('BooleanList Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_p1').should('have.text', '')
-    cy.get('#\\/_p2').should('have.text', 'false, true, false')
-    cy.get('#\\/_p3').should('have.text', 'true, false, true, false, false, false, true, false')
-    cy.get('#\\/_p4').should('have.text', 'true, false, true, false, false')
+    cy.get(cesc('#\\/_p1')).should('have.text', '')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'false, true, false')
+    cy.get(cesc('#\\/_p3')).should('have.text', 'true, false, true, false, false, false, true, false')
+    cy.get(cesc('#\\/_p4')).should('have.text', 'true, false, true, false, false')
 
 
   })
@@ -65,10 +68,10 @@ describe('BooleanList Tag Tests', function () {
         ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', 'true, false, false, false, false, true, false, false, true')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'true, false, false, false, false, true, false, false, true')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -100,18 +103,18 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('change values')
 
-    cy.get("#\\/_booleaninput1").click();
-    cy.get("#\\/_booleaninput2").click();
-    cy.get("#\\/_booleaninput3").click();
-    cy.get("#\\/_booleaninput4").click();
-    cy.get("#\\/_booleaninput5").click();
-    cy.get("#\\/_booleaninput6").click();
-    cy.get("#\\/_booleaninput7").click();
-    cy.get("#\\/_booleaninput8").click();
-    cy.get("#\\/_booleaninput9").click();
+    cy.get(cesc("#\\/_booleaninput1")).click();
+    cy.get(cesc("#\\/_booleaninput2")).click();
+    cy.get(cesc("#\\/_booleaninput3")).click();
+    cy.get(cesc("#\\/_booleaninput4")).click();
+    cy.get(cesc("#\\/_booleaninput5")).click();
+    cy.get(cesc("#\\/_booleaninput6")).click();
+    cy.get(cesc("#\\/_booleaninput7")).click();
+    cy.get(cesc("#\\/_booleaninput8")).click();
+    cy.get(cesc("#\\/_booleaninput9")).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', 'false, true, true, true, true, false, true, true, false')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'false, true, true, true, true, false, true, true, false')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -174,10 +177,10 @@ describe('BooleanList Tag Tests', function () {
         ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', 'true, false, false, false, false, true, false, false, true')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'true, false, false, false, false, true, false, false, true')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -209,18 +212,18 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('change values')
 
-    cy.get("#\\/_booleaninput1").click();
-    cy.get("#\\/_booleaninput2").click();
-    cy.get("#\\/_booleaninput3").click();
-    cy.get("#\\/_booleaninput4").click();
-    cy.get("#\\/_booleaninput5").click();
-    cy.get("#\\/_booleaninput6").click();
-    cy.get("#\\/_booleaninput7").click();
-    cy.get("#\\/_booleaninput8").click();
-    cy.get("#\\/_booleaninput9").click();
+    cy.get(cesc("#\\/_booleaninput1")).click();
+    cy.get(cesc("#\\/_booleaninput2")).click();
+    cy.get(cesc("#\\/_booleaninput3")).click();
+    cy.get(cesc("#\\/_booleaninput4")).click();
+    cy.get(cesc("#\\/_booleaninput5")).click();
+    cy.get(cesc("#\\/_booleaninput6")).click();
+    cy.get(cesc("#\\/_booleaninput7")).click();
+    cy.get(cesc("#\\/_booleaninput8")).click();
+    cy.get(cesc("#\\/_booleaninput9")).click();
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_p1').should('have.text', 'false, true, true, true, true, false, true, true, false')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'false, true, true, true, true, false, true, true, false')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -267,18 +270,18 @@ describe('BooleanList Tag Tests', function () {
       ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/_p1').should('have.text', 'true, true, false, true, false')
-      cy.get('#\\/_p2').should('have.text', 'true, true, false')
-      cy.get('#\\/_p3').should('have.text', 'true, true, false, true, false')
+      cy.get(cesc('#\\/_p1')).should('have.text', 'true, true, false, true, false')
+      cy.get(cesc('#\\/_p2')).should('have.text', 'true, true, false')
+      cy.get(cesc('#\\/_p3')).should('have.text', 'true, true, false, true, false')
 
-      cy.get('#\\/_p4').should('have.text', 'true, true, false')
-      cy.get('#\\/_p5').should('have.text', 'true, true, false, true')
-      cy.get('#\\/_p6').should('have.text', 'true, true, false, true, false')
+      cy.get(cesc('#\\/_p4')).should('have.text', 'true, true, false')
+      cy.get(cesc('#\\/_p5')).should('have.text', 'true, true, false, true')
+      cy.get(cesc('#\\/_p6')).should('have.text', 'true, true, false, true, false')
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
@@ -307,13 +310,13 @@ describe('BooleanList Tag Tests', function () {
       ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
 
     cy.window().then(async (win) => {
 
-      cy.get('#\\/_p1').should('have.text', 'true, true')
-      cy.get('#\\/_p2').should('have.text', 'true, true, false, true, false')
+      cy.get(cesc('#\\/_p1')).should('have.text', 'true, true')
+      cy.get(cesc('#\\/_p2')).should('have.text', 'true, true, false, true, false')
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -323,9 +326,9 @@ describe('BooleanList Tag Tests', function () {
     })
 
     cy.log("clear first maxnum")
-    cy.get('#\\/mn1 textarea').type("{end}{backspace}", { force: true }).blur();
-    cy.get('#\\/_p1').should('have.text', 'true, true, false, true, false')
-    cy.get('#\\/_p2').should('have.text', 'true, true, false, true, false')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("{end}{backspace}", { force: true }).blur();
+    cy.get(cesc('#\\/_p1')).should('have.text', 'true, true, false, true, false')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'true, true, false, true, false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -335,9 +338,9 @@ describe('BooleanList Tag Tests', function () {
 
 
     cy.log("number in second maxnum")
-    cy.get('#\\/mn2 textarea').type("3{enter}", { force: true });
-    cy.get('#\\/_p2').should('have.text', 'true, true, false')
-    cy.get('#\\/_p1').should('have.text', 'true, true, false, true, false')
+    cy.get(cesc('#\\/mn2') + ' textarea').type("3{enter}", { force: true });
+    cy.get(cesc('#\\/_p2')).should('have.text', 'true, true, false')
+    cy.get(cesc('#\\/_p1')).should('have.text', 'true, true, false, true, false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -347,9 +350,9 @@ describe('BooleanList Tag Tests', function () {
 
 
     cy.log("number in first maxnum")
-    cy.get('#\\/mn1 textarea').type("4{enter}", { force: true });
-    cy.get('#\\/_p1').should('have.text', 'true, true, false, true')
-    cy.get('#\\/_p2').should('have.text', 'true, true, false')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("4{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('have.text', 'true, true, false, true')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'true, true, false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -359,9 +362,9 @@ describe('BooleanList Tag Tests', function () {
 
 
     cy.log("change number in first maxnum")
-    cy.get('#\\/mn1 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/_p1').should('have.text', 'true')
-    cy.get('#\\/_p2').should('have.text', 'true, true, false')
+    cy.get(cesc('#\\/mn1') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/_p1')).should('have.text', 'true')
+    cy.get(cesc('#\\/_p2')).should('have.text', 'true, true, false')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

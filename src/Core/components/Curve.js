@@ -16,7 +16,7 @@ export default class Curve extends GraphicalComponent {
       changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
       switchCurve: this.switchCurve.bind(this),
       curveClicked: this.curveClicked.bind(this),
-      mouseDownOnCurve: this.mouseDownOnCurve.bind(this),
+      curveFocused: this.curveFocused.bind(this),
     });
 
   }
@@ -329,6 +329,7 @@ export default class Curve extends GraphicalComponent {
     // that shadows the component adapted
     stateVariableDefinitions.fShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
@@ -382,6 +383,7 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.parMax = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
@@ -483,6 +485,7 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.parMin = {
       forRenderer: true,
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -653,6 +656,7 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -917,6 +921,7 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.vectorControlDirections = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "text",
       },
@@ -1098,6 +1103,7 @@ export default class Curve extends GraphicalComponent {
     stateVariableDefinitions.controlVectors = {
       isArray: true,
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -1457,6 +1463,7 @@ export default class Curve extends GraphicalComponent {
     stateVariableDefinitions.controlPoints = {
       isArray: true,
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -3338,27 +3345,31 @@ export default class Curve extends GraphicalComponent {
 
   async curveClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  async mouseDownOnCurve({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
+  async curveFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
 
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "down",
-      componentName: name,  // use name rather than this.componentName to get original name if adapted
-      actionId,
-      sourceInformation,
-      skipRendererUpdate,
-    })
+    if (! await this.stateValues.fixed) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      })
+    }
 
     this.coreFunctions.resolveAction({ actionId });
 

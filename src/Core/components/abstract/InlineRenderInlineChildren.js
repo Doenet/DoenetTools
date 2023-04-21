@@ -5,6 +5,8 @@ export default class InlineRenderInlineChildren extends InlineComponent {
   static renderChildren = true;
   static includeBlankStringChildren = true;
 
+  // Note: these atributes are used just for the text state variable, below.
+  // They are ignored in the renderers themselves.
   static beginTextDelimiter = "";
   static endTextDelimiter = "";
 

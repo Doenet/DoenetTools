@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Sectioning Tag Tests', function () {
 
@@ -78,34 +70,34 @@ describe('Sectioning Tag Tests', function () {
 
 
     // to wait for page to load
-    cy.get('#\\/_document1_title').should('have.text', 'Activity')
+    cy.get(cesc('#\\/_document1_title')).should('have.text', 'Activity')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let docCaAnchor = cesc("#" + stateVariables["/docCa"].replacements[0].componentName);
-      let docPcaAnchor = cesc("#" + stateVariables["/docPca"].replacements[0].componentName);
-      let s1CaAnchor = cesc("#" + stateVariables["/s1Ca"].replacements[0].componentName);
-      let s1PcaAnchor = cesc("#" + stateVariables["/s1Pca"].replacements[0].componentName);
-      let s2CaAnchor = cesc("#" + stateVariables["/s2Ca"].replacements[0].componentName);
-      let s2PcaAnchor = cesc("#" + stateVariables["/s2Pca"].replacements[0].componentName);
-      let s21CaAnchor = cesc("#" + stateVariables["/s21Ca"].replacements[0].componentName);
-      let s21PcaAnchor = cesc("#" + stateVariables["/s21Pca"].replacements[0].componentName);
-      let s22CaAnchor = cesc("#" + stateVariables["/s22Ca"].replacements[0].componentName);
-      let s22PcaAnchor = cesc("#" + stateVariables["/s22Pca"].replacements[0].componentName);
-      let s221CaAnchor = cesc("#" + stateVariables["/s221Ca"].replacements[0].componentName);
-      let s221PcaAnchor = cesc("#" + stateVariables["/s221Pca"].replacements[0].componentName);
-      let s222CaAnchor = cesc("#" + stateVariables["/s222Ca"].replacements[0].componentName);
-      let s222PcaAnchor = cesc("#" + stateVariables["/s222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + stateVariables['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + stateVariables['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + stateVariables['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + stateVariables['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + stateVariables['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + stateVariables['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + stateVariables['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + stateVariables['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + stateVariables['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
+      let docCaAnchor = cesc2("#" + stateVariables["/docCa"].replacements[0].componentName);
+      let docPcaAnchor = cesc2("#" + stateVariables["/docPca"].replacements[0].componentName);
+      let s1CaAnchor = cesc2("#" + stateVariables["/s1Ca"].replacements[0].componentName);
+      let s1PcaAnchor = cesc2("#" + stateVariables["/s1Pca"].replacements[0].componentName);
+      let s2CaAnchor = cesc2("#" + stateVariables["/s2Ca"].replacements[0].componentName);
+      let s2PcaAnchor = cesc2("#" + stateVariables["/s2Pca"].replacements[0].componentName);
+      let s21CaAnchor = cesc2("#" + stateVariables["/s21Ca"].replacements[0].componentName);
+      let s21PcaAnchor = cesc2("#" + stateVariables["/s21Pca"].replacements[0].componentName);
+      let s22CaAnchor = cesc2("#" + stateVariables["/s22Ca"].replacements[0].componentName);
+      let s22PcaAnchor = cesc2("#" + stateVariables["/s22Pca"].replacements[0].componentName);
+      let s221CaAnchor = cesc2("#" + stateVariables["/s221Ca"].replacements[0].componentName);
+      let s221PcaAnchor = cesc2("#" + stateVariables["/s221Pca"].replacements[0].componentName);
+      let s222CaAnchor = cesc2("#" + stateVariables["/s222Ca"].replacements[0].componentName);
+      let s222PcaAnchor = cesc2("#" + stateVariables["/s222Pca"].replacements[0].componentName);
+      let mathinput1Anchor = cesc2('#' + stateVariables['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc2('#' + stateVariables['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc2('#' + stateVariables['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc2('#' + stateVariables['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc2('#' + stateVariables['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc2('#' + stateVariables['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc2('#' + stateVariables['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc2('#' + stateVariables['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc2('#' + stateVariables['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       let weight = [1, 1, 2, 1, 0.5, 1, 1, 1, 3]
       let totWeight = weight.reduce((a, b) => a + b);
@@ -423,34 +415,34 @@ describe('Sectioning Tag Tests', function () {
 
 
     // to wait for page to load
-    cy.get('#\\/_document1_title').should('have.text', 'Activity')
+    cy.get(cesc('#\\/_document1_title')).should('have.text', 'Activity')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let docCaAnchor = cesc("#" + stateVariables["/docCa"].replacements[0].componentName);
-      let docPcaAnchor = cesc("#" + stateVariables["/docPca"].replacements[0].componentName);
-      let s1CaAnchor = cesc("#" + stateVariables["/s1Ca"].replacements[0].componentName);
-      let s1PcaAnchor = cesc("#" + stateVariables["/s1Pca"].replacements[0].componentName);
-      let s2CaAnchor = cesc("#" + stateVariables["/s2Ca"].replacements[0].componentName);
-      let s2PcaAnchor = cesc("#" + stateVariables["/s2Pca"].replacements[0].componentName);
-      let s21CaAnchor = cesc("#" + stateVariables["/s21Ca"].replacements[0].componentName);
-      let s21PcaAnchor = cesc("#" + stateVariables["/s21Pca"].replacements[0].componentName);
-      let s22CaAnchor = cesc("#" + stateVariables["/s22Ca"].replacements[0].componentName);
-      let s22PcaAnchor = cesc("#" + stateVariables["/s22Pca"].replacements[0].componentName);
-      let s221CaAnchor = cesc("#" + stateVariables["/s221Ca"].replacements[0].componentName);
-      let s221PcaAnchor = cesc("#" + stateVariables["/s221Pca"].replacements[0].componentName);
-      let s222CaAnchor = cesc("#" + stateVariables["/s222Ca"].replacements[0].componentName);
-      let s222PcaAnchor = cesc("#" + stateVariables["/s222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + stateVariables['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + stateVariables['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + stateVariables['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + stateVariables['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + stateVariables['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + stateVariables['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + stateVariables['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + stateVariables['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + stateVariables['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
+      let docCaAnchor = cesc2("#" + stateVariables["/docCa"].replacements[0].componentName);
+      let docPcaAnchor = cesc2("#" + stateVariables["/docPca"].replacements[0].componentName);
+      let s1CaAnchor = cesc2("#" + stateVariables["/s1Ca"].replacements[0].componentName);
+      let s1PcaAnchor = cesc2("#" + stateVariables["/s1Pca"].replacements[0].componentName);
+      let s2CaAnchor = cesc2("#" + stateVariables["/s2Ca"].replacements[0].componentName);
+      let s2PcaAnchor = cesc2("#" + stateVariables["/s2Pca"].replacements[0].componentName);
+      let s21CaAnchor = cesc2("#" + stateVariables["/s21Ca"].replacements[0].componentName);
+      let s21PcaAnchor = cesc2("#" + stateVariables["/s21Pca"].replacements[0].componentName);
+      let s22CaAnchor = cesc2("#" + stateVariables["/s22Ca"].replacements[0].componentName);
+      let s22PcaAnchor = cesc2("#" + stateVariables["/s22Pca"].replacements[0].componentName);
+      let s221CaAnchor = cesc2("#" + stateVariables["/s221Ca"].replacements[0].componentName);
+      let s221PcaAnchor = cesc2("#" + stateVariables["/s221Pca"].replacements[0].componentName);
+      let s222CaAnchor = cesc2("#" + stateVariables["/s222Ca"].replacements[0].componentName);
+      let s222PcaAnchor = cesc2("#" + stateVariables["/s222Pca"].replacements[0].componentName);
+      let mathinput1Anchor = cesc2('#' + stateVariables['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc2('#' + stateVariables['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc2('#' + stateVariables['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc2('#' + stateVariables['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc2('#' + stateVariables['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc2('#' + stateVariables['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc2('#' + stateVariables['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc2('#' + stateVariables['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc2('#' + stateVariables['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')
@@ -826,34 +818,34 @@ describe('Sectioning Tag Tests', function () {
 
 
     // to wait for page to load
-    cy.get('#\\/_document1_title').should('have.text', 'Activity')
+    cy.get(cesc('#\\/_document1_title')).should('have.text', 'Activity')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let docCaAnchor = cesc("#" + stateVariables["/docCa"].replacements[0].componentName);
-      let docPcaAnchor = cesc("#" + stateVariables["/docPca"].replacements[0].componentName);
-      let s1CaAnchor = cesc("#" + stateVariables["/s1Ca"].replacements[0].componentName);
-      let s1PcaAnchor = cesc("#" + stateVariables["/s1Pca"].replacements[0].componentName);
-      let s2CaAnchor = cesc("#" + stateVariables["/s2Ca"].replacements[0].componentName);
-      let s2PcaAnchor = cesc("#" + stateVariables["/s2Pca"].replacements[0].componentName);
-      let s21CaAnchor = cesc("#" + stateVariables["/s21Ca"].replacements[0].componentName);
-      let s21PcaAnchor = cesc("#" + stateVariables["/s21Pca"].replacements[0].componentName);
-      let s22CaAnchor = cesc("#" + stateVariables["/s22Ca"].replacements[0].componentName);
-      let s22PcaAnchor = cesc("#" + stateVariables["/s22Pca"].replacements[0].componentName);
-      let s221CaAnchor = cesc("#" + stateVariables["/s221Ca"].replacements[0].componentName);
-      let s221PcaAnchor = cesc("#" + stateVariables["/s221Pca"].replacements[0].componentName);
-      let s222CaAnchor = cesc("#" + stateVariables["/s222Ca"].replacements[0].componentName);
-      let s222PcaAnchor = cesc("#" + stateVariables["/s222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + stateVariables['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + stateVariables['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + stateVariables['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + stateVariables['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + stateVariables['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + stateVariables['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + stateVariables['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + stateVariables['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + stateVariables['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
+      let docCaAnchor = cesc2("#" + stateVariables["/docCa"].replacements[0].componentName);
+      let docPcaAnchor = cesc2("#" + stateVariables["/docPca"].replacements[0].componentName);
+      let s1CaAnchor = cesc2("#" + stateVariables["/s1Ca"].replacements[0].componentName);
+      let s1PcaAnchor = cesc2("#" + stateVariables["/s1Pca"].replacements[0].componentName);
+      let s2CaAnchor = cesc2("#" + stateVariables["/s2Ca"].replacements[0].componentName);
+      let s2PcaAnchor = cesc2("#" + stateVariables["/s2Pca"].replacements[0].componentName);
+      let s21CaAnchor = cesc2("#" + stateVariables["/s21Ca"].replacements[0].componentName);
+      let s21PcaAnchor = cesc2("#" + stateVariables["/s21Pca"].replacements[0].componentName);
+      let s22CaAnchor = cesc2("#" + stateVariables["/s22Ca"].replacements[0].componentName);
+      let s22PcaAnchor = cesc2("#" + stateVariables["/s22Pca"].replacements[0].componentName);
+      let s221CaAnchor = cesc2("#" + stateVariables["/s221Ca"].replacements[0].componentName);
+      let s221PcaAnchor = cesc2("#" + stateVariables["/s221Pca"].replacements[0].componentName);
+      let s222CaAnchor = cesc2("#" + stateVariables["/s222Ca"].replacements[0].componentName);
+      let s222PcaAnchor = cesc2("#" + stateVariables["/s222Pca"].replacements[0].componentName);
+      let mathinput1Anchor = cesc2('#' + stateVariables['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc2('#' + stateVariables['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc2('#' + stateVariables['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc2('#' + stateVariables['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc2('#' + stateVariables['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc2('#' + stateVariables['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc2('#' + stateVariables['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc2('#' + stateVariables['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc2('#' + stateVariables['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')
@@ -1196,10 +1188,10 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_paragraphs1_title').should('have.text', 'Some paragraphs');
+    cy.get(cesc('#\\/_paragraphs1_title')).should('have.text', 'Some paragraphs');
 
-    cy.get('#\\/_paragraphs1 p:first-of-type').should('have.text', 'Paragraph 1');
-    cy.get('#\\/_paragraphs1 p:last-of-type').should('have.text', 'Paragraph 2');
+    cy.get(cesc('#\\/_paragraphs1') + ' p:first-of-type').should('have.text', 'Paragraph 1');
+    cy.get(cesc('#\\/_paragraphs1') + ' p:last-of-type').should('have.text', 'Paragraph 2');
 
   });
 
@@ -1225,95 +1217,95 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x+1)(x2−1)");
     })
-    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+1)");
     })
-    cy.get('#\\/expr1a').should('not.exist')
-    cy.get('#\\/expr2a .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(x−1)(x2+1)");
-    })
-
-    cy.get('#\\/expr1').should('not.exist')
-    cy.get('#\\/expr2 .mq-editable-field').invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1a')).should('not.exist')
+    cy.get(cesc('#\\/expr2a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+1)");
     })
 
-    cy.get('#\\/aside1_title').click();
-
-    cy.get('#\\/expr1a .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(x+1)(x2−1)");
-    })
-    cy.get('#\\/expr1 .mq-editable-field').invoke('text').then(text => {
-      expect(text.trim()).eq("(x+1)(x2−1)");
-    })
-
-    cy.get('#\\/aside2_title').click();
-    cy.get('#\\/expr2a').should('not.exist')
-    cy.get('#\\/expr2').should('not.exist')
-
-    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(x+1)(x2−1)");
-    })
-    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1')).should('not.exist')
+    cy.get(cesc('#\\/expr2') + ' .mq-editable-field').invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+1)");
     })
 
-    cy.get('#\\/expr1 textarea').type("{end}{leftArrow}{backspace}4{enter}", { force: true }).blur()
+    cy.get(cesc('#\\/aside1_title')).click();
+
+    cy.get(cesc('#\\/expr1a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−1)");
+    })
+    cy.get(cesc('#\\/expr1') + ' .mq-editable-field').invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−1)");
+    })
+
+    cy.get(cesc('#\\/aside2_title')).click();
+    cy.get(cesc('#\\/expr2a')).should('not.exist')
+    cy.get(cesc('#\\/expr2')).should('not.exist')
+
+    cy.get(cesc('#\\/expr1b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−1)");
+    })
+    cy.get(cesc('#\\/expr2b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+
+    cy.get(cesc('#\\/expr1') + ' textarea').type("{end}{leftArrow}{backspace}4{enter}", { force: true }).blur()
 
 
-    cy.get('#\\/expr1a').should('contain.text', "(x+1)(x2−4)")
-    cy.get('#\\/expr1a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1a')).should('contain.text', "(x+1)(x2−4)")
+    cy.get(cesc('#\\/expr1a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x+1)(x2−4)");
     })
-    cy.get('#\\/expr1 .mq-editable-field').invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1') + ' .mq-editable-field').invoke('text').then(text => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).eq("(x+1)(x2−4)");
     })
 
-    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x+1)(x2−4)");
     })
-    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+1)");
     })
 
-    cy.get('#\\/aside1_title').click();
-    cy.get('#\\/expr1a').should('not.exist')
-    cy.get('#\\/expr1').should('not.exist')
+    cy.get(cesc('#\\/aside1_title')).click();
+    cy.get(cesc('#\\/expr1a')).should('not.exist')
+    cy.get(cesc('#\\/expr1')).should('not.exist')
 
-    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x+1)(x2−4)");
     })
-    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+1)");
     })
 
-    cy.get('#\\/aside2_title').click();
+    cy.get(cesc('#\\/aside2_title')).click();
 
-    cy.get('#\\/expr2a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+1)");
     })
-    cy.get('#\\/expr2 .mq-editable-field').invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2') + ' .mq-editable-field').invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+1)");
     })
 
-    cy.get('#\\/expr2 textarea').type("{end}{leftArrow}{backspace}4{enter}", { force: true }).blur()
+    cy.get(cesc('#\\/expr2') + ' textarea').type("{end}{leftArrow}{backspace}4{enter}", { force: true }).blur()
 
-    cy.get('#\\/expr2a .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2a') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+4)");
     })
-    cy.get('#\\/expr2 .mq-editable-field').invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2') + ' .mq-editable-field').invoke('text').then(text => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).eq("(x−1)(x2+4)");
     })
 
-    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr1b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x+1)(x2−4)");
     })
-    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+    cy.get(cesc('#\\/expr2b') + ' .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text.trim()).eq("(x−1)(x2+4)");
     })
 
@@ -1341,16 +1333,16 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec_title').should('have.text', 'Section 1: A title');
-    cy.get('#\\/revised_title').should('have.text', 'Section 2: A better title');
-    cy.get('#\\/title1').should('have.text', 'A title');
-    cy.get('#\\/title2').should('have.text', 'A better title');
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get(cesc('#\\/sec_title')).should('have.text', 'Section 1: A title');
+    cy.get(cesc('#\\/revised_title')).should('have.text', 'Section 2: A better title');
+    cy.get(cesc('#\\/title1')).should('have.text', 'A title');
+    cy.get(cesc('#\\/title2')).should('have.text', 'A better title');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
 
-    cy.get('#\\/_p1').should('have.text', 'Hello');
-    cy.get('#\\/revised p:first-of-type').should('have.text', 'Hello');
-    cy.get('#\\/_p2').should('have.text', 'Good day!');
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Hello');
+    cy.get(cesc('#\\/revised') + ' p:first-of-type').should('have.text', 'Hello');
+    cy.get(cesc('#\\/_p2')).should('have.text', 'Good day!');
 
   });
 
@@ -1376,19 +1368,19 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec_title').should('have.text', 'Section 1: A title');
-    cy.get('#\\/revised_title').should('have.text', 'Section 2: A better title');
-    cy.get('#\\/sec\\/_title1').should('have.text', 'A title');
-    cy.get('#\\/revised\\/_title').should('not.exist');
-    cy.get('#\\/revised\\/_title2').should('have.text', 'A better title');
-    cy.get('#\\/title1').should('have.text', 'A title');
-    cy.get('#\\/title2').should('have.text', 'A better title');
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
+    cy.get(cesc('#\\/sec_title')).should('have.text', 'Section 1: A title');
+    cy.get(cesc('#\\/revised_title')).should('have.text', 'Section 2: A better title');
+    cy.get(cesc('#\\/sec\\/_title1')).should('have.text', 'A title');
+    cy.get(cesc('#\\/revised\\/_title')).should('not.exist');
+    cy.get(cesc('#\\/revised\\/_title2')).should('have.text', 'A better title');
+    cy.get(cesc('#\\/title1')).should('have.text', 'A title');
+    cy.get(cesc('#\\/title2')).should('have.text', 'A better title');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
 
-    cy.get('#\\/sec\\/_p1').should('have.text', 'Hello');
-    cy.get('#\\/revised\\/_p1').should('have.text', 'Hello');
-    cy.get('#\\/revised\\/_p2').should('have.text', 'Good day!');
+    cy.get(cesc('#\\/sec\\/_p1')).should('have.text', 'Hello');
+    cy.get(cesc('#\\/revised\\/_p1')).should('have.text', 'Hello');
+    cy.get(cesc('#\\/revised\\/_p2')).should('have.text', 'Good day!');
 
   });
 
@@ -1451,35 +1443,35 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec1_title').should('have.text', 'Section 1');
-    cy.get('#\\/sec2_title').should('have.text', 'Section 2');
-    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1');
-    cy.get('#\\/sec22_title').should('have.text', 'Section 2.2');
-    cy.get('#\\/sec221_title').should('have.text', 'Section 2.2.1');
-    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2.2');
-    cy.get('#\\/sec223_title').should('have.text', 'Section 2.2.3');
-    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1');
-    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3');
+    cy.get(cesc('#\\/sec1_title')).should('have.text', 'Section 1');
+    cy.get(cesc('#\\/sec2_title')).should('have.text', 'Section 2');
+    cy.get(cesc('#\\/sec21_title')).should('have.text', 'Section 2.1');
+    cy.get(cesc('#\\/sec22_title')).should('have.text', 'Section 2.2');
+    cy.get(cesc('#\\/sec221_title')).should('have.text', 'Section 2.2.1');
+    cy.get(cesc('#\\/sec222_title')).should('have.text', 'Section 2.2.2');
+    cy.get(cesc('#\\/sec223_title')).should('have.text', 'Section 2.2.3');
+    cy.get(cesc('#\\/sec2231_title')).should('have.text', 'Section 2.2.3.1');
+    cy.get(cesc('#\\/sec23_title')).should('have.text', 'Section 2.3');
 
-    cy.get('#\\/title1').should('have.text', 'Section 1');
-    cy.get('#\\/title2').should('have.text', 'Section 2');
-    cy.get('#\\/title21').should('have.text', 'Section 2.1');
-    cy.get('#\\/title22').should('have.text', 'Section 2.2');
-    cy.get('#\\/title221').should('have.text', 'Section 2.2.1');
-    cy.get('#\\/title222').should('have.text', 'Section 2.2.2');
-    cy.get('#\\/title223').should('have.text', 'Section 2.2.3');
-    cy.get('#\\/title2231').should('have.text', 'Section 2.2.3.1');
-    cy.get('#\\/title23').should('have.text', 'Section 2.3');
+    cy.get(cesc('#\\/title1')).should('have.text', 'Section 1');
+    cy.get(cesc('#\\/title2')).should('have.text', 'Section 2');
+    cy.get(cesc('#\\/title21')).should('have.text', 'Section 2.1');
+    cy.get(cesc('#\\/title22')).should('have.text', 'Section 2.2');
+    cy.get(cesc('#\\/title221')).should('have.text', 'Section 2.2.1');
+    cy.get(cesc('#\\/title222')).should('have.text', 'Section 2.2.2');
+    cy.get(cesc('#\\/title223')).should('have.text', 'Section 2.2.3');
+    cy.get(cesc('#\\/title2231')).should('have.text', 'Section 2.2.3.1');
+    cy.get(cesc('#\\/title23')).should('have.text', 'Section 2.3');
 
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
-    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
-    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
-    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
-    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
-    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
-    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
-    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumber21')).should('have.text', '2.1');
+    cy.get(cesc('#\\/sectionNumber22')).should('have.text', '2.2');
+    cy.get(cesc('#\\/sectionNumber221')).should('have.text', '2.2.1');
+    cy.get(cesc('#\\/sectionNumber222')).should('have.text', '2.2.2');
+    cy.get(cesc('#\\/sectionNumber223')).should('have.text', '2.2.3');
+    cy.get(cesc('#\\/sectionNumber2231')).should('have.text', '2.2.3.1');
+    cy.get(cesc('#\\/sectionNumber23')).should('have.text', '2.3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1564,35 +1556,35 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec1_title').should('have.text', 'A');
-    cy.get('#\\/sec2_title').should('have.text', 'B');
-    cy.get('#\\/sec21_title').should('have.text', 'BA');
-    cy.get('#\\/sec22_title').should('have.text', 'BB');
-    cy.get('#\\/sec221_title').should('have.text', 'BBA');
-    cy.get('#\\/sec222_title').should('have.text', 'BBB');
-    cy.get('#\\/sec223_title').should('have.text', 'BBC');
-    cy.get('#\\/sec2231_title').should('have.text', 'BBCA');
-    cy.get('#\\/sec23_title').should('have.text', 'BC');
+    cy.get(cesc('#\\/sec1_title')).should('have.text', 'A');
+    cy.get(cesc('#\\/sec2_title')).should('have.text', 'B');
+    cy.get(cesc('#\\/sec21_title')).should('have.text', 'BA');
+    cy.get(cesc('#\\/sec22_title')).should('have.text', 'BB');
+    cy.get(cesc('#\\/sec221_title')).should('have.text', 'BBA');
+    cy.get(cesc('#\\/sec222_title')).should('have.text', 'BBB');
+    cy.get(cesc('#\\/sec223_title')).should('have.text', 'BBC');
+    cy.get(cesc('#\\/sec2231_title')).should('have.text', 'BBCA');
+    cy.get(cesc('#\\/sec23_title')).should('have.text', 'BC');
 
-    cy.get('#\\/title1').should('have.text', 'A');
-    cy.get('#\\/title2').should('have.text', 'B');
-    cy.get('#\\/title21').should('have.text', 'BA');
-    cy.get('#\\/title22').should('have.text', 'BB');
-    cy.get('#\\/title221').should('have.text', 'BBA');
-    cy.get('#\\/title222').should('have.text', 'BBB');
-    cy.get('#\\/title223').should('have.text', 'BBC');
-    cy.get('#\\/title2231').should('have.text', 'BBCA');
-    cy.get('#\\/title23').should('have.text', 'BC');
+    cy.get(cesc('#\\/title1')).should('have.text', 'A');
+    cy.get(cesc('#\\/title2')).should('have.text', 'B');
+    cy.get(cesc('#\\/title21')).should('have.text', 'BA');
+    cy.get(cesc('#\\/title22')).should('have.text', 'BB');
+    cy.get(cesc('#\\/title221')).should('have.text', 'BBA');
+    cy.get(cesc('#\\/title222')).should('have.text', 'BBB');
+    cy.get(cesc('#\\/title223')).should('have.text', 'BBC');
+    cy.get(cesc('#\\/title2231')).should('have.text', 'BBCA');
+    cy.get(cesc('#\\/title23')).should('have.text', 'BC');
 
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
-    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
-    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
-    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
-    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
-    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
-    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
-    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumber21')).should('have.text', '2.1');
+    cy.get(cesc('#\\/sectionNumber22')).should('have.text', '2.2');
+    cy.get(cesc('#\\/sectionNumber221')).should('have.text', '2.2.1');
+    cy.get(cesc('#\\/sectionNumber222')).should('have.text', '2.2.2');
+    cy.get(cesc('#\\/sectionNumber223')).should('have.text', '2.2.3');
+    cy.get(cesc('#\\/sectionNumber2231')).should('have.text', '2.2.3.1');
+    cy.get(cesc('#\\/sectionNumber23')).should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -1678,35 +1670,35 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec1_title').should('have.text', '1. A');
-    cy.get('#\\/sec2_title').should('have.text', '2. B');
-    cy.get('#\\/sec21_title').should('have.text', '2.1. BA');
-    cy.get('#\\/sec22_title').should('have.text', '2.2. BB');
-    cy.get('#\\/sec221_title').should('have.text', '2.2.1. BBA');
-    cy.get('#\\/sec222_title').should('have.text', '2.2.2. BBB');
-    cy.get('#\\/sec223_title').should('have.text', '2.2.3. BBC');
-    cy.get('#\\/sec2231_title').should('have.text', '2.2.3.1. BBCA');
-    cy.get('#\\/sec23_title').should('have.text', '2.3. BC');
+    cy.get(cesc('#\\/sec1_title')).should('have.text', '1. A');
+    cy.get(cesc('#\\/sec2_title')).should('have.text', '2. B');
+    cy.get(cesc('#\\/sec21_title')).should('have.text', '2.1. BA');
+    cy.get(cesc('#\\/sec22_title')).should('have.text', '2.2. BB');
+    cy.get(cesc('#\\/sec221_title')).should('have.text', '2.2.1. BBA');
+    cy.get(cesc('#\\/sec222_title')).should('have.text', '2.2.2. BBB');
+    cy.get(cesc('#\\/sec223_title')).should('have.text', '2.2.3. BBC');
+    cy.get(cesc('#\\/sec2231_title')).should('have.text', '2.2.3.1. BBCA');
+    cy.get(cesc('#\\/sec23_title')).should('have.text', '2.3. BC');
 
-    cy.get('#\\/title1').should('have.text', 'A');
-    cy.get('#\\/title2').should('have.text', 'B');
-    cy.get('#\\/title21').should('have.text', 'BA');
-    cy.get('#\\/title22').should('have.text', 'BB');
-    cy.get('#\\/title221').should('have.text', 'BBA');
-    cy.get('#\\/title222').should('have.text', 'BBB');
-    cy.get('#\\/title223').should('have.text', 'BBC');
-    cy.get('#\\/title2231').should('have.text', 'BBCA');
-    cy.get('#\\/title23').should('have.text', 'BC');
+    cy.get(cesc('#\\/title1')).should('have.text', 'A');
+    cy.get(cesc('#\\/title2')).should('have.text', 'B');
+    cy.get(cesc('#\\/title21')).should('have.text', 'BA');
+    cy.get(cesc('#\\/title22')).should('have.text', 'BB');
+    cy.get(cesc('#\\/title221')).should('have.text', 'BBA');
+    cy.get(cesc('#\\/title222')).should('have.text', 'BBB');
+    cy.get(cesc('#\\/title223')).should('have.text', 'BBC');
+    cy.get(cesc('#\\/title2231')).should('have.text', 'BBCA');
+    cy.get(cesc('#\\/title23')).should('have.text', 'BC');
 
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
-    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
-    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
-    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
-    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
-    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
-    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
-    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumber21')).should('have.text', '2.1');
+    cy.get(cesc('#\\/sectionNumber22')).should('have.text', '2.2');
+    cy.get(cesc('#\\/sectionNumber221')).should('have.text', '2.2.1');
+    cy.get(cesc('#\\/sectionNumber222')).should('have.text', '2.2.2');
+    cy.get(cesc('#\\/sectionNumber223')).should('have.text', '2.2.3');
+    cy.get(cesc('#\\/sectionNumber2231')).should('have.text', '2.2.3.1');
+    cy.get(cesc('#\\/sectionNumber23')).should('have.text', '2.3');
 
 
 
@@ -1793,35 +1785,35 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec1_title').should('have.text', 'Section 1: A');
-    cy.get('#\\/sec2_title').should('have.text', 'Section 2: B');
-    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1: BA');
-    cy.get('#\\/sec22_title').should('have.text', 'Section 2.2: BB');
-    cy.get('#\\/sec221_title').should('have.text', 'Section 2.2.1: BBA');
-    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2.2: BBB');
-    cy.get('#\\/sec223_title').should('have.text', 'Section 2.2.3: BBC');
-    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1: BBCA');
-    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+    cy.get(cesc('#\\/sec1_title')).should('have.text', 'Section 1: A');
+    cy.get(cesc('#\\/sec2_title')).should('have.text', 'Section 2: B');
+    cy.get(cesc('#\\/sec21_title')).should('have.text', 'Section 2.1: BA');
+    cy.get(cesc('#\\/sec22_title')).should('have.text', 'Section 2.2: BB');
+    cy.get(cesc('#\\/sec221_title')).should('have.text', 'Section 2.2.1: BBA');
+    cy.get(cesc('#\\/sec222_title')).should('have.text', 'Section 2.2.2: BBB');
+    cy.get(cesc('#\\/sec223_title')).should('have.text', 'Section 2.2.3: BBC');
+    cy.get(cesc('#\\/sec2231_title')).should('have.text', 'Section 2.2.3.1: BBCA');
+    cy.get(cesc('#\\/sec23_title')).should('have.text', 'Section 2.3: BC');
 
-    cy.get('#\\/title1').should('have.text', 'A');
-    cy.get('#\\/title2').should('have.text', 'B');
-    cy.get('#\\/title21').should('have.text', 'BA');
-    cy.get('#\\/title22').should('have.text', 'BB');
-    cy.get('#\\/title221').should('have.text', 'BBA');
-    cy.get('#\\/title222').should('have.text', 'BBB');
-    cy.get('#\\/title223').should('have.text', 'BBC');
-    cy.get('#\\/title2231').should('have.text', 'BBCA');
-    cy.get('#\\/title23').should('have.text', 'BC');
+    cy.get(cesc('#\\/title1')).should('have.text', 'A');
+    cy.get(cesc('#\\/title2')).should('have.text', 'B');
+    cy.get(cesc('#\\/title21')).should('have.text', 'BA');
+    cy.get(cesc('#\\/title22')).should('have.text', 'BB');
+    cy.get(cesc('#\\/title221')).should('have.text', 'BBA');
+    cy.get(cesc('#\\/title222')).should('have.text', 'BBB');
+    cy.get(cesc('#\\/title223')).should('have.text', 'BBC');
+    cy.get(cesc('#\\/title2231')).should('have.text', 'BBCA');
+    cy.get(cesc('#\\/title23')).should('have.text', 'BC');
 
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
-    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
-    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
-    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
-    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
-    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
-    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
-    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumber21')).should('have.text', '2.1');
+    cy.get(cesc('#\\/sectionNumber22')).should('have.text', '2.2');
+    cy.get(cesc('#\\/sectionNumber221')).should('have.text', '2.2.1');
+    cy.get(cesc('#\\/sectionNumber222')).should('have.text', '2.2.2');
+    cy.get(cesc('#\\/sectionNumber223')).should('have.text', '2.2.3');
+    cy.get(cesc('#\\/sectionNumber2231')).should('have.text', '2.2.3.1');
+    cy.get(cesc('#\\/sectionNumber23')).should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -1907,35 +1899,35 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec1_title').should('have.text', 'Section: A');
-    cy.get('#\\/sec2_title').should('have.text', 'Section: B');
-    cy.get('#\\/sec21_title').should('have.text', 'Section: BA');
-    cy.get('#\\/sec22_title').should('have.text', 'Section: BB');
-    cy.get('#\\/sec221_title').should('have.text', 'Section: BBA');
-    cy.get('#\\/sec222_title').should('have.text', 'Section: BBB');
-    cy.get('#\\/sec223_title').should('have.text', 'Section: BBC');
-    cy.get('#\\/sec2231_title').should('have.text', 'Section: BBCA');
-    cy.get('#\\/sec23_title').should('have.text', 'Section: BC');
+    cy.get(cesc('#\\/sec1_title')).should('have.text', 'Section: A');
+    cy.get(cesc('#\\/sec2_title')).should('have.text', 'Section: B');
+    cy.get(cesc('#\\/sec21_title')).should('have.text', 'Section: BA');
+    cy.get(cesc('#\\/sec22_title')).should('have.text', 'Section: BB');
+    cy.get(cesc('#\\/sec221_title')).should('have.text', 'Section: BBA');
+    cy.get(cesc('#\\/sec222_title')).should('have.text', 'Section: BBB');
+    cy.get(cesc('#\\/sec223_title')).should('have.text', 'Section: BBC');
+    cy.get(cesc('#\\/sec2231_title')).should('have.text', 'Section: BBCA');
+    cy.get(cesc('#\\/sec23_title')).should('have.text', 'Section: BC');
 
-    cy.get('#\\/title1').should('have.text', 'A');
-    cy.get('#\\/title2').should('have.text', 'B');
-    cy.get('#\\/title21').should('have.text', 'BA');
-    cy.get('#\\/title22').should('have.text', 'BB');
-    cy.get('#\\/title221').should('have.text', 'BBA');
-    cy.get('#\\/title222').should('have.text', 'BBB');
-    cy.get('#\\/title223').should('have.text', 'BBC');
-    cy.get('#\\/title2231').should('have.text', 'BBCA');
-    cy.get('#\\/title23').should('have.text', 'BC');
+    cy.get(cesc('#\\/title1')).should('have.text', 'A');
+    cy.get(cesc('#\\/title2')).should('have.text', 'B');
+    cy.get(cesc('#\\/title21')).should('have.text', 'BA');
+    cy.get(cesc('#\\/title22')).should('have.text', 'BB');
+    cy.get(cesc('#\\/title221')).should('have.text', 'BBA');
+    cy.get(cesc('#\\/title222')).should('have.text', 'BBB');
+    cy.get(cesc('#\\/title223')).should('have.text', 'BBC');
+    cy.get(cesc('#\\/title2231')).should('have.text', 'BBCA');
+    cy.get(cesc('#\\/title23')).should('have.text', 'BC');
 
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
-    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
-    cy.get('#\\/sectionNumber22').should('have.text', '2.2');
-    cy.get('#\\/sectionNumber221').should('have.text', '2.2.1');
-    cy.get('#\\/sectionNumber222').should('have.text', '2.2.2');
-    cy.get('#\\/sectionNumber223').should('have.text', '2.2.3');
-    cy.get('#\\/sectionNumber2231').should('have.text', '2.2.3.1');
-    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumber21')).should('have.text', '2.1');
+    cy.get(cesc('#\\/sectionNumber22')).should('have.text', '2.2');
+    cy.get(cesc('#\\/sectionNumber221')).should('have.text', '2.2.1');
+    cy.get(cesc('#\\/sectionNumber222')).should('have.text', '2.2.2');
+    cy.get(cesc('#\\/sectionNumber223')).should('have.text', '2.2.3');
+    cy.get(cesc('#\\/sectionNumber2231')).should('have.text', '2.2.3.1');
+    cy.get(cesc('#\\/sectionNumber23')).should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -2040,44 +2032,44 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/sec1_title').should('have.text', 'Section 1: A');
-    cy.get('#\\/sec2_title').should('have.text', 'Section 2: B');
-    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1: BA');
-    cy.get('#\\/sec211_title').should('have.text', 'Section 1: BAA');
-    cy.get('#\\/sec2111_title').should('have.text', 'Section 1.1: BAAA');
-    cy.get('#\\/sec2112_title').should('have.text', 'Section 1.2: BAAB');
-    cy.get('#\\/sec22_title').should('have.text', 'Section 2: BB');
-    cy.get('#\\/sec221_title').should('have.text', 'Section 2.1: BBA');
-    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2: BBB');
-    cy.get('#\\/sec223_title').should('have.text', 'Section 2.3: BBC');
-    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.3.1: BBCA');
-    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+    cy.get(cesc('#\\/sec1_title')).should('have.text', 'Section 1: A');
+    cy.get(cesc('#\\/sec2_title')).should('have.text', 'Section 2: B');
+    cy.get(cesc('#\\/sec21_title')).should('have.text', 'Section 2.1: BA');
+    cy.get(cesc('#\\/sec211_title')).should('have.text', 'Section 1: BAA');
+    cy.get(cesc('#\\/sec2111_title')).should('have.text', 'Section 1.1: BAAA');
+    cy.get(cesc('#\\/sec2112_title')).should('have.text', 'Section 1.2: BAAB');
+    cy.get(cesc('#\\/sec22_title')).should('have.text', 'Section 2: BB');
+    cy.get(cesc('#\\/sec221_title')).should('have.text', 'Section 2.1: BBA');
+    cy.get(cesc('#\\/sec222_title')).should('have.text', 'Section 2.2: BBB');
+    cy.get(cesc('#\\/sec223_title')).should('have.text', 'Section 2.3: BBC');
+    cy.get(cesc('#\\/sec2231_title')).should('have.text', 'Section 2.3.1: BBCA');
+    cy.get(cesc('#\\/sec23_title')).should('have.text', 'Section 2.3: BC');
 
-    cy.get('#\\/title1').should('have.text', 'A');
-    cy.get('#\\/title2').should('have.text', 'B');
-    cy.get('#\\/title21').should('have.text', 'BA');
-    cy.get('#\\/title211').should('have.text', 'BAA');
-    cy.get('#\\/title2111').should('have.text', 'BAAA');
-    cy.get('#\\/title2112').should('have.text', 'BAAB');
-    cy.get('#\\/title22').should('have.text', 'BB');
-    cy.get('#\\/title221').should('have.text', 'BBA');
-    cy.get('#\\/title222').should('have.text', 'BBB');
-    cy.get('#\\/title223').should('have.text', 'BBC');
-    cy.get('#\\/title2231').should('have.text', 'BBCA');
-    cy.get('#\\/title23').should('have.text', 'BC');
+    cy.get(cesc('#\\/title1')).should('have.text', 'A');
+    cy.get(cesc('#\\/title2')).should('have.text', 'B');
+    cy.get(cesc('#\\/title21')).should('have.text', 'BA');
+    cy.get(cesc('#\\/title211')).should('have.text', 'BAA');
+    cy.get(cesc('#\\/title2111')).should('have.text', 'BAAA');
+    cy.get(cesc('#\\/title2112')).should('have.text', 'BAAB');
+    cy.get(cesc('#\\/title22')).should('have.text', 'BB');
+    cy.get(cesc('#\\/title221')).should('have.text', 'BBA');
+    cy.get(cesc('#\\/title222')).should('have.text', 'BBB');
+    cy.get(cesc('#\\/title223')).should('have.text', 'BBC');
+    cy.get(cesc('#\\/title2231')).should('have.text', 'BBCA');
+    cy.get(cesc('#\\/title23')).should('have.text', 'BC');
 
-    cy.get('#\\/sectionNumber1').should('have.text', '1');
-    cy.get('#\\/sectionNumber2').should('have.text', '2');
-    cy.get('#\\/sectionNumber21').should('have.text', '2.1');
-    cy.get('#\\/sectionNumber211').should('have.text', '1');
-    cy.get('#\\/sectionNumber2111').should('have.text', '1.1');
-    cy.get('#\\/sectionNumber2112').should('have.text', '1.2');
-    cy.get('#\\/sectionNumber22').should('have.text', '2');
-    cy.get('#\\/sectionNumber221').should('have.text', '2.1');
-    cy.get('#\\/sectionNumber222').should('have.text', '2.2');
-    cy.get('#\\/sectionNumber223').should('have.text', '2.3');
-    cy.get('#\\/sectionNumber2231').should('have.text', '2.3.1');
-    cy.get('#\\/sectionNumber23').should('have.text', '2.3');
+    cy.get(cesc('#\\/sectionNumber1')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumber21')).should('have.text', '2.1');
+    cy.get(cesc('#\\/sectionNumber211')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumber2111')).should('have.text', '1.1');
+    cy.get(cesc('#\\/sectionNumber2112')).should('have.text', '1.2');
+    cy.get(cesc('#\\/sectionNumber22')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumber221')).should('have.text', '2.1');
+    cy.get(cesc('#\\/sectionNumber222')).should('have.text', '2.2');
+    cy.get(cesc('#\\/sectionNumber223')).should('have.text', '2.3');
+    cy.get(cesc('#\\/sectionNumber2231')).should('have.text', '2.3.1');
+    cy.get(cesc('#\\/sectionNumber23')).should('have.text', '2.3');
 
 
     cy.window().then(async (win) => {
@@ -2097,7 +2089,9 @@ describe('Sectioning Tag Tests', function () {
     });
   });
 
-  it('Add auto name to aside', () => {
+  // TODO: reinstate this test
+  // Temporarily skipping due to stopgap solution of reverting new type of section
+  it.skip('Add auto name to aside', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2118,9 +2112,6 @@ describe('Sectioning Tag Tests', function () {
         <aside name="aside32">
           <p><lorem generateSentences="1" /></p>
         </aside>
-        <aside name="aside33" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </aside>
       </aside>
   
       <p>Title 1: <text name="title1" copySource="aside1.title" /></p>
@@ -2128,37 +2119,33 @@ describe('Sectioning Tag Tests', function () {
       <p>Title 3: <text name="title3" copySource="aside3.title" /></p>
       <p>Title 3.1: <text name="title31" copySource="aside31.title" /></p>
       <p>Title 3.2: <text name="title32" copySource="aside32.title" /></p>
-      <p>Title 3.3: <text name="title33" copySource="aside33.title" /></p>
 
     `}, "*");
     });
 
-    cy.get('#\\/aside1_title').should('contain.text', 'Aside 1');
-    cy.get('#\\/aside1_title').should('not.contain.text', ':');
-    cy.get('#\\/aside2_title').should('contain.text', 'Aside: Side point');
-    cy.get('#\\/aside3_title').should('contain.text', 'Aside 3: Another side point');
-    cy.get('#\\/title1').should('have.text', 'Aside 1');
-    cy.get('#\\/title2').should('have.text', 'Side point');
-    cy.get('#\\/title3').should('have.text', 'Another side point');
+    cy.get(cesc('#\\/aside1_title')).should('contain.text', 'Aside 1');
+    cy.get(cesc('#\\/aside1_title')).should('not.contain.text', ':');
+    cy.get(cesc('#\\/aside2_title')).should('contain.text', 'Aside: Side point');
+    cy.get(cesc('#\\/aside3_title')).should('contain.text', 'Aside 3: Another side point');
+    cy.get(cesc('#\\/title1')).should('have.text', 'Aside 1');
+    cy.get(cesc('#\\/title2')).should('have.text', 'Side point');
+    cy.get(cesc('#\\/title3')).should('have.text', 'Another side point');
 
-    cy.get('#\\/aside3_title').click();
+    cy.get(cesc('#\\/aside3_title')).click();
 
-    cy.get('#\\/aside31_title').should('contain.text', 'Subpoint');
-    cy.get('#\\/aside31_title').should('not.contain.text', '1');
-    cy.get('#\\/aside31_title').should('not.contain.text', ':');
-    cy.get('#\\/aside32_title').should('contain.text', 'Aside 2 ');
-    cy.get('#\\/aside32_title').should('not.contain.text', ':');
-    cy.get('#\\/aside33_title').should('contain.text', 'Aside 3.3 ');
-    cy.get('#\\/aside33_title').should('not.contain.text', ':');
+    cy.get(cesc('#\\/aside31_title')).should('contain.text', 'Subpoint');
+    cy.get(cesc('#\\/aside31_title')).should('not.contain.text', '1');
+    cy.get(cesc('#\\/aside31_title')).should('not.contain.text', ':');
+    cy.get(cesc('#\\/aside32_title')).should('contain.text', 'Aside 5 ');
+    cy.get(cesc('#\\/aside32_title')).should('not.contain.text', ':');
 
 
-    cy.get('#\\/title31').should('have.text', 'Subpoint');
-    cy.get('#\\/title32').should('have.text', 'Aside 2');
-    cy.get('#\\/title33').should('have.text', 'Aside 3.3');
+    cy.get(cesc('#\\/title31')).should('have.text', 'Subpoint');
+    cy.get(cesc('#\\/title32')).should('have.text', 'Aside 5');
 
   });
 
-  it('Example, problems, exercise do not include parent number by default', () => {
+  it('Example, problems, exercise do not include parent number', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2181,15 +2168,6 @@ describe('Sectioning Tag Tests', function () {
         <example name="exam12">
           <p><lorem generateSentences="1" /></p>
         </example>
-        <problem name="prob13" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </problem>
-        <exercise name="exer13" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </exercise>
-        <example name="exam13" includeParentNumber>
-          <p><lorem generateSentences="1" /></p>
-        </example>
 
       </section>
   
@@ -2201,9 +2179,6 @@ describe('Sectioning Tag Tests', function () {
       <p>Title Problem 1.2: <text name="titleProb12" copySource="prob12.title" /></p>
       <p>Title Exercise 1.2: <text name="titleExer12" copySource="exer12.title" /></p>
       <p>Title Example 1.2: <text name="titleExam12" copySource="exam12.title" /></p>
-      <p>Title Problem 1.3: <text name="titleProb13" copySource="prob13.title" /></p>
-      <p>Title Exercise 1.3: <text name="titleExer13" copySource="exer13.title" /></p>
-      <p>Title Example 1.3: <text name="titleExam13" copySource="exam13.title" /></p>
 
 
       <p>Number for Section 1: <text name="sectionNumberSec1" copySource="sec1.sectionNumber" /></p>
@@ -2213,45 +2188,33 @@ describe('Sectioning Tag Tests', function () {
       <p>Number for Problem 1.2: <text name="sectionNumberProb12" copySource="prob12.sectionNumber" /></p>
       <p>Number for Exercise 1.2: <text name="sectionNumberExer12" copySource="exer12.sectionNumber" /></p>
       <p>Number for Example 1.2: <text name="sectionNumberExam12" copySource="exam12.sectionNumber" /></p>
-      <p>Number for Problem 1.3: <text name="sectionNumberProb13" copySource="prob13.sectionNumber" /></p>
-      <p>Number for Exercise 1.3: <text name="sectionNumberExer13" copySource="exer13.sectionNumber" /></p>
-      <p>Number for Example 1.3: <text name="sectionNumberExam13" copySource="exam13.sectionNumber" /></p>
 
 
 
     `}, "*");
     });
 
-    cy.get('#\\/sec1_title').should('have.text', 'Section 1');
-    cy.get('#\\/prob11_title').should('have.text', 'Problem 1');
-    cy.get('#\\/exer11_title').should('have.text', 'Exercise 1');
-    cy.get('#\\/exam11_title').should('have.text', 'Example 1');
-    cy.get('#\\/prob12_title').should('have.text', 'Problem 2');
-    cy.get('#\\/exer12_title').should('have.text', 'Exercise 2');
-    cy.get('#\\/exam12_title').should('have.text', 'Example 2');
-    cy.get('#\\/prob13_title').should('have.text', 'Problem 1.3');
-    cy.get('#\\/exer13_title').should('have.text', 'Exercise 1.3');
-    cy.get('#\\/exam13_title').should('have.text', 'Example 1.3');
+    cy.get(cesc('#\\/sec1_title')).should('have.text', 'Section 1');
+    cy.get(cesc('#\\/prob11_title')).should('have.text', 'Problem 1');
+    cy.get(cesc('#\\/exer11_title')).should('have.text', 'Exercise 2');
+    cy.get(cesc('#\\/exam11_title')).should('have.text', 'Example 3');
+    cy.get(cesc('#\\/prob12_title')).should('have.text', 'Problem 4');
+    cy.get(cesc('#\\/exer12_title')).should('have.text', 'Exercise 5');
+    cy.get(cesc('#\\/exam12_title')).should('have.text', 'Example 6');
 
-    cy.get('#\\/titleProb11').should('have.text', 'Problem 1');
-    cy.get('#\\/titleExer11').should('have.text', 'Exercise 1');
-    cy.get('#\\/titleExam11').should('have.text', 'Example 1');
-    cy.get('#\\/titleProb12').should('have.text', 'Problem 2');
-    cy.get('#\\/titleExer12').should('have.text', 'Exercise 2');
-    cy.get('#\\/titleExam12').should('have.text', 'Example 2');
-    cy.get('#\\/titleProb13').should('have.text', 'Problem 1.3');
-    cy.get('#\\/titleExer13').should('have.text', 'Exercise 1.3');
-    cy.get('#\\/titleExam13').should('have.text', 'Example 1.3');
+    cy.get(cesc('#\\/titleProb11')).should('have.text', 'Problem 1');
+    cy.get(cesc('#\\/titleExer11')).should('have.text', 'Exercise 2');
+    cy.get(cesc('#\\/titleExam11')).should('have.text', 'Example 3');
+    cy.get(cesc('#\\/titleProb12')).should('have.text', 'Problem 4');
+    cy.get(cesc('#\\/titleExer12')).should('have.text', 'Exercise 5');
+    cy.get(cesc('#\\/titleExam12')).should('have.text', 'Example 6');
 
-    cy.get('#\\/sectionNumberProb11').should('have.text', '1');
-    cy.get('#\\/sectionNumberExer11').should('have.text', '1');
-    cy.get('#\\/sectionNumberExam11').should('have.text', '1');
-    cy.get('#\\/sectionNumberProb12').should('have.text', '2');
-    cy.get('#\\/sectionNumberExer12').should('have.text', '2');
-    cy.get('#\\/sectionNumberExam12').should('have.text', '2');
-    cy.get('#\\/sectionNumberProb13').should('have.text', '1.3');
-    cy.get('#\\/sectionNumberExer13').should('have.text', '1.3');
-    cy.get('#\\/sectionNumberExam13').should('have.text', '1.3');
+    cy.get(cesc('#\\/sectionNumberProb11')).should('have.text', '1');
+    cy.get(cesc('#\\/sectionNumberExer11')).should('have.text', '2');
+    cy.get(cesc('#\\/sectionNumberExam11')).should('have.text', '3');
+    cy.get(cesc('#\\/sectionNumberProb12')).should('have.text', '4');
+    cy.get(cesc('#\\/sectionNumberExer12')).should('have.text', '5');
+    cy.get(cesc('#\\/sectionNumberExam12')).should('have.text', '6');
 
   });
 
@@ -2274,17 +2237,426 @@ describe('Sectioning Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/aside1_title').should('contain.text', 'Hello');
-    cy.get('#\\/_p1').should('not.exist');
-    cy.get('#\\/ti_input').should('be.disabled')
+    cy.get(cesc('#\\/aside1_title')).should('contain.text', 'Hello');
+    cy.get(cesc('#\\/_p1')).should('not.exist');
+    cy.get(cesc('#\\/ti_input')).should('be.disabled')
 
-    cy.get('#\\/aside1_title').click();
-    cy.get('#\\/_p1').should('have.text', 'Content');
+    cy.get(cesc('#\\/aside1_title')).click();
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Content');
 
-    cy.get('#\\/aside1_title').click();
-    cy.get('#\\/_p1').should('not.exist');
+    cy.get(cesc('#\\/aside1_title')).click();
+    cy.get(cesc('#\\/_p1')).should('not.exist');
 
   });
 
+  it('Exercise with statement, hint, givenanswer, and solution', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+    <exercise name="exer">
+      <title>An exercise</title>
+      <statement>The exercise</statement>
+      <hint>
+        <p>Try harder</p>
+      </hint>
+      <givenAnswer>
+        <p>The correct answer</p>
+      </givenAnswer>
+      <solution>
+        <p>Here's how you do it.</p>
+      </solution>
+    </exercise>
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#\\/_title1')).should('have.text', 'An exercise');
+
+    cy.get(cesc('#\\/_statement1')).should('have.text', 'The exercise');
+
+    cy.get(cesc('#\\/_hint1') + ' [data-test=hint-heading]').should('contain.text', 'Hint')
+    cy.get(cesc('#\\/_hint1')).should('not.contain.text', 'Try harder')
+    cy.get(cesc('#\\/_givenanswer1')).should('contain.text', 'Answer')
+    cy.get(cesc('#\\/_givenanswer1')).should('not.contain.text', 'The correct answer')
+    cy.get(cesc('#\\/_solution1')).should('contain.text', 'Solution')
+    cy.get(cesc('#\\/_solution1')).should('not.contain.text', "Here's how you do it.")
+
+    cy.get(cesc('#\\/_hint1') + ' [data-test=hint-heading]').click()
+    cy.get(cesc('#\\/_hint1')).should('contain.text', 'Try harder')
+    cy.get(cesc('#\\/_givenanswer1')).should('not.contain.text', 'The correct answer')
+    cy.get(cesc('#\\/_solution1')).should('not.contain.text', "Here's how you do it.")
+
+    cy.get(cesc("#\\/_givenanswer1_button")).click();
+    cy.get(cesc('#\\/_givenanswer1')).should('contain.text', 'The correct answer')
+    cy.get(cesc('#\\/_hint1')).should('contain.text', 'Try harder')
+    cy.get(cesc('#\\/_solution1')).should('not.contain.text', "Here's how you do it.")
+
+    cy.get(cesc("#\\/_solution1_button")).click();
+    cy.get(cesc('#\\/_solution1')).should('contain.text', "Here's how you do it.")
+    cy.get(cesc('#\\/_hint1')).should('contain.text', 'Try harder')
+    cy.get(cesc('#\\/_givenanswer1')).should('contain.text', 'The correct answer')
+
+  });
+
+  it('Section with introduction, subsections and conclusion', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <introduction>
+    <p>First this</p>
+    <p>Then that</p>
+    <text>Hello</text> <text>World</text>
+  </introduction>
+  <subsection>
+    <title>Point 1</title>
+    <p>Make the first point</p>
+  </subsection>
+  <subsection>
+    <title>Point 2</title>
+    <p>Make the second point</p>
+  </subsection>
+  <conclusion>
+    Wrap <text>it</text> <text>up</text>!
+  </conclusion>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#\\/_title1')).should('have.text', 'A section');
+
+    cy.get(cesc('#\\/_introduction1')).should('have.text', '\n    First this\n    Then that\n    Hello World\n  ');
+
+    cy.get(cesc('#\\/_subsection1')).should('have.text', ' Point 1\n    \n    Make the first point\n   ');
+    cy.get(cesc('#\\/_subsection2')).should('have.text', ' Point 2\n    \n    Make the second point\n   ');
+
+    cy.get(cesc('#\\/_conclusion1')).should('have.text', '\n    Wrap it up!\n  ');
+
+
+  });
+
+  it('Objectives', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <objectives>
+    <text>Hello</text> <text>World</text>
+  </objectives>
+  <p>Is objectives boxed? $_objectives1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#\\/_title1')).should('have.text', 'A section');
+
+    cy.get(cesc('#\\/_objectives1_title')).should('have.text', 'Objectives 1');
+    cy.get(cesc('#\\/_objectives1')).should('contain.text', 'Hello World');
+
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Is objectives boxed? true')
+
+  });
+
+  it('Activity', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <activity>
+    <text>Hello</text> <text>World</text>
+  </activity>
+  <p>Is activity boxed? $_activity1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#\\/_title1')).should('have.text', 'A section');
+
+    cy.get(cesc('#\\/_activity1_title')).should('have.text', 'Activity 1');
+    cy.get(cesc('#\\/_activity1')).should('contain.text', 'Hello World');
+
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Is activity boxed? false')
+
+  });
+
+  it('Definition', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <definition>
+    <text>Hello</text> <text>World</text>
+  </definition>
+  <p>Is definition boxed? $_definition1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#\\/_title1')).should('have.text', 'A section');
+
+    cy.get(cesc('#\\/_definition1_title')).should('have.text', 'Definition 1');
+    cy.get(cesc('#\\/_definition1')).should('contain.text', 'Hello World');
+
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Is definition boxed? false')
+
+  });
+
+  it('Note', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <note>
+    <text>Hello</text> <text>World</text>
+  </note>
+  <p>Is note boxed? $_note1.boxed</p>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#\\/_title1')).should('have.text', 'A section');
+
+    cy.get(cesc('#\\/_note1_title')).should('have.text', 'Note 1');
+    cy.get(cesc('#\\/_note1')).should('contain.text', 'Hello World');
+
+    cy.get(cesc('#\\/_p1')).should('have.text', 'Is note boxed? false')
+
+  });
+
+  // TODO: reinstate this test
+  // Temporarily skipping due to stopgap solution of reverting new type of section
+  it.skip('Theorem elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section>
+  <title>A section</title>
+  <theorem>
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </theorem>
+  <theorem renameTo="Corollary">
+    <statement>The statement</statement>
+    <proof>The proof</proof>
+  </theorem>
+</section>
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#\\/_title1')).should('have.text', 'A section');
+
+    cy.get(cesc('#\\/_theorem1_title')).should('have.text', 'Theorem 1');
+    cy.get(cesc('#\\/_statement1')).should('have.text', 'The statement');
+    cy.get(cesc('#\\/_proof1_title')).should('contain.text', 'Proof')
+    cy.get(cesc('#\\/_proof1_title')).should('contain.text', 'Proof')
+    cy.get(cesc('#\\/_proof1')).should('not.contain.text', 'The proof')
+    cy.get(cesc('#\\/_proof1_title')).click();
+    cy.get(cesc('#\\/_proof1')).should('contain.text', 'The proof')
+
+    cy.get(cesc('#\\/_theorem2_title')).should('have.text', 'Corollary 2');
+    cy.get(cesc('#\\/_statement2')).should('have.text', 'The statement');
+    cy.get(cesc('#\\/_proof2_title')).should('contain.text', 'Proof')
+    cy.get(cesc('#\\/_proof2')).should('not.contain.text', 'The proof')
+    cy.get(cesc('#\\/_proof2_title')).click();
+    cy.get(cesc('#\\/_proof2')).should('contain.text', 'The proof')
+
+  });
+
+  // TODO: reinstate this test
+  // Temporarily skipping due to stopgap solution of reverting new type of section
+  it.skip('Sections number independently of other sectioning elements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+<section name="sec1">
+  <objectives name="obj1">
+    <ul>
+      <li>First</li>
+      <li>Second</li>
+    </ul>
+  </objectives>
+  <definition name="exp2">
+    An definition
+  </definition>
+  <subsection name="sec1-1">
+    <activity name="act3">
+      Activity inside a subsection.
+    </activity>
+  </subsection>
+  <section name="sec1-2">
+    <aside name="aside4">
+      An aside
+    </aside>
+  </section>
+  <activity name="act5">
+    Final activity
+  </activity>
+  <objectives renameTo="Outcomes" name="out6">
+    <ul>
+      <li>First</li>
+      <li>Second</li>
+    </ul>
+  </objectives>
+</section>
+<section name="sec2">
+  <objectives name="obj7">
+  <ul>
+    <li>First 2</li>
+    <li>Second 2</li>
+  </ul>
+  </objectives>
+  <section name="sec2-1">
+    <definition name="exp8">
+      Another definition
+    </definition>
+  </section>
+</section>
+
+    `}, "*");
+    });
+
+    // Note: not sure if this is how we want numbering to work long term,
+    // but this test at least documents how it is working now.
+
+    cy.get(cesc('#\\/sec1_title')).should('have.text', 'Section 1');
+
+    cy.get(cesc('#\\/obj1_title')).should('have.text', 'Objectives 1');
+    cy.get(cesc('#\\/exp2_title')).should('have.text', 'Definition 2');
+    cy.get(cesc('#\\/sec1-1_title')).should('have.text', 'Section 1.1');
+    cy.get(cesc('#\\/act3_title')).should('have.text', 'Activity 3');
+    cy.get(cesc('#\\/sec1-2_title')).should('have.text', 'Section 1.2');
+    cy.get(cesc('#\\/aside4_title')).should('contain.text', 'Aside 4');
+    cy.get(cesc('#\\/act5_title')).should('have.text', 'Activity 5');
+    cy.get(cesc('#\\/out6_title')).should('have.text', 'Outcomes 6');
+
+    cy.get(cesc('#\\/sec2_title')).should('have.text', 'Section 2');
+
+    cy.get(cesc('#\\/obj7_title')).should('have.text', 'Objectives 7');
+    cy.get(cesc('#\\/sec2-1_title')).should('have.text', 'Section 2.1');
+
+  });
+
+  it('Problems tag causes child sections to be rendered as a list', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <problem name="aProb" newNamespace>
+      <title>This is a problem</title>
+      <p>Here is a problem!</p>
+  
+      <ol>
+        <li>Item 1</li>
+        <li>Item 2</li>
+      </ol>
+    </problem>
+  
+    <exercises name="exercises">
+      <problem name="prob1" newNamespace>
+        <p>We don't have a title, but we have a list.</p>
+          
+        <ol>
+          <li>Item A</li>
+          <li>Item B</li>
+        </ol>
+      </problem>
+      <problem name="prob2" newNamespace>
+      <title>A titled problem</title>
+        <p>Work hard</p>
+      </problem>
+  
+      $aProb{assignNames='aProbb'}
+    </exercises>
+
+    `}, "*");
+    });
+
+
+    cy.get(cesc('#\\/aProb_title')).should('have.text', 'This is a problem');
+    cy.get(cesc('#\\/aProb\\/_ol1')).should('have.css', 'list-style-type', 'decimal');
+
+    cy.get(cesc('#\\/exercises') + ' li').eq(0).should('contain.text', "We don't have a title, but we have a list.")
+
+    cy.get(cesc('#\\/prob1_title')).should('have.text', '');
+    cy.get(cesc('#\\/prob1\\/_ol1')).should('have.css', 'list-style-type', 'lower-alpha');
+
+    cy.get(cesc('#\\/prob2_title')).should('have.text', 'A titled problem');
+
+    cy.get(cesc('#\\/aProbb_title')).should('have.text', 'This is a problem');
+    cy.get(cesc('#\\/aProbb\\/_ol1')).should('have.css', 'list-style-type', 'lower-alpha');
+
+
+
+  });
+
+  it('As list attribute causes child sections to be rendered as a list', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <problem name="aProb" newNamespace>
+      <title>This is a problem</title>
+      <p>Here is a problem!</p>
+  
+      <ol>
+        <li>Item 1</li>
+        <li>Item 2</li>
+      </ol>
+    </problem>
+  
+    <section name="exercises" asList>
+      <problem name="prob1" newNamespace>
+        <p>We don't have a title, but we have a list.</p>
+          
+        <ol>
+          <li>Item A</li>
+          <li>Item B</li>
+        </ol>
+      </problem>
+      <problem name="prob2" newNamespace>
+      <title>A titled problem</title>
+        <p>Work hard</p>
+      </problem>
+  
+      $aProb{assignNames='aProbb'}
+    </section>
+
+    `}, "*");
+    });
+
+
+    cy.get(cesc('#\\/aProb_title')).should('have.text', 'This is a problem');
+    cy.get(cesc('#\\/aProb\\/_ol1')).should('have.css', 'list-style-type', 'decimal');
+
+    cy.get(cesc('#\\/exercises') + ' li').eq(0).should('contain.text', "We don't have a title, but we have a list.")
+
+    cy.get(cesc('#\\/prob1_title')).should('have.text', '');
+    cy.get(cesc('#\\/prob1\\/_ol1')).should('have.css', 'list-style-type', 'lower-alpha');
+
+    cy.get(cesc('#\\/prob2_title')).should('have.text', 'A titled problem');
+
+    cy.get(cesc('#\\/aProbb_title')).should('have.text', 'This is a problem');
+    cy.get(cesc('#\\/aProbb\\/_ol1')).should('have.css', 'list-style-type', 'lower-alpha');
+
+
+
+  });
 
 });

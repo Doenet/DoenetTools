@@ -5,27 +5,36 @@ import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 import { useRecoilValue } from 'recoil';
 import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
+import { textRendererStyle } from '../../Core/utils/style';
 
 
 export default React.memo(function Line(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
-  Line.ignoreActionsWithoutCore = true;
+  Line.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
   let lineJXG = useRef({});
 
-  let pointerAtDown = useRef(false);
-  let pointsAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointsAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
   let pointCoords = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
+  let fixed = useRef(false);
+  let fixLocation = useRef(false);
+  let switchable = useRef(false);
 
   lastPositionsFromCore.current = SVs.numericalPoints;
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
+  switchable.current = SVs.switchable && !SVs.fixed;
 
   const darkMode = useRecoilValue(darkModeAtom);
 
@@ -39,8 +48,19 @@ export default React.memo(function Line(props) {
         deleteLineJXG();
       }
 
+      if (board) {
+        board.off('move', boardMoveHandler);
+      }
+
     }
   }, [])
+
+
+  useEffect(() => {
+    if (board) {
+      board.on('move', boardMoveHandler)
+    }
+  }, [board])
 
 
   function createLineJXG() {
@@ -52,18 +72,16 @@ export default React.memo(function Line(props) {
       return;
     }
 
-    let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
     let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-    lineColor = lineColor.toLowerCase();
 
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withlabel,
-      fixed,
+      fixed: fixed.current,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
@@ -72,7 +90,7 @@ export default React.memo(function Line(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
-      highlight: !fixed,
+      highlight: !fixLocation.current,
     };
 
     if (withlabel) {
@@ -130,13 +148,45 @@ export default React.memo(function Line(props) {
 
     let newLineJXG = board.create('line', through, jsxLineAttributes);
 
+    newLineJXG.isDraggable = !fixLocation.current;
+
     newLineJXG.on('drag', function (e) {
+
+      let viaPointer = e.type === "pointermove";
+
       //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      if (!viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
         dragged.current = true;
       }
-      calculatePointPositions(e);
+
+      pointCoords.current = []
+
+      if (viaPointer) {
+        var o = board.origin.scrCoords;
+        for (let i = 0; i < 2; i++) {
+          // the reason we calculate point position with this algorithm,
+          // rather than using .X() and .Y() directly
+          // is so that points don't get trapped on an attracting object
+          // if you move the mouse slowly.
+          // The attributes .X() and .Y() are affected by
+          // .setCoordinates functions called in update()
+          // so will get modified to go back to the attracting object
+
+          let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+            - o[1]) / board.unitX;
+          let calculatedY = (o[2] -
+            (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+            / board.unitY;
+          pointCoords.current.push([calculatedX, calculatedY]);
+        }
+      } else {
+        pointCoords.current.push([newLineJXG.point1.X(), newLineJXG.point1.Y()]);
+        pointCoords.current.push([newLineJXG.point2.X(), newLineJXG.point2.Y()]);
+      }
+
       callAction({
         action: actions.moveLine,
         args: {
@@ -160,17 +210,36 @@ export default React.memo(function Line(props) {
             point2coords: pointCoords.current[1],
           }
         })
-      } else if (SVs.switchable && !SVs.fixed) {
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
+
+        if (switchable.current) {
+          callAction({
+            action: actions.switchLine,
+          })
+          callAction({
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
+          });
+        } else {
+          callAction({
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
+          });
+        }
+      }
+      pointerIsDown.current = false;
+    })
+
+    newLineJXG.on('keyfocusout', function (e) {
+      if (dragged.current) {
         callAction({
-          action: actions.switchLine,
+          action: actions.moveLine,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+          }
         })
-        callAction({
-          action: actions.lineClicked
-        });
-      } else {
-        callAction({
-          action: actions.lineClicked
-        });
+        dragged.current = false;
       }
     })
 
@@ -181,11 +250,61 @@ export default React.memo(function Line(props) {
         [...newLineJXG.point1.coords.scrCoords],
         [...newLineJXG.point2.coords.scrCoords]
       ]
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+      if (!fixed.current) {
+        callAction({
+          action: actions.lineFocused,
+          args: { name }   // send name so get original name if adapted
+        });
+      }
+
+    })
+
+    newLineJXG.on('hit', function (e) {
+      dragged.current = false;
+      pointsAtDown.current = [
+        [...newLineJXG.point1.coords.scrCoords],
+        [...newLineJXG.point2.coords.scrCoords]
+      ]
       callAction({
-        action: actions.mouseDownOnLine
+        action: actions.lineFocused,
+        args: { name }   // send name so get original name if adapted
       });
 
     })
+
+
+    newLineJXG.on('keydown', function (e) {
+
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.moveLine,
+            args: {
+              point1coords: pointCoords.current[0],
+              point2coords: pointCoords.current[1],
+            }
+          })
+          dragged.current = false;
+        }
+        if (switchable.current) {
+          callAction({
+            action: actions.switchLine,
+          })
+          callAction({
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
+          });
+        } else {
+          callAction({
+            action: actions.lineClicked,
+            args: { name }   // send name so get original name if adapted
+          });
+        }
+      }
+    })
+
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
@@ -193,35 +312,25 @@ export default React.memo(function Line(props) {
 
   }
 
-  function calculatePointPositions(e) {
-
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is so that points don't get trapped on an attracting object
-    // if you move the mouse slowly.
-    // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called in update()
-    // so will get modified to go back to the attracting object
-
-    var o = board.origin.scrCoords;
-
-    pointCoords.current = []
-
-    for (let i = 0; i < 2; i++) {
-      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      let calculatedY = (o[2] -
-        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      pointCoords.current.push([calculatedX, calculatedY]);
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
     }
-
   }
+
 
   function deleteLineJXG() {
     lineJXG.current.off('drag');
     lineJXG.current.off('down');
+    lineJXG.current.off('hit');
     lineJXG.current.off('up');
+    lineJXG.current.off('keyfocusout');
+    lineJXG.current.off('keydown');
     board.removeObject(lineJXG.current);
     lineJXG.current = {};
   }
@@ -273,10 +382,9 @@ export default React.memo(function Line(props) {
         // lineJXG.current.setAttribute({visible: false})
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      lineJXG.current.visProp.fixed = fixed;
-      lineJXG.current.visProp.highlight = !fixed;
+      lineJXG.current.visProp.fixed = fixed.current;
+      lineJXG.current.visProp.highlight = !fixLocation.current;
+      lineJXG.current.isDraggable = !fixLocation.current;
 
       let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = lineJXG.current.visProp.layer !== layer;
@@ -287,7 +395,6 @@ export default React.memo(function Line(props) {
 
 
       let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
-      lineColor = lineColor.toLowerCase();
 
       if (lineJXG.current.visProp.strokecolor !== lineColor) {
         lineJXG.current.visProp.strokecolor = lineColor;
@@ -368,7 +475,8 @@ export default React.memo(function Line(props) {
 
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
-  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  return <><a name={id} /><span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 
 function styleToDash(style, dash) {

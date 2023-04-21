@@ -1,5 +1,7 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
+import { cesc2 } from "../../../src/_utils/url";
+
 
 describe('doenet events test', function () {
   const userId = "cyuserId";
@@ -56,14 +58,12 @@ describe('doenet events test', function () {
     //Interact with content
     cy.log("Enter a correct answer in")
     //TODO: clear out previous entry state
-    cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true }).blur();
-    // cy.get('#\\/_mathinput1 textarea').invoke('val',`x+y`).blur();
-    // cy.get('#\\/_mathinput2 textarea').invoke('val',`2x-y`).blur();
+    cy.get(cesc2('#/_mathinput1') + ' textarea').type(`x+y`, { force: true }).blur();
+    cy.get(cesc2('#/_mathinput2') + ' textarea').type(`2x-y`, { force: true }).blur();
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_answer1_submit').click();
+    cy.get(cesc2('#/_answer1_submit')).click();
 
     cy.wait(1000); //TODO: time travel instead of wait?
     //Test if interactions were recorded

@@ -26,7 +26,7 @@ export default function EditorInfoCap() {
 
   if (image != 'none') {
     accessible_name = find_image_label(image);
-    image = 'url(./drive_pictures/' + image + ')';
+    image = 'url(/drive_pictures/' + image + ')';
   }
   if (color != 'none') {
     accessible_name = find_color_label(color);

@@ -1,12 +1,4 @@
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('SideBySide Tag Tests', function () {
 
@@ -80,22 +72,22 @@ describe('SideBySide Tag Tests', function () {
     let valign = specifiedValign ? specifiedValign : "top";
 
     if (!ignoreInitialDOMChecks) {
-      cy.get(cesc('#' + widthValueName)).should("contain.text", Math.trunc(actualWidth))
-      cy.get(cesc('#' + leftMarginValueName)).should("contain.text", Math.trunc(actualLeftMargin))
-      cy.get(cesc('#' + rightMarginValueName)).should("contain.text", Math.trunc(actualRightMargin))
-      cy.get(cesc('#' + valignValueName)).should("have.text", valign)
+      cy.get(cesc2('#' + widthValueName)).should("contain.text", Math.trunc(actualWidth))
+      cy.get(cesc2('#' + leftMarginValueName)).should("contain.text", Math.trunc(actualLeftMargin))
+      cy.get(cesc2('#' + rightMarginValueName)).should("contain.text", Math.trunc(actualRightMargin))
+      cy.get(cesc2('#' + valignValueName)).should("have.text", valign)
     }
 
     if (!isSbsGroup) {
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
         expect(Number(width)).closeTo(sbsWidth * actualWidth / 100, 0.1)
       })
 
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
       });
 
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
       });
     }
@@ -229,33 +221,33 @@ describe('SideBySide Tag Tests', function () {
     ]
 
     if (!ignoreInitialDOMChecks) {
-      cy.get(cesc('#' + leftWidthValueName)).should("contain.text", Math.trunc(actualWidth1))
-      cy.get(cesc('#' + rightWidthValueName)).should("contain.text", Math.trunc(actualWidth2))
-      cy.get(cesc('#' + leftMarginValueName)).should("contain.text", Math.trunc(actualLeftMargin))
-      cy.get(cesc('#' + rightMarginValueName)).should("contain.text", Math.trunc(actualRightMargin))
-      cy.get(cesc('#' + leftValignValueName)).should("have.text", valigns[0])
-      cy.get(cesc('#' + rightValignValueName)).should("have.text", valigns[1])
+      cy.get(cesc2('#' + leftWidthValueName)).should("contain.text", Math.trunc(actualWidth1))
+      cy.get(cesc2('#' + rightWidthValueName)).should("contain.text", Math.trunc(actualWidth2))
+      cy.get(cesc2('#' + leftMarginValueName)).should("contain.text", Math.trunc(actualLeftMargin))
+      cy.get(cesc2('#' + rightMarginValueName)).should("contain.text", Math.trunc(actualRightMargin))
+      cy.get(cesc2('#' + leftValignValueName)).should("have.text", valigns[0])
+      cy.get(cesc2('#' + rightValignValueName)).should("have.text", valigns[1])
     }
 
     if (!isSbsGroup) {
 
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
         expect(Number(width)).closeTo(sbsWidth * actualWidth1 / 100, 0.1)
       })
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
       });
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * (actualRightMargin + actualGap / 2) / 100, 0.1)
       });
 
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('width').then(width => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(2)`).invoke('width').then(width => {
         expect(Number(width)).closeTo(sbsWidth * actualWidth2 / 100, 0.1)
       })
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-left').then(margin => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-left').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * (actualLeftMargin + actualGap / 2) / 100, 0.1)
       });
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-right').then(margin => {
+      cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-right').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
       });
     }
@@ -397,16 +389,16 @@ describe('SideBySide Tag Tests', function () {
     let valigns = specifiedValigns.map(x => x ? x : "top");
 
     if (!ignoreInitialDOMChecks) {
-      cy.get(cesc('#' + width1ValueName)).should("contain.text", Math.trunc(actualWidths[0]))
-      cy.get(cesc('#' + width2ValueName)).should("contain.text", Math.trunc(actualWidths[1]))
-      cy.get(cesc('#' + width3ValueName)).should("contain.text", Math.trunc(actualWidths[2]))
-      cy.get(cesc('#' + width4ValueName)).should("contain.text", Math.trunc(actualWidths[3]))
-      cy.get(cesc('#' + leftMarginValueName)).should("contain.text", Math.trunc(actualLeftMargin))
-      cy.get(cesc('#' + rightMarginValueName)).should("contain.text", Math.trunc(actualRightMargin))
-      cy.get(cesc('#' + valign1ValueName)).should("have.text", valigns[0])
-      cy.get(cesc('#' + valign2ValueName)).should("have.text", valigns[1])
-      cy.get(cesc('#' + valign3ValueName)).should("have.text", valigns[2])
-      cy.get(cesc('#' + valign4ValueName)).should("have.text", valigns[3])
+      cy.get(cesc2('#' + width1ValueName)).should("contain.text", Math.trunc(actualWidths[0]))
+      cy.get(cesc2('#' + width2ValueName)).should("contain.text", Math.trunc(actualWidths[1]))
+      cy.get(cesc2('#' + width3ValueName)).should("contain.text", Math.trunc(actualWidths[2]))
+      cy.get(cesc2('#' + width4ValueName)).should("contain.text", Math.trunc(actualWidths[3]))
+      cy.get(cesc2('#' + leftMarginValueName)).should("contain.text", Math.trunc(actualLeftMargin))
+      cy.get(cesc2('#' + rightMarginValueName)).should("contain.text", Math.trunc(actualRightMargin))
+      cy.get(cesc2('#' + valign1ValueName)).should("have.text", valigns[0])
+      cy.get(cesc2('#' + valign2ValueName)).should("have.text", valigns[1])
+      cy.get(cesc2('#' + valign3ValueName)).should("have.text", valigns[2])
+      cy.get(cesc2('#' + valign4ValueName)).should("have.text", valigns[3])
     }
 
     if (!isSbsGroup) {
@@ -423,15 +415,15 @@ describe('SideBySide Tag Tests', function () {
           thisRightMargin += actualGap / 2;
         }
 
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('width').then(width => {
+        cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('width').then(width => {
           expect(Number(width)).closeTo(sbsWidth * actualWidths[col] / 100, 0.1)
         })
 
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-left').then(margin => {
+        cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-left').then(margin => {
           expect(parseFloat(margin)).closeTo(sbsWidth * thisLeftMargin / 100, 0.1)
         });
 
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-right').then(margin => {
+        cy.get(`${cesc2('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-right').then(margin => {
           expect(parseFloat(margin)).closeTo(sbsWidth * thisRightMargin / 100, 0.1)
         });
       }
@@ -497,10 +489,10 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkSingleColumnSbs({
         sbsWidth, sbsName: "/sbs"
@@ -513,7 +505,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin first, unspecified width adjusts`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedMargins: [10, null],
@@ -521,7 +513,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin, unspecified width adjusts`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedMargins: [10, 20],
@@ -530,7 +522,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`change width to be smaller, add extra to right margin`)
       //  Note: add to right margin since with one panel, there is not gapWidth to set
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -542,7 +534,7 @@ describe('SideBySide Tag Tests', function () {
       // Note: this rescaling ignores the extra width added to the right margin,
       // as it was an indirect consequence of changing the width.
       // Computations assume the right margin is at the origin 20% specified
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 95,
@@ -551,9 +543,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`shrink margins to make specified values add back to 100%`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
-      cy.get("#\\/m2a").should('not.contain.text', '1');
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
+      cy.get(cesc("#\\/m2a")).should('not.contain.text', '1');
 
       checkSingleColumnSbs({
         specifiedWidth: 95,
@@ -562,11 +554,11 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`shrink right margin to 1, gets recreated to make 100%`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
       // since value of m2a doesn't get changed, can't use it to determine how long to wait
       // use boolean input to check that core has responded to that
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkSingleColumnSbs({
         specifiedWidth: 95,
@@ -575,7 +567,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase left margin to make specified total be 100%`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 95,
@@ -584,9 +576,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change totals to keep at 100%`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -595,7 +587,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increasing right margin rescales`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -604,7 +596,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increasing left margin rescales`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -613,7 +605,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`shrink width to get specified back to 100%`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
 
       checkSingleColumnSbs({
@@ -623,7 +615,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign`)
-      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("bottom{enter}");
 
       checkSingleColumnSbs({
         specifiedWidth: 20,
@@ -633,10 +625,10 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid valign ignored`)
-      cy.get("#\\/v1_input").clear().type("invalid{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("invalid{enter}");
       // since no change, use booleaninput to wait for core
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'false');
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'false');
 
 
       checkSingleColumnSbs({
@@ -686,9 +678,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkSingleColumnSbs({
         sbsWidth, sbsName: "/sbs"
@@ -706,7 +698,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width first, unspecified margins adjusts`)
-      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}70{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{ctrl+home}{shift+end}{backspace}70{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 70,
@@ -714,7 +706,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change width larger than 100%, scaled back to 100%`)
-      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}170{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{ctrl+home}{shift+end}{backspace}170{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 170,
@@ -722,7 +714,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change width smaller again`)
-      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}60{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{ctrl+home}{shift+end}{backspace}60{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -730,7 +722,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin, unspecified left margin adjusts`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -740,7 +732,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin so total is larger than 100%, rescales`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -750,7 +742,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`change left margin to be large, rescaling adjusts`)
       //  Note: add to right margin since with one panel, there is not gapWidth to set
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}120{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}120{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -797,9 +789,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -815,7 +807,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin, specified margins stay symmetric, get rescaling`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -825,7 +817,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin, specified margins stay symmetric, extra added to right`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -835,7 +827,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`symmetry regained by increasing width`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 90,
@@ -845,7 +837,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign`)
-      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("bottom{enter}");
 
 
       checkSingleColumnSbs({
@@ -856,9 +848,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`ignore invalid valign`)
-      cy.get("#\\/v1_input").clear().type("green{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v1_input")).clear().type("green{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkSingleColumnSbs({
         specifiedWidth: 90,
@@ -908,9 +900,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -926,7 +918,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`decrease left margin, space added to right margin`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -936,7 +928,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase right margin, get rescaling`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -946,7 +938,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`decrease width to return to 100%`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 55,
@@ -956,7 +948,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign`)
-      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("bottom{enter}");
 
       checkSingleColumnSbs({
         specifiedWidth: 55,
@@ -966,9 +958,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`ignore invalid valign`)
-      cy.get("#\\/v1_input").clear().type("green{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v1_input")).clear().type("green{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkSingleColumnSbs({
         specifiedWidth: 55,
@@ -1017,9 +1009,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -1033,7 +1025,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change left margin, specified margins stay symmetric, get rescaling`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -1043,7 +1035,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin, specified margins stay symmetric, extra added to right`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 80,
@@ -1053,7 +1045,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`symmetry regained by increasing width`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 90,
@@ -1063,7 +1055,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign`)
-      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("bottom{enter}");
 
       checkSingleColumnSbs({
         specifiedWidth: 90,
@@ -1073,9 +1065,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`ignore invalid valign`)
-      cy.get("#\\/v1_input").clear().type("green{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v1_input")).clear().type("green{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkSingleColumnSbs({
         specifiedWidth: 90,
@@ -1129,10 +1121,10 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         sbsWidth, sbsName: "/sbs"
@@ -1145,7 +1137,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin first, unspecified widths adjust`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedMargins: [10, null],
@@ -1154,7 +1146,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin, unspecified widths adjust`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedMargins: [10, 5],
@@ -1162,7 +1154,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first width to be smaller, add extra to second width`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, null],
@@ -1171,7 +1163,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first width to be larger, second width shrinks to zero, rescale to 100%`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [95, null],
@@ -1180,7 +1172,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first width to be smaller again`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, null],
@@ -1189,7 +1181,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second width to be smaller, extra added to gap`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 50],
@@ -1198,7 +1190,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second width to be larger, rescaled to 100%`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 85],
@@ -1207,8 +1199,8 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`shrink margins to make specified values add back to 100%`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}1.5{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}1{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}1.5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{ctrl+home}{shift+end}{backspace}1{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 85],
@@ -1217,7 +1209,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`shrink right margin to 0.5, extra added to gap`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}0.5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}0.5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 85],
@@ -1226,7 +1218,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase left margin to make specified total be 100%`)
-      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 85],
@@ -1235,10 +1227,10 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change totals to keep at 100%`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-      cy.get("#\\/w2 textarea").type("{ctrl+home}{shift+end}{backspace}50{enter}", { force: true });
-      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}4{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}6{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{ctrl+home}{shift+end}{backspace}50{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{ctrl+home}{shift+end}{backspace}4{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{ctrl+home}{shift+end}{backspace}6{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 50],
@@ -1248,7 +1240,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increasing right margin rescales`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}18.5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}18.5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 50],
@@ -1258,7 +1250,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increasing left margin rescales`)
-      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}21.5{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{ctrl+home}{shift+end}{backspace}21.5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 50],
@@ -1268,8 +1260,8 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink widths to get specified below 100%`)
-      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}5{enter}", { force: true });
-      cy.get("#\\/w2 textarea").type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{ctrl+home}{shift+end}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [5, 10],
@@ -1278,7 +1270,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first valign`)
-      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [5, 10],
@@ -1288,7 +1280,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second valign`)
-      cy.get("#\\/v2_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [5, 10],
@@ -1298,9 +1290,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid valign ignored`)
-      cy.get("#\\/v2_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v2_input")).clear().type("invalid{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkTwoColumnSbs({
         specifiedWidths: [5, 10],
@@ -1354,9 +1346,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         sbsWidth, sbsName: "/sbs"
@@ -1369,7 +1361,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change second width past 100%, unspecified first width shrinks to zero, rescales`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}130{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}130{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [null, 130],
@@ -1377,7 +1369,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second width, unspecified first width adjusts`)
-      cy.get("#\\/w2 textarea").type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [null, 10],
@@ -1386,7 +1378,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first width, unspecified margins adjust`)
-      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{ctrl+home}{shift+end}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 10],
@@ -1394,7 +1386,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin, unspecified left margin adjusts`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 10],
@@ -1403,7 +1395,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase second width so total is past 100%, rescaling`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 85],
@@ -1412,7 +1404,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`decrease second width`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 20],
@@ -1421,7 +1413,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`specify first margin to be smaller, remainder in gap`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 20],
@@ -1474,9 +1466,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 20],
@@ -1491,7 +1483,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first width, second matches`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 30],
@@ -1501,7 +1493,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second width, first matches, rescaling`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [80, 80],
@@ -1511,7 +1503,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`shrink width, rest in gap`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -1521,7 +1513,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase left margin, right margin matches`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -1531,7 +1523,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase right margin, left margin matches, rescaling`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -1541,7 +1533,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first valign`)
-      cy.get("#\\/v1_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("top{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -1551,7 +1543,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second valign`)
-      cy.get("#\\/v2_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -1561,9 +1553,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid valign ignored`)
-      cy.get("#\\/v1_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v1_input")).clear().type("invalid{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -1617,9 +1609,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 10],
@@ -1634,7 +1626,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first width`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 10],
@@ -1644,7 +1636,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second width, rescaling`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}110{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}110{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 110],
@@ -1654,7 +1646,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`shrink second width`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -1665,7 +1657,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`decrease right margin`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -1676,7 +1668,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increase left margin, rescaling`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}77.5{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}77.5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -1686,7 +1678,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first valign`)
-      cy.get("#\\/v1_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("top{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -1696,7 +1688,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second valign`)
-      cy.get("#\\/v2_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -1706,9 +1698,9 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid valign ignored`)
-      cy.get("#\\/v2_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v2_input")).clear().type("invalid{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -1762,9 +1754,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [20, null],
@@ -1780,7 +1772,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first width, unspecified second width adjusts`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, null],
@@ -1791,7 +1783,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin, left is symmetric, unspecified second width adjusts`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, null],
@@ -1802,7 +1794,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change second width, rest in gap`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 20],
@@ -1813,7 +1805,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first width, rescaling`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}140{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}140{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [140, 20],
@@ -1824,7 +1816,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink first width`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
@@ -1834,7 +1826,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`decrease right margin, left matches`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
@@ -1844,7 +1836,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase left margin, right matches, rescaling`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}42.5{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}42.5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
@@ -1855,7 +1847,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first valign`)
-      cy.get("#\\/v1_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("top{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
@@ -1865,7 +1857,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second valign`)
-      cy.get("#\\/v2_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
@@ -1876,9 +1868,9 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`invalid valign ignored`)
-      cy.get("#\\/v2_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v2_input")).clear().type("invalid{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
@@ -1942,9 +1934,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkFourColumnSbs({
         sbsWidth, sbsName: "/sbs"
@@ -1957,7 +1949,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin first, unspecified widths adjust`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedMargins: [2, null],
@@ -1965,7 +1957,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin, unspecified widths adjust`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedMargins: [2, 3],
@@ -1974,7 +1966,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 3rd width to be smaller, add extra to other widths`)
-      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}14{enter}", { force: true });
+      cy.get(cesc("#\\/w3") + " textarea").type("{end}{backspace}{backspace}14{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [null, null, 14, null],
@@ -1984,7 +1976,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 3rd width to be larger, others widths shrinks to zero, rescale to 100%`)
-      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}180{enter}", { force: true });
+      cy.get(cesc("#\\/w3") + " textarea").type("{end}{backspace}{backspace}180{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [null, null, 180, null],
@@ -1994,7 +1986,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 3rd width to be smaller again`)
-      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
+      cy.get(cesc("#\\/w3") + " textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [null, null, 11, null],
@@ -2004,7 +1996,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 2nd width to be smaller`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [null, 15, 11, null],
@@ -2014,7 +2006,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 1st width to be smaller`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [20, 15, 11, null],
@@ -2024,7 +2016,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 4th width to be smaller, remainder added to gap`)
-      cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}19{enter}", { force: true });
+      cy.get(cesc("#\\/w4") + " textarea").type("{end}{backspace}{backspace}19{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [20, 15, 11, 19],
@@ -2034,7 +2026,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 2nd width to be larger, rescaled to 100%`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [20, 55, 11, 19],
@@ -2044,7 +2036,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink width 2 to make specified values add back to 100%`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
@@ -2054,7 +2046,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink right margin, extra added to gap`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
@@ -2064,7 +2056,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change fourth valign`)
-      cy.get("#\\/v4_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v4_input")).clear().type("bottom{enter}");
 
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
@@ -2075,7 +2067,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change second valign`)
-      cy.get("#\\/v2_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("middle{enter}");
 
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
@@ -2086,7 +2078,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first valign`)
-      cy.get("#\\/v1_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("middle{enter}");
 
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
@@ -2097,7 +2089,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change third valign`)
-      cy.get("#\\/v3_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v3_input")).clear().type("bottom{enter}");
 
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
@@ -2108,9 +2100,9 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`invalid valign ignored`)
-      cy.get("#\\/v3_input").clear().type("invalid{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v3_input")).clear().type("invalid{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
@@ -2175,9 +2167,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkFourColumnSbs({
         specifiedWidths: [15, 15, 15, 15],
@@ -2193,7 +2185,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 4th width, rest match, remainder added to gap`)
-      cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/w4") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [10, 10, 10, 10],
@@ -2203,7 +2195,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin, rescaled`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [10, 10, 10, 10],
@@ -2214,7 +2206,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink left margin`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [10, 10, 10, 10],
@@ -2225,7 +2217,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change fourth valign`)
-      cy.get("#\\/v4_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v4_input")).clear().type("bottom{enter}");
 
       checkFourColumnSbs({
         specifiedWidths: [10, 10, 10, 10],
@@ -2289,10 +2281,10 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkFourColumnSbs({
         specifiedWidths: [5, 10, 15, 20],
@@ -2308,7 +2300,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 4th width, remainder added to gap`)
-      cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+      cy.get(cesc("#\\/w4") + " textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [5, 10, 15, 9],
@@ -2319,7 +2311,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change 1st width, rescaled`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}63{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}63{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [63, 10, 15, 9],
@@ -2330,9 +2322,9 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change more widths, remainder added to gap`)
-      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
-      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}13{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+      cy.get(cesc("#\\/w3") + " textarea").type("{end}{backspace}{backspace}13{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [3, 8, 13, 9],
@@ -2343,8 +2335,8 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change margins`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
 
       checkFourColumnSbs({
         specifiedWidths: [3, 8, 13, 9],
@@ -2355,10 +2347,10 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valigns`)
-      cy.get("#\\/v1_input").clear().type("top{enter}");
-      cy.get("#\\/v2_input").clear().type("middle{enter}");
-      cy.get("#\\/v3_input").clear().type("bottom{enter}");
-      cy.get("#\\/v4_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("top{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("middle{enter}");
+      cy.get(cesc("#\\/v3_input")).clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v4_input")).clear().type("middle{enter}");
 
       checkFourColumnSbs({
         specifiedWidths: [3, 8, 13, 9],
@@ -2388,10 +2380,10 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkFourColumnSbs({
         specifiedWidths: [5, 10, 15, 20],
@@ -2499,13 +2491,13 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     // Note: including essentialWidths and essentialMargins
     // just so can keep track of which sbs will still be affected by the spsGroup
 
 
-    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs1')).invoke('width').then(sbsWidth => {
 
       checkSingleColumnSbs({
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true,
@@ -2542,7 +2534,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbs1, unspecified width of sbs1 adjusts`)
-      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m11") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkSingleColumnSbs({
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true,
@@ -2576,7 +2568,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change width of sbsg, unspecified margin(s) adjust`)
-      cy.get("#\\/w1g textarea").type("{ctrl+home}{shift+end}{backspace}70{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{ctrl+home}{shift+end}{backspace}70{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 70,
@@ -2615,7 +2607,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin of sbs2, unspecified margin adjusts`)
-      cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
+      cy.get(cesc("#\\/m22") + " textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 70,
@@ -2654,7 +2646,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbsg, affects only sbs2`)
-      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+      cy.get(cesc("#\\/m1g") + " textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 70,
@@ -2694,7 +2686,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change sbsg width to be smaller, adds to unspecified or right margins`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -2734,7 +2726,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change sbs1 width to be smaller, adds to unspecified right margin`)
-      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
+      cy.get(cesc("#\\/w11") + " textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -2774,7 +2766,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increase sbsg left margin, cause rescaling just in sbs2`)
-      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/m1g") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -2815,7 +2807,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increase sbsg width, causing rescaling in sbsg and a second in sbs2`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 90,
@@ -2855,7 +2847,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink sbsg width to remove rescaling`)
-      cy.get("#\\/w1g textarea").type("{ctrl+home}{shift+end}{backspace}40{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{ctrl+home}{shift+end}{backspace}40{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
@@ -2895,7 +2887,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valign of sbs1`)
-      cy.get("#\\/v11_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v11_input")).clear().type("bottom{enter}");
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
@@ -2935,7 +2927,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign of sbsg`)
-      cy.get("#\\/v1g_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v1g_input")).clear().type("middle{enter}");
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
@@ -2977,7 +2969,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign of sbs2`)
-      cy.get("#\\/v12_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v12_input")).clear().type("top{enter}");
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
@@ -3020,9 +3012,9 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`valign of sbsg ignores invalid`)
-      cy.get("#\\/v1g_input").clear().type("banana{enter}");
-      cy.get('#\\/bi').click();
-      cy.get('#\\/b').should('have.text', 'true');
+      cy.get(cesc("#\\/v1g_input")).clear().type("banana{enter}");
+      cy.get(cesc('#\\/bi')).click();
+      cy.get(cesc('#\\/b')).should('have.text', 'true');
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
@@ -3156,13 +3148,13 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
     // Note: including essentialWidths and essentialMargins
     // just so can keep track of which sbs will still be affected by the spsGroup
 
 
-    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs1')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true,
@@ -3205,7 +3197,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width1 of sbsg`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, null],
@@ -3248,7 +3240,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`override width1 of sbs1`)
-      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w11") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, null],
@@ -3291,7 +3283,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`override width2 of sbs2`)
-      cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
+      cy.get(cesc("#\\/w22") + " textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, null],
@@ -3334,7 +3326,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbs1`)
-      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m11") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, null],
@@ -3378,7 +3370,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbsg`)
-      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+      cy.get(cesc("#\\/m1g") + " textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, null],
@@ -3424,7 +3416,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin of sbsg`)
-      cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
+      cy.get(cesc("#\\/m2g") + " textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, null],
@@ -3470,7 +3462,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change second width of sbsg`)
-      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
+      cy.get(cesc("#\\/w2g") + " textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, 45],
@@ -3516,7 +3508,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increase second width of sbsg to cause rescaling`)
-      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}65{enter}", { force: true });
+      cy.get(cesc("#\\/w2g") + " textarea").type("{end}{backspace}{backspace}65{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, 65],
@@ -3562,7 +3554,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`decrease second width of sbs1 to drop below 100%`)
-      cy.get("#\\/w21 textarea").type("{ctrl+home}{shift+end}{backspace}55{enter}", { force: true });
+      cy.get(cesc("#\\/w21") + " textarea").type("{ctrl+home}{shift+end}{backspace}55{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, 65],
@@ -3608,7 +3600,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`decrease first width of sbsg to drop below 100%`)
-      cy.get("#\\/w1g textarea").type("{ctrl+home}{shift+end}{backspace}25{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{ctrl+home}{shift+end}{backspace}25{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
@@ -3654,7 +3646,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first valign of sbsg`)
-      cy.get("#\\/v1g_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1g_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
@@ -3702,7 +3694,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first valign of sbs2`)
-      cy.get("#\\/v12_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v12_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
@@ -3750,7 +3742,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second valign of sbs1`)
-      cy.get("#\\/v21_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v21_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
@@ -3798,7 +3790,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second valign of sbsg`)
-      cy.get("#\\/v2g_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v2g_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
@@ -3938,10 +3930,10 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs1')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 25],
@@ -3994,7 +3986,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width1 of sbsg`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 20],
@@ -4043,7 +4035,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width2 of sbs2`)
-      cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+      cy.get(cesc("#\\/w22") + " textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 20],
@@ -4093,7 +4085,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width2 of sbsg`)
-      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
+      cy.get(cesc("#\\/w2g") + " textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4142,7 +4134,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width1 of sbs1`)
-      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
+      cy.get(cesc("#\\/w11") + " textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4191,8 +4183,8 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change margins of sbs2`)
-      cy.get("#\\/m12 textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
-      cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
+      cy.get(cesc("#\\/m12") + " textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
+      cy.get(cesc("#\\/m22") + " textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4240,7 +4232,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin of sbsg`)
-      cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+      cy.get(cesc("#\\/m2g") + " textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4288,7 +4280,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change right margin of sbs1`)
-      cy.get("#\\/m21 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
+      cy.get(cesc("#\\/m21") + " textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4337,7 +4329,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbsg`)
-      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+      cy.get(cesc("#\\/m1g") + " textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4385,7 +4377,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change left margin of sbs1`)
-      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+      cy.get(cesc("#\\/m11") + " textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4434,7 +4426,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valign1 of sbsg`)
-      cy.get("#\\/v1g_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1g_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4483,7 +4475,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valign2 of sbs1`)
-      cy.get("#\\/v21_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v21_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4531,7 +4523,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign2 of sbsg`)
-      cy.get("#\\/v2g_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v2g_input")).clear().type("top{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4579,7 +4571,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valign1 of sbs1`)
-      cy.get("#\\/v11_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v11_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4627,8 +4619,8 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valigns of sbs2`)
-      cy.get("#\\/v12_input").clear().type("middle{enter}");
-      cy.get("#\\/v22_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v12_input")).clear().type("middle{enter}");
+      cy.get(cesc("#\\/v22_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [12, 12],
@@ -4768,10 +4760,10 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs1')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 15],
@@ -4823,7 +4815,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width1 of sbsg`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+      cy.get(cesc("#\\/w1g") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 15],
@@ -4872,7 +4864,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width2 of sbs2`)
-      cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
+      cy.get(cesc("#\\/w22") + " textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 15],
@@ -4921,7 +4913,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width2 of sbsg`)
-      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
+      cy.get(cesc("#\\/w2g") + " textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -4970,7 +4962,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width1 of sbs1`)
-      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
+      cy.get(cesc("#\\/w11") + " textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5019,7 +5011,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width2 of sbs1`)
-      cy.get("#\\/w21 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w21") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5068,7 +5060,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width1 of sbs2`)
-      cy.get("#\\/w12 textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
+      cy.get(cesc("#\\/w12") + " textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5117,7 +5109,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin of sbsg`)
-      cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+      cy.get(cesc("#\\/m2g") + " textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5166,7 +5158,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin of sbs1`)
-      cy.get("#\\/m21 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
+      cy.get(cesc("#\\/m21") + " textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5215,7 +5207,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbsg`)
-      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+      cy.get(cesc("#\\/m1g") + " textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5264,7 +5256,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbs1`)
-      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+      cy.get(cesc("#\\/m11") + " textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5313,7 +5305,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change right margin of sbs2`)
-      cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+      cy.get(cesc("#\\/m22") + " textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5362,7 +5354,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change left margin of sbs2`)
-      cy.get("#\\/m12 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/m12") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5411,7 +5403,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valign1 of sbsg`)
-      cy.get("#\\/v1g_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1g_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5460,7 +5452,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valign2 of sbs1`)
-      cy.get("#\\/v21_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v21_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5509,7 +5501,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valign2 of sbsg`)
-      cy.get("#\\/v2g_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v2g_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5558,7 +5550,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change valign1 of sbs1`)
-      cy.get("#\\/v11_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v11_input")).clear().type("top{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5606,8 +5598,8 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change valigns of sbs2`)
-      cy.get("#\\/v12_input").clear().type("middle{enter}");
-      cy.get("#\\/v22_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v12_input")).clear().type("middle{enter}");
+      cy.get(cesc("#\\/v22_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 12],
@@ -5680,10 +5672,10 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
 
-    cy.get('#\\/sbsg\\/sbs1').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbsg\\/sbs1')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 15],
@@ -5781,9 +5773,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [49, 49],
@@ -5848,9 +5840,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 20],
@@ -5865,7 +5857,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first width, second matches`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 30],
@@ -5875,7 +5867,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second width, first matches, rescaling`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [80, 80],
@@ -5885,7 +5877,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change defining width`)
-      cy.get("#\\/w textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
+      cy.get(cesc("#\\/w") + " textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 25],
@@ -5895,7 +5887,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid defining width treated as null`)
-      cy.get("#\\/w textarea").type("{end}{backspace}{backspace}x{enter}", { force: true });
+      cy.get(cesc("#\\/w") + " textarea").type("{end}{backspace}{backspace}x{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [null, null],
@@ -5906,7 +5898,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`reset width by changing second width`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5916,7 +5908,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`decrease defining margin`)
-      cy.get("#\\/m textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5926,7 +5918,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid defining margin treated as null`)
-      cy.get("#\\/m textarea").type("{end}{backspace}{backspace}none{enter}", { force: true });
+      cy.get(cesc("#\\/m") + " textarea").type("{end}{backspace}{backspace}none{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5937,7 +5929,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`reset from left margin, right margin matches`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5947,7 +5939,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase right margin, left margin matches, rescaling`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5957,7 +5949,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first valign`)
-      cy.get("#\\/v1_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("top{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5967,7 +5959,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change defining valign`)
-      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5978,7 +5970,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change second valign`)
-      cy.get("#\\/v2_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5988,7 +5980,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid defining valign becomes top`)
-      cy.get("#\\/v_input").clear().type("invalid{enter}");
+      cy.get(cesc("#\\/v_input")).clear().type("invalid{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -5999,7 +5991,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`reset from first valign`)
-      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
@@ -6067,9 +6059,9 @@ describe('SideBySide Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait for page to load
 
-    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+    cy.get(cesc('#\\/sbs')).invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
         specifiedWidths: [20, 10],
@@ -6084,7 +6076,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first width`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 10],
@@ -6094,7 +6086,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second defining width, rescaling`)
-      cy.get("#\\/dw2 textarea").type("{end}{backspace}{backspace}110{enter}", { force: true });
+      cy.get(cesc("#\\/dw2") + " textarea").type("{end}{backspace}{backspace}110{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 110],
@@ -6104,7 +6096,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`make second defining width be invalid, treated as null`)
-      cy.get("#\\/dw2 textarea").type("{ctrl+home}{shift+end}{backspace}hello{enter}", { force: true });
+      cy.get(cesc("#\\/dw2") + " textarea").type("{ctrl+home}{shift+end}{backspace}hello{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, null],
@@ -6114,7 +6106,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`make first defining width be invalid, treated as null`)
-      cy.get("#\\/dw1 textarea").type("{ctrl+home}{shift+end}{backspace}bye{enter}", { force: true });
+      cy.get(cesc("#\\/dw1") + " textarea").type("{ctrl+home}{shift+end}{backspace}bye{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [null, null],
@@ -6124,7 +6116,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`reset second width`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/w2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [null, 5],
@@ -6134,7 +6126,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`reset first width`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get(cesc("#\\/w1") + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6145,7 +6137,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`decrease right margin`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6156,7 +6148,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increase left defining margin, rescaling`)
-      cy.get("#\\/dm1 textarea").type("{end}{backspace}{backspace}77.5{enter}", { force: true });
+      cy.get(cesc("#\\/dm1") + " textarea").type("{end}{backspace}{backspace}77.5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6166,7 +6158,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`decrease left margin`)
-      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}7{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{ctrl+home}{shift+end}{backspace}7{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6177,7 +6169,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`invalid left defining margin, treated as null`)
-      cy.get("#\\/dm1 textarea").type("{end}{backspace}{backspace}hello{enter}", { force: true });
+      cy.get(cesc("#\\/dm1") + " textarea").type("{end}{backspace}{backspace}hello{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6187,7 +6179,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid right defining margin, treated as null`)
-      cy.get("#\\/dm2 textarea").type("{end}{backspace}{backspace}bye{enter}", { force: true });
+      cy.get(cesc("#\\/dm2") + " textarea").type("{end}{backspace}{backspace}bye{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6197,7 +6189,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`reset left margin`)
-      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}12{enter}", { force: true });
+      cy.get(cesc("#\\/m1") + " textarea").type("{ctrl+home}{shift+end}{backspace}12{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6207,7 +6199,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`reset right margin`)
-      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}8{enter}", { force: true });
+      cy.get(cesc("#\\/m2") + " textarea").type("{ctrl+home}{shift+end}{backspace}8{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6218,7 +6210,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first valign`)
-      cy.get("#\\/v1_input").clear().type("top{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("top{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6228,7 +6220,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second valign`)
-      cy.get("#\\/v2_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6238,7 +6230,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change first defining valign`)
-      cy.get("#\\/dv1_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/dv1_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6248,7 +6240,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second defining valign`)
-      cy.get("#\\/dv2_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/dv2_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6258,7 +6250,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid second defining valign treated as null`)
-      cy.get("#\\/dv2_input").clear().type("banana{enter}");
+      cy.get(cesc("#\\/dv2_input")).clear().type("banana{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6268,7 +6260,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`invalid first defining valign treated as null`)
-      cy.get("#\\/dv1_input").clear().type("apple{enter}");
+      cy.get(cesc("#\\/dv1_input")).clear().type("apple{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6279,7 +6271,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`reset first valign`)
-      cy.get("#\\/v1_input").clear().type("middle{enter}");
+      cy.get(cesc("#\\/v1_input")).clear().type("middle{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6289,7 +6281,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`reset second valign`)
-      cy.get("#\\/v2_input").clear().type("bottom{enter}");
+      cy.get(cesc("#\\/v2_input")).clear().type("bottom{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],

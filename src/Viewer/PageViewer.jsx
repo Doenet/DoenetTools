@@ -14,9 +14,8 @@ import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVarian
 import { useLocation, useNavigate } from "react-router";
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../_reactComponents/Course/CourseActions';
-
-import cssesc from 'cssesc';
 import { darkModeAtom } from '../Tools/_framework/DarkmodeController';
+import { cesc } from '../_utils/url';
 
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
@@ -144,6 +143,11 @@ export default function PageViewer(props) {
 
   const previousLocationKeys = useRef([]);
 
+  const errorInitializingRenderers = useRef(false);
+  const errorInsideRenderers = useRef(false);
+
+  const [ignoreRendererError, setIgnoreRendererError] = useState(false);
+
   const darkMode = useRecoilValue(darkModeAtom);
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
@@ -162,11 +166,17 @@ export default function PageViewer(props) {
       coreWorker.current.onmessage = function (e) {
         // console.log('message from core', e.data)
         if (e.data.messageType === "updateRenderers") {
-          if (e.data.init && coreInfo.current) {
+          if (e.data.init && coreInfo.current && !errorInitializingRenderers.current && !errorInsideRenderers.current) {
             // we don't initialize renderer state values if already have a coreInfo
+            // and no errors were encountered
             // as we must have already gotten the renderer information before core was created
+
           } else {
             updateRenderers(e.data.args)
+            if (errorInsideRenderers.current) {
+              setIgnoreRendererError(true);
+              props.setIsInErrorState?.(false);
+            }
           }
         } else if (e.data.messageType === "requestAnimationFrame") {
           requestAnimationFrame(e.data.args);
@@ -178,11 +188,15 @@ export default function PageViewer(props) {
           setStage('coreCreated');
           props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
-          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
-            // we already initialized renderers before core was created
-            // so don't initialize them again when core is createad and this is called a second time
+          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo) && !errorInitializingRenderers.current && !errorInsideRenderers.current) {
+            // we already initialized renderers before core was created and no errors were encountered
+            // so don't initialize them again when core sends the initializeRenderers message
           } else {
             initializeRenderers(e.data.args)
+            if (errorInsideRenderers.current) {
+              setIgnoreRendererError(true);
+              props.setIsInErrorState?.(false);
+            }
           }
         } else if (e.data.messageType === "updateCreditAchieved") {
           props.updateCreditAchievedCallback?.(e.data.args);
@@ -284,7 +298,7 @@ export default function PageViewer(props) {
         coreWorker.current.postMessage({
           messageType: "navigatingToComponent",
           args: {
-            componentName: anchor.substring(prefixForIds.length)
+            componentName: anchor.substring(prefixForIds.length).replaceAll('\\/', '/')
           }
         })
       }
@@ -299,7 +313,7 @@ export default function PageViewer(props) {
         anchor.length > prefixForIds.length &&
         anchor.substring(0, prefixForIds.length) === prefixForIds
       ) {
-        document.getElementById(cssesc(anchor))?.scrollIntoView();
+        document.getElementById(anchor)?.scrollIntoView();
       }
       previousLocationKeys.current.push(location.key);
     }
@@ -326,7 +340,7 @@ export default function PageViewer(props) {
 
   async function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
-    if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
+    if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore?.(action.actionName)) {
       let actionId = nanoid();
       args = { ...args };
       args.actionId = actionId;
@@ -448,6 +462,8 @@ export default function PageViewer(props) {
 
       props.renderersInitializedCallback?.()
 
+    }).catch(e => {
+      errorInitializingRenderers.current = true;
     });
 
 
@@ -915,7 +931,7 @@ export default function PageViewer(props) {
 
   async function navigateToTarget({ cid, doenetId, variantIndex, edit, hash, page, uri, targetName, actionId, componentName, effectiveName }) {
 
-    let id = prefixForIds + effectiveName;
+    let id = prefixForIds + cesc(effectiveName);
     let { targetForATag, url, haveValidTarget, externalUri } = getURLFromRef({
       cid, doenetId, variantIndex, edit, hash, page,
       givenUri: uri,
@@ -949,6 +965,15 @@ export default function PageViewer(props) {
 
 
     resolveAction({ actionId });
+  }
+
+  function errorHandler() {
+
+    errorInsideRenderers.current = true;
+
+    if (ignoreRendererError) {
+      setIgnoreRendererError(false);
+    }
   }
 
   if (errMsg !== null) {
@@ -1074,10 +1099,11 @@ export default function PageViewer(props) {
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
+
   //Spacing around the whole doenetML document
-  return <ErrorBoundary setIsInErrorState={props.setIsInErrorState}>
+  return <ErrorBoundary setIsInErrorState={props.setIsInErrorState} errorHandler={errorHandler} ignoreError={ignoreRendererError} coreCreated={coreCreated.current}>
     {noCoreWarning}
-    <div style={pageStyle}>
+    <div style={pageStyle} className='doenet-viewer'>
       {documentRenderer}
     </div>
   </ErrorBoundary>;
@@ -1115,10 +1141,17 @@ class ErrorBoundary extends React.Component {
   }
   componentDidCatch(error, errorInfo) {
     this.props.setIsInErrorState?.(true)
+    this.props.errorHandler()
   }
   render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
+    if (this.state.hasError && !this.props.ignoreError) {
+
+      if (!this.props.coreCreated) {
+        return null;
+      } else {
+        return <h1>Something went wrong.</h1>;
+      }
+
     }
     return this.props.children;
   }
@@ -1175,10 +1208,10 @@ export function getURLFromRef({
       if (page) {
         url += `#page${page}`;
         if (targetName) {
-          url += targetName;
+          url += cesc(targetName);
         }
       } else if (targetName) {
-        url += '#' + targetName;
+        url += '#' + cesc(targetName);
       }
     }
   } else if (givenUri) {
@@ -1193,11 +1226,11 @@ export function getURLFromRef({
     if (page) {
       url += `#page${page}`;
     } else {
-      let firstSlash = id.indexOf("/");
+      let firstSlash = id.indexOf("\\/");
       let prefix = id.substring(0, firstSlash);
       url += "#" + prefix;
     }
-    url += targetName;
+    url += cesc(targetName);
     targetForATag = null;
     haveValidTarget = true;
   }

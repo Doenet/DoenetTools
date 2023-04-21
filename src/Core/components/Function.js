@@ -3,6 +3,7 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { mergeListsWithOtherContainers, normalizeMathExpression, returnNVariables, roundForDisplay, vectorOperators } from '../utils/math';
 import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnNumericalFunctionFromReevaluatedFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula, returnSymbolicFunctionFromReevaluatedFormula } from '../utils/function';
+import { returnTextStyleDescriptionDefinitions } from '../utils/style';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -224,6 +225,9 @@ export default class Function extends InlineComponent {
   static returnStateVariableDefinitions({ numerics }) {
 
     let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions();
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -2320,7 +2324,7 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "latex",
       },
       returnDependencies: () => ({
         formula: {

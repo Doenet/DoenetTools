@@ -128,7 +128,8 @@ export default class Choice extends InlineComponent {
       },
       returnDependencies: () => ({
         countAmongSiblings: {
-          dependencyType: "countAmongSiblingsOfSameType"
+          dependencyType: "countAmongSiblings",
+          sameType: true,
         },
         childIndicesSelected: {
           dependencyType: "parentStateVariable",

@@ -1,3 +1,4 @@
+import { cesc2 } from "../../../src/_utils/url";
 
 describe('Gradebook tests', function () {
   const userId = "cyuserId";
@@ -63,9 +64,8 @@ describe('Gradebook tests', function () {
     cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
 
     cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should('be.visible')
 
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
-    cy.get('[data-test="toast cancel button"]').click();
 
     // update grade category to exams
     cy.get('[data-test="Grade Category"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
@@ -83,27 +83,27 @@ describe('Gradebook tests', function () {
     let pageOrder = [];
     let ns = [];
 
-    cy.get("#page1\\/_title1").invoke("text").then((text) => {
+    cy.get(cesc2("#page1/_title1")).invoke("text").then((text) => {
       pageOrder.push(parseInt(text.slice(7)))
     })
 
-    cy.get('#page1\\/n').invoke("text").then((text) => {
+    cy.get(cesc2('#page1/n')).invoke("text").then((text) => {
       ns.push(parseInt(text));
     })
 
-    cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get(cesc2('#page1/ans2') + ' .mjx-mrow').should('contain.text', '\uff3f')
 
-    cy.get('#page1\\/ans textarea').type("wrong{enter}", { force: true })
+    cy.get(cesc2('#page1/ans') + ' textarea').type("wrong{enter}", { force: true })
 
-    cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', "wrong");
+    cy.get(cesc2('#page1/ans2') + ' .mjx-mrow').should('contain.text', "wrong");
 
 
     cy.get('[data-test=next').click();
 
-    cy.get("#page2\\/_title1").invoke("text").then((text) => {
+    cy.get(cesc2("#page2/_title1")).invoke("text").then((text) => {
       pageOrder.push(parseInt(text.slice(7)))
     })
-    cy.get('#page2\\/n').invoke("text").then((text) => {
+    cy.get(cesc2('#page2/n')).invoke("text").then((text) => {
       ns.push(parseInt(text));
     })
 
@@ -111,19 +111,19 @@ describe('Gradebook tests', function () {
 
     cy.get('[data-test=next').click();
 
-    cy.get("#page3\\/_title1").invoke("text").then((text) => {
+    cy.get(cesc2("#page3/_title1")).invoke("text").then((text) => {
       pageOrder.push(parseInt(text.slice(7)))
       console.log('pageOrder', [...pageOrder])
     })
-    cy.get('#page3\\/n').invoke("text").then((text) => {
+    cy.get(cesc2('#page3/n')).invoke("text").then((text) => {
       ns.push(parseInt(text));
       console.log('ns', [...ns])
 
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', '\uff3f')
+      cy.get(cesc2('#page3/ans2') + ' .mjx-mrow').should('contain.text', '\uff3f')
 
-      cy.get('#page3\\/ans textarea').type(`${text}{enter}`, { force: true })
+      cy.get(cesc2('#page3/ans') + ' textarea').type(`${text}{enter}`, { force: true })
 
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', text);
+      cy.get(cesc2('#page3/ans2') + ' .mjx-mrow').should('contain.text', text);
 
 
     })
@@ -134,24 +134,25 @@ describe('Gradebook tests', function () {
     cy.get('[data-test="Assignment Percent"]').should('have.text', '33.3%')
 
 
+    cy.wait(1000)
     cy.get('[data-test="Crumb 2"]').click();
     cy.get('.navigationRow').should('have.length', 1);
 
     cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`).then(() => {
       // put inside a "then" just so that pageOrder and ns have their new values
 
-      cy.get('#page3\\/_title1').should('have.text', `Option ${pageOrder[2]}`)
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', `${ns[2]}`)
+      cy.get(cesc2('#page3/_title1')).should('have.text', `Option ${pageOrder[2]}`)
+      cy.get(cesc2('#page3/ans2') + ' .mjx-mrow').should('contain.text', `${ns[2]}`)
 
       cy.get('[data-test=previous').click();
 
-      cy.get('#page2\\/_title1').should('have.text', `Option ${pageOrder[1]}`)
-      cy.get('#page2\\/ans2 .mjx-mrow').should('contain.text', "\uff3f")
+      cy.get(cesc2('#page2/_title1')).should('have.text', `Option ${pageOrder[1]}`)
+      cy.get(cesc2('#page2/ans2') + ' .mjx-mrow').should('contain.text', "\uff3f")
 
       cy.get('[data-test=previous').click();
 
-      cy.get('#page1\\/_title1').should('have.text', `Option ${pageOrder[0]}`)
-      cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', "wrong")
+      cy.get(cesc2('#page1/_title1')).should('have.text', `Option ${pageOrder[0]}`)
+      cy.get(cesc2('#page1/ans2') + ' .mjx-mrow').should('contain.text', "wrong")
 
 
       cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
@@ -168,18 +169,18 @@ describe('Gradebook tests', function () {
     cy.visit(`/course?tool=gradebookStudentAssignment&courseId=${courseId}&userId=${studentUserId}&doenetId=${doenetId}`).then(() => {
       // put inside a "then" just so that pageOrder and ns have their new values
 
-      cy.get('#page3\\/_title1').should('have.text', `Option ${pageOrder[2]}`)
-      cy.get('#page3\\/ans2 .mjx-mrow').should('contain.text', `${ns[2]}`)
+      cy.get(cesc2('#page3/_title1')).should('have.text', `Option ${pageOrder[2]}`)
+      cy.get(cesc2('#page3/ans2') + ' .mjx-mrow').should('contain.text', `${ns[2]}`)
 
       cy.get('[data-test=previous').click();
 
-      cy.get('#page2\\/_title1').should('have.text', `Option ${pageOrder[1]}`)
-      cy.get('#page2\\/ans2 .mjx-mrow').should('contain.text', "\uff3f")
+      cy.get(cesc2('#page2/_title1')).should('have.text', `Option ${pageOrder[1]}`)
+      cy.get(cesc2('#page2/ans2') + ' .mjx-mrow').should('contain.text', "\uff3f")
 
       cy.get('[data-test=previous').click();
 
-      cy.get('#page1\\/_title1').should('have.text', `Option ${pageOrder[0]}`)
-      cy.get('#page1\\/ans2 .mjx-mrow').should('contain.text', "wrong")
+      cy.get(cesc2('#page1/_title1')).should('have.text', `Option ${pageOrder[0]}`)
+      cy.get(cesc2('#page1/ans2') + ' .mjx-mrow').should('contain.text', "wrong")
 
 
       cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')

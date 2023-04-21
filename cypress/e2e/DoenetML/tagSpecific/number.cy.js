@@ -1,13 +1,5 @@
 import me from 'math-expressions';
-import cssesc from 'cssesc';
-
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
+import { cesc, cesc2 } from '../../../../src/_utils/url';
 
 describe('Number Tag Tests', function () {
 
@@ -26,16 +18,16 @@ describe('Number Tag Tests', function () {
     ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let number0Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let number0Anchor = cesc('#' + number0Name);
+      let number0Anchor = cesc2('#' + number0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(number0Anchor).should('have.text', '2')
-      cy.get('#\\/_number1').should('have.text', '2')
+      cy.get(cesc('#\\/_number1')).should('have.text', '2')
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
@@ -56,16 +48,16 @@ describe('Number Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let number0Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let number0Anchor = cesc('#' + number0Name);
+      let number0Anchor = cesc2('#' + number0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(number0Anchor).should('have.text', 'NaN')
-      cy.get('#\\/_number1').should('have.text', 'NaN')
+      cy.get(cesc('#\\/_number1')).should('have.text', 'NaN')
 
 
       cy.log('Test internal values are set to the correct values')
@@ -87,15 +79,15 @@ describe('Number Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n').should('have.text', '5');
+    cy.get(cesc('#\\/n')).should('have.text', '5');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}x{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', 'NaN');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{end}x{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', 'NaN');
 
-    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}9{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '9');
+    cy.get(cesc('#\\/_mathinput1') + ' textarea').type('{ctrl+home}{shift+end}{backspace}9{enter}', { force: true })
+    cy.get(cesc('#\\/n')).should('have.text', '9');
 
   })
 
@@ -108,10 +100,10 @@ describe('Number Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+3')
     })
 
@@ -132,10 +124,10 @@ describe('Number Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_number1').should('have.text', '8')
+    cy.get(cesc('#\\/_number1')).should('have.text', '8')
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -156,14 +148,14 @@ describe('Number Tag Tests', function () {
       ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
     let num = Math.log(0.5 / 0.3);
     let numString = me.math.round(num, 10).toString();
 
     cy.log('Test value displayed in browser');
-    cy.get('#\\/_number1').should('have.text', numString)
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc('#\\/_number1')).should('have.text', numString)
+    cy.get(cesc('#\\/_math1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(numString)
     })
 
@@ -234,62 +226,62 @@ describe('Number Tag Tests', function () {
     ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n1').should('have.text', '234234823.3')
-    cy.get('#\\/n1a').should('have.text', '234000000')
-    cy.get('#\\/n1b').should('have.text', '234234823.342')
-    cy.get('#\\/n1c').should('have.text', '234000000')
-    cy.get('#\\/n1am .mjx-mrow').eq(0).should('have.text', '234000000')
-    cy.get('#\\/n1bm .mjx-mrow').eq(0).should('have.text', '234234823.342')
-    cy.get('#\\/n1cm .mjx-mrow').eq(0).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1')).should('have.text', '234234823.3')
+    cy.get(cesc('#\\/n1a')).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1b')).should('have.text', '234234823.342')
+    cy.get(cesc('#\\/n1c')).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1am') + ' .mjx-mrow').eq(0).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1bm') + ' .mjx-mrow').eq(0).should('have.text', '234234823.342')
+    cy.get(cesc('#\\/n1cm') + ' .mjx-mrow').eq(0).should('have.text', '234000000')
 
-    cy.get('#\\/n2').should('have.text', '5.428502341')
-    cy.get('#\\/n2a').should('have.text', '5.43')
-    cy.get('#\\/n2b').should('have.text', '5.429')
-    cy.get('#\\/n2c').should('have.text', '5.43')
-    cy.get('#\\/n2am .mjx-mrow').eq(0).should('have.text', '5.43')
-    cy.get('#\\/n2bm .mjx-mrow').eq(0).should('have.text', '5.429')
-    cy.get('#\\/n2cm .mjx-mrow').eq(0).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2')).should('have.text', '5.428502341')
+    cy.get(cesc('#\\/n2a')).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2b')).should('have.text', '5.429')
+    cy.get(cesc('#\\/n2c')).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2am') + ' .mjx-mrow').eq(0).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2bm') + ' .mjx-mrow').eq(0).should('have.text', '5.429')
+    cy.get(cesc('#\\/n2cm') + ' .mjx-mrow').eq(0).should('have.text', '5.43')
 
-    cy.get('#\\/n3').should('have.text', '5.02348134 * 10^(-15)')
-    cy.get('#\\/n3a').should('have.text', '5.02 * 10^(-15)')
-    cy.get('#\\/n3b').should('have.text', '0')
-    cy.get('#\\/n3c').should('have.text', '0')
-    cy.get('#\\/n3am .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
-    cy.get('#\\/n3bm .mjx-mrow').eq(0).should('have.text', '0')
-    cy.get('#\\/n3cm .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n3')).should('have.text', '5.02348134 * 10^(-15)')
+    cy.get(cesc('#\\/n3a')).should('have.text', '5.02 * 10^(-15)')
+    cy.get(cesc('#\\/n3b')).should('have.text', '0')
+    cy.get(cesc('#\\/n3c')).should('have.text', '0')
+    cy.get(cesc('#\\/n3am') + ' .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
+    cy.get(cesc('#\\/n3bm') + ' .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n3cm') + ' .mjx-mrow').eq(0).should('have.text', '0')
 
 
-    cy.get('#\\/n1aa').should('have.text', '234000000')
-    cy.get('#\\/n1ab').should('have.text', '234234823.342')
-    cy.get('#\\/n1aam .mjx-mrow').eq(0).should('have.text', '234000000')
-    cy.get('#\\/n1abm .mjx-mrow').eq(0).should('have.text', '234234823.342')
+    cy.get(cesc('#\\/n1aa')).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1ab')).should('have.text', '234234823.342')
+    cy.get(cesc('#\\/n1aam') + ' .mjx-mrow').eq(0).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1abm') + ' .mjx-mrow').eq(0).should('have.text', '234234823.342')
 
-    cy.get('#\\/n2aa').should('have.text', '5.43')
-    cy.get('#\\/n2ab').should('have.text', '5.429')
-    cy.get('#\\/n2aam .mjx-mrow').eq(0).should('have.text', '5.43')
-    cy.get('#\\/n2abm .mjx-mrow').eq(0).should('have.text', '5.429')
+    cy.get(cesc('#\\/n2aa')).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2ab')).should('have.text', '5.429')
+    cy.get(cesc('#\\/n2aam') + ' .mjx-mrow').eq(0).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2abm') + ' .mjx-mrow').eq(0).should('have.text', '5.429')
 
-    cy.get('#\\/n3aa').should('have.text', '5.02 * 10^(-15)')
-    cy.get('#\\/n3ab').should('have.text', '0')
-    cy.get('#\\/n3aam .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
-    cy.get('#\\/n3abm .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n3aa')).should('have.text', '5.02 * 10^(-15)')
+    cy.get(cesc('#\\/n3ab')).should('have.text', '0')
+    cy.get(cesc('#\\/n3aam') + ' .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
+    cy.get(cesc('#\\/n3abm') + ' .mjx-mrow').eq(0).should('have.text', '0')
 
-    cy.get('#\\/n1ba').should('have.text', '234000000')
-    cy.get('#\\/n1bb').should('have.text', '234234823.342')
-    cy.get('#\\/n1bam .mjx-mrow').eq(0).should('have.text', '234000000')
-    cy.get('#\\/n1bbm .mjx-mrow').eq(0).should('have.text', '234234823.342')
+    cy.get(cesc('#\\/n1ba')).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1bb')).should('have.text', '234234823.342')
+    cy.get(cesc('#\\/n1bam') + ' .mjx-mrow').eq(0).should('have.text', '234000000')
+    cy.get(cesc('#\\/n1bbm') + ' .mjx-mrow').eq(0).should('have.text', '234234823.342')
 
-    cy.get('#\\/n2ba').should('have.text', '5.43')
-    cy.get('#\\/n2bb').should('have.text', '5.429')
-    cy.get('#\\/n2bam .mjx-mrow').eq(0).should('have.text', '5.43')
-    cy.get('#\\/n2bbm .mjx-mrow').eq(0).should('have.text', '5.429')
+    cy.get(cesc('#\\/n2ba')).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2bb')).should('have.text', '5.429')
+    cy.get(cesc('#\\/n2bam') + ' .mjx-mrow').eq(0).should('have.text', '5.43')
+    cy.get(cesc('#\\/n2bbm') + ' .mjx-mrow').eq(0).should('have.text', '5.429')
 
-    cy.get('#\\/n3ba').should('have.text', '5.02 * 10^(-15)')
-    cy.get('#\\/n3bb').should('have.text', '0')
-    cy.get('#\\/n3bam .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
-    cy.get('#\\/n3bbm .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n3ba')).should('have.text', '5.02 * 10^(-15)')
+    cy.get(cesc('#\\/n3bb')).should('have.text', '0')
+    cy.get(cesc('#\\/n3bam') + ' .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
+    cy.get(cesc('#\\/n3bbm') + ' .mjx-mrow').eq(0).should('have.text', '0')
 
 
     cy.window().then(async (win) => {
@@ -447,100 +439,100 @@ describe('Number Tag Tests', function () {
     ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n1').should('have.text', '22')
-    cy.get('#\\/n1a').should('have.text', '22')
-    cy.get('#\\/n1apad').should('have.text', '22.0')
-    cy.get('#\\/n1b').should('have.text', '22')
-    cy.get('#\\/n1bpad').should('have.text', '22.000')
-    cy.get('#\\/n1c').should('have.text', '22')
-    cy.get('#\\/n1cpad').should('have.text', '22.0')
-    cy.get('#\\/n2').should('have.text', '5 * 10^(-15)')
-    cy.get('#\\/n2a').should('have.text', '5 * 10^(-15)')
-    cy.get('#\\/n2apad').should('have.text', '5.00 * 10^(-15)')
-    cy.get('#\\/n2b').should('have.text', '0')
-    cy.get('#\\/n2bpad').should('have.text', '0.000')
-    cy.get('#\\/n2c').should('have.text', '0')
-    cy.get('#\\/n2cpad').should('have.text', '0.00')
+    cy.get(cesc('#\\/n1')).should('have.text', '22')
+    cy.get(cesc('#\\/n1a')).should('have.text', '22')
+    cy.get(cesc('#\\/n1apad')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n1b')).should('have.text', '22')
+    cy.get(cesc('#\\/n1bpad')).should('have.text', '22.000')
+    cy.get(cesc('#\\/n1c')).should('have.text', '22')
+    cy.get(cesc('#\\/n1cpad')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n2')).should('have.text', '5 * 10^(-15)')
+    cy.get(cesc('#\\/n2a')).should('have.text', '5 * 10^(-15)')
+    cy.get(cesc('#\\/n2apad')).should('have.text', '5.00 * 10^(-15)')
+    cy.get(cesc('#\\/n2b')).should('have.text', '0')
+    cy.get(cesc('#\\/n2bpad')).should('have.text', '0.000')
+    cy.get(cesc('#\\/n2c')).should('have.text', '0')
+    cy.get(cesc('#\\/n2cpad')).should('have.text', '0.00')
 
-    cy.get('#\\/n1am .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1apadm .mjx-mrow').eq(0).should('have.text', '22.0')
-    cy.get('#\\/n1bm .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1bpadm .mjx-mrow').eq(0).should('have.text', '22.000')
-    cy.get('#\\/n1cm .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1cpadm .mjx-mrow').eq(0).should('have.text', '22.0')
-    cy.get('#\\/n2am .mjx-mrow').eq(0).should('have.text', '5⋅10−15')
-    cy.get('#\\/n2apadm .mjx-mrow').eq(0).should('have.text', '5.00⋅10−15')
-    cy.get('#\\/n2bm .mjx-mrow').eq(0).should('have.text', '0')
-    cy.get('#\\/n2bpadm .mjx-mrow').eq(0).should('have.text', '0.000')
-    cy.get('#\\/n2cm .mjx-mrow').eq(0).should('have.text', '0')
-    cy.get('#\\/n2cpadm .mjx-mrow').eq(0).should('have.text', '0.00')
+    cy.get(cesc('#\\/n1am') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1apadm') + ' .mjx-mrow').eq(0).should('have.text', '22.0')
+    cy.get(cesc('#\\/n1bm') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1bpadm') + ' .mjx-mrow').eq(0).should('have.text', '22.000')
+    cy.get(cesc('#\\/n1cm') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1cpadm') + ' .mjx-mrow').eq(0).should('have.text', '22.0')
+    cy.get(cesc('#\\/n2am') + ' .mjx-mrow').eq(0).should('have.text', '5⋅10−15')
+    cy.get(cesc('#\\/n2apadm') + ' .mjx-mrow').eq(0).should('have.text', '5.00⋅10−15')
+    cy.get(cesc('#\\/n2bm') + ' .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n2bpadm') + ' .mjx-mrow').eq(0).should('have.text', '0.000')
+    cy.get(cesc('#\\/n2cm') + ' .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n2cpadm') + ' .mjx-mrow').eq(0).should('have.text', '0.00')
 
-    cy.get('#\\/n1aNumber').should('have.text', '22')
-    cy.get('#\\/n1apadNumber').should('have.text', '22.0')
-    cy.get('#\\/n1bNumber').should('have.text', '22')
-    cy.get('#\\/n1bpadNumber').should('have.text', '22.000')
-    cy.get('#\\/n1cNumber').should('have.text', '22')
-    cy.get('#\\/n1cpadNumber').should('have.text', '22.0')
-    cy.get('#\\/n2aNumber').should('have.text', '5 * 10^(-15)')
-    cy.get('#\\/n2apadNumber').should('have.text', '5.00 * 10^(-15)')
-    cy.get('#\\/n2bNumber').should('have.text', '0')
-    cy.get('#\\/n2bpadNumber').should('have.text', '0.000')
-    cy.get('#\\/n2cNumber').should('have.text', '0')
-    cy.get('#\\/n2cpadNumber').should('have.text', '0.00')
+    cy.get(cesc('#\\/n1aNumber')).should('have.text', '22')
+    cy.get(cesc('#\\/n1apadNumber')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n1bNumber')).should('have.text', '22')
+    cy.get(cesc('#\\/n1bpadNumber')).should('have.text', '22.000')
+    cy.get(cesc('#\\/n1cNumber')).should('have.text', '22')
+    cy.get(cesc('#\\/n1cpadNumber')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n2aNumber')).should('have.text', '5 * 10^(-15)')
+    cy.get(cesc('#\\/n2apadNumber')).should('have.text', '5.00 * 10^(-15)')
+    cy.get(cesc('#\\/n2bNumber')).should('have.text', '0')
+    cy.get(cesc('#\\/n2bpadNumber')).should('have.text', '0.000')
+    cy.get(cesc('#\\/n2cNumber')).should('have.text', '0')
+    cy.get(cesc('#\\/n2cpadNumber')).should('have.text', '0.00')
 
-    cy.get('#\\/n1aMath .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1apadMath .mjx-mrow').eq(0).should('have.text', '22.0')
-    cy.get('#\\/n1bMath .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1bpadMath .mjx-mrow').eq(0).should('have.text', '22.000')
-    cy.get('#\\/n1cMath .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1cpadMath .mjx-mrow').eq(0).should('have.text', '22.0')
-    cy.get('#\\/n2aMath .mjx-mrow').eq(0).should('have.text', '5⋅10−15')
-    cy.get('#\\/n2apadMath .mjx-mrow').eq(0).should('have.text', '5.00⋅10−15')
-    cy.get('#\\/n2bMath .mjx-mrow').eq(0).should('have.text', '0')
-    cy.get('#\\/n2bpadMath .mjx-mrow').eq(0).should('have.text', '0.000')
-    cy.get('#\\/n2cMath .mjx-mrow').eq(0).should('have.text', '0')
-    cy.get('#\\/n2cpadMath .mjx-mrow').eq(0).should('have.text', '0.00')
+    cy.get(cesc('#\\/n1aMath') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1apadMath') + ' .mjx-mrow').eq(0).should('have.text', '22.0')
+    cy.get(cesc('#\\/n1bMath') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1bpadMath') + ' .mjx-mrow').eq(0).should('have.text', '22.000')
+    cy.get(cesc('#\\/n1cMath') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1cpadMath') + ' .mjx-mrow').eq(0).should('have.text', '22.0')
+    cy.get(cesc('#\\/n2aMath') + ' .mjx-mrow').eq(0).should('have.text', '5⋅10−15')
+    cy.get(cesc('#\\/n2apadMath') + ' .mjx-mrow').eq(0).should('have.text', '5.00⋅10−15')
+    cy.get(cesc('#\\/n2bMath') + ' .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n2bpadMath') + ' .mjx-mrow').eq(0).should('have.text', '0.000')
+    cy.get(cesc('#\\/n2cMath') + ' .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n2cpadMath') + ' .mjx-mrow').eq(0).should('have.text', '0.00')
 
-    cy.get('#\\/n1aValue').should('have.text', '22')
-    cy.get('#\\/n1apadValue').should('have.text', '22.0')
-    cy.get('#\\/n1bValue').should('have.text', '22')
-    cy.get('#\\/n1bpadValue').should('have.text', '22.000')
-    cy.get('#\\/n1cValue').should('have.text', '22')
-    cy.get('#\\/n1cpadValue').should('have.text', '22.0')
-    cy.get('#\\/n2aValue').should('have.text', '5 * 10^(-15)')
-    cy.get('#\\/n2apadValue').should('have.text', '5.00 * 10^(-15)')
-    cy.get('#\\/n2bValue').should('have.text', '0')
-    cy.get('#\\/n2bpadValue').should('have.text', '0.000')
-    cy.get('#\\/n2cValue').should('have.text', '0')
-    cy.get('#\\/n2cpadValue').should('have.text', '0.00')
+    cy.get(cesc('#\\/n1aValue')).should('have.text', '22')
+    cy.get(cesc('#\\/n1apadValue')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n1bValue')).should('have.text', '22')
+    cy.get(cesc('#\\/n1bpadValue')).should('have.text', '22.000')
+    cy.get(cesc('#\\/n1cValue')).should('have.text', '22')
+    cy.get(cesc('#\\/n1cpadValue')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n2aValue')).should('have.text', '5 * 10^(-15)')
+    cy.get(cesc('#\\/n2apadValue')).should('have.text', '5.00 * 10^(-15)')
+    cy.get(cesc('#\\/n2bValue')).should('have.text', '0')
+    cy.get(cesc('#\\/n2bpadValue')).should('have.text', '0.000')
+    cy.get(cesc('#\\/n2cValue')).should('have.text', '0')
+    cy.get(cesc('#\\/n2cpadValue')).should('have.text', '0.00')
 
-    cy.get('#\\/n1aText').should('have.text', '22')
-    cy.get('#\\/n1apadText').should('have.text', '22.0')
-    cy.get('#\\/n1bText').should('have.text', '22')
-    cy.get('#\\/n1bpadText').should('have.text', '22.000')
-    cy.get('#\\/n1cText').should('have.text', '22')
-    cy.get('#\\/n1cpadText').should('have.text', '22.0')
-    cy.get('#\\/n2aText').should('have.text', '5 * 10^(-15)')
-    cy.get('#\\/n2apadText').should('have.text', '5.00 * 10^(-15)')
-    cy.get('#\\/n2bText').should('have.text', '0')
-    cy.get('#\\/n2bpadText').should('have.text', '0.000')
-    cy.get('#\\/n2cText').should('have.text', '0')
-    cy.get('#\\/n2cpadText').should('have.text', '0.00')
+    cy.get(cesc('#\\/n1aText')).should('have.text', '22')
+    cy.get(cesc('#\\/n1apadText')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n1bText')).should('have.text', '22')
+    cy.get(cesc('#\\/n1bpadText')).should('have.text', '22.000')
+    cy.get(cesc('#\\/n1cText')).should('have.text', '22')
+    cy.get(cesc('#\\/n1cpadText')).should('have.text', '22.0')
+    cy.get(cesc('#\\/n2aText')).should('have.text', '5 * 10^(-15)')
+    cy.get(cesc('#\\/n2apadText')).should('have.text', '5.00 * 10^(-15)')
+    cy.get(cesc('#\\/n2bText')).should('have.text', '0')
+    cy.get(cesc('#\\/n2bpadText')).should('have.text', '0.000')
+    cy.get(cesc('#\\/n2cText')).should('have.text', '0')
+    cy.get(cesc('#\\/n2cpadText')).should('have.text', '0.00')
 
-    cy.get('#\\/n1aMath2 .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1apadMath2 .mjx-mrow').eq(0).should('have.text', '22.0')
-    cy.get('#\\/n1bMath2 .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1bpadMath2 .mjx-mrow').eq(0).should('have.text', '22.000')
-    cy.get('#\\/n1cMath2 .mjx-mrow').eq(0).should('have.text', '22')
-    cy.get('#\\/n1cpadMath2 .mjx-mrow').eq(0).should('have.text', '22.0')
-    cy.get('#\\/n2aMath2 .mjx-mrow').eq(0).should('have.text', '5⋅10−15')
-    cy.get('#\\/n2apadMath2 .mjx-mrow').eq(0).should('have.text', '5.00⋅10−15')
-    cy.get('#\\/n2bMath2 .mjx-mrow').eq(0).should('have.text', '0')
-    cy.get('#\\/n2bpadMath2 .mjx-mrow').eq(0).should('have.text', '0.000')
-    cy.get('#\\/n2cMath2 .mjx-mrow').eq(0).should('have.text', '0')
-    cy.get('#\\/n2cpadMath2 .mjx-mrow').eq(0).should('have.text', '0.00')
+    cy.get(cesc('#\\/n1aMath2') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1apadMath2') + ' .mjx-mrow').eq(0).should('have.text', '22.0')
+    cy.get(cesc('#\\/n1bMath2') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1bpadMath2') + ' .mjx-mrow').eq(0).should('have.text', '22.000')
+    cy.get(cesc('#\\/n1cMath2') + ' .mjx-mrow').eq(0).should('have.text', '22')
+    cy.get(cesc('#\\/n1cpadMath2') + ' .mjx-mrow').eq(0).should('have.text', '22.0')
+    cy.get(cesc('#\\/n2aMath2') + ' .mjx-mrow').eq(0).should('have.text', '5⋅10−15')
+    cy.get(cesc('#\\/n2apadMath2') + ' .mjx-mrow').eq(0).should('have.text', '5.00⋅10−15')
+    cy.get(cesc('#\\/n2bMath2') + ' .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n2bpadMath2') + ' .mjx-mrow').eq(0).should('have.text', '0.000')
+    cy.get(cesc('#\\/n2cMath2') + ' .mjx-mrow').eq(0).should('have.text', '0')
+    cy.get(cesc('#\\/n2cpadMath2') + ' .mjx-mrow').eq(0).should('have.text', '0.00')
 
   })
 
@@ -557,36 +549,36 @@ describe('Number Tag Tests', function () {
     ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n').should('have.text', '35203423.02')
-    cy.get('#\\/na').should('have.text', '35200000')
-    cy.get('#\\/nb').should('have.text', '35203423.024')
+    cy.get(cesc('#\\/n')).should('have.text', '35203423.02')
+    cy.get(cesc('#\\/na')).should('have.text', '35200000')
+    cy.get(cesc('#\\/nb')).should('have.text', '35203423.024')
 
     cy.log('higher precision')
-    cy.get('#\\/ndigits textarea').type("{end}{backspace}12{enter}", { force: true });
-    cy.get('#\\/ndecimals textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/na').should('have.text', '35203423.0235')
-    cy.get('#\\/nb').should('have.text', '35203423.02352')
+    cy.get(cesc('#\\/ndigits') + ' textarea').type("{end}{backspace}12{enter}", { force: true });
+    cy.get(cesc('#\\/ndecimals') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/na')).should('have.text', '35203423.0235')
+    cy.get(cesc('#\\/nb')).should('have.text', '35203423.02352')
 
     cy.log('invalid precision means default rounding')
-    cy.get('#\\/ndigits textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
-    cy.get('#\\/ndecimals textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
-    cy.get('#\\/na').should('have.text', '35203423.02')
-    cy.get('#\\/nb').should('have.text', '35203423.02')
+    cy.get(cesc('#\\/ndigits') + ' textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
+    cy.get(cesc('#\\/ndecimals') + ' textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
+    cy.get(cesc('#\\/na')).should('have.text', '35203423.02')
+    cy.get(cesc('#\\/nb')).should('have.text', '35203423.02')
 
     cy.log('low precision')
-    cy.get('#\\/ndigits textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/ndecimals textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/na').should('have.text', '40000000')
-    cy.get('#\\/nb').should('have.text', '35203423')
+    cy.get(cesc('#\\/ndigits') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/ndecimals') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc('#\\/na')).should('have.text', '40000000')
+    cy.get(cesc('#\\/nb')).should('have.text', '35203423')
 
 
     cy.log('negative precision, default rounding for displayDigits')
-    cy.get('#\\/ndigits textarea').type("{end}{backspace}-3{enter}", { force: true });
-    cy.get('#\\/ndecimals textarea').type("{end}{backspace}-3{enter}", { force: true });
-    cy.get('#\\/na').should('have.text', '35203423.02')
-    cy.get('#\\/nb').should('have.text', '35203000')
+    cy.get(cesc('#\\/ndigits') + ' textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get(cesc('#\\/ndecimals') + ' textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get(cesc('#\\/na')).should('have.text', '35203423.02')
+    cy.get(cesc('#\\/nb')).should('have.text', '35203000')
 
   })
 
@@ -624,32 +616,32 @@ describe('Number Tag Tests', function () {
     ` }, "*");
     })
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/inf1').should('have.text', '∞')
-    cy.get('#\\/inf2').should('have.text', '∞')
-    cy.get('#\\/inf3').should('have.text', '∞')
-    cy.get('#\\/inf4').should('have.text', '∞')
-    cy.get('#\\/inf5').should('have.text', '∞')
-    cy.get('#\\/inf6').should('have.text', '∞')
-    cy.get('#\\/inf7').should('have.text', '∞')
-    cy.get('#\\/inf8').should('have.text', '∞')
+    cy.get(cesc('#\\/inf1')).should('have.text', '∞')
+    cy.get(cesc('#\\/inf2')).should('have.text', '∞')
+    cy.get(cesc('#\\/inf3')).should('have.text', '∞')
+    cy.get(cesc('#\\/inf4')).should('have.text', '∞')
+    cy.get(cesc('#\\/inf5')).should('have.text', '∞')
+    cy.get(cesc('#\\/inf6')).should('have.text', '∞')
+    cy.get(cesc('#\\/inf7')).should('have.text', '∞')
+    cy.get(cesc('#\\/inf8')).should('have.text', '∞')
 
-    cy.get('#\\/ninf1').should('have.text', '-∞')
-    cy.get('#\\/ninf2').should('have.text', '-∞')
-    cy.get('#\\/ninf3').should('have.text', '-∞')
-    cy.get('#\\/ninf4').should('have.text', '-∞')
-    cy.get('#\\/ninf5').should('have.text', '-∞')
-    cy.get('#\\/ninf6').should('have.text', '-∞')
+    cy.get(cesc('#\\/ninf1')).should('have.text', '-∞')
+    cy.get(cesc('#\\/ninf2')).should('have.text', '-∞')
+    cy.get(cesc('#\\/ninf3')).should('have.text', '-∞')
+    cy.get(cesc('#\\/ninf4')).should('have.text', '-∞')
+    cy.get(cesc('#\\/ninf5')).should('have.text', '-∞')
+    cy.get(cesc('#\\/ninf6')).should('have.text', '-∞')
 
-    cy.get('#\\/nan1').should('have.text', 'NaN')
-    cy.get('#\\/nan2').should('have.text', 'NaN')
-    cy.get('#\\/nan3').should('have.text', 'NaN')
-    cy.get('#\\/nan4').should('have.text', 'NaN')
-    cy.get('#\\/nan5').should('have.text', 'NaN')
-    cy.get('#\\/nan6').should('have.text', 'NaN')
-    cy.get('#\\/nan7').should('have.text', 'NaN')
-    cy.get('#\\/nan8').should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan1')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan2')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan3')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan4')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan5')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan6')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan7')).should('have.text', 'NaN')
+    cy.get(cesc('#\\/nan8')).should('have.text', 'NaN')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -711,25 +703,25 @@ describe('Number Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n1').should('have.text', '8.52');
-    cy.get('#\\/n1a').should('have.text', '8.52');
-    cy.get('#\\/n1b').should('have.text', '8.5204');
-    cy.get('#\\/n1c').should('have.text', '8.52');
-    cy.get('#\\/n1d').should('have.text', '8.5204');
+    cy.get(cesc('#\\/n1')).should('have.text', '8.52');
+    cy.get(cesc('#\\/n1a')).should('have.text', '8.52');
+    cy.get(cesc('#\\/n1b')).should('have.text', '8.5204');
+    cy.get(cesc('#\\/n1c')).should('have.text', '8.52');
+    cy.get(cesc('#\\/n1d')).should('have.text', '8.5204');
 
-    cy.get('#\\/n2').should('have.text', '8.5204');
-    cy.get('#\\/n2a').should('have.text', '8.5204');
-    cy.get('#\\/n2b').should('have.text', '8.520385');
-    cy.get('#\\/n2c').should('have.text', '8.5204');
-    cy.get('#\\/n2d').should('have.text', '8.520385');
+    cy.get(cesc('#\\/n2')).should('have.text', '8.5204');
+    cy.get(cesc('#\\/n2a')).should('have.text', '8.5204');
+    cy.get(cesc('#\\/n2b')).should('have.text', '8.520385');
+    cy.get(cesc('#\\/n2c')).should('have.text', '8.5204');
+    cy.get(cesc('#\\/n2d')).should('have.text', '8.520385');
 
-    cy.get('#\\/n3').should('have.text', '0');
-    cy.get('#\\/n3a').should('have.text', '0');
-    cy.get('#\\/n3b').should('have.text', '1.5382487 * 10^(-17)');
-    cy.get('#\\/n3c').should('have.text', '0');
-    cy.get('#\\/n3d').should('have.text', '1.5382487 * 10^(-17)');
+    cy.get(cesc('#\\/n3')).should('have.text', '0');
+    cy.get(cesc('#\\/n3a')).should('have.text', '0');
+    cy.get(cesc('#\\/n3b')).should('have.text', '1.5382487 * 10^(-17)');
+    cy.get(cesc('#\\/n3c')).should('have.text', '0');
+    cy.get(cesc('#\\/n3d')).should('have.text', '1.5382487 * 10^(-17)');
 
 
   });
@@ -781,41 +773,41 @@ describe('Number Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/m1').should('have.text', '8.52');
-    cy.get('#\\/m1a').should('have.text', '8.52');
-    cy.get('#\\/m1b').should('have.text', '24.19161674');
-    cy.get('#\\/m1c').should('have.text', '24.19161674');
-    cy.get('#\\/m1d').should('have.text', '24.19161674');
-    cy.get('#\\/m1e').should('have.text', '24.19161674');
-    cy.get('#\\/m1f').should('have.text', '8.52038');
-    cy.get('#\\/m1g').should('have.text', '8.52038453');
+    cy.get(cesc('#\\/m1')).should('have.text', '8.52');
+    cy.get(cesc('#\\/m1a')).should('have.text', '8.52');
+    cy.get(cesc('#\\/m1b')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m1c')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m1d')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m1e')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m1f')).should('have.text', '8.52038');
+    cy.get(cesc('#\\/m1g')).should('have.text', '8.52038453');
 
-    cy.get('#\\/m2').should('have.text', '8.5204');
-    cy.get('#\\/m2a').should('have.text', '8.5204');
-    cy.get('#\\/m2b').should('have.text', '24.19161674');
-    cy.get('#\\/m2c').should('have.text', '24.19161674');
-    cy.get('#\\/m2d').should('have.text', '24.19161674');
-    cy.get('#\\/m2e').should('have.text', '24.19161674');
-    cy.get('#\\/m2f').should('have.text', '8.520385');
-    cy.get('#\\/m2g').should('have.text', '8.5203845');
+    cy.get(cesc('#\\/m2')).should('have.text', '8.5204');
+    cy.get(cesc('#\\/m2a')).should('have.text', '8.5204');
+    cy.get(cesc('#\\/m2b')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m2c')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m2d')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m2e')).should('have.text', '24.19161674');
+    cy.get(cesc('#\\/m2f')).should('have.text', '8.520385');
+    cy.get(cesc('#\\/m2g')).should('have.text', '8.5203845');
 
-    cy.get('#\\/m3').should('have.text', '0');
-    cy.get('#\\/m3a').should('have.text', '0');
-    cy.get('#\\/m3b').should('have.text', '4.36749338 * 10^(-17)');
-    cy.get('#\\/m3c').should('have.text', '4.36749338 * 10^(-17)');
-    cy.get('#\\/m3d').should('have.text', '4.36749338 * 10^(-17)');
-    cy.get('#\\/m3e').should('have.text', '4.36749338 * 10^(-17)');
-    cy.get('#\\/m3f').should('have.text', '1.5382487 * 10^(-17)');
+    cy.get(cesc('#\\/m3')).should('have.text', '0');
+    cy.get(cesc('#\\/m3a')).should('have.text', '0');
+    cy.get(cesc('#\\/m3b')).should('have.text', '4.36749338 * 10^(-17)');
+    cy.get(cesc('#\\/m3c')).should('have.text', '4.36749338 * 10^(-17)');
+    cy.get(cesc('#\\/m3d')).should('have.text', '4.36749338 * 10^(-17)');
+    cy.get(cesc('#\\/m3e')).should('have.text', '4.36749338 * 10^(-17)');
+    cy.get(cesc('#\\/m3f')).should('have.text', '1.5382487 * 10^(-17)');
 
-    cy.get('#\\/m4').should('have.text', '8.00');
-    cy.get('#\\/m4a').should('have.text', '8.00');
-    cy.get('#\\/m4b').should('have.text', '16');
-    cy.get('#\\/m4c').should('have.text', '16');
-    cy.get('#\\/m4d').should('have.text', '16');
-    cy.get('#\\/m4e').should('have.text', '16');
-    cy.get('#\\/m4f').should('have.text', '8');
+    cy.get(cesc('#\\/m4')).should('have.text', '8.00');
+    cy.get(cesc('#\\/m4a')).should('have.text', '8.00');
+    cy.get(cesc('#\\/m4b')).should('have.text', '16');
+    cy.get(cesc('#\\/m4c')).should('have.text', '16');
+    cy.get(cesc('#\\/m4d')).should('have.text', '16');
+    cy.get(cesc('#\\/m4e')).should('have.text', '16');
+    cy.get(cesc('#\\/m4f')).should('have.text', '8');
 
   });
 
@@ -896,207 +888,207 @@ describe('Number Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/n1').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n1')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/n2').should('have.text', '3');
+    cy.get(cesc('#\\/n2')).should('have.text', '3');
 
-    cy.get(`#\\/mi3 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
     })
-    cy.get('#\\/n3').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n3')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi4 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
-    cy.get('#\\/n4').should('have.text', '5');
+    cy.get(cesc('#\\/n4')).should('have.text', '5');
 
 
-    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi1a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/n1a').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n1a')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi2a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/n2a').should('have.text', '3');
+    cy.get(cesc('#\\/n2a')).should('have.text', '3');
 
-    cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi3a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/n3a').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n3a')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi4a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
-    cy.get('#\\/n4a').should('have.text', '5');
+    cy.get(cesc('#\\/n4a')).should('have.text', '5');
 
 
-    cy.get(`#\\/mi2b .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2b`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/n2b').should('have.text', '3');
+    cy.get(cesc('#\\/n2b')).should('have.text', '3');
 
-    cy.get(`#\\/mi4b .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4b`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
-    cy.get('#\\/n4b').should('have.text', '5');
+    cy.get(cesc('#\\/n4b')).should('have.text', '5');
 
 
 
-    cy.get('#\\/n5').should('have.text', 'NaN');
-    cy.get('#\\/n6').should('have.text', '7');
+    cy.get(cesc('#\\/n5')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/n6')).should('have.text', '7');
 
-    cy.get('#\\/n7').should('have.text', 'NaN');
-    cy.get('#\\/n8').should('have.text', '9');
+    cy.get(cesc('#\\/n7')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/n8')).should('have.text', '9');
 
-    cy.get('#\\/n9').should('have.text', 'NaN');
-    cy.get('#\\/n10').should('have.text', '-9');
+    cy.get(cesc('#\\/n9')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/n10')).should('have.text', '-9');
 
 
-    cy.get('#\\/mi1 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
-    cy.get('#\\/mi2 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
-    cy.get('#\\/mi3 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
-    cy.get('#\\/mi4 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi1') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi2') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi4') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
 
-    cy.get('#\\/mi1a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
-    cy.get('#\\/mi2a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
-    cy.get('#\\/mi3a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
-    cy.get('#\\/mi4a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi1a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi2a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi3a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi4a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
 
-    cy.get('#\\/mi2b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
-    cy.get('#\\/mi4b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi2b') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get(cesc('#\\/mi4b') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
 
-    cy.get(`#\\/mi4b .mq-editable-field`).should('contain.text', '0.75')
+    cy.get(cesc(`#\\/mi4b`) + ` .mq-editable-field`).should('contain.text', '0.75')
 
-    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
     })
-    cy.get('#\\/n1').should('have.text', '0.75');
+    cy.get(cesc('#\\/n1')).should('have.text', '0.75');
 
-    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
     })
-    cy.get('#\\/n2').should('have.text', '0.75');
+    cy.get(cesc('#\\/n2')).should('have.text', '0.75');
 
-    cy.get(`#\\/mi3 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
     })
-    cy.get('#\\/n3').should('have.text', '0.75');
+    cy.get(cesc('#\\/n3')).should('have.text', '0.75');
 
-    cy.get(`#\\/mi4 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
     })
-    cy.get('#\\/n4').should('have.text', '0.75');
+    cy.get(cesc('#\\/n4')).should('have.text', '0.75');
 
 
-    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi1a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
     })
-    cy.get('#\\/n1a').should('have.text', '0.75');
+    cy.get(cesc('#\\/n1a')).should('have.text', '0.75');
 
-    cy.get(`#\\/mi2a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
     })
-    cy.get('#\\/n2a').should('have.text', '0.75');
+    cy.get(cesc('#\\/n2a')).should('have.text', '0.75');
 
-    cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi3a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
     })
-    cy.get('#\\/n3a').should('have.text', '0.75');
+    cy.get(cesc('#\\/n3a')).should('have.text', '0.75');
 
-    cy.get(`#\\/mi4a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
     })
-    cy.get('#\\/n4a').should('have.text', '0.75');
+    cy.get(cesc('#\\/n4a')).should('have.text', '0.75');
 
 
-    cy.get(`#\\/mi2b .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2b`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
     })
-    cy.get('#\\/n2b').should('have.text', '0.75');
+    cy.get(cesc('#\\/n2b')).should('have.text', '0.75');
 
-    cy.get(`#\\/mi4b .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4b`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
     })
-    cy.get('#\\/n4b').should('have.text', '0.75');
+    cy.get(cesc('#\\/n4b')).should('have.text', '0.75');
 
 
 
-    cy.get('#\\/mi1 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/mi2 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/mi3 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/mi4 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi1') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi2') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi4') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
 
-    cy.get('#\\/mi1a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/mi2a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/mi3a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/mi4a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi1a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi2a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi3a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi4a') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
 
-    cy.get('#\\/mi2b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/mi4b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi2b') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get(cesc('#\\/mi4b') + ' textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
 
-    cy.get(`#\\/mi4b .mq-editable-field`).should('contain.text', '5')
+    cy.get(cesc(`#\\/mi4b`) + ` .mq-editable-field`).should('contain.text', '5')
 
-    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-    cy.get('#\\/n1').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n1')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-    cy.get('#\\/n2').should('have.text', '3');
+    cy.get(cesc('#\\/n2')).should('have.text', '3');
 
-    cy.get(`#\\/mi3 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
     })
-    cy.get('#\\/n3').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n3')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi4 .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
-    cy.get('#\\/n4').should('have.text', '5');
+    cy.get(cesc('#\\/n4')).should('have.text', '5');
 
 
-    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi1a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-    cy.get('#\\/n1a').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n1a')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi2a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-    cy.get('#\\/n2a').should('have.text', '3');
+    cy.get(cesc('#\\/n2a')).should('have.text', '3');
 
-    cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi3a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
-    cy.get('#\\/n3a').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n3a')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi4a .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4a`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
-    cy.get('#\\/n4a').should('have.text', '5');
+    cy.get(cesc('#\\/n4a')).should('have.text', '5');
 
 
-    cy.get(`#\\/mi2b .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi2b`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-    cy.get('#\\/n2b').should('have.text', '3');
+    cy.get(cesc('#\\/n2b')).should('have.text', '3');
 
-    cy.get(`#\\/mi4b .mq-editable-field`).invoke('text').then((text) => {
+    cy.get(cesc(`#\\/mi4b`) + ` .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
-    cy.get('#\\/n4b').should('have.text', '5');
+    cy.get(cesc('#\\/n4b')).should('have.text', '5');
 
   });
 
@@ -1117,16 +1109,16 @@ describe('Number Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/if1').should('have.text', 'NaN');
-    cy.get('#\\/if2').should('have.text', 'NaN');
-    cy.get('#\\/if3').should('have.text', 'NaN');
-    cy.get('#\\/if4').should('have.text', 'NaN');
-    cy.get('#\\/if5').should('have.text', 'NaN');
-    cy.get('#\\/if6').should('have.text', 'NaN');
-    cy.get('#\\/if7').should('have.text', 'NaN');
-    cy.get('#\\/ifalt').should('have.text', 'NaN');
+    cy.get(cesc('#\\/if1')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/if2')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/if3')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/if4')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/if5')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/if6')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/if7')).should('have.text', 'NaN');
+    cy.get(cesc('#\\/ifalt')).should('have.text', 'NaN');
 
 
   });
@@ -1178,46 +1170,46 @@ describe('Number Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/i1').should('have.text', 'i');
-    cy.get('#\\/i1a .mjx-mrow').eq(0).should('have.text', 'i');
-    cy.get('#\\/i2').should('have.text', 'i');
-    cy.get('#\\/i3').should('have.text', 'i');
-    cy.get('#\\/i4').should('have.text', 'i');
-    cy.get('#\\/i5').should('have.text', 'i');
-    cy.get('#\\/i6').should('have.text', 'i');
-    cy.get('#\\/i7').should('have.text', 'i');
-    cy.get('#\\/i8').should('have.text', 'i');
-    cy.get('#\\/i9').should('have.text', 'i');
-    cy.get('#\\/i10').should('have.text', 'i');
-    cy.get('#\\/i11').should('have.text', 'i');
-    cy.get('#\\/i12').should('have.text', 'i');
+    cy.get(cesc('#\\/i1')).should('have.text', 'i');
+    cy.get(cesc('#\\/i1a') + ' .mjx-mrow').eq(0).should('have.text', 'i');
+    cy.get(cesc('#\\/i2')).should('have.text', 'i');
+    cy.get(cesc('#\\/i3')).should('have.text', 'i');
+    cy.get(cesc('#\\/i4')).should('have.text', 'i');
+    cy.get(cesc('#\\/i5')).should('have.text', 'i');
+    cy.get(cesc('#\\/i6')).should('have.text', 'i');
+    cy.get(cesc('#\\/i7')).should('have.text', 'i');
+    cy.get(cesc('#\\/i8')).should('have.text', 'i');
+    cy.get(cesc('#\\/i9')).should('have.text', 'i');
+    cy.get(cesc('#\\/i10')).should('have.text', 'i');
+    cy.get(cesc('#\\/i11')).should('have.text', 'i');
+    cy.get(cesc('#\\/i12')).should('have.text', 'i');
 
 
-    cy.get('#\\/ni1').should('have.text', '-i');
-    cy.get('#\\/ni1a .mjx-mrow').eq(0).should('have.text', '−i');
-    cy.get('#\\/ni2').should('have.text', '-i');
-    cy.get('#\\/ni3').should('have.text', '-i');
-    cy.get('#\\/ni4').should('have.text', '-i');
-    cy.get('#\\/ni5').should('have.text', '-i');
-    cy.get('#\\/ni6').should('have.text', '-i');
-    cy.get('#\\/ni7').should('have.text', '-i');
-    cy.get('#\\/ni8').should('have.text', '-i');
-    cy.get('#\\/ni9').should('have.text', '-i');
-    cy.get('#\\/ni10').should('have.text', '-i');
-    cy.get('#\\/ni11').should('have.text', '-i');
-    cy.get('#\\/ni12').should('have.text', '-i');
-    cy.get('#\\/ni13').should('have.text', '-i');
+    cy.get(cesc('#\\/ni1')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni1a') + ' .mjx-mrow').eq(0).should('have.text', '−i');
+    cy.get(cesc('#\\/ni2')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni3')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni4')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni5')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni6')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni7')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni8')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni9')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni10')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni11')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni12')).should('have.text', '-i');
+    cy.get(cesc('#\\/ni13')).should('have.text', '-i');
 
-    cy.get('#\\/c1').should('have.text', '2 + 3 i');
-    cy.get('#\\/c2').should('have.text', '2 + 3 i');
-    cy.get('#\\/c3').should('have.text', '0.9 + 0.7 i');
-    cy.get('#\\/c4').should('have.text', '0.9 + 0.7 i');
-    cy.get('#\\/c5').should('have.text', 'NaN + NaN i');
-    cy.get('#\\/c6').should('have.text', 'NaN + NaN i');
-    cy.get('#\\/c7').should('have.text', '5');
-    cy.get('#\\/c8').should('have.text', '5');
+    cy.get(cesc('#\\/c1')).should('have.text', '2 + 3 i');
+    cy.get(cesc('#\\/c2')).should('have.text', '2 + 3 i');
+    cy.get(cesc('#\\/c3')).should('have.text', '0.9 + 0.7 i');
+    cy.get(cesc('#\\/c4')).should('have.text', '0.9 + 0.7 i');
+    cy.get(cesc('#\\/c5')).should('have.text', 'NaN + NaN i');
+    cy.get(cesc('#\\/c6')).should('have.text', 'NaN + NaN i');
+    cy.get(cesc('#\\/c7')).should('have.text', '5');
+    cy.get(cesc('#\\/c8')).should('have.text', '5');
 
 
 
@@ -1308,15 +1300,15 @@ describe('Number Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n1').should('have.text', '1');
-    cy.get('#\\/n2').should('have.text', '1');
-    cy.get('#\\/n3').should('have.text', 'NaN');
+    cy.get(cesc('#\\/n1')).should('have.text', '1');
+    cy.get(cesc('#\\/n2')).should('have.text', '1');
+    cy.get(cesc('#\\/n3')).should('have.text', 'NaN');
 
-    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "1")
-    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "1")
-    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "")
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should('have.text', "1")
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should('have.text', "1")
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).should('have.text', "")
 
 
     cy.window().then(async (win) => {
@@ -1330,17 +1322,17 @@ describe('Number Tag Tests', function () {
 
     })
 
-    cy.get('#\\/mi1 textarea').type("{end}{backspace}i{enter}", { force: true })
-    cy.get('#\\/mi2 textarea').type("{end}{backspace}i{enter}", { force: true })
-    cy.get('#\\/mi3 textarea').type("{end}{backspace}i{enter}", { force: true }).blur()
+    cy.get(cesc('#\\/mi1') + ' textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get(cesc('#\\/mi2') + ' textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{end}{backspace}i{enter}", { force: true }).blur()
 
-    cy.get('#\\/n1').should('have.text', 'i');
-    cy.get('#\\/n2').should('have.text', 'i');
-    cy.get('#\\/n3').should('have.text', 'i');
+    cy.get(cesc('#\\/n1')).should('have.text', 'i');
+    cy.get(cesc('#\\/n2')).should('have.text', 'i');
+    cy.get(cesc('#\\/n3')).should('have.text', 'i');
 
-    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "i")
-    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "i")
-    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "i")
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should('have.text', "i")
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should('have.text', "i")
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).should('have.text', "i")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1354,17 +1346,17 @@ describe('Number Tag Tests', function () {
     })
 
 
-    cy.get('#\\/mi1 textarea').type("{end}+2{enter}", { force: true })
-    cy.get('#\\/mi2 textarea').type("{end}+2{enter}", { force: true })
-    cy.get('#\\/mi3 textarea').type("{end}+2{enter}", { force: true }).blur()
+    cy.get(cesc('#\\/mi1') + ' textarea').type("{end}+2{enter}", { force: true })
+    cy.get(cesc('#\\/mi2') + ' textarea').type("{end}+2{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{end}+2{enter}", { force: true }).blur()
 
-    cy.get('#\\/n1').should('have.text', '2 + i');
-    cy.get('#\\/n2').should('have.text', '2 + i');
-    cy.get('#\\/n3').should('have.text', '2 + i');
+    cy.get(cesc('#\\/n1')).should('have.text', '2 + i');
+    cy.get(cesc('#\\/n2')).should('have.text', '2 + i');
+    cy.get(cesc('#\\/n3')).should('have.text', '2 + i');
 
-    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "2+i")
-    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "2+i")
-    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "2+i")
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should('have.text', "2+i")
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should('have.text', "2+i")
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).should('have.text', "2+i")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1381,17 +1373,17 @@ describe('Number Tag Tests', function () {
     })
 
 
-    cy.get('#\\/mi1 textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true })
-    cy.get('#\\/mi2 textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true })
-    cy.get('#\\/mi3 textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true }).blur()
+    cy.get(cesc('#\\/mi1') + ' textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true })
+    cy.get(cesc('#\\/mi2') + ' textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{end}{backspace}{backspace}{backspace}3+0i{enter}", { force: true }).blur()
 
-    cy.get('#\\/n1').should('have.text', '3');
-    cy.get('#\\/n2').should('have.text', '3');
-    cy.get('#\\/n3').should('have.text', '3');
+    cy.get(cesc('#\\/n1')).should('have.text', '3');
+    cy.get(cesc('#\\/n2')).should('have.text', '3');
+    cy.get(cesc('#\\/n3')).should('have.text', '3');
 
-    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "3")
-    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "3")
-    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "3")
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should('have.text', "3")
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should('have.text', "3")
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).should('have.text', "3")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1405,17 +1397,17 @@ describe('Number Tag Tests', function () {
     })
 
 
-    cy.get('#\\/mi1 textarea').type("{end}{backspace}1i{enter}", { force: true })
-    cy.get('#\\/mi2 textarea').type("{end}{backspace}1i{enter}", { force: true })
-    cy.get('#\\/mi3 textarea').type("{end}{backspace}1i{enter}", { force: true }).blur()
+    cy.get(cesc('#\\/mi1') + ' textarea').type("{end}{backspace}1i{enter}", { force: true })
+    cy.get(cesc('#\\/mi2') + ' textarea').type("{end}{backspace}1i{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{end}{backspace}1i{enter}", { force: true }).blur()
 
-    cy.get('#\\/n1').should('have.text', 'i');
-    cy.get('#\\/n2').should('have.text', 'i');
-    cy.get('#\\/n3').should('have.text', 'i');
+    cy.get(cesc('#\\/n1')).should('have.text', 'i');
+    cy.get(cesc('#\\/n2')).should('have.text', 'i');
+    cy.get(cesc('#\\/n3')).should('have.text', 'i');
 
-    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "i")
-    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "i")
-    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "i")
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should('have.text', "i")
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should('have.text', "i")
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).should('have.text', "i")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1429,17 +1421,17 @@ describe('Number Tag Tests', function () {
     })
 
 
-    cy.get('#\\/mi1 textarea').type("{end}{backspace}-1i+0{enter}", { force: true })
-    cy.get('#\\/mi2 textarea').type("{end}{backspace}-1i+0{enter}", { force: true })
-    cy.get('#\\/mi3 textarea').type("{end}{backspace}-1i+0{enter}", { force: true }).blur()
+    cy.get(cesc('#\\/mi1') + ' textarea').type("{end}{backspace}-1i+0{enter}", { force: true })
+    cy.get(cesc('#\\/mi2') + ' textarea').type("{end}{backspace}-1i+0{enter}", { force: true })
+    cy.get(cesc('#\\/mi3') + ' textarea').type("{end}{backspace}-1i+0{enter}", { force: true }).blur()
 
-    cy.get('#\\/n1').should('have.text', '-i');
-    cy.get('#\\/n2').should('have.text', '-i');
-    cy.get('#\\/n3').should('have.text', '-i');
+    cy.get(cesc('#\\/n1')).should('have.text', '-i');
+    cy.get(cesc('#\\/n2')).should('have.text', '-i');
+    cy.get(cesc('#\\/n3')).should('have.text', '-i');
 
-    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', "−i")
-    cy.get(`#\\/mi2 .mq-editable-field`).should('have.text', "−i")
-    cy.get(`#\\/mi3 .mq-editable-field`).should('have.text', "−i")
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should('have.text', "−i")
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should('have.text', "−i")
+    cy.get(cesc(`#\\/mi3`) + ` .mq-editable-field`).should('have.text', "−i")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1480,20 +1472,20 @@ describe('Number Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/n1').should('have.text', '2');
-    cy.get('#\\/n2').should('have.text', '-4');
-    cy.get('#\\/n3').should('have.text', '2');
-    cy.get('#\\/n4').should('have.text', '-14');
-    cy.get('#\\/n1a').should('have.text', '2');
-    cy.get('#\\/n2a').should('have.text', '-4');
-    cy.get('#\\/n3a').should('have.text', '2');
-    cy.get('#\\/n4a').should('have.text', '-14');
-    cy.get('#\\/n1b').should('have.text', '2');
-    cy.get('#\\/n2b').should('have.text', '-4');
-    cy.get('#\\/n3b').should('have.text', '2');
-    cy.get('#\\/n4b').should('have.text', '-14');
+    cy.get(cesc('#\\/n1')).should('have.text', '2');
+    cy.get(cesc('#\\/n2')).should('have.text', '-4');
+    cy.get(cesc('#\\/n3')).should('have.text', '2');
+    cy.get(cesc('#\\/n4')).should('have.text', '-14');
+    cy.get(cesc('#\\/n1a')).should('have.text', '2');
+    cy.get(cesc('#\\/n2a')).should('have.text', '-4');
+    cy.get(cesc('#\\/n3a')).should('have.text', '2');
+    cy.get(cesc('#\\/n4a')).should('have.text', '-14');
+    cy.get(cesc('#\\/n1b')).should('have.text', '2');
+    cy.get(cesc('#\\/n2b')).should('have.text', '-4');
+    cy.get(cesc('#\\/n3b')).should('have.text', '2');
+    cy.get(cesc('#\\/n4b')).should('have.text', '-14');
 
 
     cy.window().then(async (win) => {
@@ -1514,5 +1506,154 @@ describe('Number Tag Tests', function () {
 
   });
 
+  it('number in graph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph >
+      <number anchor="$anchorCoords1" name="number1" positionFromAnchor="$positionFromAnchor1" draggable="$draggable1">$content1</number>
+      <number name="number2">-17</number>
+    </graph>
+
+    <p name="pAnchor1">Anchor 1 coordinates: $number1.anchor</p>
+    <p name="pAnchor2">Anchor 2 coordinates: $number2.anchor</p>
+    <p name="pChangeAnchor1">Change anchor 1 coordinates: <mathinput name="anchorCoords1" prefill="(1,3)" /></p>
+    <p name="pChangeAnchor2">Change anchor 2 coordinates: <mathinput name="anchorCoords2" bindValueTo="$number2.anchor" /></p>
+    <p name="pPositionFromAnchor1">Position from anchor 1: $number1.positionFromAnchor</p>
+    <p name="pPositionFromAnchor2">Position from anchor 2: $number2.positionFromAnchor</p>
+    <p>Change position from anchor 1
+    <choiceinput inline preselectChoice="1" name="positionFromAnchor1">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p>Change position from anchor 2
+    <choiceinput inline name="positionFromAnchor2" bindValueTo="$number2.positionFromAnchor">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+      <choice>left</choice>
+      <choice>right</choice>
+      <choice>top</choice>
+      <choice>bottom</choice>
+      <choice>center</choice>
+    </choiceinput>
+    </p>
+    <p name="pDraggable1">Draggable 1: $draggable1</p>
+    <p name="pDraggable2">Draggable 2: $draggable2</p>
+    <p>Change draggable 1 <booleanInput name="draggable1" prefill="true" /></p>
+    <p>Change draggable 2 <booleanInput name="draggable2" bindValueTo="$number2.draggable" /></p>
+    <p name="pContent1">Content 1: $number1</p>
+    <p name="pContent2">Content 2: $number2</p>
+    <p>Content 1 <mathinput name="content1" prefill="11" /></p>
+    <p>Content 2 <mathinput name="content2" bindValueTo="$number2" /></p>
+    <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
+
+    ` }, "*");
+    });
+
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
+    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
+    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pContent1")).should('have.text', 'Content 1: 11')
+    cy.get(cesc("#\\/pContent2")).should('have.text', 'Content 2: -17')
+
+
+    cy.log("move numbers by dragging")
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveNumber",
+        componentName: "/number1",
+        args: { x: -2, y: 3 }
+      })
+      win.callAction1({
+        actionName: "moveNumber",
+        componentName: "/number2",
+        args: { x: 4, y: -5 }
+      })
+    })
+
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+
+
+    cy.log("move numbers by entering coordinates")
+
+    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
+    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+
+    cy.log('change position from anchor');
+    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
+    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
+
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+
+
+    cy.log('make not draggable')
+
+    cy.get(cesc('#\\/draggable1')).click();
+    cy.get(cesc('#\\/draggable2')).click();
+    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
+    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
+
+
+    cy.log('cannot move numbers by dragging')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveNumber",
+        componentName: "/number1",
+        args: { x: -10, y: -9 }
+      })
+      win.callAction1({
+        actionName: "moveNumber",
+        componentName: "/number2",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b")).should('have.text', 'true');
+
+    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
+    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+
+
+    cy.log("change content of number")
+    cy.get(cesc('#\\/content1') + ' textarea').type("{end}+5{enter}", { force: true })
+    cy.get(cesc('#\\/content2') + ' textarea').type("{end}-1{enter}", { force: true })
+
+
+    cy.get(cesc("#\\/pContent2")).should('have.text', 'Content 2: -18')
+    cy.get(cesc("#\\/pContent1")).should('have.text', 'Content 1: 16')
+
+  })
 
 });

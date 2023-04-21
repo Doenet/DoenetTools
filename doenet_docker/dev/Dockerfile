@@ -4,6 +4,7 @@ RUN echo "deb http://deb.debian.org/debian bullseye-backports main" >/etc/apt/so
 
 RUN apt-get update && \
     apt-get -y install \
+    gnome-keyring \
     # for docker from source
     apt-transport-https \
     ca-certificates \

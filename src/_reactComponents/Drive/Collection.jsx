@@ -179,11 +179,11 @@ function Collection(props) {
 
   let openCloseText = isOpen ? (
     <span data-test="folderToggleCloseIcon">
-      <FontAwesomeIcon icon={faChevronDown} />
+      <FontAwesomeIcon icon={faChevronDown} style={{ color: "var(--canvastext)" }} />
     </span>
   ) : (
     <span data-test="folderToggleOpenIcon">
-      <FontAwesomeIcon icon={faChevronRight} />
+      <FontAwesomeIcon icon={faChevronRight} style={{ color: "var(--canvastext)" }} />
     </span>
   );
 

@@ -43,7 +43,7 @@ export function getFromText({
   appliedFunctionSymbols = appliedFunctionSymbolsDefault,
   splitSymbols = true,
   parseScientificNotation = false,
-}) {
+} = {}) {
   return x => me.fromAst((new me.converters.textToAstObj({
     appliedFunctionSymbols, functionSymbols, splitSymbols, parseScientificNotation
   })).convert(x))
@@ -59,7 +59,7 @@ export function getFromLatex({
   appliedFunctionSymbols = appliedFunctionSymbolsDefaultLatex,
   splitSymbols = true,
   parseScientificNotation = false,
-}) {
+} = {}) {
   if (splitSymbols) {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,
@@ -442,7 +442,17 @@ export function mathStateVariableFromNumberStateVariable({
     },
     inverseDefinition: function ({ desiredStateVariableValues }) {
 
-      let desiredNumber = desiredStateVariableValues[mathVariableName].evaluate_to_constant();
+      let desiredMath = desiredStateVariableValues[mathVariableName];
+
+      let desiredNumber;
+      if (desiredMath instanceof me.class) {
+        desiredNumber = desiredMath.evaluate_to_constant();
+      } else if (typeof desiredMath === "number") {
+        desiredNumber = desiredMath;
+      } else {
+        desiredNumber = NaN;
+      }
+
       return {
         success: true,
         instructions: [{
@@ -826,3 +836,21 @@ export const mathjaxConfig = {
 };
 
 export const vectorOperators = ["vector", "altvector", "tuple"];
+
+
+export function removeFunctionsMathExpressionClass(value) {
+  if (value instanceof me.class) {
+    value = value.tree;
+  } else if (typeof value === "function") {
+    value = undefined;
+  } else if (Array.isArray(value)) {
+    value = value.map(x => removeFunctionsMathExpressionClass(x))
+  } else if (typeof value === "object" && value !== null) {
+    let valueCopy = {}
+    for (let key in value) {
+      valueCopy[key] = removeFunctionsMathExpressionClass(value[key]);
+    }
+    value = valueCopy;
+  }
+  return value;
+}

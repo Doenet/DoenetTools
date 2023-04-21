@@ -292,6 +292,9 @@ function substituteDeprecations(serializedComponents) {
     selectforvariantnames: "selectForVariants",
   }
 
+  // Note: use lower case
+  let deprecatedPropertyDeletions = new Set(["suppressautoname", "suppressautonumber"]);
+
   // Note: use lower case for keys
   let deprecatedPropertySubstitutionsComponentSpecific = {
     copy: {
@@ -307,6 +310,11 @@ function substituteDeprecations(serializedComponents) {
     }
   }
 
+  // use lower case
+  let deprecatedPropertyDeletionsComponentSpecific = {
+    textinput: ["size"],
+  }
+
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
@@ -317,6 +325,10 @@ function substituteDeprecations(serializedComponents) {
       let typeSpecificDeps = deprecatedPropertySubstitutionsComponentSpecific[cType.toLowerCase()];
       if (!typeSpecificDeps) {
         typeSpecificDeps = {};
+      }
+      let typeSpecificDeletions = deprecatedPropertyDeletionsComponentSpecific[cType.toLowerCase()];
+      if (!typeSpecificDeletions) {
+        typeSpecificDeletions = [];
       }
       let retry = true;
       while (retry) {
@@ -341,6 +353,24 @@ function substituteDeprecations(serializedComponents) {
             console.warn(`Attribute ${prop} is deprecated.  Use ${newProp} instead.`)
 
             component.props[newProp] = component.props[prop];
+            delete component.props[prop];
+
+            // since modified object over which are looping
+            // break out of loop and start over
+            retry = true;
+            break;
+
+          } else if (typeSpecificDeletions.includes(propLower)) {
+            console.warn(`Attribute ${prop} of component type ${cType} is deprecated.  It is ignored.`)
+            delete component.props[prop];
+
+            // since modified object over which are looping
+            // break out of loop and start over
+            retry = true;
+            break;
+
+          } else if (deprecatedPropertyDeletions.has(propLower)) {
+            console.warn(`Attribute ${prop} is deprecated.  It is ignored.`)
             delete component.props[prop];
 
             // since modified object over which are looping
@@ -3507,6 +3537,10 @@ export function extractRangeIndexPieces({
 }
 
 export function countComponentTypes(serializedComponents) {
+  // Count component types from the components in the array (not recursing to children).
+  // Used for counting the sections in a document in order to increment section counts
+  // subsequent pages.
+
   let componentTypeCounts = {};
 
   for (let component of serializedComponents) {

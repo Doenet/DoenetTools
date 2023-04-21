@@ -83,7 +83,7 @@ export function addStandardTriggeringStateVariableDefinitions(stateVariableDefin
         }
         if (dependencyValues.triggerWhenObjectsFocused !== null) {
           for (let nameObj of dependencyValues.triggerWhenObjectsFocused) {
-            triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "down" })
+            triggerWith.push({ target: nameObj.absoluteName, triggeringAction: "focus" })
           }
         }
 

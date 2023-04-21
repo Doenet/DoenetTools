@@ -1,4 +1,6 @@
 import me from 'math-expressions';
+import { cesc } from '../../../../src/_utils/url';
+
 
 function nInDOM(n) {
   if (n < 0) {
@@ -222,7 +224,7 @@ describe('Rectangle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
     async function checkTransformedRectangleValues({ stateVariables, v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4 }) {
 
@@ -614,7 +616,7 @@ describe('Rectangle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
@@ -622,46 +624,46 @@ describe('Rectangle Tag Tests', function () {
     let t3x = 3, t3y = 4;
     let t4x = 2, t4y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t4x)},${nInDOM(t4y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t4x)},${nInDOM(t4y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -685,7 +687,7 @@ describe('Rectangle Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+    cy.get(cesc('#\\/_text1')).should('have.text', 'a')// to wait for page to load
 
 
     let t1x = 2, t1y = -3;
@@ -693,52 +695,52 @@ describe('Rectangle Tag Tests', function () {
     let t3x = 3, t3y = 4;
     let t4x = 2, t4y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("1{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("1{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t4x)},${nInDOM(t4y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('contain.text', `(${nInDOM(t4x)},${nInDOM(t4y)})`);
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
-    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/x .mjx-mrow').should('not.exist');
-    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc('#\\/P1') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P2') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P3') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/P4') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/x') + ' .mjx-mrow').should('not.exist');
+    cy.get(cesc('#\\/xa') + ' .mjx-mrow').should('not.exist');
 
 
   });
@@ -758,10 +760,10 @@ describe('Rectangle Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'false')
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -785,14 +787,14 @@ describe('Rectangle Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -818,14 +820,14 @@ describe('Rectangle Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'false')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(1,3)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(1,3)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
 
     cy.window().then(async (win) => {
@@ -839,8 +841,8 @@ describe('Rectangle Tag Tests', function () {
 
     cy.log('only vertices draggable')
 
-    cy.get('#\\/verticesDraggable').click()
-    cy.get('#\\/vd2').should('have.text', 'true')
+    cy.get(cesc('#\\/verticesDraggable')).click()
+    cy.get(cesc('#\\/vd2')).should('have.text', 'true')
 
 
     cy.log('can move single vertex')
@@ -856,13 +858,13 @@ describe('Rectangle Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(4,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(4,7)')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -888,15 +890,15 @@ describe('Rectangle Tag Tests', function () {
 
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'true')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'true')
 
-    cy.get("#\\/d2").should('have.text', 'false')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'false')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -910,8 +912,8 @@ describe('Rectangle Tag Tests', function () {
 
     cy.log('vertices and polygon draggable')
 
-    cy.get('#\\/draggable').click()
-    cy.get('#\\/d2').should('have.text', 'true')
+    cy.get(cesc('#\\/draggable')).click()
+    cy.get(cesc('#\\/d2')).should('have.text', 'true')
 
 
     cy.log('can move single vertex')
@@ -927,13 +929,13 @@ describe('Rectangle Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(−3,2)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(−3,2)')
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(4,7)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(−3,2)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(4,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(−3,2)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -958,15 +960,15 @@ describe('Rectangle Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(3,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(3,8)')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'true')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'true')
 
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(3,8)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,1)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,1)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -979,8 +981,8 @@ describe('Rectangle Tag Tests', function () {
 
     cy.log('polygon but not vertices draggable')
 
-    cy.get('#\\/verticesDraggable').click()
-    cy.get('#\\/vd2').should('have.text', 'false')
+    cy.get(cesc('#\\/verticesDraggable')).click()
+    cy.get(cesc('#\\/vd2')).should('have.text', 'false')
 
 
     cy.log('cannot move single vertex')
@@ -996,15 +998,15 @@ describe('Rectangle Tag Tests', function () {
     })
 
     // wait for core to process click
-    cy.get('#\\/bi').click()
-    cy.get('#\\/bi2').should('have.text', 'false')
+    cy.get(cesc('#\\/bi')).click()
+    cy.get(cesc('#\\/bi2')).should('have.text', 'false')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(3,8)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(5,1)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(3,8)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(5,1)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1029,15 +1031,15 @@ describe('Rectangle Tag Tests', function () {
     })
 
 
-    cy.get("#\\/pvert .mjx-mrow").should('contain.text', '(−4,1)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").should('contain.text', '(−4,1)')
 
 
-    cy.get("#\\/d2").should('have.text', 'true')
-    cy.get("#\\/vd2").should('have.text', 'false')
+    cy.get(cesc("#\\/d2")).should('have.text', 'true')
+    cy.get(cesc("#\\/vd2")).should('have.text', 'false')
 
 
-    cy.get("#\\/pvert .mjx-mrow").eq(0).should('have.text', '(−4,1)')
-    cy.get("#\\/pvert .mjx-mrow").eq(2).should('have.text', '(3,7)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(0).should('have.text', '(−4,1)')
+    cy.get(cesc("#\\/pvert") + " .mjx-mrow").eq(2).should('have.text', '(3,7)')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1087,7 +1089,7 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
 }
 
 function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
-  cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+  cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
