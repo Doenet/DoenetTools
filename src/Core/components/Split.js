@@ -1,8 +1,8 @@
-import CompositeComponent from './abstract/CompositeComponent';
-import { processAssignNames } from '../utils/serializedStateProcessing';
+import CompositeComponent from "./abstract/CompositeComponent";
+import { processAssignNames } from "../utils/serializedStateProcessing";
 
 export default class Split extends CompositeComponent {
-  static componentType = 'split';
+  static componentType = "split";
 
   static assignNamesToReplacements = true;
 
@@ -12,8 +12,8 @@ export default class Split extends CompositeComponent {
     let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
-      createPrimitiveOfType: "number"
-    }
+      createPrimitiveOfType: "number",
+    };
 
     // TODO: other types than text or eliminate type attribute
     attributes.type = {
@@ -21,16 +21,16 @@ export default class Split extends CompositeComponent {
       createStateVariable: "type",
       defaultPrimitiveValue: "text",
       toLowerCase: true,
-      validValues: ["text"]
-    }
+      validValues: ["text"],
+    };
 
     attributes.splitBy = {
       createComponentOfType: "text",
       createStateVariable: "splitBy",
       defaultValue: "letter",
       toLowerCase: true,
-      validValues: ["letter", "word", "comma"]
-    }
+      validValues: ["letter", "word", "comma"],
+    };
 
     return attributes;
   }
@@ -39,7 +39,6 @@ export default class Split extends CompositeComponent {
     let sugarInstructions = [];
 
     function addType({ matchedChildren, componentAttributes }) {
-
       let type = componentAttributes.type;
       if (!["text"].includes(type)) {
         type = "text";
@@ -47,114 +46,113 @@ export default class Split extends CompositeComponent {
 
       return {
         success: true,
-        newChildren: [{
-          componentType: type,
-          children: matchedChildren
-        }]
-      }
+        newChildren: [
+          {
+            componentType: type,
+            children: matchedChildren,
+          },
+        ],
+      };
     }
 
     sugarInstructions.push({
-      replacementFunction: addType
+      replacementFunction: addType,
     });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.originalValue = {
       returnDependencies: () => ({
         child: {
           dependencyType: "child",
           childGroups: ["anything"],
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.child.length > 0) {
-          return { setValue: { originalValue: dependencyValues.child[0].stateValues.value } }
+          return {
+            setValue: {
+              originalValue: dependencyValues.child[0].stateValues.value,
+            },
+          };
         } else {
-          return { setValue: { originalValue: null } }
+          return { setValue: { originalValue: null } };
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.child.length > 0) {
-
           return {
             success: true,
-            instructions: [{
-              setDependency: "child",
-              desiredValue: desiredStateVariableValues.originalValue,
-              childIndex: 0,
-              variableIndex: 0
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "child",
+                desiredValue: desiredStateVariableValues.originalValue,
+                childIndex: 0,
+                variableIndex: 0,
+              },
+            ],
+          };
         } else {
-          return { success: false }
+          return { success: false };
         }
-      }
-
-    }
+      },
+    };
 
     stateVariableDefinitions.splitValues = {
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         originalValue: {
           dependencyType: "stateVariable",
-          variableName: "originalValue"
+          variableName: "originalValue",
         },
         splitBy: {
           dependencyType: "stateVariable",
-          variableName: "splitBy"
+          variableName: "splitBy",
         },
       }),
       definition({ dependencyValues }) {
-
         if (dependencyValues.originalValue === null) {
           return {
             setValue: { splitValues: [] },
-          }
+          };
         }
 
         let splitValues = [];
 
         if (dependencyValues.splitBy === "letter") {
           splitValues = [...dependencyValues.originalValue];
-        } else if(dependencyValues.splitBy === "word") {
-          splitValues = dependencyValues.originalValue.split(/\s+/)
-        } else if(dependencyValues.splitBy === "comma") {
-          splitValues = dependencyValues.originalValue.split(/\s*,\s*/)
+        } else if (dependencyValues.splitBy === "word") {
+          splitValues = dependencyValues.originalValue.split(/\s+/);
+        } else if (dependencyValues.splitBy === "comma") {
+          splitValues = dependencyValues.originalValue.split(/\s*,\s*/);
         } else {
           splitValues = [dependencyValues.originalValue];
         }
 
         return {
           setValue: { splitValues },
-        }
-
-      }
-    }
+        };
+      },
+    };
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
-
       returnDependencies: () => ({
         splitValues: {
           dependencyType: "stateVariable",
@@ -171,27 +169,28 @@ export default class Split extends CompositeComponent {
       },
     };
 
-
     return stateVariableDefinitions;
-
   }
 
-
-  static async createSerializedReplacements({ component, componentInfoObjects }) {
-
+  static async createSerializedReplacements({
+    component,
+    componentInfoObjects,
+  }) {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let serializedReplacement = {
       componentType: "textList",
       state: { textsShadow: await component.stateValues.splitValues },
       downstreamDependencies: {
-        [component.componentName]: [{
-          dependencyType: "referenceShadow",
-          compositeName: component.componentName,
-          propVariable: "splitValues",
-        }]
+        [component.componentName]: [
+          {
+            dependencyType: "referenceShadow",
+            compositeName: component.componentName,
+            propVariable: "splitValues",
+          },
+        ],
       },
-    }
+    };
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -203,6 +202,4 @@ export default class Split extends CompositeComponent {
 
     return { replacements: processResult.serializedComponents };
   }
-
-
 }

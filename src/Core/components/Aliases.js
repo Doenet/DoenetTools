@@ -1,11 +1,10 @@
-import TextComponent from './Text';
-import TextOrInline from './abstract/TextOrInline';
-import Template from './Template';
-import MathComponent from './Math';
-import Label from './Label';
-import MathList from './MathList';
-import { Div } from './Divisions';
-
+import TextComponent from "./Text";
+import TextOrInline from "./abstract/TextOrInline";
+import Template from "./Template";
+import MathComponent from "./Math";
+import Label from "./Label";
+import MathList from "./MathList";
+import { Div } from "./Divisions";
 
 export class Columns extends TextComponent {
   static componentType = "columns";

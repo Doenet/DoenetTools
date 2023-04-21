@@ -1,4 +1,4 @@
-import BooleanComponent from '../Boolean';
+import BooleanComponent from "../Boolean";
 
 export default class BooleanOperator extends BooleanComponent {
   static componentType = "_booleanOperator";
@@ -10,52 +10,48 @@ export default class BooleanOperator extends BooleanComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let breakStringsIntoBooleansBySpaces = function ({ matchedChildren }) {
-
       // break any string by white space and wrap pieces with boolean
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (typeof c === "string") {
           return [
             ...a,
-            ...c.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
+            ...c
+              .split(/\s+/)
+              .filter((s) => s)
+              .map((s) => ({
                 componentType: "boolean",
-                children: [s]
-              }))
-          ]
+                children: [s],
+              })),
+          ];
         } else {
-          return [...a, c]
+          return [...a, c];
         }
       }, []);
 
       return {
         success: true,
         newChildren: newChildren,
-      }
-    }
-
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoBooleansBySpaces
+      replacementFunction: breakStringsIntoBooleansBySpaces,
     });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "booleans",
-      componentTypes: ["boolean"]
-    }]
-
+    return [
+      {
+        group: "booleans",
+        componentTypes: ["boolean"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     delete stateVariableDefinitions.parsedExpression;
@@ -73,23 +69,20 @@ export default class BooleanOperator extends BooleanComponent {
         booleanChildren: {
           dependencyType: "child",
           childGroups: ["booleans"],
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
             value: constructor.applyBooleanOperator(
-              dependencyValues.booleanChildren
-                .map(x => x.stateValues.value)
-            )
-          }
-        }
-      }
-    }
+              dependencyValues.booleanChildren.map((x) => x.stateValues.value),
+            ),
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

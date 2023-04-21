@@ -1,5 +1,5 @@
-import Line from './Line';
-import me from 'math-expressions';
+import Line from "./Line";
+import me from "math-expressions";
 
 export default class BestFitLine extends Line {
   static componentType = "bestFitLine";
@@ -20,15 +20,11 @@ export default class BestFitLine extends Line {
     return attributes;
   }
 
-
   static returnSugarInstructions() {
     return [];
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.draggable = {
@@ -38,9 +34,8 @@ export default class BestFitLine extends Line {
       public: true,
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { draggable: false } })
-    }
-
+      definition: () => ({ setValue: { draggable: false } }),
+    };
 
     stateVariableDefinitions.nDimensions = {
       public: true,
@@ -48,9 +43,8 @@ export default class BestFitLine extends Line {
         createComponentOfType: "number",
       },
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nDimensions: 2 } })
-    }
-
+      definition: () => ({ setValue: { nDimensions: 2 } }),
+    };
 
     delete stateVariableDefinitions.nPointsPrescribed;
     delete stateVariableDefinitions.basedOnSlope;
@@ -59,57 +53,63 @@ export default class BestFitLine extends Line {
     delete stateVariableDefinitions.essentialPoint1y;
     delete stateVariableDefinitions.equationIdentity;
 
-
-    delete stateVariableDefinitions.equation.stateVariablesDeterminingDependencies;
+    delete stateVariableDefinitions.equation
+      .stateVariablesDeterminingDependencies;
 
     stateVariableDefinitions.equation.returnDependencies = () => ({
       points: {
         dependencyType: "attributeComponent",
         attributeName: "points",
-        variableNames: ["points", "nDimensions"]
+        variableNames: ["points", "nDimensions"],
       },
       variables: {
         dependencyType: "stateVariable",
-        variableName: "variables"
-      }
-    })
+        variableName: "variables",
+      },
+    });
 
-    stateVariableDefinitions.equation.definition = function ({ dependencyValues }) {
-
-      if (!dependencyValues.points
-        || dependencyValues.points.stateValues.nDimensions < 2
-        || dependencyValues.points.stateValues.points.length < 1
+    stateVariableDefinitions.equation.definition = function ({
+      dependencyValues,
+    }) {
+      if (
+        !dependencyValues.points ||
+        dependencyValues.points.stateValues.nDimensions < 2 ||
+        dependencyValues.points.stateValues.points.length < 1
       ) {
-        let blankMath = me.fromAst('\uff3f');
+        let blankMath = me.fromAst("\uff3f");
         return {
           setValue: {
             equation: blankMath,
-            coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
-          }
-        }
+            coeff0: blankMath,
+            coeffvar1: blankMath,
+            coeffvar2: blankMath,
+          },
+        };
       }
 
       let X = [];
       let Y = [];
 
-
       for (let pt of dependencyValues.points.stateValues.points) {
-        let numericalX = pt.slice(0, 2).map(x => x && x.evaluate_to_constant());
+        let numericalX = pt
+          .slice(0, 2)
+          .map((x) => x && x.evaluate_to_constant());
         if (numericalX.every(Number.isFinite)) {
           X.push([1, numericalX[0]]);
           Y.push([numericalX[1]]);
         }
-
       }
 
       if (X.length === 0) {
-        let blankMath = me.fromAst('\uff3f');
+        let blankMath = me.fromAst("\uff3f");
         return {
           setValue: {
             equation: blankMath,
-            coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
-          }
-        }
+            coeff0: blankMath,
+            coeffvar1: blankMath,
+            coeffvar2: blankMath,
+          },
+        };
       }
 
       X = me.math.matrix(X);
@@ -118,7 +118,7 @@ export default class BestFitLine extends Line {
 
       let b = me.math.multiply(Xt, Y);
 
-      let A = me.math.multiply(Xt, X)
+      let A = me.math.multiply(Xt, X);
 
       let s = me.math.lusolve(A, b);
 
@@ -128,42 +128,48 @@ export default class BestFitLine extends Line {
 
       let variables = dependencyValues.variables;
 
-      let rhs = me.fromAst(['+', ['*', 'a', 'x'], 'c']).substitute({
-        a: coeffvar1, c: coeff0, x: variables[0], y: variables[1]
-      }).simplify();
+      let rhs = me
+        .fromAst(["+", ["*", "a", "x"], "c"])
+        .substitute({
+          a: coeffvar1,
+          c: coeff0,
+          x: variables[0],
+          y: variables[1],
+        })
+        .simplify();
 
-      let equation = me.fromAst(['=', 'y', 'r']).substitute({
-        r: rhs
+      let equation = me.fromAst(["=", "y", "r"]).substitute({
+        r: rhs,
       });
 
       return {
         setValue: {
-          equation, coeff0, coeffvar1, coeffvar2
-        }
-      }
-
-    }
+          equation,
+          coeff0,
+          coeffvar1,
+          coeffvar2,
+        },
+      };
+    };
 
     delete stateVariableDefinitions.equation.inverseDefinition;
 
-
-
-    delete stateVariableDefinitions.points.stateVariablesDeterminingDependencies;
+    delete stateVariableDefinitions.points
+      .stateVariablesDeterminingDependencies;
 
     stateVariableDefinitions.points.returnArrayDependenciesByKey = function () {
-
       let globalDependencies = {
         coeff0: {
           dependencyType: "stateVariable",
-          variableName: "coeff0"
+          variableName: "coeff0",
         },
         coeffvar1: {
           dependencyType: "stateVariable",
-          variableName: "coeffvar1"
+          variableName: "coeffvar1",
         },
         coeffvar2: {
           dependencyType: "stateVariable",
-          variableName: "coeffvar2"
+          variableName: "coeffvar2",
         },
         variables: {
           dependencyType: "stateVariable",
@@ -171,17 +177,12 @@ export default class BestFitLine extends Line {
         },
         lastPointsFromInverting: {
           dependencyType: "stateVariable",
-          variableName: "lastPointsFromInverting"
-        }
-      }
-      return { globalDependencies }
-    }
-
-
+          variableName: "lastPointsFromInverting",
+        },
+      };
+      return { globalDependencies };
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
 }

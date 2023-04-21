@@ -1,4 +1,4 @@
-import InlineComponent from './InlineComponent';
+import InlineComponent from "./InlineComponent";
 
 export default class SingleCharacter extends InlineComponent {
   static componentType = "_singleCharacterInline";
@@ -15,8 +15,8 @@ export default class SingleCharacter extends InlineComponent {
         createComponentOfType: "text",
       },
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { text: this.unicodeCharacter } })
-    }
+      definition: () => ({ setValue: { text: this.unicodeCharacter } }),
+    };
 
     return stateVariableDefinitions;
   }

@@ -1,6 +1,9 @@
-import MathComponent from './Math';
-import me from 'math-expressions';
-import { returnNumericFunctionForEvaluate, returnSymbolicFunctionForEvaluate } from '../utils/function';
+import MathComponent from "./Math";
+import me from "math-expressions";
+import {
+  returnNumericFunctionForEvaluate,
+  returnSymbolicFunctionForEvaluate,
+} from "../utils/function";
 
 export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
@@ -26,12 +29,12 @@ export default class Evaluate extends MathComponent {
     };
 
     attributes.function = {
-      createComponentOfType: "function"
-    }
+      createComponentOfType: "function",
+    };
 
     attributes.input = {
       createComponentOfType: "mathList",
-    }
+    };
 
     attributes.unordered = {
       createComponentOfType: "boolean",
@@ -43,15 +46,11 @@ export default class Evaluate extends MathComponent {
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return []
-
+    return [];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     delete stateVariableDefinitions.codePre;
@@ -64,8 +63,8 @@ export default class Evaluate extends MathComponent {
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { canBeModified: false } })
-    }
+      definition: () => ({ setValue: { canBeModified: false } }),
+    };
 
     stateVariableDefinitions.displayDigits = {
       public: true,
@@ -78,7 +77,7 @@ export default class Evaluate extends MathComponent {
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -88,20 +87,25 @@ export default class Evaluate extends MathComponent {
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDigitsAttr !== null) {
-
           let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault =
+            dependencyValues.displayDecimalsAttr === null ||
+            usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          if (
+            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
+          ) {
             // if both display digits and display decimals did not use default
             // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+            let shadowDepthDisplayDigits =
+              dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals =
+              dependencyValues.displayDecimalsAttr.shadowDepth;
 
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
@@ -112,30 +116,42 @@ export default class Evaluate extends MathComponent {
             return {
               useEssentialOrDefaultValue: {
                 displayDigits: {
-                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.displayDigitsAttr.stateValues.value,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
-              }
-            }
+                displayDigits:
+                  dependencyValues.displayDigitsAttr.stateValues.value,
+              },
+            };
           }
         } else if (dependencyValues.functionAttr) {
-
           let displayDigitsFunctionAttrUsedDefault = usedDefault.functionAttr;
-          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault =
+            dependencyValues.displayDecimalsAttr === null ||
+            usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsFunctionAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          if (
+            !(
+              displayDigitsFunctionAttrUsedDefault ||
+              displayDecimalsAttrUsedDefault
+            )
+          ) {
             // if both display digits (from function) and display decimals did not use default
-            // we'll regard display digits as using default if it comes 
+            // we'll regard display digits as using default if it comes
             // from the same or deeper shadow
-            let shadowDepthDisplayDigitsFunction = dependencyValues.functionAttr.shadowDepth;
-            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+            let shadowDepthDisplayDigitsFunction =
+              dependencyValues.functionAttr.shadowDepth;
+            let shadowDepthDisplayDecimals =
+              dependencyValues.displayDecimalsAttr.shadowDepth;
 
-            if (shadowDepthDisplayDecimals <= shadowDepthDisplayDigitsFunction) {
+            if (
+              shadowDepthDisplayDecimals <= shadowDepthDisplayDigitsFunction
+            ) {
               displayDigitsFunctionAttrUsedDefault = true;
             }
           }
@@ -144,24 +160,26 @@ export default class Evaluate extends MathComponent {
             return {
               useEssentialOrDefaultValue: {
                 displayDigits: {
-                  defaultValue: dependencyValues.functionAttr.stateValues.displayDigits
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.functionAttr.stateValues.displayDigits,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDigits: dependencyValues.functionAttr.stateValues.displayDigits
-              }
-            }
+                displayDigits:
+                  dependencyValues.functionAttr.stateValues.displayDigits,
+              },
+            };
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displayDigits: true }
-          }
+            useEssentialOrDefaultValue: { displayDigits: true },
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.displayDecimals = {
       public: true,
@@ -174,7 +192,7 @@ export default class Evaluate extends MathComponent {
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -186,32 +204,35 @@ export default class Evaluate extends MathComponent {
         if (dependencyValues.displayDecimalsAttr !== null) {
           return {
             setValue: {
-              displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
-            }
-          }
+              displayDecimals:
+                dependencyValues.displayDecimalsAttr.stateValues.value,
+            },
+          };
         } else if (dependencyValues.functionAttr) {
           if (usedDefault.functionAttr) {
             return {
               useEssentialOrDefaultValue: {
                 displayDecimals: {
-                  defaultValue: dependencyValues.functionAttr.stateValues.displayDecimals
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.functionAttr.stateValues.displayDecimals,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDecimals: dependencyValues.functionAttr.stateValues.displayDecimals
-              }
-            }
+                displayDecimals:
+                  dependencyValues.functionAttr.stateValues.displayDecimals,
+              },
+            };
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displayDecimals: true }
-          }
+            useEssentialOrDefaultValue: { displayDecimals: true },
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.displaySmallAsZero = {
       public: true,
@@ -224,7 +245,7 @@ export default class Evaluate extends MathComponent {
         displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -236,32 +257,36 @@ export default class Evaluate extends MathComponent {
         if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
-              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
-            }
-          }
+              displaySmallAsZero:
+                dependencyValues.displaySmallAsZeroAttr.stateValues.value,
+            },
+          };
         } else if (dependencyValues.functionAttr) {
           if (usedDefault.functionAttr) {
             return {
               useEssentialOrDefaultValue: {
                 displaySmallAsZero: {
-                  defaultValue: dependencyValues.functionAttr.stateValues.displaySmallAsZero
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.functionAttr.stateValues
+                      .displaySmallAsZero,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displaySmallAsZero: dependencyValues.functionAttr.stateValues.displaySmallAsZero
-              }
-            }
+                displaySmallAsZero:
+                  dependencyValues.functionAttr.stateValues.displaySmallAsZero,
+              },
+            };
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displaySmallAsZero: true }
-          }
+            useEssentialOrDefaultValue: { displaySmallAsZero: true },
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.padZeros = {
       public: true,
@@ -274,7 +299,7 @@ export default class Evaluate extends MathComponent {
         padZerosAttr: {
           dependencyType: "attributeComponent",
           attributeName: "padZeros",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -286,49 +311,54 @@ export default class Evaluate extends MathComponent {
         if (dependencyValues.padZerosAttr !== null) {
           return {
             setValue: {
-              padZeros: dependencyValues.padZerosAttr.stateValues.value
-            }
-          }
+              padZeros: dependencyValues.padZerosAttr.stateValues.value,
+            },
+          };
         } else if (dependencyValues.functionAttr) {
           if (usedDefault.functionAttr) {
             return {
               useEssentialOrDefaultValue: {
                 padZeros: {
-                  defaultValue: dependencyValues.functionAttr.stateValues.padZeros
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.functionAttr.stateValues.padZeros,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                padZeros: dependencyValues.functionAttr.stateValues.padZeros
-              }
-            }
+                padZeros: dependencyValues.functionAttr.stateValues.padZeros,
+              },
+            };
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { padZeros: true }
-          }
+            useEssentialOrDefaultValue: { padZeros: true },
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.inputMaths = {
       returnDependencies: () => ({
         inputAttr: {
           dependencyType: "attributeComponent",
           attributeName: "input",
-          variableNames: ["maths"]
+          variableNames: ["maths"],
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.inputAttr) {
-          return { setValue: { inputMaths: dependencyValues.inputAttr.stateValues.maths } }
+          return {
+            setValue: {
+              inputMaths: dependencyValues.inputAttr.stateValues.maths,
+            },
+          };
         } else {
-          return { setValue: { inputMaths: [] } }
+          return { setValue: { inputMaths: [] } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.unnormalizedValue = {
       public: true,
@@ -339,7 +369,7 @@ export default class Evaluate extends MathComponent {
         return {
           inputMaths: {
             dependencyType: "stateVariable",
-            variableName: "inputMaths"
+            variableName: "inputMaths",
           },
           functionAttr: {
             dependencyType: "attributeComponent",
@@ -348,40 +378,39 @@ export default class Evaluate extends MathComponent {
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
-            variableName: "forceSymbolic"
+            variableName: "forceSymbolic",
           },
           forceNumeric: {
             dependencyType: "stateVariable",
-            variableName: "forceNumeric"
-          }
-        }
-
+            variableName: "forceNumeric",
+          },
+        };
       },
       definition({ dependencyValues }) {
-
         let functionComp = dependencyValues.functionAttr;
 
         if (!functionComp) {
           return {
             setValue: {
-              unnormalizedValue: me.fromAst('\uFF3F')
-            }
-          }
+              unnormalizedValue: me.fromAst("\uFF3F"),
+            },
+          };
         }
 
         let f;
-        if (!dependencyValues.forceNumeric &&
+        if (
+          !dependencyValues.forceNumeric &&
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
         ) {
           f = returnSymbolicFunctionForEvaluate({
             nInputs: functionComp.stateValues.nInputs,
             symbolicfs: functionComp.stateValues.symbolicfs,
-          })
+          });
         } else {
           f = returnNumericFunctionForEvaluate({
             nInputs: functionComp.stateValues.nInputs,
-            numericalfs: functionComp.stateValues.numericalfs
-          })
+            numericalfs: functionComp.stateValues.numericalfs,
+          });
         }
 
         let unnormalizedValue = f(dependencyValues.inputMaths);
@@ -390,11 +419,10 @@ export default class Evaluate extends MathComponent {
         // console.log(unnormalizedValue)
 
         return {
-          setValue: { unnormalizedValue }
-        }
-
-      }
-    }
+          setValue: { unnormalizedValue },
+        };
+      },
+    };
 
     stateVariableDefinitions.formula = {
       public: true,
@@ -405,43 +433,38 @@ export default class Evaluate extends MathComponent {
         return {
           inputMaths: {
             dependencyType: "stateVariable",
-            variableName: "inputMaths"
+            variableName: "inputMaths",
           },
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
             variableNames: ["symbolicfs", "nInputs"],
           },
-        }
-
+        };
       },
       definition({ dependencyValues }) {
-
         let functionComp = dependencyValues.functionAttr;
 
         if (!functionComp) {
           return {
             setValue: {
-              formula: me.fromAst('\uFF3F')
-            }
-          }
+              formula: me.fromAst("\uFF3F"),
+            },
+          };
         }
 
         let f = returnSymbolicFunctionForEvaluate({
           nInputs: functionComp.stateValues.nInputs,
           symbolicfs: functionComp.stateValues.symbolicfs,
-        })
+        });
 
         let formula = f(dependencyValues.inputMaths);
 
         return {
-          setValue: { formula }
-        }
-
-      }
-    }
-
-
+          setValue: { formula },
+        };
+      },
+    };
 
     stateVariableDefinitions.fReevaluate = {
       returnDependencies() {
@@ -453,46 +476,45 @@ export default class Evaluate extends MathComponent {
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
-            variableName: "forceSymbolic"
+            variableName: "forceSymbolic",
           },
           forceNumeric: {
             dependencyType: "stateVariable",
-            variableName: "forceNumeric"
-          }
-        }
-
+            variableName: "forceNumeric",
+          },
+        };
       },
       definition({ dependencyValues }) {
-
         let functionComp = dependencyValues.functionAttr;
 
         if (!functionComp) {
           return {
             setValue: {
-              fReevaluate: _ => me.fromAst('\uFF3F')
-            }
-          }
+              fReevaluate: (_) => me.fromAst("\uFF3F"),
+            },
+          };
         }
 
         let fReevaluate;
 
-        if (!dependencyValues.forceNumeric &&
+        if (
+          !dependencyValues.forceNumeric &&
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
         ) {
           fReevaluate = returnSymbolicFunctionForEvaluate({
             nInputs: functionComp.stateValues.nInputs,
             symbolicfs: functionComp.stateValues.symbolicfs,
-          })
+          });
         } else {
           fReevaluate = returnNumericFunctionForEvaluate({
             nInputs: functionComp.stateValues.nInputs,
-            numericalfs: functionComp.stateValues.numericalfs
-          })
+            numericalfs: functionComp.stateValues.numericalfs,
+          });
         }
 
-        return { setValue: { fReevaluate } }
-      }
-    }
+        return { setValue: { fReevaluate } };
+      },
+    };
 
     stateVariableDefinitions.fReevaluateDefinition = {
       returnDependencies() {
@@ -504,30 +526,29 @@ export default class Evaluate extends MathComponent {
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
-            variableName: "forceSymbolic"
+            variableName: "forceSymbolic",
           },
           forceNumeric: {
             dependencyType: "stateVariable",
-            variableName: "forceNumeric"
-          }
-        }
-
+            variableName: "forceNumeric",
+          },
+        };
       },
       definition({ dependencyValues }) {
-
         let functionComp = dependencyValues.functionAttr;
 
         if (!functionComp) {
           return {
             setValue: {
-              fReevaluateDefinition: {}
-            }
-          }
+              fReevaluateDefinition: {},
+            },
+          };
         }
 
         let fReevaluateDefinition;
 
-        if (!dependencyValues.forceNumeric &&
+        if (
+          !dependencyValues.forceNumeric &&
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
         ) {
           // TODO: fDefinitions only used for moving a function across the webworker barrier,
@@ -537,22 +558,20 @@ export default class Evaluate extends MathComponent {
           fReevaluateDefinition = {
             functionType: "numericForEvaluate",
             nInputs: functionComp.stateValues.nInputs,
-            fDefinitions: functionComp.stateValues.fDefinitions
-          }
+            fDefinitions: functionComp.stateValues.fDefinitions,
+          };
         } else {
           fReevaluateDefinition = {
             functionType: "numericForEvaluate",
             nInputs: functionComp.stateValues.nInputs,
-            fDefinitions: functionComp.stateValues.fDefinitions
-          }
+            fDefinitions: functionComp.stateValues.fDefinitions,
+          };
         }
 
-        return { setValue: { fReevaluateDefinition } }
-      }
-    }
+        return { setValue: { fReevaluateDefinition } };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

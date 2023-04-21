@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import { BoardContext, LINE_LAYER_OFFSET } from './graph';
-import me from 'math-expressions';
-import { MathJax } from 'better-react-mathjax';
-import { useRecoilValue } from 'recoil';
-import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
-import { textRendererStyle } from '../../Core/utils/style';
-
+import React, { useContext, useEffect, useRef } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { BoardContext, LINE_LAYER_OFFSET } from "./graph";
+import me from "math-expressions";
+import { MathJax } from "better-react-mathjax";
+import { useRecoilValue } from "recoil";
+import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { textRendererStyle } from "../../Core/utils/style";
 
 export default React.memo(function Line(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props);
@@ -38,9 +37,7 @@ export default React.memo(function Line(props) {
 
   const darkMode = useRecoilValue(darkModeAtom);
 
-
   useEffect(() => {
-
     //On unmount
     return () => {
       // if line is defined
@@ -49,24 +46,21 @@ export default React.memo(function Line(props) {
       }
 
       if (board) {
-        board.off('move', boardMoveHandler);
+        board.off("move", boardMoveHandler);
       }
-
-    }
-  }, [])
-
+    };
+  }, []);
 
   useEffect(() => {
     if (board) {
-      board.on('move', boardMoveHandler)
+      board.on("move", boardMoveHandler);
     }
-  }, [board])
-
+  }, [board]);
 
   function createLineJXG() {
-
-    if (SVs.numericalPoints?.length !== 2 ||
-      SVs.numericalPoints.some(x => x.length !== 2)
+    if (
+      SVs.numericalPoints?.length !== 2 ||
+      SVs.numericalPoints.some((x) => x.length !== 2)
     ) {
       lineJXG.current = {};
       return;
@@ -74,7 +68,10 @@ export default React.memo(function Line(props) {
 
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
-    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    let lineColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.lineColorDarkMode
+        : SVs.selectedStyle.lineColor;
 
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
@@ -94,7 +91,6 @@ export default React.memo(function Line(props) {
     };
 
     if (withlabel) {
-
       let anchorx, anchory, offset;
       if (SVs.labelPosition === "upperright") {
         offset = [5, 5];
@@ -120,11 +116,11 @@ export default React.memo(function Line(props) {
         anchorx,
         anchory,
         position: "top",
-        highlight: false
-      }
+        highlight: false,
+      };
 
       if (SVs.labelHasLatex) {
-        jsxLineAttributes.label.useMathJax = true
+        jsxLineAttributes.label.useMathJax = true;
       }
 
       if (SVs.applyStyleToLabel) {
@@ -134,35 +130,32 @@ export default React.memo(function Line(props) {
       }
     } else {
       jsxLineAttributes.label = {
-        highlight: false
-      }
+        highlight: false,
+      };
       if (SVs.labelHasLatex) {
-        jsxLineAttributes.label.useMathJax = true
+        jsxLineAttributes.label.useMathJax = true;
       }
     }
 
-    let through = [
-      [...SVs.numericalPoints[0]],
-      [...SVs.numericalPoints[1]]
-    ];
+    let through = [[...SVs.numericalPoints[0]], [...SVs.numericalPoints[1]]];
 
-    let newLineJXG = board.create('line', through, jsxLineAttributes);
+    let newLineJXG = board.create("line", through, jsxLineAttributes);
 
     newLineJXG.isDraggable = !fixLocation.current;
 
-    newLineJXG.on('drag', function (e) {
-
+    newLineJXG.on("drag", function (e) {
       let viaPointer = e.type === "pointermove";
 
       //Protect against very small unintended drags
-      if (!viaPointer ||
-        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        !viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         dragged.current = true;
       }
 
-      pointCoords.current = []
+      pointCoords.current = [];
 
       if (viaPointer) {
         var o = board.origin.scrCoords;
@@ -175,16 +168,27 @@ export default React.memo(function Line(props) {
           // .setCoordinates functions called in update()
           // so will get modified to go back to the attracting object
 
-          let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
-            - o[1]) / board.unitX;
-          let calculatedY = (o[2] -
-            (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
-            / board.unitY;
+          let calculatedX =
+            (pointsAtDown.current[i][1] +
+              e.x -
+              pointerAtDown.current[0] -
+              o[1]) /
+            board.unitX;
+          let calculatedY =
+            (o[2] -
+              (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1])) /
+            board.unitY;
           pointCoords.current.push([calculatedX, calculatedY]);
         }
       } else {
-        pointCoords.current.push([newLineJXG.point1.X(), newLineJXG.point1.Y()]);
-        pointCoords.current.push([newLineJXG.point2.X(), newLineJXG.point2.Y()]);
+        pointCoords.current.push([
+          newLineJXG.point1.X(),
+          newLineJXG.point1.Y(),
+        ]);
+        pointCoords.current.push([
+          newLineJXG.point2.X(),
+          newLineJXG.point2.Y(),
+        ]);
       }
 
       callAction({
@@ -194,89 +198,90 @@ export default React.memo(function Line(props) {
           point2coords: pointCoords.current[1],
           transient: true,
           skippable: true,
-        }
-      })
+        },
+      });
 
-      newLineJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
-      newLineJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
-    })
+      newLineJXG.point1.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionsFromCore.current[0],
+      );
+      newLineJXG.point2.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionsFromCore.current[1],
+      );
+    });
 
-    newLineJXG.on('up', function (e) {
+    newLineJXG.on("up", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveLine,
           args: {
             point1coords: pointCoords.current[0],
             point2coords: pointCoords.current[1],
-          }
-        })
+          },
+        });
       } else if (!pointerMovedSinceDown.current && !fixed.current) {
-
         if (switchable.current) {
           callAction({
             action: actions.switchLine,
-          })
+          });
           callAction({
             action: actions.lineClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         } else {
           callAction({
             action: actions.lineClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         }
       }
       pointerIsDown.current = false;
-    })
+    });
 
-    newLineJXG.on('keyfocusout', function (e) {
+    newLineJXG.on("keyfocusout", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveLine,
           args: {
             point1coords: pointCoords.current[0],
             point2coords: pointCoords.current[1],
-          }
-        })
+          },
+        });
         dragged.current = false;
       }
-    })
+    });
 
-    newLineJXG.on('down', function (e) {
+    newLineJXG.on("down", function (e) {
       dragged.current = false;
       pointerAtDown.current = [e.x, e.y];
       pointsAtDown.current = [
         [...newLineJXG.point1.coords.scrCoords],
-        [...newLineJXG.point2.coords.scrCoords]
-      ]
+        [...newLineJXG.point2.coords.scrCoords],
+      ];
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
       if (!fixed.current) {
         callAction({
           action: actions.lineFocused,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
+    });
 
-    })
-
-    newLineJXG.on('hit', function (e) {
+    newLineJXG.on("hit", function (e) {
       dragged.current = false;
       pointsAtDown.current = [
         [...newLineJXG.point1.coords.scrCoords],
-        [...newLineJXG.point2.coords.scrCoords]
-      ]
+        [...newLineJXG.point2.coords.scrCoords],
+      ];
       callAction({
         action: actions.lineFocused,
-        args: { name }   // send name so get original name if adapted
+        args: { name }, // send name so get original name if adapted
       });
+    });
 
-    })
-
-
-    newLineJXG.on('keydown', function (e) {
-
+    newLineJXG.on("keydown", function (e) {
       if (e.key === "Enter") {
         if (dragged.current) {
           callAction({
@@ -284,71 +289,64 @@ export default React.memo(function Line(props) {
             args: {
               point1coords: pointCoords.current[0],
               point2coords: pointCoords.current[1],
-            }
-          })
+            },
+          });
           dragged.current = false;
         }
         if (switchable.current) {
           callAction({
             action: actions.switchLine,
-          })
+          });
           callAction({
             action: actions.lineClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         } else {
           callAction({
             action: actions.lineClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         }
       }
-    })
-
+    });
 
     previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
 
     lineJXG.current = newLineJXG;
-
   }
 
   function boardMoveHandler(e) {
     if (pointerIsDown.current) {
       //Protect against very small unintended move
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         pointerMovedSinceDown.current = true;
       }
     }
   }
 
-
   function deleteLineJXG() {
-    lineJXG.current.off('drag');
-    lineJXG.current.off('down');
-    lineJXG.current.off('hit');
-    lineJXG.current.off('up');
-    lineJXG.current.off('keyfocusout');
-    lineJXG.current.off('keydown');
+    lineJXG.current.off("drag");
+    lineJXG.current.off("down");
+    lineJXG.current.off("hit");
+    lineJXG.current.off("up");
+    lineJXG.current.off("keyfocusout");
+    lineJXG.current.off("keydown");
     board.removeObject(lineJXG.current);
     lineJXG.current = {};
   }
 
-
   if (board) {
     if (Object.keys(lineJXG.current).length === 0) {
-
       createLineJXG();
-
-    } else if (SVs.numericalPoints?.length !== 2 ||
-      SVs.numericalPoints.some(x => x.length !== 2)
+    } else if (
+      SVs.numericalPoints?.length !== 2 ||
+      SVs.numericalPoints.some((x) => x.length !== 2)
     ) {
-
       deleteLineJXG();
-
     } else {
-
       let validCoords = true;
 
       for (let coords of [SVs.numericalPoints[0], SVs.numericalPoints[1]]) {
@@ -360,22 +358,28 @@ export default React.memo(function Line(props) {
         }
       }
 
-      lineJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalPoints[0]);
-      lineJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalPoints[1]);
+      lineJXG.current.point1.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        SVs.numericalPoints[0],
+      );
+      lineJXG.current.point2.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        SVs.numericalPoints[1],
+      );
 
       let visible = !SVs.hidden;
 
       if (validCoords) {
-        let actuallyChangedVisibility = lineJXG.current.visProp["visible"] !== visible;
+        let actuallyChangedVisibility =
+          lineJXG.current.visProp["visible"] !== visible;
         lineJXG.current.visProp["visible"] = visible;
         lineJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // at least for point, this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          lineJXG.current.setAttribute({ visible: visible })
+          lineJXG.current.setAttribute({ visible: visible });
         }
-
       } else {
         lineJXG.current.visProp["visible"] = false;
         lineJXG.current.visPropCalc["visible"] = false;
@@ -393,20 +397,26 @@ export default React.memo(function Line(props) {
         lineJXG.current.setAttribute({ layer });
       }
 
-
-      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      let lineColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.lineColorDarkMode
+          : SVs.selectedStyle.lineColor;
 
       if (lineJXG.current.visProp.strokecolor !== lineColor) {
         lineJXG.current.visProp.strokecolor = lineColor;
         lineJXG.current.visProp.highlightstrokecolor = lineColor;
       }
       if (lineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
-        lineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
-        lineJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+        lineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+        lineJXG.current.visProp.highlightstrokewidth =
+          SVs.selectedStyle.lineWidth;
       }
-      if (lineJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
-        lineJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
-        lineJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5
+      if (
+        lineJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity
+      ) {
+        lineJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        lineJXG.current.visProp.highlightstrokeopacity =
+          SVs.selectedStyle.lineOpacity * 0.5;
       }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (lineJXG.current.visProp.dash !== newDash) {
@@ -422,11 +432,11 @@ export default React.memo(function Line(props) {
       }
 
       lineJXG.current.needsUpdate = true;
-      lineJXG.current.update()
+      lineJXG.current.update();
       if (lineJXG.current.hasLabel) {
         lineJXG.current.label.needsUpdate = true;
         if (SVs.applyStyleToLabel) {
-          lineJXG.current.label.visProp.strokecolor = lineColor
+          lineJXG.current.label.visProp.strokecolor = lineColor;
         } else {
           lineJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
@@ -459,25 +469,34 @@ export default React.memo(function Line(props) {
         } else {
           lineJXG.current.label.update();
         }
-
       }
       board.updateRenderer();
     }
 
-    return <><a name={id} /></>
-
+    return (
+      <>
+        <a name={id} />
+      </>
+    );
   }
 
   if (SVs.hidden) {
     return null;
   }
 
-
-
   let mathJaxify = "\\(" + SVs.latex + "\\)";
   let style = textRendererStyle(darkMode, SVs.selectedStyle);
-  return <><a name={id} /><span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
-})
+  return (
+    <>
+      <a name={id} />
+      <span id={id} style={style}>
+        <MathJax hideUntilTypeset={"first"} inline dynamic>
+          {mathJaxify}
+        </MathJax>
+      </span>
+    </>
+  );
+});
 
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {

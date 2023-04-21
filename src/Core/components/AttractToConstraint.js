@@ -1,6 +1,6 @@
-import ConstraintComponent from './abstract/ConstraintComponent';
-import { findFiniteNumericalValue } from '../utils/math';
-import { applyConstraintFromComponentConstraints } from '../utils/constraints';
+import ConstraintComponent from "./abstract/ConstraintComponent";
+import { findFiniteNumericalValue } from "../utils/math";
+import { applyConstraintFromComponentConstraints } from "../utils/constraints";
 
 export default class AttractToConstraint extends ConstraintComponent {
   static componentType = "attractToConstraint";
@@ -17,17 +17,15 @@ export default class AttractToConstraint extends ConstraintComponent {
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "constraints",
-      componentTypes: ["_constraint"]
-    }]
-
+    return [
+      {
+        group: "constraints",
+        componentTypes: ["_constraint"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.applyConstraint = {
@@ -40,17 +38,16 @@ export default class AttractToConstraint extends ConstraintComponent {
         },
         independentComponentConstraints: {
           dependencyType: "stateVariable",
-          variableName: "independentComponentConstraints"
+          variableName: "independentComponentConstraints",
         },
         threshold: {
           dependencyType: "stateVariable",
-          variableName: "threshold"
-        }
+          variableName: "threshold",
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           applyConstraint: function ({ variables, scales }) {
-
             let constraintResult;
 
             let constraintChild = dependencyValues.constraintChild[0];
@@ -60,13 +57,17 @@ export default class AttractToConstraint extends ConstraintComponent {
             }
 
             if (constraintChild.stateValues.applyConstraint) {
-              constraintResult = constraintChild.stateValues.applyConstraint({ variables, scales });
+              constraintResult = constraintChild.stateValues.applyConstraint({
+                variables,
+                scales,
+              });
             } else {
               constraintResult = applyConstraintFromComponentConstraints({
                 variables,
-                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
-                scales
-              })
+                applyComponentConstraint:
+                  constraintChild.stateValues.applyComponentConstraint,
+                scales,
+              });
             }
 
             let distance2 = 0;
@@ -75,27 +76,33 @@ export default class AttractToConstraint extends ConstraintComponent {
               // since, for now, have a distance function only for numerical values,
               // skip if don't have numerical values
               let originalVar = findFiniteNumericalValue(variables[varname]);
-              let constrainedVar = findFiniteNumericalValue(constraintResult.variables[varname]);
+              let constrainedVar = findFiniteNumericalValue(
+                constraintResult.variables[varname],
+              );
 
-              if (!Number.isFinite(originalVar) || !Number.isFinite(constrainedVar)) {
+              if (
+                !Number.isFinite(originalVar) ||
+                !Number.isFinite(constrainedVar)
+              ) {
                 return {};
               }
 
               distance2 += Math.pow(originalVar - constrainedVar, 2);
             }
 
-            if (distance2 > dependencyValues.threshold * dependencyValues.threshold) {
+            if (
+              distance2 >
+              dependencyValues.threshold * dependencyValues.threshold
+            ) {
               return {};
             }
 
             return constraintResult;
-          }
-        }
-      })
-    }
+          },
+        },
+      }),
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

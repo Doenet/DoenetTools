@@ -1,7 +1,7 @@
-import { roundForDisplay } from '../utils/math';
-import BaseComponent from './abstract/BaseComponent';
-import me from 'math-expressions';
-import { returnLabelStateVariableDefinitions } from '../utils/label';
+import { roundForDisplay } from "../utils/math";
+import BaseComponent from "./abstract/BaseComponent";
+import me from "math-expressions";
+import { returnLabelStateVariableDefinitions } from "../utils/label";
 
 export default class Slider extends BaseComponent {
   constructor(args) {
@@ -9,7 +9,7 @@ export default class Slider extends BaseComponent {
     this.changeValue = this.changeValue.bind(this);
 
     Object.assign(this.actions, {
-      changeValue: this.changeValue
+      changeValue: this.changeValue,
     });
   }
   static componentType = "slider";
@@ -32,20 +32,20 @@ export default class Slider extends BaseComponent {
       createStateVariable: "width",
       defaultValue: { size: 300, isAbsolute: true },
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
       defaultValue: { size: 100, isAbsolute: true },
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.initialValue = {
       createComponentOfType: "_componentWithSelectableType",
       createStateVariable: "initialValue",
       defaultValue: null,
-    }
+    };
     attributes.labelIsName = {
       createComponentOfType: "boolean",
       createStateVariable: "labelIsName",
@@ -57,42 +57,42 @@ export default class Slider extends BaseComponent {
       createStateVariable: "showControls",
       defaultValue: false,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.showTicks = {
       createComponentOfType: "boolean",
       createStateVariable: "showTicks",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.showValue = {
       createComponentOfType: "boolean",
       createStateVariable: "showValue",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.from = {
       createComponentOfType: "number",
       createStateVariable: "from",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.to = {
       createComponentOfType: "number",
       createStateVariable: "to",
       defaultValue: 10,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.step = {
       createComponentOfType: "number",
       createStateVariable: "step",
       defaultValue: 1,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.displayDigits = {
@@ -108,7 +108,7 @@ export default class Slider extends BaseComponent {
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1E-14,
+      valueForTrue: 1e-14,
       valueForFalse: 0,
       defaultValue: 0,
       public: true,
@@ -121,25 +121,24 @@ export default class Slider extends BaseComponent {
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "numbersTexts",
-      componentTypes: ["number", "text"]
-    }, {
-      group: "markers",
-      componentTypes: ["markers"]
-    }, {
-      group: "labels",
-      componentTypes: ["label"]
-    }]
-
+    return [
+      {
+        group: "numbersTexts",
+        componentTypes: ["number", "text"],
+      },
+      {
+        group: "markers",
+        componentTypes: ["markers"],
+      },
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let labelDefinitions = returnLabelStateVariableDefinitions();
@@ -157,26 +156,30 @@ export default class Slider extends BaseComponent {
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.displayDigitsAttr !== null) {
-
           let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault =
+            dependencyValues.displayDecimalsAttr === null ||
+            usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          if (
+            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
+          ) {
             // if both display digits and display decimals did not use default
             // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+            let shadowDepthDisplayDigits =
+              dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals =
+              dependencyValues.displayDecimalsAttr.shadowDepth;
 
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
@@ -187,23 +190,24 @@ export default class Slider extends BaseComponent {
             return {
               useEssentialOrDefaultValue: {
                 displayDigits: {
-                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.displayDigitsAttr.stateValues.value,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
-              }
-            }
+                displayDigits:
+                  dependencyValues.displayDigitsAttr.stateValues.value,
+              },
+            };
           }
         }
 
-        return { useEssentialOrDefaultValue: { displayDigits: true } }
-
-      }
-    }
+        return { useEssentialOrDefaultValue: { displayDigits: true } };
+      },
+    };
 
     stateVariableDefinitions.items = {
       forRenderer: true,
@@ -218,15 +222,14 @@ export default class Slider extends BaseComponent {
         numberAndTextChildren: {
           dependencyType: "child",
           childGroups: ["numbersTexts"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
-        }
+          variableName: "type",
+        },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-
         let items = [];
 
         // Note: if no numberAndTextChildren, items will be empty.
@@ -235,42 +238,46 @@ export default class Slider extends BaseComponent {
 
         if (dependencyValues.type === "text") {
           for (let child of dependencyValues.numberAndTextChildren) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "text"
-            })) {
-              items.push(child.stateValues.value)
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "text",
+              })
+            ) {
+              items.push(child.stateValues.value);
             } else {
               // number child
-              items.push(child.stateValues.value.toString())
+              items.push(child.stateValues.value.toString());
             }
           }
         } else if (dependencyValues.numberAndTextChildren.length > 0) {
-
           for (let child of dependencyValues.numberAndTextChildren) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "number"
-            })) {
-              items.push(child.stateValues.value)
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "number",
+              })
+            ) {
+              items.push(child.stateValues.value);
             } else {
               // text child
-              let num = Number(child.stateValues.value)
+              let num = Number(child.stateValues.value);
               if (Number.isFinite(num)) {
                 items.push(num);
               }
             }
           }
-          items.sort((a, b) => { return a - b; }); //sort in number order
+          items.sort((a, b) => {
+            return a - b;
+          }); //sort in number order
         }
 
         return {
           setValue: { items },
           setCreateComponentOfType: { items: dependencyValues.type },
         };
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.nItems = {
       forRenderer: true,
@@ -281,24 +288,24 @@ export default class Slider extends BaseComponent {
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
-          variableName: "items"
+          variableName: "items",
         },
         from: {
           dependencyType: "stateVariable",
-          variableName: "from"
+          variableName: "from",
         },
         to: {
           dependencyType: "stateVariable",
-          variableName: "to"
+          variableName: "to",
         },
         step: {
           dependencyType: "stateVariable",
-          variableName: "step"
+          variableName: "step",
         },
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
-        }
+          variableName: "type",
+        },
       }),
       definition({ dependencyValues }) {
         let nItems = dependencyValues.items.length;
@@ -306,117 +313,120 @@ export default class Slider extends BaseComponent {
         if (nItems === 0 && dependencyValues.type === "number") {
           // Note: add 1E-10 before taking floor
           // to make sure round-off error doesn't reduce number of items
-          nItems = Math.floor((dependencyValues.to - dependencyValues.from) / dependencyValues.step + 1E-10) + 1;
+          nItems =
+            Math.floor(
+              (dependencyValues.to - dependencyValues.from) /
+                dependencyValues.step +
+                1e-10,
+            ) + 1;
           if (!(nItems >= 0 && Number.isFinite(nItems))) {
             nItems = 0;
           }
         }
 
-        return { setValue: { nItems } }
-      }
-    }
+        return { setValue: { nItems } };
+      },
+    };
 
     stateVariableDefinitions.firstItem = {
       forRenderer: true,
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
-          variableName: "items"
+          variableName: "items",
         },
         from: {
           dependencyType: "stateVariable",
-          variableName: "from"
+          variableName: "from",
         },
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
       }),
       definition({ dependencyValues }) {
-
         let firstItem;
 
         if (dependencyValues.items.length > 0) {
           firstItem = dependencyValues.items[0];
         } else if (dependencyValues.type === "number") {
-          firstItem = dependencyValues.from
+          firstItem = dependencyValues.from;
         } else {
-          firstItem = null;  // text with no children
+          firstItem = null; // text with no children
         }
 
-        return { setValue: { firstItem } }
-      }
-    }
+        return { setValue: { firstItem } };
+      },
+    };
 
     stateVariableDefinitions.lastItem = {
       forRenderer: true,
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
-          variableName: "items"
+          variableName: "items",
         },
         from: {
           dependencyType: "stateVariable",
-          variableName: "from"
+          variableName: "from",
         },
         nItems: {
           dependencyType: "stateVariable",
-          variableName: "nItems"
+          variableName: "nItems",
         },
         step: {
           dependencyType: "stateVariable",
-          variableName: "step"
+          variableName: "step",
         },
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
       }),
       definition({ dependencyValues }) {
-
         let lastItem;
 
         if (dependencyValues.items.length > 0) {
           lastItem = dependencyValues.items[dependencyValues.items.length - 1];
         } else if (dependencyValues.type === "number") {
-          lastItem = dependencyValues.from + (dependencyValues.nItems - 1) * dependencyValues.step;
+          lastItem =
+            dependencyValues.from +
+            (dependencyValues.nItems - 1) * dependencyValues.step;
         } else {
-          lastItem = null;   // text with no children
+          lastItem = null; // text with no children
         }
 
-        return { setValue: { lastItem } }
-      }
-    }
-
+        return { setValue: { lastItem } };
+      },
+    };
 
     stateVariableDefinitions.valueToIndex = {
       forRenderer: true,
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
-          variableName: "items"
-        }
+          variableName: "items",
+        },
       }),
       definition: function ({ dependencyValues }) {
         let valueToIndex = {};
         for (let [ind, item] of dependencyValues.items.entries()) {
           valueToIndex[item] = ind;
         }
-        return { setValue: { valueToIndex } }
-      }
-    }
-
+        return { setValue: { valueToIndex } };
+      },
+    };
 
     stateVariableDefinitions.preliminaryValue = {
       hasEssential: true,
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         initialValue: {
           dependencyType: "stateVariable",
-          variableName: "initialValue"
+          variableName: "initialValue",
         },
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -431,44 +441,51 @@ export default class Slider extends BaseComponent {
               preliminaryValue: {
                 get defaultValue() {
                   return dependencyValues.initialValue;
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          };
         }
 
-        return { setValue: { preliminaryValue: dependencyValues.bindValueTo.stateValues.value } };
-
+        return {
+          setValue: {
+            preliminaryValue: dependencyValues.bindValueTo.stateValues.value,
+          },
+        };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.bindValueTo) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "bindValueTo",
-              desiredValue: desiredStateVariableValues.preliminaryValue,
-              variableIndex: 0,
-            }]
+            instructions: [
+              {
+                setDependency: "bindValueTo",
+                desiredValue: desiredStateVariableValues.preliminaryValue,
+                variableIndex: 0,
+              },
+            ],
           };
         }
 
         // no children, so preliminaryValue is essential and give it the desired value
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "preliminaryValue",
-            value: desiredStateVariableValues.preliminaryValue
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "preliminaryValue",
+              value: desiredStateVariableValues.preliminaryValue,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.index = {
       forRenderer: true,
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         valueToIndex: {
           dependencyType: "stateVariable",
@@ -480,23 +497,22 @@ export default class Slider extends BaseComponent {
         },
         preliminaryValue: {
           dependencyType: "stateVariable",
-          variableName: "preliminaryValue"
+          variableName: "preliminaryValue",
         },
         from: {
           dependencyType: "stateVariable",
-          variableName: "from"
+          variableName: "from",
         },
         step: {
           dependencyType: "stateVariable",
-          variableName: "step"
+          variableName: "step",
         },
         nItems: {
           dependencyType: "stateVariable",
-          variableName: "nItems"
-        }
+          variableName: "nItems",
+        },
       }),
       definition: function ({ dependencyValues }) {
-
         let index = findIndexOfClosestValidValue(dependencyValues);
 
         //The text value might not match so choose the first item
@@ -504,11 +520,9 @@ export default class Slider extends BaseComponent {
           index = 0;
         }
 
-        return { setValue: { index } }
-
+        return { setValue: { index } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-
         if (dependencyValues.items.length === 0) {
           // values specified by from, to, step
 
@@ -523,19 +537,20 @@ export default class Slider extends BaseComponent {
           if (ind >= 0 && ind < dependencyValues.nItems) {
             return {
               success: true,
-              instructions: [{
-                setDependency: "preliminaryValue",
-                desiredValue: from + ind * step
-              }]
-            }
+              instructions: [
+                {
+                  setDependency: "preliminaryValue",
+                  desiredValue: from + ind * step,
+                },
+              ],
+            };
           } else {
             return { success: false };
           }
-
         }
 
-
-        let desiredValue = dependencyValues.items[desiredStateVariableValues.index];
+        let desiredValue =
+          dependencyValues.items[desiredStateVariableValues.index];
 
         if (desiredValue === undefined) {
           return { success: false };
@@ -543,15 +558,15 @@ export default class Slider extends BaseComponent {
 
         return {
           success: true,
-          instructions: [{
-            setDependency: "preliminaryValue",
-            desiredValue
-          }]
-        }
-
-      }
-
-    }
+          instructions: [
+            {
+              setDependency: "preliminaryValue",
+              desiredValue,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.value = {
       forRenderer: true,
@@ -562,23 +577,23 @@ export default class Slider extends BaseComponent {
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         items: {
           dependencyType: "stateVariable",
-          variableName: "items"
+          variableName: "items",
         },
         index: {
           dependencyType: "stateVariable",
-          variableName: "index"
+          variableName: "index",
         },
         from: {
           dependencyType: "stateVariable",
-          variableName: "from"
+          variableName: "from",
         },
         step: {
           dependencyType: "stateVariable",
-          variableName: "step"
+          variableName: "step",
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -587,36 +602,37 @@ export default class Slider extends BaseComponent {
           value = dependencyValues.items[dependencyValues.index];
         } else {
           // value determined by from,to,step
-          value = dependencyValues.from + dependencyValues.step * dependencyValues.index;
+          value =
+            dependencyValues.from +
+            dependencyValues.step * dependencyValues.index;
         }
 
         return {
           setValue: { value },
           setCreateComponentOfType: { value: dependencyValues.type },
-        }
-
+        };
       },
       inverseDefinition: invertSliderValue,
-    }
+    };
 
     stateVariableDefinitions.valueForDisplay = {
       forRenderer: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
-          variableName: "value"
+          variableName: "value",
         },
         displayDigits: {
           dependencyType: "stateVariable",
-          variableName: "displayDigits"
+          variableName: "displayDigits",
         },
         displayDecimals: {
           dependencyType: "stateVariable",
-          variableName: "displayDecimals"
+          variableName: "displayDecimals",
         },
         displaySmallAsZero: {
           dependencyType: "stateVariable",
-          variableName: "displaySmallAsZero"
+          variableName: "displaySmallAsZero",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
@@ -624,18 +640,17 @@ export default class Slider extends BaseComponent {
         // determined by displaydigits or displaydecimals
         let rounded = roundForDisplay({
           value: dependencyValues.value,
-          dependencyValues, usedDefault
+          dependencyValues,
+          usedDefault,
         });
 
         return {
           setValue: {
-            valueForDisplay: rounded.tree
-          }
-        }
-      }
-    }
-
-
+            valueForDisplay: rounded.tree,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.markers = {
       forRenderer: true,
@@ -643,25 +658,25 @@ export default class Slider extends BaseComponent {
         markersChild: {
           dependencyType: "child",
           childGroups: ["markers"],
-          variableNames: ["markerType", "markers"]
+          variableNames: ["markerType", "markers"],
         },
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         items: {
           dependencyType: "stateVariable",
-          variableName: "items"
+          variableName: "items",
         },
       }),
       definition: function ({ dependencyValues }) {
         let markers = [];
 
         if (dependencyValues.markersChild.length > 0) {
+          let markerType =
+            dependencyValues.markersChild[0].stateValues.markerType;
 
-          let markerType = dependencyValues.markersChild[0].stateValues.markerType;
-
-          if (markerType === 'empty') {
+          if (markerType === "empty") {
             //All Ticks become markers
             markers = [...dependencyValues.items];
           } else if (markerType !== dependencyValues.type) {
@@ -673,10 +688,9 @@ export default class Slider extends BaseComponent {
           }
         }
 
-        return { setValue: { markers } }
-
-      }
-    }
+        return { setValue: { markers } };
+      },
+    };
 
     // stateVariableDefinitions.disabled = {
     //   forRenderer: true,
@@ -701,19 +715,24 @@ export default class Slider extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-
-  async changeValue({ value, transient, actionId,
-    sourceInformation = {}, skipRendererUpdate = false,
+  async changeValue({
+    value,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-    if (!await this.stateValues.disabled) {
+    if (!(await this.stateValues.disabled)) {
       if (transient) {
         return await this.coreFunctions.performUpdate({
-          updateInstructions: [{
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "value",
-            value
-          }],
+          updateInstructions: [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "value",
+              value,
+            },
+          ],
           transient,
           actionId,
           sourceInformation,
@@ -721,12 +740,14 @@ export default class Slider extends BaseComponent {
         });
       } else {
         return await this.coreFunctions.performUpdate({
-          updateInstructions: [{
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "value",
-            value
-          }],
+          updateInstructions: [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "value",
+              value,
+            },
+          ],
           actionId,
           sourceInformation,
           skipRendererUpdate,
@@ -738,24 +759,26 @@ export default class Slider extends BaseComponent {
             },
             result: {
               response: value,
-              responseText: value.toString()
-            }
-          }
+              responseText: value.toString(),
+            },
+          },
         });
       }
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
-
-
 }
 
-function findIndexOfClosestValidValue({ preliminaryValue, valueToIndex,
-  type, items,
-  from, step, nItems,
+function findIndexOfClosestValidValue({
+  preliminaryValue,
+  valueToIndex,
+  type,
+  items,
+  from,
+  step,
+  nItems,
 }) {
-
   let value = preliminaryValue;
 
   if (items.length === 0) {
@@ -775,7 +798,6 @@ function findIndexOfClosestValidValue({ preliminaryValue, valueToIndex,
     } else {
       return 0;
     }
-
   }
 
   // first check if value is actually a known value
@@ -789,20 +811,21 @@ function findIndexOfClosestValidValue({ preliminaryValue, valueToIndex,
     return undefined;
   }
 
-  let findNextLargerIndex = function (minIndex = 0, maxIndex = items.length - 1) {
+  let findNextLargerIndex = function (
+    minIndex = 0,
+    maxIndex = items.length - 1,
+  ) {
     if (maxIndex <= minIndex + 1) {
       if (value > items[minIndex]) {
         return maxIndex;
-      }
-      else {
+      } else {
         return minIndex;
       }
     }
     let midIndex = Math.round((maxIndex + minIndex) / 2);
     if (value > items[midIndex]) {
       return findNextLargerIndex(midIndex, maxIndex);
-    }
-    else {
+    } else {
       return findNextLargerIndex(minIndex, midIndex);
     }
   };
@@ -821,19 +844,18 @@ function findIndexOfClosestValidValue({ preliminaryValue, valueToIndex,
 }
 
 async function invertSliderValue({ desiredStateVariableValues, stateValues }) {
-
   // console.log(`invert slider value`)
   // console.log(desiredStateVariableValues)
   // console.log(stateValues);
 
   let preliminaryValue = desiredStateVariableValues.value;
-  if (await stateValues.type === "text") {
+  if ((await stateValues.type) === "text") {
     preliminaryValue = preliminaryValue.toString();
   } else {
     if (preliminaryValue instanceof me.class) {
       preliminaryValue = preliminaryValue.evaluate_to_constant();
       if (Number.isNaN(preliminaryValue)) {
-        return { success: false }
+        return { success: false };
       }
     } else {
       preliminaryValue = Number(preliminaryValue);
@@ -847,7 +869,7 @@ async function invertSliderValue({ desiredStateVariableValues, stateValues }) {
     items: await stateValues.items,
     from: await stateValues.from,
     step: await stateValues.step,
-    nItems: await stateValues.nItems
+    nItems: await stateValues.nItems,
   });
 
   // Text value requested didn't match so can't update
@@ -856,11 +878,12 @@ async function invertSliderValue({ desiredStateVariableValues, stateValues }) {
   } else {
     return {
       success: true,
-      instructions: [{
-        setDependency: "index",
-        desiredValue: newIndex
-      }]
-    }
+      instructions: [
+        {
+          setDependency: "index",
+          desiredValue: newIndex,
+        },
+      ],
+    };
   }
-
 }

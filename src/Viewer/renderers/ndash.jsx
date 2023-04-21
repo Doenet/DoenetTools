@@ -1,5 +1,5 @@
-import React from 'react';
-import useDoenetRender from '../useDoenetRenderer';
+import React from "react";
+import useDoenetRender from "../useDoenetRenderer";
 
 export default React.memo(function Ndash(props) {
   let { SVs } = useDoenetRender(props);
@@ -8,6 +8,5 @@ export default React.memo(function Ndash(props) {
     return null;
   }
 
-  return <>&ndash;</>
-
-})
+  return <>&ndash;</>;
+});

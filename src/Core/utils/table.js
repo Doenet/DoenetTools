@@ -1,4 +1,3 @@
-
 // Convert letter string or number index starting with 1)
 // to number index starting with 0
 // (Author can index tables with the letter/1-based number system
@@ -16,13 +15,12 @@ export function normalizeIndex(numberOrLetter) {
     return Number(numberOrLetter) - 1;
   }
 
-  if (typeof numberOrLetter !== 'string') {
+  if (typeof numberOrLetter !== "string") {
     return undefined;
   }
 
   return lettersToNumber(numberOrLetter);
 }
-
 
 // convert letter combinations to 0-based number
 export function lettersToNumber(letters) {
@@ -41,4 +39,3 @@ export function lettersToNumber(letters) {
   number--;
   return number;
 }
-

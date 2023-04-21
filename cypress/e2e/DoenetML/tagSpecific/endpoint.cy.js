@@ -1,17 +1,17 @@
-import me from 'math-expressions';
-import { cesc } from '../../../../src/_utils/url';
+import me from "math-expressions";
+import { cesc } from "../../../../src/_utils/url";
 
-describe('Endpoint Tag Tests', function () {
-
+describe("Endpoint Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
-  })
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
-  it('endpoint change open', () => {
+  it("endpoint change open", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <graph name="g" newNamespace>
       <endpoint name="A" open switchAble>(4,0)</endpoint>
@@ -28,10 +28,13 @@ describe('Endpoint Tag Tests', function () {
     <copy prop="value" target="b2" assignNames="b2a" />
 
     <copy target="g" assignNames="g2" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -53,11 +56,11 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.xs).eqls([7, 0]);
       expect(stateVariables["/g2/C"].stateValues.xs).eqls([-9, 0]);
       expect(stateVariables["/g2/D"].stateValues.xs).eqls([-3, 0]);
-    })
+    });
 
-    cy.log('switch C via boolean input')
-    cy.get(cesc('#\\/b1')).click();
-    cy.get(cesc('#\\/b1a')).should('have.text', 'true')
+    cy.log("switch C via boolean input");
+    cy.get(cesc("#\\/b1")).click();
+    cy.get(cesc("#\\/b1a")).should("have.text", "true");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -71,11 +74,11 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.open).eq(false);
       expect(stateVariables["/g2/C"].stateValues.open).eq(true);
       expect(stateVariables["/g2/D"].stateValues.open).eq(false);
-    })
+    });
 
-    cy.log('switch D via boolean input')
-    cy.get(cesc('#\\/b2')).click();
-    cy.get(cesc('#\\/b2a')).should('have.text', 'true')
+    cy.log("switch D via boolean input");
+    cy.get(cesc("#\\/b2")).click();
+    cy.get(cesc("#\\/b2a")).should("have.text", "true");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -89,10 +92,9 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.open).eq(false);
       expect(stateVariables["/g2/C"].stateValues.open).eq(true);
       expect(stateVariables["/g2/D"].stateValues.open).eq(true);
-    })
+    });
 
-
-    cy.log('switch A via first action')
+    cy.log("switch A via first action");
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "switchPoint",
@@ -110,11 +112,9 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.open).eq(false);
       expect(stateVariables["/g2/C"].stateValues.open).eq(true);
       expect(stateVariables["/g2/D"].stateValues.open).eq(true);
-    })
+    });
 
-
-
-    cy.log('switch A via second action')
+    cy.log("switch A via second action");
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "switchPoint",
@@ -132,10 +132,9 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.open).eq(false);
       expect(stateVariables["/g2/C"].stateValues.open).eq(true);
       expect(stateVariables["/g2/D"].stateValues.open).eq(true);
-    })
+    });
 
-
-    cy.log('cannot switch B via action')
+    cy.log("cannot switch B via action");
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "switchPoint",
@@ -153,11 +152,9 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.open).eq(false);
       expect(stateVariables["/g2/C"].stateValues.open).eq(true);
       expect(stateVariables["/g2/D"].stateValues.open).eq(true);
-    })
+    });
 
-
-
-    cy.log('cannot switch C via second action')
+    cy.log("cannot switch C via second action");
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "switchPoint",
@@ -175,10 +172,9 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.open).eq(false);
       expect(stateVariables["/g2/C"].stateValues.open).eq(true);
       expect(stateVariables["/g2/D"].stateValues.open).eq(true);
-    })
+    });
 
-
-    cy.log('switch D via second action')
+    cy.log("switch D via second action");
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "switchPoint",
@@ -196,12 +192,6 @@ describe('Endpoint Tag Tests', function () {
       expect(stateVariables["/g2/B"].stateValues.open).eq(false);
       expect(stateVariables["/g2/C"].stateValues.open).eq(true);
       expect(stateVariables["/g2/D"].stateValues.open).eq(false);
-    })
-
-
-
-
+    });
   });
-
-
-})
+});

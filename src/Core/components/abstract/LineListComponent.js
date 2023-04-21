@@ -1,62 +1,56 @@
-import BaseComponent from './BaseComponent';
+import BaseComponent from "./BaseComponent";
 
 export default class LineListComponent extends BaseComponent {
   static componentType = "_lineListComponent";
   static rendererType = "containerInline";
   static renderChildren = true;
 
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
     let breakStringsIntoLinesBySpaces = function ({ matchedChildren }) {
-
       // break any string by white space and wrap pieces with line
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (typeof c === "string") {
           return [
             ...a,
-            ...c.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
+            ...c
+              .split(/\s+/)
+              .filter((s) => s)
+              .map((s) => ({
                 componentType: "line",
-                children: [s]
-              }))
-          ]
+                children: [s],
+              })),
+          ];
         } else {
-          return [...a, c]
+          return [...a, c];
         }
       }, []);
 
       return {
         success: true,
         newChildren: newChildren,
-      }
-    }
-
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoLinesBySpaces
+      replacementFunction: breakStringsIntoLinesBySpaces,
     });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "lines",
-      componentTypes: ["line"]
-    }]
-
+    return [
+      {
+        group: "lines",
+        componentTypes: ["line"],
+      },
+    ];
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nLines = {
@@ -65,16 +59,15 @@ export default class LineListComponent extends BaseComponent {
           dependencyType: "child",
           childGroups: ["lines"],
           skipComponentNames: true,
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
         return {
           setValue: { nLines: dependencyValues.lineChildren.length },
-          checkForActualChange: { nLines: true }
-        }
-      }
-    }
-
+          checkForActualChange: { nLines: true },
+        };
+      },
+    };
 
     stateVariableDefinitions.lineNames = {
       isArray: true,
@@ -96,31 +89,26 @@ export default class LineListComponent extends BaseComponent {
               dependencyType: "child",
               childGroups: ["lines"],
               childIndices: [arrayKey],
-            }
-          }
+            },
+          };
         }
 
         return { dependenciesByKey };
-
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         let lineNames = {};
 
         for (let arrayKey of arrayKeys) {
           let lineChild = dependencyValuesByKey[arrayKey].lineChild[0];
           if (lineChild) {
-            lineNames[arrayKey] = lineChild.componentName
+            lineNames[arrayKey] = lineChild.componentName;
           }
         }
 
-        return { setValue: { lineNames } }
-
-      }
-    }
+        return { setValue: { lineNames } };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

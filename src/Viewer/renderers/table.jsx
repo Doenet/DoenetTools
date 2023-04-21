@@ -1,25 +1,25 @@
-import React, { useEffect } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import VisibilitySensor from 'react-visibility-sensor-v2';
+import React, { useEffect } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import VisibilitySensor from "react-visibility-sensor-v2";
 
 export default React.memo(function Table(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
-  let onChangeVisibility = isVisible => {
+  let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
-      args: { isVisible }
-    })
-  }
+      args: { isVisible },
+    });
+  };
 
   useEffect(() => {
     return () => {
       callAction({
         action: actions.recordVisibilityChange,
-        args: { isVisible: false }
-      })
-    }
-  }, [])
+        args: { isVisible: false },
+      });
+    };
+  }, []);
 
   if (SVs.hidden) {
     return null;
@@ -38,7 +38,9 @@ export default React.memo(function Table(props) {
     let titleChildInd;
     for (let [ind, child] of children.entries()) {
       //child might be null or a string
-      if (child?.props?.componentInstructions.componentName === SVs.titleChildName) {
+      if (
+        child?.props?.componentInstructions.componentName === SVs.titleChildName
+      ) {
         titleChildInd = ind;
         break;
       }
@@ -50,15 +52,19 @@ export default React.memo(function Table(props) {
   }
 
   if (!SVs.suppressTableNameInTitle) {
-    let tableName = <strong>{SVs.tableName}</strong>
+    let tableName = <strong>{SVs.tableName}</strong>;
     if (title) {
-      title = <>{tableName}: {title}</>
+      title = (
+        <>
+          {tableName}: {title}
+        </>
+      );
     } else {
       title = tableName;
     }
   }
 
-  heading = <div id={id + "_title"}>{title}</div>
+  heading = <div id={id + "_title"}>{title}</div>;
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
@@ -68,5 +74,5 @@ export default React.memo(function Table(props) {
         {childrenToRender}
       </div>
     </VisibilitySensor>
-  )
-})
+  );
+});

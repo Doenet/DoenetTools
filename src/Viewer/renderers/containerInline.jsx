@@ -1,5 +1,5 @@
-import React from 'react';
-import useDoenetRender from '../useDoenetRenderer';
+import React from "react";
+import useDoenetRender from "../useDoenetRenderer";
 
 export default React.memo(function ContainerInline(props) {
   let { name, id, SVs, children } = useDoenetRender(props);
@@ -8,5 +8,10 @@ export default React.memo(function ContainerInline(props) {
     return null;
   }
 
-  return <span id={id}><a name={id} />{children}</span>;
-})
+  return (
+    <span id={id}>
+      <a name={id} />
+      {children}
+    </span>
+  );
+});

@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import VisibilitySensor from 'react-visibility-sensor-v2';
-import Measure from 'react-measure';
+import React, { useState, useEffect } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import VisibilitySensor from "react-visibility-sensor-v2";
+import Measure from "react-measure";
 
 export default React.memo(function Figure(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
-  let onChangeVisibility = isVisible => {
+  let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
-      args: { isVisible }
-    })
-  }
+      args: { isVisible },
+    });
+  };
 
   useEffect(() => {
     return () => {
       callAction({
         action: actions.recordVisibilityChange,
-        args: { isVisible: false }
-      })
-    }
-  }, [])
+        args: { isVisible: false },
+      });
+    };
+  }, []);
 
   if (SVs.hidden || !children) {
     return null;
@@ -37,7 +37,10 @@ export default React.memo(function Figure(props) {
     let captionChildInd;
     for (let [ind, child] of children.entries()) {
       //child might be null or a string
-      if (child?.props?.componentInstructions.componentName === SVs.captionChildName) {
+      if (
+        child?.props?.componentInstructions.componentName ===
+        SVs.captionChildName
+      ) {
         captionChildInd = ind;
         break;
       }
@@ -48,15 +51,19 @@ export default React.memo(function Figure(props) {
   }
 
   if (!SVs.suppressFigureNameInCaption) {
-    let figureName = <strong>{SVs.figureName}</strong>
+    let figureName = <strong>{SVs.figureName}</strong>;
     if (captionChild) {
-      caption = <div>{figureName}: {captionChild}</div>
+      caption = (
+        <div>
+          {figureName}: {captionChild}
+        </div>
+      );
     } else {
-      caption = <div>{figureName}</div>
+      caption = <div>{figureName}</div>;
     }
   } else {
     if (captionChild) {
-      caption = <div>{captionChild}</div>
+      caption = <div>{captionChild}</div>;
     }
   }
 
@@ -64,10 +71,17 @@ export default React.memo(function Figure(props) {
 
   // Helper function for countCaptionLines
   function getLineHeight(el) {
-    var temp = document.createElement(el.nodeName), ret;
-    temp.setAttribute("style", "margin:0; padding:0; "
-      + "font-family:" + (el.style.fontFamily || "inherit") + "; "
-      + "font-size:" + (el.style.fontSize || "inherit"));
+    var temp = document.createElement(el.nodeName),
+      ret;
+    temp.setAttribute(
+      "style",
+      "margin:0; padding:0; " +
+        "font-family:" +
+        (el.style.fontFamily || "inherit") +
+        "; " +
+        "font-size:" +
+        (el.style.fontSize || "inherit"),
+    );
     temp.innerHTML = "A";
 
     el.parentNode.appendChild(temp);
@@ -113,6 +127,5 @@ export default React.memo(function Figure(props) {
         </figcaption>
       </figure>
     </VisibilitySensor>
-  )
-})
-
+  );
+});

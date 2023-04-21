@@ -1,8 +1,15 @@
-import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
-import { getFromLatex, getFromText } from '../utils/math';
-import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
-import InlineComponent from './abstract/InlineComponent';
-import me from 'math-expressions';
+import {
+  moveGraphicalObjectWithAnchorAction,
+  returnAnchorAttributes,
+  returnAnchorStateVariableDefinition,
+} from "../utils/graphical";
+import { getFromLatex, getFromText } from "../utils/math";
+import {
+  returnSelectedStyleStateVariableDefinition,
+  returnTextStyleDescriptionDefinitions,
+} from "../utils/style";
+import InlineComponent from "./abstract/InlineComponent";
+import me from "math-expressions";
 
 export default class Text extends InlineComponent {
   constructor(args) {
@@ -13,7 +20,6 @@ export default class Text extends InlineComponent {
       textClicked: this.textClicked.bind(this),
       textFocused: this.textFocused.bind(this),
     });
-
   }
   static componentType = "text";
 
@@ -26,7 +32,6 @@ export default class Text extends InlineComponent {
   // don't required composite replacements
   static descendantCompositesMustHaveAReplacement = false;
 
-
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -35,7 +40,7 @@ export default class Text extends InlineComponent {
       createStateVariable: "draggable",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.layer = {
@@ -43,7 +48,7 @@ export default class Text extends InlineComponent {
       createStateVariable: "layer",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.isLatex = {
@@ -53,28 +58,28 @@ export default class Text extends InlineComponent {
       public: true,
     };
 
-    Object.assign(attributes, returnAnchorAttributes())
+    Object.assign(attributes, returnAnchorAttributes());
 
     return attributes;
-
-  };
-
-
-  static returnChildGroups() {
-
-    // Note: Latex class extends Text and depends on "textLike" being the first entry
-    return [{
-      group: "textLike",
-      componentTypes: ["string", "text", "_singleCharacterInline", "_inlineRenderInlineChildren"]
-    }]
-
   }
 
+  static returnChildGroups() {
+    // Note: Latex class extends Text and depends on "textLike" being the first entry
+    return [
+      {
+        group: "textLike",
+        componentTypes: [
+          "string",
+          "text",
+          "_singleCharacterInline",
+          "_inlineRenderInlineChildren",
+        ],
+      },
+    ];
+  }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
@@ -84,7 +89,6 @@ export default class Text extends InlineComponent {
 
     let anchorDefinition = returnAnchorStateVariableDefinition();
     Object.assign(stateVariableDefinitions, anchorDefinition);
-
 
     stateVariableDefinitions.value = {
       public: true,
@@ -98,7 +102,7 @@ export default class Text extends InlineComponent {
         addAttributeComponentsShadowingStateVariables: {
           fixed: {
             stateVariableToShadow: "fixed",
-          }
+          },
         },
       },
       hasEssential: true,
@@ -110,14 +114,14 @@ export default class Text extends InlineComponent {
         },
       }),
       defaultValue: "",
-      set: x => x === null ? "" : String(x),
+      set: (x) => (x === null ? "" : String(x)),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.textLikeChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              value: true
-            }
-          }
+              value: true,
+            },
+          };
         }
         let value = "";
         for (let comp of dependencyValues.textLikeChildren) {
@@ -129,7 +133,10 @@ export default class Text extends InlineComponent {
         }
         return { setValue: { value } };
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+      inverseDefinition: function ({
+        desiredStateVariableValues,
+        dependencyValues,
+      }) {
         let numChildren = dependencyValues.textLikeChildren.length;
         if (numChildren > 1) {
           return { success: false };
@@ -137,24 +144,31 @@ export default class Text extends InlineComponent {
         if (numChildren === 1) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "textLikeChildren",
-              desiredValue: desiredStateVariableValues.value,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
+            instructions: [
+              {
+                setDependency: "textLikeChildren",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0,
+              },
+            ],
           };
         }
         // no children, so set essential value to the desired value
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "value",
-            value: desiredStateVariableValues.value === null ? "" : String(desiredStateVariableValues.value)
-          }]
+          instructions: [
+            {
+              setEssentialValue: "value",
+              value:
+                desiredStateVariableValues.value === null
+                  ? ""
+                  : String(desiredStateVariableValues.value),
+            },
+          ],
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -165,21 +179,22 @@ export default class Text extends InlineComponent {
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
-          variableName: "value"
-        }
+          variableName: "value",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value },
       }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
         success: true,
-        instructions: [{
-          setDependency: "value",
-          desiredValue: desiredStateVariableValues.text,
-        }]
-      })
-
-    }
+        instructions: [
+          {
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.text,
+          },
+        ],
+      }),
+    };
 
     stateVariableDefinitions.math = {
       public: true,
@@ -190,12 +205,12 @@ export default class Text extends InlineComponent {
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
-          variableName: "value"
+          variableName: "value",
         },
         isLatex: {
           dependencyType: "stateVariable",
-          variableName: "isLatex"
-        }
+          variableName: "isLatex",
+        },
       }),
       definition({ dependencyValues }) {
         let parser = dependencyValues.isLatex ? getFromLatex() : getFromText();
@@ -203,9 +218,9 @@ export default class Text extends InlineComponent {
         try {
           expression = parser(dependencyValues.value);
         } catch (e) {
-          expression = me.fromAst('\uFF3F');
+          expression = me.fromAst("\uFF3F");
         }
-        return { setValue: { math: expression } }
+        return { setValue: { math: expression } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let text;
@@ -216,16 +231,15 @@ export default class Text extends InlineComponent {
         }
         return {
           success: true,
-          instructions: [{
-            setDependency: "value",
-            desiredValue: text,
-          }]
-        }
-      }
-
-    }
-
-
+          instructions: [
+            {
+              setDependency: "value",
+              desiredValue: text,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.number = {
       public: true,
@@ -236,77 +250,92 @@ export default class Text extends InlineComponent {
       returnDependencies: () => ({
         math: {
           dependencyType: "stateVariable",
-          variableName: "math"
+          variableName: "math",
         },
       }),
       definition({ dependencyValues }) {
-
-        return { setValue: { number: dependencyValues.math.evaluate_to_constant() } }
+        return {
+          setValue: { number: dependencyValues.math.evaluate_to_constant() },
+        };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setDependency: "math",
-            desiredValue: me.fromAst(Number(desiredStateVariableValues.number)),
-          }]
-        }
-      }
-
-    }
+          instructions: [
+            {
+              setDependency: "math",
+              desiredValue: me.fromAst(
+                Number(desiredStateVariableValues.number),
+              ),
+            },
+          ],
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 
   static adapters = ["math", "number"];
 
   async moveText({
-    x, y, z, transient, actionId,
-    sourceInformation = {}, skipRendererUpdate = false,
+    x,
+    y,
+    z,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-
     return await moveGraphicalObjectWithAnchorAction({
-      x, y, z, transient, actionId,
-      sourceInformation, skipRendererUpdate,
+      x,
+      y,
+      z,
+      transient,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       componentName: this.componentName,
       componentType: this.componentType,
-      coreFunctions: this.coreFunctions
-    })
-
+      coreFunctions: this.coreFunctions,
+    });
   }
 
-  async textClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
-
-    if (! await this.stateValues.fixed) {
+  async textClicked({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
       await this.coreFunctions.triggerChainedActions({
         triggeringAction: "click",
-        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        componentName: name, // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      })
+      });
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
 
-  async textFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
-
-    if (! await this.stateValues.fixed) {
+  async textFocused({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
       await this.coreFunctions.triggerChainedActions({
         triggeringAction: "focus",
-        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        componentName: name, // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      })
+      });
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
-
-
 }

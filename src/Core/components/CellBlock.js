@@ -1,5 +1,4 @@
-import BaseComponent from './abstract/BaseComponent';
-
+import BaseComponent from "./abstract/BaseComponent";
 
 export default class CellBlock extends BaseComponent {
   static componentType = "cellBlock";
@@ -24,12 +23,12 @@ export default class CellBlock extends BaseComponent {
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "children",
-      componentTypes: ["cell", "row", "column", "cellblock"]
-    }]
-
+    return [
+      {
+        group: "children",
+        componentTypes: ["cell", "row", "column", "cellblock"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
@@ -45,22 +44,21 @@ export default class CellBlock extends BaseComponent {
             "colNum",
             "prescribedCellsWithColNum",
             "prescribedCellsWithRowNum",
-            "prescribedCellsRowsColumnsBlocks"
+            "prescribedCellsRowsColumnsBlocks",
           ],
           variablesOptional: true,
-        }
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            prescribedCellsRowsColumnsBlocks: dependencyValues.cellRelatedChildren
-          }
-        }
-      }
-    }
+            prescribedCellsRowsColumnsBlocks:
+              dependencyValues.cellRelatedChildren,
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

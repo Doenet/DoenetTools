@@ -1,7 +1,11 @@
-import BlockComponent from './BlockComponent';
-import { determineVariantsForSection, getVariantsForDescendantsForUniqueVariants, setUpVariantSeedAndRng } from '../../utils/variants';
-import { returnStyleDefinitionStateVariables } from '../../utils/style';
-import { returnFeedbackDefinitionStateVariables } from '../../utils/feedback';
+import BlockComponent from "./BlockComponent";
+import {
+  determineVariantsForSection,
+  getVariantsForDescendantsForUniqueVariants,
+  setUpVariantSeedAndRng,
+} from "../../utils/variants";
+import { returnStyleDefinitionStateVariables } from "../../utils/style";
+import { returnFeedbackDefinitionStateVariables } from "../../utils/feedback";
 
 export class SectioningComponent extends BlockComponent {
   constructor(args) {
@@ -11,9 +15,8 @@ export class SectioningComponent extends BlockComponent {
       submitAllAnswers: this.submitAllAnswers.bind(this),
       revealSection: this.revealSection.bind(this),
       closeSection: this.closeSection.bind(this),
-      recordVisibilityChange: this.recordVisibilityChange.bind(this)
-    })
-
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
   }
 
   static componentType = "_sectioningComponent";
@@ -29,7 +32,7 @@ export class SectioningComponent extends BlockComponent {
       createComponentOfType: "boolean",
       createStateVariable: "aggregateScores",
       defaultValue: false,
-      public: true
+      public: true,
     };
     attributes.weight = {
       createComponentOfType: "number",
@@ -50,14 +53,14 @@ export class SectioningComponent extends BlockComponent {
       defaultValue: "Check Work",
       public: true,
       forRenderer: true,
-    }
+    };
     attributes.submitLabelNoCorrectness = {
       createComponentOfType: "text",
       createStateVariable: "submitLabelNoCorrectness",
       defaultValue: "Submit Response",
       public: true,
       forRenderer: true,
-    }
+    };
 
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
@@ -74,28 +77,28 @@ export class SectioningComponent extends BlockComponent {
       createStateVariable: "includeAutoName",
       defaultValue: false,
       public: true,
-    }
+    };
 
     attributes.includeAutoNumber = {
       createComponentOfType: "boolean",
       createStateVariable: "includeAutoNumber",
       defaultValue: false,
       public: true,
-    }
+    };
 
     attributes.includeAutoNameIfNoTitle = {
       createComponentOfType: "boolean",
       createStateVariable: "includeAutoNameIfNoTitle",
       defaultValue: true,
       public: true,
-    }
+    };
 
     attributes.includeAutoNumberIfNoTitle = {
       createComponentOfType: "boolean",
       createStateVariable: "includeAutoNumberIfNoTitle",
       defaultValue: true,
       public: true,
-    }
+    };
 
     attributes.asList = {
       createComponentOfType: "boolean",
@@ -103,41 +106,41 @@ export class SectioningComponent extends BlockComponent {
       defaultValue: false,
       public: true,
       forRenderer: true,
-    }
+    };
 
     attributes.level = {
       createComponentOfType: "integer",
-    }
+    };
 
     attributes.renameTo = {
-      createComponentOfType: "text"
-    }
-
+      createComponentOfType: "text",
+    };
 
     return attributes;
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "variantControls",
-      componentTypes: ["variantControl"]
-    }, {
-      group: "titles",
-      componentTypes: ["title"]
-    }, {
-      group: "setups",
-      componentTypes: ["setup"],
-    }, {
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "variantControls",
+        componentTypes: ["variantControl"],
+      },
+      {
+        group: "titles",
+        componentTypes: ["title"],
+      },
+      {
+        group: "setups",
+        componentTypes: ["setup"],
+      },
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let componentClass = this;
@@ -147,7 +150,8 @@ export class SectioningComponent extends BlockComponent {
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
 
-    let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
+    let feedbackDefinitionStateVariables =
+      returnFeedbackDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
 
     stateVariableDefinitions.inAList = {
@@ -155,81 +159,83 @@ export class SectioningComponent extends BlockComponent {
       returnDependencies: () => ({
         parentIsAsList: {
           dependencyType: "parentStateVariable",
-          variableName: "asList"
-        }
+          variableName: "asList",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { inAList: Boolean(dependencyValues.parentIsAsList) } }
-      }
-    }
+        return {
+          setValue: { inAList: Boolean(dependencyValues.parentIsAsList) },
+        };
+      },
+    };
 
     stateVariableDefinitions.enumeration = {
       stateVariablesDeterminingDependencies: ["inAList"],
-      additionalStateVariablesDefined: [{
-        variableName: "sectionNumber",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "text",
+      additionalStateVariablesDefined: [
+        {
+          variableName: "sectionNumber",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "text",
+          },
         },
-      }],
+      ],
       mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies: ({ stateValues }) => {
-
         let dependencies = {
           inAList: {
             dependencyType: "stateVariable",
-            variableName: "inAList"
-          }
-        }
+            variableName: "inAList",
+          },
+        };
 
         if (stateValues.inAList) {
           dependencies.countAmongSiblings = {
             dependencyType: "countAmongSiblings",
-            componentType: '_sectioningComponent',
+            componentType: "_sectioningComponent",
             includeInheritedComponentTypes: true,
-          }
+          };
         } else {
-
           dependencies.sectioningCounter = {
             dependencyType: "counter",
-            counterName: "sectioning"
-          }
+            counterName: "sectioning",
+          };
         }
 
         return dependencies;
-
       },
       definition({ dependencyValues }) {
-
         if (dependencyValues.inAList) {
           let sectionNumber = dependencyValues.countAmongSiblings;
           let enumeration = [sectionNumber];
-          return { setValue: { enumeration, sectionNumber } }
+          return { setValue: { enumeration, sectionNumber } };
         } else {
           let sectionNumber = String(dependencyValues.sectioningCounter);
-          return { setValue: { enumeration: [sectionNumber], sectionNumber } }
+          return { setValue: { enumeration: [sectionNumber], sectionNumber } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.sectionName = {
       returnDependencies: () => ({
         renameToAttr: {
           dependencyType: "attributeComponent",
           attributeName: "renameTo",
-          variableNames: ["value"]
-        }
-
+          variableNames: ["value"],
+        },
       }),
       definition: ({ dependencyValues }) => {
         if (dependencyValues.renameToAttr) {
-          return { setValue: { sectionName: dependencyValues.renameToAttr.stateValues.value } }
+          return {
+            setValue: {
+              sectionName: dependencyValues.renameToAttr.stateValues.value,
+            },
+          };
         } else {
-          return { setValue: { sectionName: componentClass.name } }
+          return { setValue: { sectionName: componentClass.name } };
         }
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.titleChildName = {
       forRenderer: true,
@@ -242,13 +248,15 @@ export class SectioningComponent extends BlockComponent {
       definition({ dependencyValues }) {
         let titleChildName = null;
         if (dependencyValues.titleChild.length > 0) {
-          titleChildName = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].componentName
+          titleChildName =
+            dependencyValues.titleChild[dependencyValues.titleChild.length - 1]
+              .componentName;
         }
         return {
-          setValue: { titleChildName }
-        }
-      }
-    }
+          setValue: { titleChildName },
+        };
+      },
+    };
 
     stateVariableDefinitions.childIndicesToRender = {
       returnDependencies: () => ({
@@ -262,49 +270,53 @@ export class SectioningComponent extends BlockComponent {
         },
         titleChildName: {
           dependencyType: "stateVariable",
-          variableName: "titleChildName"
+          variableName: "titleChildName",
         },
         asList: {
           dependencyType: "stateVariable",
-          variableName: "asList"
-        }
+          variableName: "asList",
+        },
       }),
       definition({ dependencyValues, componentInfoObjects }) {
         let childIndicesToRender = [];
 
-        let allTitleChildNames = dependencyValues.titleChildren.map(x => x.componentName);
+        let allTitleChildNames = dependencyValues.titleChildren.map(
+          (x) => x.componentName,
+        );
 
         for (let [ind, child] of dependencyValues.allChildren.entries()) {
           if (dependencyValues.asList) {
             // if asList, then only include titleChild and sections
-            if (child.componentName === dependencyValues.titleChildName
-              || componentInfoObjects.isInheritedComponentType({
+            if (
+              child.componentName === dependencyValues.titleChildName ||
+              componentInfoObjects.isInheritedComponentType({
                 inheritedComponentType: child.componentType,
-                baseComponentType: "_sectioningComponent"
+                baseComponentType: "_sectioningComponent",
               })
             ) {
               childIndicesToRender.push(ind);
             }
-
-          } else if (typeof child !== "object"
-            || !allTitleChildNames.includes(child.componentName)
-            || child.componentName === dependencyValues.titleChildName
+          } else if (
+            typeof child !== "object" ||
+            !allTitleChildNames.includes(child.componentName) ||
+            child.componentName === dependencyValues.titleChildName
           ) {
-            childIndicesToRender.push(ind)
+            childIndicesToRender.push(ind);
           }
         }
 
-        return { setValue: { childIndicesToRender } }
-
-      }
-    }
+        return { setValue: { childIndicesToRender } };
+      },
+    };
 
     stateVariableDefinitions.title = {
-      additionalStateVariablesDefined: [{
-        variableName: "titlePrefix",
-        forRenderer: true,
-        alwaysUpdateRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "titlePrefix",
+          forRenderer: true,
+          alwaysUpdateRenderer: true,
+        },
+      ],
       public: true,
       shadowingInstructions: {
         createComponentOfType: "text",
@@ -323,40 +335,43 @@ export class SectioningComponent extends BlockComponent {
         },
         sectionNumber: {
           dependencyType: "stateVariable",
-          variableName: "sectionNumber"
+          variableName: "sectionNumber",
         },
         includeAutoName: {
           dependencyType: "stateVariable",
-          variableName: "includeAutoName"
+          variableName: "includeAutoName",
         },
         includeAutoNumber: {
           dependencyType: "stateVariable",
-          variableName: "includeAutoNumber"
+          variableName: "includeAutoNumber",
         },
         prerender: {
           dependencyType: "value",
-          value: sharedParameters.prerender
+          value: sharedParameters.prerender,
         },
         includeAutoNameIfNoTitle: {
           dependencyType: "stateVariable",
-          variableName: "includeAutoNameIfNoTitle"
+          variableName: "includeAutoNameIfNoTitle",
         },
         includeAutoNumberIfNoTitle: {
           dependencyType: "stateVariable",
-          variableName: "includeAutoNumberIfNoTitle"
+          variableName: "includeAutoNumberIfNoTitle",
         },
       }),
       definition({ dependencyValues }) {
-
         let titlePrefix = "";
         let title = "";
 
         const haveTitleChild = dependencyValues.titleChild.length > 0;
 
-        let includeAutoNumber = (dependencyValues.includeAutoNumber || (!haveTitleChild && dependencyValues.includeAutoNumberIfNoTitle))
-          && !dependencyValues.prerender;
+        let includeAutoNumber =
+          (dependencyValues.includeAutoNumber ||
+            (!haveTitleChild && dependencyValues.includeAutoNumberIfNoTitle)) &&
+          !dependencyValues.prerender;
 
-        let includeAutoName = dependencyValues.includeAutoName || (!haveTitleChild && dependencyValues.includeAutoNameIfNoTitle);
+        let includeAutoName =
+          dependencyValues.includeAutoName ||
+          (!haveTitleChild && dependencyValues.includeAutoNameIfNoTitle);
 
         if (includeAutoNumber) {
           if (includeAutoName) {
@@ -372,28 +387,28 @@ export class SectioningComponent extends BlockComponent {
         if (!haveTitleChild) {
           title = titlePrefix;
         } else {
-
           if (titlePrefix) {
             if (dependencyValues.includeAutoName) {
-              titlePrefix += ": "
+              titlePrefix += ": ";
             } else {
-              titlePrefix += ". "
+              titlePrefix += ". ";
             }
           }
 
-          title = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].stateValues.text;
-
+          title =
+            dependencyValues.titleChild[dependencyValues.titleChild.length - 1]
+              .stateValues.text;
         }
 
         return { setValue: { title, titlePrefix } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.containerTag = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { containerTag: "section" } })
-    }
+      definition: () => ({ setValue: { containerTag: "section" } }),
+    };
 
     stateVariableDefinitions.level = {
       forRenderer: true,
@@ -401,13 +416,13 @@ export class SectioningComponent extends BlockComponent {
         ancestorLevel: {
           dependencyType: "ancestor",
           componentType: "_sectioningComponent",
-          variableNames: ["level"]
+          variableNames: ["level"],
         },
         levelAttr: {
           dependencyType: "attributeComponent",
           attributeName: "level",
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition({ dependencyValues }) {
         let level = dependencyValues.levelAttr?.stateValues.value;
@@ -416,9 +431,9 @@ export class SectioningComponent extends BlockComponent {
           level = (dependencyValues.ancestorLevel?.stateValues.level || 0) + 1;
         }
 
-        return { setValue: { level } }
-      }
-    }
+        return { setValue: { level } };
+      },
+    };
 
     stateVariableDefinitions.viewedSolution = {
       defaultValue: false,
@@ -426,33 +441,31 @@ export class SectioningComponent extends BlockComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          viewedSolution: true
-        }
+          viewedSolution: true,
+        },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "viewedSolution",
-            value: desiredStateVariableValues.viewedSolution
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "viewedSolution",
+              value: desiredStateVariableValues.viewedSolution,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.scoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "descendant",
           componentTypes: ["_sectioningComponent", "answer", "setup"],
-          variableNames: [
-            "scoredDescendants",
-            "aggregateScores",
-            "weight"
-          ],
+          variableNames: ["scoredDescendants", "aggregateScores", "weight"],
           recurseToMatchedChildren: false,
-          variablesOptional: true
-        }
+          variablesOptional: true,
+        },
       }),
       definition({ dependencyValues }) {
         let scoredDescendants = [];
@@ -461,19 +474,19 @@ export class SectioningComponent extends BlockComponent {
           if (descendant.componentType === "setup") {
             continue;
           }
-          if (descendant.stateValues.aggregateScores ||
+          if (
+            descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
-            scoredDescendants.push(descendant)
+            scoredDescendants.push(descendant);
           } else {
-            scoredDescendants.push(...descendant.stateValues.scoredDescendants)
+            scoredDescendants.push(...descendant.stateValues.scoredDescendants);
           }
         }
 
-        return { setValue: { scoredDescendants } }
-
-      }
-    }
+        return { setValue: { scoredDescendants } };
+      },
+    };
 
     stateVariableDefinitions.answerDescendants = {
       returnDependencies: () => ({
@@ -482,49 +495,52 @@ export class SectioningComponent extends BlockComponent {
           componentTypes: ["answer"],
           variableNames: ["justSubmitted"],
           recurseToMatchedChildren: false,
-        }
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { answerDescendants: dependencyValues.answerDescendants } }
-      }
-    }
+        return {
+          setValue: { answerDescendants: dependencyValues.answerDescendants },
+        };
+      },
+    };
 
     stateVariableDefinitions.justSubmitted = {
       forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
           dependencyType: "stateVariable",
-          variableName: "answerDescendants"
-        }
+          variableName: "answerDescendants",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            justSubmitted:
-              dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
-          }
-        }
-      }
-    }
+            justSubmitted: dependencyValues.answerDescendants.every(
+              (x) => x.stateValues.justSubmitted,
+            ),
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.showCorrectness = {
       forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessFlag: {
           dependencyType: "flag",
-          flagName: "showCorrectness"
-        }
+          flagName: "showCorrectness",
+        },
       }),
       definition({ dependencyValues }) {
         let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
-        return { setValue: { showCorrectness } }
-      }
-    }
+        return { setValue: { showCorrectness } };
+      },
+    };
 
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } })
-    }
+      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } }),
+    };
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
@@ -533,66 +549,75 @@ export class SectioningComponent extends BlockComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
-          }
+          },
         },
       },
       forRenderer: true,
       defaultValue: 0,
       hasEssential: true,
-      additionalStateVariablesDefined: [{
-        variableName: "percentCreditAchieved",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "number",
-          addAttributeComponentsShadowingStateVariables: {
-            displayDigits: {
-              stateVariableToShadow: "displayDigitsForCreditAchieved",
-            }
+      additionalStateVariablesDefined: [
+        {
+          variableName: "percentCreditAchieved",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "number",
+            addAttributeComponentsShadowingStateVariables: {
+              displayDigits: {
+                stateVariableToShadow: "displayDigitsForCreditAchieved",
+              },
+            },
           },
+          defaultValue: 0,
+          hasEssential: true,
         },
-        defaultValue: 0,
-        hasEssential: true,
-      }],
-      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
+      ],
+      stateVariablesDeterminingDependencies: [
+        "aggregateScores",
+        "scoredDescendants",
+      ],
       returnDependencies({ stateValues }) {
         let dependencies = {
           aggregateScores: {
             dependencyType: "stateVariable",
-            variableName: "aggregateScores"
-          }
-        }
+            variableName: "aggregateScores",
+          },
+        };
         if (stateValues.aggregateScores) {
           dependencies.scoredDescendants = {
             dependencyType: "stateVariable",
-            variableName: "scoredDescendants"
-          }
-          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            variableName: "scoredDescendants",
+          };
+          for (let [
+            ind,
+            descendant,
+          ] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchieved" + ind] = {
               dependencyType: "stateVariable",
               componentName: descendant.componentName,
-              variableName: "creditAchieved"
-            }
+              variableName: "creditAchieved",
+            };
           }
         }
 
         return dependencies;
       },
       definition({ dependencyValues }) {
-
         if (!dependencyValues.aggregateScores) {
           return {
             setValue: {
               creditAchieved: 0,
-              percentCreditAchieved: 0
-            }
-          }
+              percentCreditAchieved: 0,
+            },
+          };
         }
-
 
         let creditSum = 0;
         let totalWeight = 0;
 
-        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+        for (let [
+          ind,
+          component,
+        ] of dependencyValues.scoredDescendants.entries()) {
           let weight = component.stateValues.weight;
           creditSum += dependencyValues["creditAchieved" + ind] * weight;
           totalWeight += weight;
@@ -606,62 +631,68 @@ export class SectioningComponent extends BlockComponent {
         }
         let percentCreditAchieved = creditAchieved * 100;
 
-        return { setValue: { creditAchieved, percentCreditAchieved } }
-
-      }
-    }
+        return { setValue: { creditAchieved, percentCreditAchieved } };
+      },
+    };
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
       defaultValue: 0,
-      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
+      stateVariablesDeterminingDependencies: [
+        "aggregateScores",
+        "scoredDescendants",
+      ],
       returnDependencies({ stateValues }) {
         let dependencies = {
           aggregateScores: {
             dependencyType: "stateVariable",
-            variableName: "aggregateScores"
-          }
-        }
+            variableName: "aggregateScores",
+          },
+        };
         if (stateValues.aggregateScores) {
           dependencies.scoredDescendants = {
             dependencyType: "stateVariable",
-            variableName: "scoredDescendants"
-          }
-          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            variableName: "scoredDescendants",
+          };
+          for (let [
+            ind,
+            descendant,
+          ] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchievedIfSubmit" + ind] = {
               dependencyType: "stateVariable",
               componentName: descendant.componentName,
-              variableName: "creditAchievedIfSubmit"
-            }
+              variableName: "creditAchievedIfSubmit",
+            };
           }
         }
 
         return dependencies;
       },
       definition({ dependencyValues }) {
-
         if (!dependencyValues.aggregateScores) {
           return {
             setValue: {
               creditAchievedIfSubmit: 0,
-            }
-          }
+            },
+          };
         }
 
         let creditSum = 0;
         let totalWeight = 0;
 
-        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+        for (let [
+          ind,
+          component,
+        ] of dependencyValues.scoredDescendants.entries()) {
           let weight = component.stateValues.weight;
-          creditSum += dependencyValues["creditAchievedIfSubmit" + ind] * weight;
+          creditSum +=
+            dependencyValues["creditAchievedIfSubmit" + ind] * weight;
           totalWeight += weight;
         }
         let creditAchievedIfSubmit = creditSum / totalWeight;
 
-        return { setValue: { creditAchievedIfSubmit } }
-
-      }
-    }
-
+        return { setValue: { creditAchievedIfSubmit } };
+      },
+    };
 
     stateVariableDefinitions.generatedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
@@ -680,62 +711,57 @@ export class SectioningComponent extends BlockComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
-          variableNames: [
-            "isVariantComponent",
-            "generatedVariantInfo",
-          ],
+          componentTypes: Object.keys(
+            componentInfoObjects.componentTypesCreatingVariants,
+          ),
+          variableNames: ["isVariantComponent", "generatedVariantInfo"],
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfEncounteredComposites: true,
         },
-
       }),
       definition({ dependencyValues, componentName }) {
-
         let generatedVariantInfo = {};
 
         if (dependencyValues.variantName) {
           generatedVariantInfo.index = dependencyValues.variantIndex;
           generatedVariantInfo.name = dependencyValues.variantName;
-
         } else {
           generatedVariantInfo.seed = dependencyValues.variantSeed;
         }
 
-
         generatedVariantInfo.meta = {
           createdBy: componentName,
-        }
+        };
 
-
-        let subvariants = generatedVariantInfo.subvariants = [];
+        let subvariants = (generatedVariantInfo.subvariants = []);
         for (let descendant of dependencyValues.variantDescendants) {
           if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.generatedVariantInfo)
+            subvariants.push(descendant.stateValues.generatedVariantInfo);
           } else if (descendant.stateValues.generatedVariantInfo) {
-            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+            subvariants.push(
+              ...descendant.stateValues.generatedVariantInfo.subvariants,
+            );
           }
         }
 
         return {
           setValue: {
             generatedVariantInfo,
-            isVariantComponent: true
-          }
-        }
-
-      }
-    }
+            isVariantComponent: true,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.collapsible = {
       forRenderer: true,
       returnDependencies: () => ({}),
       definition() {
-        return { setValue: { collapsible: false } }
-      }
-    }
+        return { setValue: { collapsible: false } };
+      },
+    };
 
     stateVariableDefinitions.open = {
       public: true,
@@ -749,94 +775,101 @@ export class SectioningComponent extends BlockComponent {
       definition() {
         return {
           useEssentialOrDefaultValue: {
-            open: true
-          }
-        }
+            open: true,
+          },
+        };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "open",
-            value: desiredStateVariableValues.open
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "open",
+              value: desiredStateVariableValues.open,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.createSubmitAllButton = {
       forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: "suppressAnswerSubmitButtons",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "suppressAnswerSubmitButtons",
+          forRenderer: true,
+        },
+      ],
       returnDependencies: () => ({
         sectionWideCheckWork: {
           dependencyType: "stateVariable",
-          variableName: "sectionWideCheckWork"
+          variableName: "sectionWideCheckWork",
         },
         aggregateScores: {
           dependencyType: "stateVariable",
-          variableName: "aggregateScores"
+          variableName: "aggregateScores",
         },
         sectionAncestor: {
           dependencyType: "ancestor",
           componentType: "_sectioningComponent",
-          variableNames: [
-            "suppressAnswerSubmitButtons",
-          ]
+          variableNames: ["suppressAnswerSubmitButtons"],
         },
         documentAncestor: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: [
-            "suppressAnswerSubmitButtons",
-          ]
-        }
+          variableNames: ["suppressAnswerSubmitButtons"],
+        },
       }),
       definition({ dependencyValues, componentName }) {
-
         let createSubmitAllButton = false;
         let suppressAnswerSubmitButtons = false;
 
         if (
-          dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons ||
-          dependencyValues.sectionAncestor &&
-          dependencyValues.sectionAncestor.stateValues.suppressAnswerSubmitButtons
+          dependencyValues.documentAncestor.stateValues
+            .suppressAnswerSubmitButtons ||
+          (dependencyValues.sectionAncestor &&
+            dependencyValues.sectionAncestor.stateValues
+              .suppressAnswerSubmitButtons)
         ) {
-          suppressAnswerSubmitButtons = true
+          suppressAnswerSubmitButtons = true;
         } else if (dependencyValues.sectionWideCheckWork) {
           if (dependencyValues.aggregateScores) {
             createSubmitAllButton = true;
-            suppressAnswerSubmitButtons = true
+            suppressAnswerSubmitButtons = true;
           } else {
-            console.warn(`Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`);
+            console.warn(
+              `Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`,
+            );
           }
         }
 
-        return { setValue: { createSubmitAllButton, suppressAnswerSubmitButtons } }
-      }
-    }
+        return {
+          setValue: { createSubmitAllButton, suppressAnswerSubmitButtons },
+        };
+      },
+    };
 
     stateVariableDefinitions.suppressCheckwork = {
       forRenderer: true,
       returnDependencies: () => ({
         autoSubmit: {
           dependencyType: "flag",
-          flagName: "autoSubmit"
-        }
+          flagName: "autoSubmit",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
-      }
-    }
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
-
-  async submitAllAnswers({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async submitAllAnswers({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
       object: {
@@ -844,38 +877,44 @@ export class SectioningComponent extends BlockComponent {
         componentType: this.componentType,
       },
       result: {
-        creditAchieved: await this.stateValues.creditAchievedIfSubmit
-      }
-
-    })
+        creditAchieved: await this.stateValues.creditAchievedIfSubmit,
+      },
+    });
     let nAnswers = await this.stateValues.answerDescendants;
-    for (let [ind, answer] of await this.stateValues.answerDescendants.entries()) {
-      if (!await answer.stateValues.justSubmitted) {
+    for (let [
+      ind,
+      answer,
+    ] of await this.stateValues.answerDescendants.entries()) {
+      if (!(await answer.stateValues.justSubmitted)) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer",
           args: {
             actionId,
             sourceInformation,
-            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1
-          }
-        })
+            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1,
+          },
+        });
       }
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
 
-  async revealSection({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async revealSection({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     return await this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "open",
-        value: true
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "open",
+          value: true,
+        },
+      ],
       overrideReadOnly: true,
       actionId,
       sourceInformation,
@@ -886,19 +925,24 @@ export class SectioningComponent extends BlockComponent {
           componentName: this.componentName,
           componentType: this.componentType,
         },
-      }
-    })
+      },
+    });
   }
 
-  async closeSection({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async closeSection({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     return await this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "open",
-        value: false
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "open",
+          value: false,
+        },
+      ],
       overrideReadOnly: true,
       actionId,
       sourceInformation,
@@ -909,8 +953,8 @@ export class SectioningComponent extends BlockComponent {
           componentName: this.componentName,
           componentType: this.componentType,
         },
-      }
-    })
+      },
+    });
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -920,33 +964,30 @@ export class SectioningComponent extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
 
   static setUpVariant({
-    serializedComponent, sharedParameters,
+    serializedComponent,
+    sharedParameters,
     descendantVariantComponents,
   }) {
-
-
     if (!serializedComponent.variants?.allPossibleVariants) {
-
       // no variant control child
       // so don't actually control variants
       // just calculate a seed
 
       setUpVariantSeedAndRng({
-        serializedComponent, sharedParameters,
+        serializedComponent,
+        sharedParameters,
         descendantVariantComponents,
         useSubpartVariantRng: true,
       });
 
       return;
-
     }
-
 
     let nVariants = serializedComponent.variants.numberOfVariants;
 
@@ -957,11 +998,15 @@ export class SectioningComponent extends BlockComponent {
       if (desiredVariant.index !== undefined) {
         let desiredVariantIndex = Number(desiredVariant.index);
         if (!Number.isFinite(desiredVariantIndex)) {
-          console.warn("Variant index " + desiredVariant.index + " must be a number");
+          console.warn(
+            "Variant index " + desiredVariant.index + " must be a number",
+          );
           variantIndex = 1;
         } else {
           if (!Number.isInteger(desiredVariantIndex)) {
-            console.warn("Variant index " + desiredVariant.index + " must be an integer");
+            console.warn(
+              "Variant index " + desiredVariant.index + " must be an integer",
+            );
             desiredVariantIndex = Math.round(desiredVariantIndex);
           }
           let indexFrom0 = (desiredVariantIndex - 1) % nVariants;
@@ -980,21 +1025,29 @@ export class SectioningComponent extends BlockComponent {
 
       // random integer from 1 to nVariants
       variantIndex = Math.floor(rand * nVariants) + 1;
-
     }
 
+    sharedParameters.allPossibleVariants =
+      serializedComponent.variants.allPossibleVariants;
+    sharedParameters.allVariantNames =
+      serializedComponent.variants.allVariantNames;
 
-    sharedParameters.allPossibleVariants = serializedComponent.variants.allPossibleVariants;
-    sharedParameters.allVariantNames = serializedComponent.variants.allVariantNames;
-
-    sharedParameters.variantSeed = serializedComponent.variants.allPossibleVariantSeeds[variantIndex - 1];
+    sharedParameters.variantSeed =
+      serializedComponent.variants.allPossibleVariantSeeds[variantIndex - 1];
     sharedParameters.variantIndex = variantIndex;
-    sharedParameters.variantName = serializedComponent.variants.allPossibleVariants[variantIndex - 1];
-    sharedParameters.uniqueIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
+    sharedParameters.variantName =
+      serializedComponent.variants.allPossibleVariants[variantIndex - 1];
+    sharedParameters.uniqueIndex =
+      serializedComponent.variants.allPossibleVariantUniqueIndices[
+        variantIndex - 1
+      ];
 
-    sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
-    sharedParameters.subpartVariantRng = new sharedParameters.rngClass(sharedParameters.variantSeed + 's');
-
+    sharedParameters.variantRng = new sharedParameters.rngClass(
+      sharedParameters.variantSeed,
+    );
+    sharedParameters.subpartVariantRng = new sharedParameters.rngClass(
+      sharedParameters.variantSeed + "s",
+    );
 
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantControlChild.stateValues.selectedSeed);
@@ -1011,29 +1064,38 @@ export class SectioningComponent extends BlockComponent {
         variantComponent.variants.desiredVariant = subvariant;
       }
     }
-
   }
 
-  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
-
+  static determineNumberOfUniqueVariants({
+    serializedComponent,
+    componentInfoObjects,
+  }) {
     return determineVariantsForSection({
-      serializedComponent, componentInfoObjects,
-    })
-
+      serializedComponent,
+      componentInfoObjects,
+    });
   }
 
-  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
-
-
+  static getUniqueVariant({
+    serializedComponent,
+    variantIndex,
+    componentInfoObjects,
+  }) {
     if (!serializedComponent.variants.allPossibleVariants) {
-      return super.getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects });
+      return super.getUniqueVariant({
+        serializedComponent,
+        variantIndex,
+        componentInfoObjects,
+      });
     }
 
-
-    let uniqueIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
+    let uniqueIndex =
+      serializedComponent.variants.allPossibleVariantUniqueIndices[
+        variantIndex - 1
+      ];
 
     if (uniqueIndex === undefined) {
-      return { success: false }
+      return { success: false };
     }
 
     if (!serializedComponent.variants.uniqueVariants) {
@@ -1042,20 +1104,20 @@ export class SectioningComponent extends BlockComponent {
         success: true,
         desiredVariant: {
           index: variantIndex,
-        }
-      }
+        },
+      };
     }
 
     let result = getVariantsForDescendantsForUniqueVariants({
       variantIndex: uniqueIndex,
       serializedComponent,
-      componentInfoObjects
-    })
+      componentInfoObjects,
+    });
 
     if (!result.success) {
       console.log("Failed to get unique variant for section.");
 
-      return { success: false }
+      return { success: false };
     }
 
     serializedComponent.variants.selectedUniqueVariant = true;
@@ -1064,17 +1126,13 @@ export class SectioningComponent extends BlockComponent {
       success: true,
       desiredVariant: {
         index: variantIndex,
-        subvariants: result.desiredVariants
-      }
-    }
-
+        subvariants: result.desiredVariants,
+      },
+    };
   }
-
 }
 
-
 export class SectioningComponentNumberWithSiblings extends SectioningComponent {
-
   static componentType = "_sectioningComponentNumberWithSiblings";
 
   static createAttributesObject() {
@@ -1087,77 +1145,76 @@ export class SectioningComponentNumberWithSiblings extends SectioningComponent {
       createStateVariable: "includeParentNumber",
       defaultValue: false,
       public: true,
-    }
+    };
 
     return attributes;
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-
     stateVariableDefinitions.enumeration = {
-      additionalStateVariablesDefined: [{
-        variableName: "sectionNumber",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "text",
+      additionalStateVariablesDefined: [
+        {
+          variableName: "sectionNumber",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "text",
+          },
         },
-      }],
+      ],
       returnDependencies: () => ({
         countAmongSiblings: {
           dependencyType: "countAmongSiblings",
-          componentType: '_sectioningComponentNumberWithSiblings',
+          componentType: "_sectioningComponentNumberWithSiblings",
           includeInheritedComponentTypes: true,
         },
         sectionAncestor: {
           dependencyType: "ancestor",
           componentType: "_sectioningComponent",
-          variableNames: ["enumeration"]
+          variableNames: ["enumeration"],
         },
         includeParentNumber: {
           dependencyType: "stateVariable",
-          variableName: "includeParentNumber"
+          variableName: "includeParentNumber",
         },
         inAList: {
           dependencyType: "stateVariable",
-          variableName: "inAList"
+          variableName: "inAList",
         },
         countAmongSiblingsInAList: {
           dependencyType: "countAmongSiblings",
-          componentType: '_sectioningComponent',
+          componentType: "_sectioningComponent",
           includeInheritedComponentTypes: true,
-        }
+        },
       }),
       definition({ dependencyValues }) {
-
         let enumeration = [];
         if (dependencyValues.inAList) {
-          enumeration.push(dependencyValues.countAmongSiblingsInAList)
+          enumeration.push(dependencyValues.countAmongSiblingsInAList);
         } else {
-          if (dependencyValues.includeParentNumber && dependencyValues.sectionAncestor) {
-            enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
+          if (
+            dependencyValues.includeParentNumber &&
+            dependencyValues.sectionAncestor
+          ) {
+            enumeration.push(
+              ...dependencyValues.sectionAncestor.stateValues.enumeration,
+            );
           }
-          enumeration.push(dependencyValues.countAmongSiblings)
+          enumeration.push(dependencyValues.countAmongSiblings);
         }
 
-        return { setValue: { enumeration, sectionNumber: enumeration.join(".") } }
-
-      }
-    }
-
+        return {
+          setValue: { enumeration, sectionNumber: enumeration.join(".") },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
-
 }
 
 export class UnnumberedSectioningComponent extends SectioningComponent {
-
   static componentType = "_unnumberedSectioningComponent";
 
   static createAttributesObject() {
@@ -1166,29 +1223,25 @@ export class UnnumberedSectioningComponent extends SectioningComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-
     stateVariableDefinitions.enumeration = {
-      additionalStateVariablesDefined: [{
-        variableName: "sectionNumber",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "text",
+      additionalStateVariablesDefined: [
+        {
+          variableName: "sectionNumber",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "text",
+          },
         },
-      }],
+      ],
       returnDependencies: () => ({}),
       definition() {
-        return { setValue: { enumeration: [], sectionNumber: null } }
-      }
-    }
-
+        return { setValue: { enumeration: [], sectionNumber: null } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
-
 }

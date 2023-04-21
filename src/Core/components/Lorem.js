@@ -1,7 +1,7 @@
-import CompositeComponent from './abstract/CompositeComponent';
+import CompositeComponent from "./abstract/CompositeComponent";
 import { LoremIpsum } from "lorem-ipsum";
-import { processAssignNames } from '../utils/serializedStateProcessing';
-import { setUpVariantSeedAndRng } from '../utils/variants';
+import { processAssignNames } from "../utils/serializedStateProcessing";
+import { setUpVariantSeedAndRng } from "../utils/variants";
 
 export default class Lorem extends CompositeComponent {
   static componentType = "lorem";
@@ -11,7 +11,6 @@ export default class Lorem extends CompositeComponent {
   static createsVariants = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
-
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -65,41 +64,38 @@ export default class Lorem extends CompositeComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({
         minSentencesPerParagraph: {
           dependencyType: "stateVariable",
-          variableName: "minSentencesPerParagraph"
+          variableName: "minSentencesPerParagraph",
         },
         maxSentencesPerParagraph: {
           dependencyType: "stateVariable",
-          variableName: "maxSentencesPerParagraph"
+          variableName: "maxSentencesPerParagraph",
         },
         minWordsPerSentence: {
           dependencyType: "stateVariable",
-          variableName: "minWordsPerSentence"
+          variableName: "minWordsPerSentence",
         },
         maxWordsPerSentence: {
           dependencyType: "stateVariable",
-          variableName: "maxWordsPerSentence"
+          variableName: "maxWordsPerSentence",
         },
         generateWords: {
           dependencyType: "stateVariable",
-          variableName: "generateWords"
+          variableName: "generateWords",
         },
         generateSentences: {
           dependencyType: "stateVariable",
-          variableName: "generateSentences"
+          variableName: "generateSentences",
         },
         generateParagraphs: {
           dependencyType: "stateVariable",
-          variableName: "generateParagraphs"
+          variableName: "generateParagraphs",
         },
       }),
       markStale: () => ({ updateReplacements: true }),
@@ -108,11 +104,10 @@ export default class Lorem extends CompositeComponent {
       },
     };
 
-
     stateVariableDefinitions.isVariantComponent = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { isVariantComponent: true } })
-    }
+      definition: () => ({ setValue: { isVariantComponent: true } }),
+    };
 
     stateVariableDefinitions.generatedVariantInfo = {
       returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
@@ -120,103 +115,92 @@ export default class Lorem extends CompositeComponent {
           dependencyType: "value",
           value: sharedParameters.variantSeed,
         },
-
       }),
       definition({ dependencyValues, componentName }) {
-
         let generatedVariantInfo = {
           seed: dependencyValues.variantSeed,
           meta: {
             createdBy: componentName,
-          }
+          },
         };
 
         return {
           setValue: {
             generatedVariantInfo,
-          }
-        }
-
-      }
-    }
-
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 
-
-  static async createSerializedReplacements({ component, componentInfoObjects }) {
-
+  static async createSerializedReplacements({
+    component,
+    componentInfoObjects,
+  }) {
     const lorem = new LoremIpsum({
       sentencesPerParagraph: {
         max: await component.stateValues.maxSentencesPerParagraph,
-        min: await component.stateValues.minSentencesPerParagraph
+        min: await component.stateValues.minSentencesPerParagraph,
       },
       wordsPerSentence: {
         max: await component.stateValues.maxWordsPerSentence,
-        min: await component.stateValues.minWordsPerSentence
+        min: await component.stateValues.minWordsPerSentence,
       },
-      random: component.sharedParameters.variantRng
+      random: component.sharedParameters.variantRng,
     });
 
     let replacements = [];
 
-    if (await component.stateValues.generateParagraphs !== null) {
-
+    if ((await component.stateValues.generateParagraphs) !== null) {
       let numParagraphs = await component.stateValues.generateParagraphs;
       if (Number.isInteger(numParagraphs) && numParagraphs > 0) {
-
         let paragraphs = lorem.generateParagraphs(numParagraphs).split("\n");
 
-        replacements = paragraphs.map(x => ({
+        replacements = paragraphs.map((x) => ({
           componentType: "p",
-          children: [x]
-        }))
+          children: [x],
+        }));
       }
-
-    } else if (await component.stateValues.generateSentences !== null) {
-
+    } else if ((await component.stateValues.generateSentences) !== null) {
       let numSentences = await component.stateValues.generateSentences;
       if (Number.isInteger(numSentences) && numSentences > 0) {
-
         let sentences = lorem.generateSentences(numSentences).split(". ");
 
         for (let sent of sentences.slice(0, sentences.length - 1)) {
           replacements.push({
             componentType: "text",
-            children: [sent + "."]
-          })
-          replacements.push(" ")
+            children: [sent + "."],
+          });
+          replacements.push(" ");
         }
 
         replacements.push({
           componentType: "text",
-          children: [sentences[sentences.length - 1]]
-        })
+          children: [sentences[sentences.length - 1]],
+        });
       }
-
-    } else if (await component.stateValues.generateWords !== null) {
-
+    } else if ((await component.stateValues.generateWords) !== null) {
       let numWords = await component.stateValues.generateWords;
 
       if (Number.isInteger(numWords) && numWords > 0) {
-
-        let words = lorem.generateWords(numWords).split(" ").map(w => ({
-          componentType: "text",
-          children: [w]
-        }));
+        let words = lorem
+          .generateWords(numWords)
+          .split(" ")
+          .map((w) => ({
+            componentType: "text",
+            children: [w],
+          }));
 
         replacements.push(words[0]);
 
         for (let w of words.slice(1)) {
-          replacements.push(" ")
-          replacements.push(w)
+          replacements.push(" ");
+          replacements.push(w);
         }
-
       }
     }
-
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
@@ -229,13 +213,16 @@ export default class Lorem extends CompositeComponent {
     });
 
     return { replacements: processResult.serializedComponents };
-
   }
 
-
-  static async calculateReplacementChanges({ component, componentInfoObjects }) {
-
-    let replacements = (await this.createSerializedReplacements({ component, componentInfoObjects }))
+  static async calculateReplacementChanges({
+    component,
+    componentInfoObjects,
+  }) {
+    let replacements = await this.createSerializedReplacements({
+      component,
+      componentInfoObjects,
+    });
 
     let replacementInstruction = {
       changeType: "add",
@@ -246,19 +233,17 @@ export default class Lorem extends CompositeComponent {
     };
 
     return [replacementInstruction];
-
   }
 
   static setUpVariant({
-    serializedComponent, sharedParameters,
+    serializedComponent,
+    sharedParameters,
     descendantVariantComponents,
   }) {
-
     setUpVariantSeedAndRng({
-      serializedComponent, sharedParameters,
-      descendantVariantComponents
+      serializedComponent,
+      sharedParameters,
+      descendantVariantComponents,
     });
-
   }
-
 }

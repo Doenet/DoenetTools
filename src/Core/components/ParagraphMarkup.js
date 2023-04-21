@@ -1,4 +1,4 @@
-import InlineRenderInlineChildren from './abstract/InlineRenderInlineChildren';
+import InlineRenderInlineChildren from "./abstract/InlineRenderInlineChildren";
 
 export class Em extends InlineRenderInlineChildren {
   static componentType = "em";
@@ -12,7 +12,6 @@ export class Q extends InlineRenderInlineChildren {
   static componentType = "q";
   static beginTextDelimiter = '"';
   static endTextDelimiter = '"';
-
 }
 
 export class SQ extends InlineRenderInlineChildren {
@@ -48,8 +47,8 @@ export class Tage extends InlineRenderInlineChildren {
     stateVariableDefinitions.selfClosed = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { selfClosed: true } })
-    }
+      definition: () => ({ setValue: { selfClosed: true } }),
+    };
     return stateVariableDefinitions;
   }
 }

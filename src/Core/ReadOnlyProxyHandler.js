@@ -10,15 +10,23 @@ const readOnlyProxyHandler = {
 
       // We return a function that will be used instead of the "then"
       // that first applies the read-only proxy
-      return f => obj.then.bind(obj)(x => f(
-        x !== null && typeof x === "object" ? new Proxy(x, readOnlyProxyHandler) : x
-      ))
+      return (f) =>
+        obj.then.bind(obj)((x) =>
+          f(
+            x !== null && typeof x === "object"
+              ? new Proxy(x, readOnlyProxyHandler)
+              : x,
+          ),
+        );
     }
     let result = obj[prop];
-    if (result !== null && typeof result === 'object' && result.__isReadOnlyProxy !== true) {
+    if (
+      result !== null &&
+      typeof result === "object" &&
+      result.__isReadOnlyProxy !== true
+    ) {
       return new Proxy(result, readOnlyProxyHandler);
-    }
-    else {
+    } else {
       return result;
     }
   },
@@ -27,7 +35,7 @@ const readOnlyProxyHandler = {
   },
   deleteProperty: function (obj, prop) {
     throw Error("Property " + prop + " is read-only");
-  }
-}
+  },
+};
 
 export default readOnlyProxyHandler;

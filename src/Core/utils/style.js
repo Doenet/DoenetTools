@@ -1,4 +1,3 @@
-
 export let styleAttributes = {
   lineColor: { componentType: "text" },
   lineColorWord: { componentType: "text" },
@@ -32,8 +31,7 @@ export let styleAttributes = {
   backgroundColorWord: { componentType: "text" },
   backgroundColorDarkMode: { componentType: "text" },
   backgroundColorWordDarkMode: { componentType: "text" },
-
-}
+};
 
 let defaultStyle = {
   lineColor: "#648FFF",
@@ -62,11 +60,9 @@ let defaultStyle = {
   textColorWord: "black",
   textColorDarkMode: "white",
   textColorWordDarkMode: "white",
-}
-
+};
 
 function returnDefaultStyleDefinitions() {
-
   return {
     1: {
       lineColor: "#648FFF",
@@ -235,12 +231,11 @@ function returnDefaultStyleDefinitions() {
       textColorWord: "gray",
       textColorDarkMode: "gray",
       textColorWordDarkMode: "gray",
-    }
-  }
+    },
+  };
 }
 
 export function returnStyleDefinitionStateVariables() {
-
   let stateVariableDefinitions = {};
 
   stateVariableDefinitions.setupChildren = {
@@ -249,12 +244,12 @@ export function returnStyleDefinitionStateVariables() {
         dependencyType: "child",
         childGroups: ["setups"],
         proceedIfAllChildrenNotMatched: true,
-      }
+      },
     }),
     definition({ dependencyValues }) {
-      return { setValue: { setupChildren: dependencyValues.setupChildren } }
-    }
-  }
+      return { setValue: { setupChildren: dependencyValues.setupChildren } };
+    },
+  };
 
   stateVariableDefinitions.styleDefinitions = {
     stateVariablesDeterminingDependencies: ["setupChildren"],
@@ -262,35 +257,34 @@ export function returnStyleDefinitionStateVariables() {
       let dependencies = {
         ancestorWithStyle: {
           dependencyType: "ancestor",
-          variableNames: ["styleDefinitions"]
+          variableNames: ["styleDefinitions"],
         },
         setupChildren: {
           dependencyType: "child",
           childGroups: ["setups"],
           proceedIfAllChildrenNotMatched: true,
-        }
-      }
+        },
+      };
 
       for (let setupChild of stateValues.setupChildren) {
         dependencies[`styleDefinitionsOf${setupChild.componentName}`] = {
           dependencyType: "child",
           parentName: setupChild.componentName,
           childGroups: ["styleDefinitions"],
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        };
       }
 
       return dependencies;
-
     },
     definition({ dependencyValues }) {
-
       let styleDefinitions = {};
 
       let startingStateVariableDefinitions;
 
       if (dependencyValues.ancestorWithStyle) {
-        startingStateVariableDefinitions = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
+        startingStateVariableDefinitions =
+          dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
       }
 
       if (!startingStateVariableDefinitions) {
@@ -298,13 +292,17 @@ export function returnStyleDefinitionStateVariables() {
       }
 
       for (let styleNumber in startingStateVariableDefinitions) {
-        styleDefinitions[styleNumber] = Object.assign({}, startingStateVariableDefinitions[styleNumber]);
+        styleDefinitions[styleNumber] = Object.assign(
+          {},
+          startingStateVariableDefinitions[styleNumber],
+        );
       }
-
 
       let styleDefinitionChildren = [];
       for (let child of dependencyValues.setupChildren) {
-        styleDefinitionChildren.push(...dependencyValues[`styleDefinitionsOf${child.componentName}`]);
+        styleDefinitionChildren.push(
+          ...dependencyValues[`styleDefinitionsOf${child.componentName}`],
+        );
       }
 
       let coloredItems = ["marker", "line", "fill", "text", "background"];
@@ -317,7 +315,10 @@ export function returnStyleDefinitionStateVariables() {
         for (let styleNumber in newStyleDefs) {
           let styleDef = styleDefinitions[styleNumber];
           if (!styleDef) {
-            styleDef = styleDefinitions[styleNumber] = Object.assign({}, defaultStyle);
+            styleDef = styleDefinitions[styleNumber] = Object.assign(
+              {},
+              defaultStyle,
+            );
           }
 
           let theNewDef = Object.assign({}, newStyleDefs[styleNumber]);
@@ -342,7 +343,7 @@ export function returnStyleDefinitionStateVariables() {
 
           for (let item of widthItems) {
             let widthKey = `${item}Width`;
-            let widthWordKey = `${widthKey}Word`
+            let widthWordKey = `${widthKey}Word`;
 
             if (widthKey in theNewDef && !(widthWordKey in theNewDef)) {
               if (theNewDef[widthKey] >= 4) {
@@ -357,7 +358,7 @@ export function returnStyleDefinitionStateVariables() {
 
           for (let item of lineStyleItems) {
             let styleKey = `${item}Style`;
-            let styleWordKey = `${styleKey}Word`
+            let styleWordKey = `${styleKey}Word`;
 
             if (styleKey in theNewDef && !(styleWordKey in theNewDef)) {
               if (theNewDef[styleKey] === "dashed") {
@@ -380,22 +381,17 @@ export function returnStyleDefinitionStateVariables() {
           }
 
           Object.assign(styleDef, theNewDef);
-
-
         }
       }
 
       return { setValue: { styleDefinitions } };
-
-    }
-  }
+    },
+  };
 
   return stateVariableDefinitions;
-
 }
 
 export function returnSelectedStyleStateVariableDefinition() {
-
   return {
     selectedStyle: {
       forRenderer: true,
@@ -407,12 +403,12 @@ export function returnSelectedStyleStateVariableDefinition() {
         },
         ancestorWithStyle: {
           dependencyType: "ancestor",
-          variableNames: ["styleDefinitions"]
-        }
+          variableNames: ["styleDefinitions"],
+        },
       }),
       definition: function ({ dependencyValues }) {
-
-        let styleDefinitions = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
+        let styleDefinitions =
+          dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
         if (!styleDefinitions) {
           styleDefinitions = returnDefaultStyleDefinitions();
         }
@@ -423,16 +419,13 @@ export function returnSelectedStyleStateVariableDefinition() {
           selectedStyle = defaultStyle;
         }
         return { setValue: { selectedStyle } };
-      }
-    }
-  }
-
+      },
+    },
+  };
 }
 
 export function returnTextStyleDescriptionDefinitions() {
-
   return {
-
     textColor: {
       public: true,
       shadowingInstructions: {
@@ -446,11 +439,10 @@ export function returnTextStyleDescriptionDefinitions() {
         document: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["theme"]
+          variableNames: ["theme"],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let selectedStyle = dependencyValues.selectedStyle;
 
         let textColorWord;
@@ -461,7 +453,7 @@ export function returnTextStyleDescriptionDefinitions() {
         }
 
         return { setValue: { textColor: textColorWord } };
-      }
+      },
     },
 
     backgroundColor: {
@@ -477,11 +469,10 @@ export function returnTextStyleDescriptionDefinitions() {
         document: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["theme"]
+          variableNames: ["theme"],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let selectedStyle = dependencyValues.selectedStyle;
 
         let backgroundColorWord;
@@ -491,13 +482,12 @@ export function returnTextStyleDescriptionDefinitions() {
           backgroundColorWord = selectedStyle.backgroundColorWord;
         }
 
-
         if (!backgroundColorWord) {
           backgroundColorWord = "none";
         }
 
         return { setValue: { backgroundColor: backgroundColorWord } };
-      }
+      },
     },
 
     textStyleDescription: {
@@ -516,7 +506,6 @@ export function returnTextStyleDescriptionDefinitions() {
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let textStyleDescription = dependencyValues.textColor;
 
         if (dependencyValues.backgroundColor !== "none") {
@@ -524,17 +513,20 @@ export function returnTextStyleDescriptionDefinitions() {
         }
 
         return { setValue: { textStyleDescription } };
-      }
+      },
     },
-
-  }
-
+  };
 }
 
-
 export function textRendererStyle(darkMode, selectedStyle) {
-  let textColor = darkMode === "dark" ? selectedStyle.textColorDarkMode : selectedStyle.textColor;
-  let backgroundColor = darkMode === "dark" ? selectedStyle.backgroundColorDarkMode : selectedStyle.backgroundColor;
+  let textColor =
+    darkMode === "dark"
+      ? selectedStyle.textColorDarkMode
+      : selectedStyle.textColor;
+  let backgroundColor =
+    darkMode === "dark"
+      ? selectedStyle.backgroundColorDarkMode
+      : selectedStyle.backgroundColor;
   let style = { color: textColor };
   if (backgroundColor) {
     style.backgroundColor = backgroundColor;

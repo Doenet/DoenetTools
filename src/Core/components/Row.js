@@ -1,5 +1,5 @@
-import BaseComponent from './abstract/BaseComponent';
-import { normalizeIndex } from '../utils/table';
+import BaseComponent from "./abstract/BaseComponent";
+import { normalizeIndex } from "../utils/table";
 
 export default class Row extends BaseComponent {
   static componentType = "row";
@@ -23,29 +23,27 @@ export default class Row extends BaseComponent {
     };
     attributes.halign = {
       createComponentOfType: "text",
-    }
+    };
     attributes.valign = {
       createComponentOfType: "text",
-    }
+    };
     attributes.left = {
       createComponentOfType: "text",
-    }
+    };
     attributes.bottom = {
       createComponentOfType: "text",
-    }
+    };
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "cells",
-      componentTypes: ["cell"]
-    }]
-
+    return [
+      {
+        group: "cells",
+        componentTypes: ["cell"],
+      },
+    ];
   }
-
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -61,28 +59,30 @@ export default class Row extends BaseComponent {
         halignAttr: {
           dependencyType: "attributeComponent",
           attributeName: "halign",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         parentHalign: {
           dependencyType: "parentStateVariable",
-          variableName: "halign"
+          variableName: "halign",
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.halignAttr !== null) {
           let halign = dependencyValues.halignAttr.stateValues.value;
           if (!["left", "center", "right", "justify"].includes(halign)) {
             halign = "left";
           }
-          return { setValue: { halign } }
-        } else if (dependencyValues.parentHalign !== null && !usedDefault.parentHalign) {
-          return { setValue: { halign: dependencyValues.parentHalign } }
+          return { setValue: { halign } };
+        } else if (
+          dependencyValues.parentHalign !== null &&
+          !usedDefault.parentHalign
+        ) {
+          return { setValue: { halign: dependencyValues.parentHalign } };
         } else {
-          return { useEssentialOrDefaultValue: { halign: true } }
+          return { useEssentialOrDefaultValue: { halign: true } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.valign = {
       public: true,
@@ -96,28 +96,30 @@ export default class Row extends BaseComponent {
         valignAttr: {
           dependencyType: "attributeComponent",
           attributeName: "valign",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         parentValign: {
           dependencyType: "parentStateVariable",
-          variableName: "valign"
+          variableName: "valign",
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.valignAttr !== null) {
           let valign = dependencyValues.valignAttr.stateValues.value;
           if (!["top", "middle", "bottom"].includes(valign)) {
             valign = "middle";
           }
-          return { setValue: { valign } }
-        } else if (dependencyValues.parentValign !== null && !usedDefault.parentValign) {
-          return { setValue: { valign: dependencyValues.parentValign } }
+          return { setValue: { valign } };
+        } else if (
+          dependencyValues.parentValign !== null &&
+          !usedDefault.parentValign
+        ) {
+          return { setValue: { valign: dependencyValues.parentValign } };
         } else {
-          return { useEssentialOrDefaultValue: { valign: true } }
+          return { useEssentialOrDefaultValue: { valign: true } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.left = {
       public: true,
@@ -131,28 +133,30 @@ export default class Row extends BaseComponent {
         leftAttr: {
           dependencyType: "attributeComponent",
           attributeName: "left",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         parentLeft: {
           dependencyType: "parentStateVariable",
-          variableName: "left"
+          variableName: "left",
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.leftAttr !== null) {
           let left = dependencyValues.leftAttr.stateValues.value;
           if (!["none", "minor", "medium", "major"].includes(left)) {
             left = "none";
           }
-          return { setValue: { left } }
-        } else if (dependencyValues.parentLeft !== null && !usedDefault.parentLeft) {
-          return { setValue: { left: dependencyValues.parentLeft } }
+          return { setValue: { left } };
+        } else if (
+          dependencyValues.parentLeft !== null &&
+          !usedDefault.parentLeft
+        ) {
+          return { setValue: { left: dependencyValues.parentLeft } };
         } else {
-          return { useEssentialOrDefaultValue: { left: true } }
+          return { useEssentialOrDefaultValue: { left: true } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.bottom = {
       public: true,
@@ -165,53 +169,55 @@ export default class Row extends BaseComponent {
         bottomAttr: {
           dependencyType: "attributeComponent",
           attributeName: "bottom",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         parentBottom: {
           dependencyType: "parentStateVariable",
-          variableName: "bottom"
+          variableName: "bottom",
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.bottomAttr !== null) {
           let bottom = dependencyValues.bottomAttr.stateValues.value;
           if (!["none", "minor", "medium", "major"].includes(bottom)) {
             bottom = "none";
           }
-          return { setValue: { bottom } }
-        } else if (dependencyValues.parentBottom !== null && !usedDefault.parentBottom) {
-          return { setValue: { bottom: dependencyValues.parentBottom } }
+          return { setValue: { bottom } };
+        } else if (
+          dependencyValues.parentBottom !== null &&
+          !usedDefault.parentBottom
+        ) {
+          return { setValue: { bottom: dependencyValues.parentBottom } };
         } else {
-          return { useEssentialOrDefaultValue: { bottom: true } }
+          return { useEssentialOrDefaultValue: { bottom: true } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.prescribedCellsWithColNum = {
       returnDependencies: () => ({
         cellChildren: {
           dependencyType: "child",
           childGroups: ["cells"],
-          variableNames: ["colNum"]
-        }
+          variableNames: ["colNum"],
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            prescribedCellsWithColNum: dependencyValues.cellChildren
-          }
-        }
-      }
-    }
+            prescribedCellsWithColNum: dependencyValues.cellChildren,
+          },
+        };
+      },
+    };
 
     // stateVariableDefinitions.cellMaths = {
     //   isArray: true,
     //   entryPrefixes: ["cellMath"],
     //   public: true,
     //   shadowingInstructions: {
-      //   createComponentOfType: "math",
-      // },
+    //   createComponentOfType: "math",
+    // },
     //   returnDependencies: function ({ arrayKeys }) {
 
     //     if (arrayKeys === undefined) {
@@ -265,7 +271,7 @@ export default class Row extends BaseComponent {
     //         return { fresh: { cellMaths: false } }
     //       } else {
     //         // asked for entire array, but it has some fresh elements
-    //         // (we don't know here how many elements cellMaths has, 
+    //         // (we don't know here how many elements cellMaths has,
     //         // so can't determine if completely fresh)
     //         return { partiallyFresh: { cellMaths: true } }
     //       }
@@ -398,8 +404,8 @@ export default class Row extends BaseComponent {
     //   entryPrefixes: ["cellNumber"],
     //   public: true,
     //   shadowingInstructions: {
-      //   createComponentOfType: "number",
-      // },
+    //   createComponentOfType: "number",
+    // },
     //   returnDependencies: function ({ arrayKeys }) {
 
     //     if (arrayKeys === undefined) {
@@ -453,7 +459,7 @@ export default class Row extends BaseComponent {
     //         return { fresh: { cellNumbers: false } }
     //       } else {
     //         // asked for entire array, but it has some fresh elements
-    //         // (we don't know here how many elements cellNumbers has, 
+    //         // (we don't know here how many elements cellNumbers has,
     //         // so can't determine if completely fresh)
     //         return { partiallyFresh: { cellNumbers: true } }
     //       }
@@ -586,8 +592,8 @@ export default class Row extends BaseComponent {
     //   entryPrefixes: ["cellText"],
     //   public: true,
     //   shadowingInstructions: {
-      //   createComponentOfType: "text",
-      // },
+    //   createComponentOfType: "text",
+    // },
     //   returnDependencies: function ({ arrayKeys }) {
 
     //     if (arrayKeys === undefined) {
@@ -641,7 +647,7 @@ export default class Row extends BaseComponent {
     //         return { fresh: { cellTexts: false } }
     //       } else {
     //         // asked for entire array, but it has some fresh elements
-    //         // (we don't know here how many elements cellTexts has, 
+    //         // (we don't know here how many elements cellTexts has,
     //         // so can't determine if completely fresh)
     //         return { partiallyFresh: { cellTexts: true } }
     //       }
@@ -771,7 +777,4 @@ export default class Row extends BaseComponent {
 
     return stateVariableDefinitions;
   }
-
-
 }
-

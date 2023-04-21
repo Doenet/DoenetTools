@@ -1,4 +1,4 @@
-import Template from './Template';
+import Template from "./Template";
 
 export default class Case extends Template {
   static componentType = "case";
@@ -13,9 +13,7 @@ export default class Case extends Template {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.conditionSatisfied = {
@@ -31,7 +29,6 @@ export default class Case extends Template {
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let conditionSatisfied;
         if (dependencyValues.condition === null) {
           conditionSatisfied = true;
@@ -39,21 +36,21 @@ export default class Case extends Template {
           conditionSatisfied = dependencyValues.condition.stateValues.value;
         }
 
-        return { setValue: { conditionSatisfied } }
-      }
+        return { setValue: { conditionSatisfied } };
+      },
     };
 
     return stateVariableDefinitions;
   }
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
-
     if (!component.stateValues.conditionSatisfied) {
-      return { replacements: [] }
+      return { replacements: [] };
     }
 
-    return super.createSerializedReplacements({ component, componentInfoObjects });
-
+    return super.createSerializedReplacements({
+      component,
+      componentInfoObjects,
+    });
   }
-
 }
