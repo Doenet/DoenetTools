@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider,
+} from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import { createRoot } from 'react-dom/client';
 
@@ -30,7 +34,6 @@ import {
   action as portfolioAction,
   Portfolio,
 } from './Tools/_framework/Paths/Portfolio';
-import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
 import {
   loader as publicPortfolioLoader,
   PublicPortfolio,
@@ -47,6 +50,11 @@ import {
 } from './Tools/_framework/Panels/NewSupportPanel';
 
 import '@fontsource/jost';
+import {
+  PortfolioActivityEditor,
+  loader as portfolioEditorLoader,
+} from './Tools/_framework/Paths/PortfolioActivityEditor';
+// import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
 
 const theme = extendTheme({
   fonts: {
@@ -194,7 +202,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/portfolioviewer/:doenetId',
+        path: 'portfolioviewer/:doenetId',
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
         element: (
@@ -211,11 +219,37 @@ const router = createBrowserRouter([
           </DarkmodeController>
         ),
       },
+      {
+        path: 'portfolioeditor/:doenetId',
+        loader: async ({ params }) => {
+          //Redirect as an activity can have no pageids
+          return redirect(`/portfolioeditor/${params.doenetId}/noPageId/`);
+        },
+        element: <div>Loading...</div>,
+      },
+      {
+        path: 'portfolioeditor/:doenetId/:pageId',
+        loader: portfolioEditorLoader,
+        // action: portfolioEditorSupportPanelAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <DarkmodeController>
+            <MathJaxContext
+              version={2}
+              config={mathjaxConfig}
+              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+            >
+              <PortfolioActivityEditor />
+              {/* <ToolRoot /> */}
+            </MathJaxContext>
+          </DarkmodeController>
+        ),
+      },
     ],
   },
 
   {
-    path: '/portfolio/:doenetId/settings',
+    path: 'portfolio/:doenetId/settings',
     loader: portfolioActivitySettingsLoader,
     action: portfolioActivitySettingsAction,
     ErrorBoundary: portfolioActivitySettingsError,
@@ -226,24 +260,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/portfolioeditor/:doenetId',
-    loader: portfolioEditorMenuCapLoader,
-    // action: portfolioEditorSupportPanelAction,
-    // errorElement: <div>Error!</div>,
-    element: (
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <ToolRoot />
-        </MathJaxContext>
-      </DarkmodeController>
-    ),
-  },
-  {
-    path: '/public',
+    path: 'public',
     loader: editorSupportPanelLoader,
     action: editorSupportPanelAction,
     // errorElement: <div>Error!</div>,
