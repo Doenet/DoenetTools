@@ -320,22 +320,42 @@ export default React.memo(function Point(props) {
       calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
       calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
 
+      let args = {
+        x: calculatedX.current,
+        y: calculatedY.current,
+        transient: true,
+        skippable: true,
+      };
+
+      if (!viaPointer) {
+        args.viaKeyboard = true;
+        args.lastPosition = lastPositionFromCore.current;
+        args.limits = [
+          [xmin, xmax],
+          [ymin, ymax],
+        ];
+        args.sourceDetails = { viaKeyboard: true };
+      }
+
       callAction({
         action: actions.movePoint,
-        args: {
-          x: calculatedX.current,
-          y: calculatedY.current,
-          transient: true,
-          skippable: true,
-        },
+        args,
       });
 
-      let shadowX = Math.min(xmax, Math.max(xmin, newShadowPointJXG.X()));
-      let shadowY = Math.min(ymax, Math.max(ymin, newShadowPointJXG.Y()));
-      newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [
-        shadowX,
-        shadowY,
-      ]);
+      if (viaPointer) {
+        let shadowX = Math.min(xmax, Math.max(xmin, newShadowPointJXG.X()));
+        let shadowY = Math.min(ymax, Math.max(ymin, newShadowPointJXG.Y()));
+        newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [
+          shadowX,
+          shadowY,
+        ]);
+      } else {
+        // don't use shadow point with keyboard
+        newShadowPointJXG.coords.setCoordinates(
+          JXG.COORDS_BY_USER,
+          lastPositionFromCore.current,
+        );
+      }
 
       newPointJXG.coords.setCoordinates(
         JXG.COORDS_BY_USER,
@@ -421,7 +441,12 @@ export default React.memo(function Point(props) {
       let y = SVs.numericalXs?.[1];
 
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
-      if (!dragged.current) {
+
+      // don't use shadow point with keyboard
+      if (
+        !dragged.current ||
+        sourceOfUpdate.sourceInformation?.[name]?.viaKeyboard
+      ) {
         shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [
           x,
           y,

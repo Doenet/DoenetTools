@@ -1275,7 +1275,11 @@ export default class Point extends GraphicalComponent {
     y,
     z,
     transient,
+    viaKeyboard,
+    lastPosition,
+    limits,
     actionId,
+    sourceDetails,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
@@ -1290,6 +1294,28 @@ export default class Point extends GraphicalComponent {
       components[2] = me.fromAst(z);
     }
     if (transient) {
+      let largerMoveOptions;
+      if (viaKeyboard) {
+        let foundChange =
+          (x !== undefined && x != lastPosition[0]) ||
+          (y !== undefined && y != lastPosition[1]) ||
+          (z !== undefined && z != lastPosition[2]);
+
+        if (foundChange) {
+          // for largerMove algorithm, expect requestedValue to be an array
+          let requestedValue = [];
+          for (let ind in components) {
+            requestedValue[ind] = components[ind];
+          }
+          largerMoveOptions = {
+            componentName: this.componentName,
+            stateVariable: "xs",
+            originalValue: lastPosition.map((x) => me.fromAst(x)),
+            requestedValue,
+            limits,
+          };
+        }
+      }
       return await this.coreFunctions.performUpdate({
         updateInstructions: [
           {
@@ -1297,12 +1323,14 @@ export default class Point extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "xs",
             value: components,
+            sourceDetails,
           },
         ],
         transient,
         actionId,
         sourceInformation,
         skipRendererUpdate,
+        largerMoveOptions,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1312,6 +1340,7 @@ export default class Point extends GraphicalComponent {
             componentName: this.componentName,
             stateVariable: "xs",
             value: components,
+            sourceDetails,
           },
         ],
         actionId,

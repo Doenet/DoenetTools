@@ -9357,7 +9357,7 @@ export default class Core {
     canSkipUpdatingRenderer = false,
     skipRendererUpdate = false,
     sourceInformation = {},
-    attemptLargerMoveIfStuck,
+    largerMoveOptions,
     suppressToast = false, // temporary
   }) {
     if (this.flags.readOnly && !overrideReadOnly) {
@@ -9466,82 +9466,13 @@ export default class Core {
 
     newStateVariableValuesProcessed.push(newStateVariableValues);
 
-    if (attemptLargerMoveIfStuck) {
-      // Check to see if state variable specified is unchanged.
-      // If so, attempt larger move
-      let cName = attemptLargerMoveIfStuck.componentName;
-      let vName = attemptLargerMoveIfStuck.stateVariable;
-      let origValue = attemptLargerMoveIfStuck.originalValue;
-      let limits = attemptLargerMoveIfStuck.limits;
-
-      let newValue = await this._components[cName].stateValues[vName];
-
-      let noChange;
-
-      if (newValue instanceof me.class && origValue instanceof me.class) {
-        noChange = newValue.equals(origValue);
-      } else if (Array.isArray(newValue) && Array.isArray(origValue)) {
-        noChange =
-          newValue.length === origValue.length &&
-          newValue.every((v, i) => v === origValue[i]);
-      } else {
-        noChange = newValue === origValue;
-      }
-
-      if (noChange) {
-        let reqValue = attemptLargerMoveIfStuck.requestedValue;
-
-        if (origValue instanceof me.class && reqValue instanceof me.class) {
-          if (
-            origValue.tree[0] === "vector" &&
-            reqValue.tree[0] === "vector" &&
-            origValue.tree.length === reqValue.tree.length
-          ) {
-            let origNums = origValue.tree.slice(1);
-            let reqNums = reqValue.tree.slice(1);
-
-            if (
-              origNums.every(Number.isFinite) &&
-              reqNums.every(Number.isFinite)
-            ) {
-              for (let stepMult = 2; stepMult < 50; stepMult++) {
-                let newDesiredNums = origNums.map(
-                  (v, i) => v + stepMult * (reqNums[i] - v),
-                );
-                if (limits) {
-                  newDesiredNums = newDesiredNums.map((v, i) =>
-                    Math.min(limits[i][1], Math.max(limits[i][0], v)),
-                  );
-                }
-
-                let instruction = {
-                  updateType: "updateValue",
-                  componentName: cName,
-                  stateVariable: vName,
-                  value: me.fromAst(["vector", ...newDesiredNums]),
-                };
-
-                let newStateVariableValues = {};
-                await this.requestComponentChanges({
-                  instruction,
-                  workspace,
-                  newStateVariableValues,
-                });
-
-                await this.executeUpdateStateVariables(newStateVariableValues);
-
-                newStateVariableValuesProcessed.push(newStateVariableValues);
-
-                let newValue = await this._components[cName].stateValues[vName];
-
-                if (!newValue.equals(origValue)) {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      }
+    if (largerMoveOptions) {
+      await this.attemptLargerMoveIfUnchanged(
+        largerMoveOptions,
+        workspace,
+        newStateVariableValuesProcessed,
+        sourceInformation,
+      );
     }
 
     // always update the renderers from the update instructions themselves,
@@ -9696,6 +9627,184 @@ export default class Core {
 
     if (event) {
       this.requestRecordEvent(event);
+    }
+  }
+
+  // Check to see if state variable specified is unchanged.
+  // If so, attempt larger move
+  async attemptLargerMoveIfUnchanged(
+    largerMoveOptions,
+    workspace,
+    newStateVariableValuesProcessed,
+    sourceInformation,
+  ) {
+    let componentName = largerMoveOptions.componentName;
+    let stateVariable = largerMoveOptions.stateVariable;
+    let originalValue = largerMoveOptions.originalValue;
+    let limits = largerMoveOptions.limits;
+
+    // unchangedTolerance specifies what is considered unchanged
+    let unchangedTolerance = 1e-2;
+    if (limits) {
+      let scale =
+        (Math.abs(limits[0][1] - limits[0][0]) +
+          Math.abs(limits[1][1] - limits[1][0])) /
+        2;
+      if (Number.isFinite(scale)) {
+        unchangedTolerance = scale * 1e-3;
+      }
+    }
+
+    let newValue = await this._components[componentName].state[stateVariable]
+      .value;
+
+    let haveArray = false;
+
+    // the function to determine if we have a large enough change in the state variable
+    let checkIfUnchanged;
+
+    if (newValue instanceof me.class && originalValue instanceof me.class) {
+      checkIfUnchanged = (expr1, expr2, tol) =>
+        expr1.equals(expr2, {
+          allowed_error_in_numbers: tol,
+          allowed_error_is_absolute: true,
+        });
+    } else if (
+      Array.isArray(newValue) &&
+      newValue.every((x) => x instanceof me.class) &&
+      Array.isArray(originalValue) &&
+      originalValue.every((x) => x instanceof me.class)
+    ) {
+      checkIfUnchanged = (expr1, expr2, tol) =>
+        expr1.length === expr2.length &&
+        expr1.every((v, i) => {
+          return v.equals(expr2[i], {
+            allowed_error_in_numbers: tol,
+            allowed_error_is_absolute: true,
+          });
+        });
+
+      haveArray = true;
+    } else {
+      // only implemented for math-expressions or arrray of math-expressions so far
+      return;
+    }
+
+    if (!checkIfUnchanged(newValue, originalValue, unchangedTolerance)) {
+      // if the value changed by more than unchangedTolerance, we're done
+      return;
+    }
+
+    // Note: since we typically will have found a change and won't continue past here,
+    // we want to keep the above code as minimal as possible
+
+    let requestedValue = largerMoveOptions.requestedValue;
+
+    // so far, we've implemented this algorithm only for vectors of numbers
+    // and arrays of numerical math-expressions
+    let originalNums, requestedNums;
+
+    if (haveArray) {
+      originalNums = originalValue.map((x) => x.tree);
+      requestedNums = requestedValue.map((x) => x.tree);
+    } else {
+      if (
+        originalValue.tree[0] === "vector" &&
+        requestedValue.tree[0] === "vector"
+      ) {
+        originalNums = originalValue.tree.slice(1);
+        requestedNums = requestedValue.tree.slice(1);
+      } else {
+        // if have single math-expression, only implemented for vectors
+        // (could implement for all vectorOperators if we find a case where it is needed)
+        return;
+      }
+    }
+
+    if (
+      !(
+        originalNums.every(Number.isFinite) &&
+        requestedNums.every(Number.isFinite)
+      )
+    ) {
+      // only implemented for numerical components
+      return;
+    }
+
+    let previousDesiredNums = requestedNums;
+
+    // try steps up to about 100 times larger, doubling each time so takes at most 8 tries
+    // (it takes about 100 unconstrained steps to cross width of full size graph)
+    for (let stepMult = 2; stepMult <= 128; stepMult *= 2) {
+      //////////////////////////////////////////////////
+      // calculate a value of stateVariables that is further away from originalValue
+      //////////////////////////////////////////////////
+
+      let newDesiredNums = originalNums.map(
+        (v, i) => v + stepMult * (requestedNums[i] - v),
+      );
+      if (limits) {
+        newDesiredNums = newDesiredNums.map((v, i) =>
+          Math.min(limits[i][1], Math.max(limits[i][0], v)),
+        );
+      }
+
+      if (newDesiredNums.every((v, i) => previousDesiredNums[i] === v)) {
+        // the desired position isn't changing at all,
+        // so either we ran into a limit
+        // or the requestedValue was the same as the originalValue
+        return;
+      }
+
+      previousDesiredNums = newDesiredNums;
+
+      let value = haveArray
+        ? newDesiredNums.map((x) => me.fromAst(x))
+        : me.fromAst(["vector", ...newDesiredNums]);
+
+      //////////////////////////////////////////////////
+      // repeat the base procedure from performUpdate
+      // to try to change stateVariable to this new value
+      //////////////////////////////////////////////////
+
+      let instruction = {
+        updateType: "updateValue",
+        componentName: componentName,
+        stateVariable: stateVariable,
+        value,
+      };
+
+      let newStateVariableValues = {};
+      await this.requestComponentChanges({
+        instruction,
+        workspace,
+        newStateVariableValues,
+      });
+
+      await this.executeUpdateStateVariables(newStateVariableValues);
+
+      newStateVariableValuesProcessed.push(newStateVariableValues);
+
+      //////////////////////////////////////////////////
+      // check if we've succeeded to obtain a value sufficiently far away from originalValue
+      //////////////////////////////////////////////////
+
+      let newValue = await this._components[componentName].stateValues[
+        stateVariable
+      ];
+
+      if (!checkIfUnchanged(newValue, originalValue, unchangedTolerance)) {
+        // found a large enough movement, so we are unstuck
+
+        let componentSourceInformation = sourceInformation[componentName];
+        if (!componentSourceInformation) {
+          componentSourceInformation = sourceInformation[componentName] = {};
+        }
+
+        componentSourceInformation.largeMoveModification = true;
+
+        return;
+      }
     }
   }
 
