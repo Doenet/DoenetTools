@@ -83,6 +83,7 @@ export default class Core {
       performAction: this.performAction.bind(this),
       resolveAction: this.resolveAction.bind(this),
       triggerChainedActions: this.triggerChainedActions.bind(this),
+      updateRenderers: this.updateRenderers.bind(this),
       requestRecordEvent: this.requestRecordEvent.bind(this),
       requestAnimationFrame: this.requestAnimationFrame.bind(this),
       cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
@@ -9255,6 +9256,16 @@ export default class Core {
       }
     }
 
+    if (!skipRendererUpdate) {
+      await this.updateAllChangedRenderers(sourceInformation, actionId);
+    }
+  }
+
+  async updateRenderers({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     if (!skipRendererUpdate) {
       await this.updateAllChangedRenderers(sourceInformation, actionId);
     }
