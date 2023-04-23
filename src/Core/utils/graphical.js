@@ -155,7 +155,7 @@ export async function moveGraphicalObjectWithAnchorAction({
     components[3] = z;
   }
   if (transient) {
-    let attemptLargerMoveIfStuck;
+    let largerMoveOptions;
     if (viaKeyboard) {
       let foundChange =
         (x !== undefined && x != lastPosition[0]) ||
@@ -163,7 +163,7 @@ export async function moveGraphicalObjectWithAnchorAction({
         (z !== undefined && z != lastPosition[2]);
 
       if (foundChange) {
-        attemptLargerMoveIfStuck = {
+        largerMoveOptions = {
           componentName,
           stateVariable: "anchor",
           originalValue: me.fromAst(["vector", ...lastPosition]),
@@ -185,7 +185,7 @@ export async function moveGraphicalObjectWithAnchorAction({
       actionId,
       sourceInformation,
       skipRendererUpdate,
-      attemptLargerMoveIfStuck,
+      largerMoveOptions,
     });
   } else {
     return await coreFunctions.performUpdate({
