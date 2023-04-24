@@ -278,23 +278,3 @@ export default class Triangle extends Polygon {
     return stateVariableDefinitions;
   }
 }
-
-function mergeVertex({ workspaceVertices, currentVertexValue, desiredVertex }) {
-  // If have any empty values in desired value,
-  // merge with current values, or value from workspace
-
-  let vertexAst;
-  if (workspaceVertices) {
-    // if have desired expresson from workspace, use that instead of currentValue
-    vertexAst = workspaceVertices.slice(0);
-  } else {
-    vertexAst = currentVertexValue.tree.slice(0);
-  }
-  for (let [ind, value] of desiredVertex.tree.entries()) {
-    if (value !== undefined) {
-      vertexAst[ind] = value;
-    }
-  }
-
-  return me.fromAst(vertexAst);
-}
