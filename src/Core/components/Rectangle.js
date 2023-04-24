@@ -1370,8 +1370,8 @@ export default class Rectangle extends Polygon {
       }
     }
 
-    // console.log("movePolygon updateInstructions", updateInstructions);
-
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
     if (transient) {
       await this.coreFunctions.performUpdate({
         updateInstructions,
@@ -1399,109 +1399,121 @@ export default class Rectangle extends Polygon {
       });
     }
 
-    // if dragged the whole rectangle that is based on two points (vertices and/or center),
-    // address case where only one point is constrained
-    // to make rectangle just translate in this case
+    // unless allowFlexibleMotion is set,
+    // we will attempt to preserve the relationship among all the vertices
+    // so that we have a rigid translation
+    // when the whole rectangle is moved.
+    // This procedure may preserve the rigid translation
+    // even if a subset of the vertices are constrained.
+    if (!(await this.stateValues.allowFlexibleMotion)) {
+      // if dragged the whole rectangle that is based on two points (vertices and/or center),
+      // address case where only one point is constrained
+      // to make rectangle just translate in this case
 
-    if (nVerticesMoved > 1) {
-      let nVerticesSpecified = await this.stateValues.nVerticesSpecified;
+      if (nVerticesMoved > 1) {
+        let nVerticesSpecified = await this.stateValues.nVerticesSpecified;
 
-      if (
-        nVerticesSpecified > 1 ||
-        (nVerticesSpecified === 1 &&
-          (await this.stateValues.haveSpecifiedCenter))
-      ) {
-        let resultingNumericalVertices = await this.stateValues
-          .numericalVertices;
+        if (
+          nVerticesSpecified > 1 ||
+          (nVerticesSpecified === 1 &&
+            (await this.stateValues.haveSpecifiedCenter))
+        ) {
+          let resultingNumericalVertices = await this.stateValues
+            .numericalVertices;
 
-        let numericalPoints, resultingNumericalPoints;
+          let numericalPoints, resultingNumericalPoints;
 
-        if (nVerticesSpecified > 1) {
-          // just look at first and third vertex
-          numericalPoints = [pointCoords[0], pointCoords[2]];
-          resultingNumericalPoints = [
-            resultingNumericalVertices[0],
-            resultingNumericalVertices[2],
-          ];
-        } else {
-          // just look at center and first vertex
-          // (calculate center from first and third vertex)
+          if (nVerticesSpecified > 1) {
+            // just look at first and third vertex
+            numericalPoints = [pointCoords[0], pointCoords[2]];
+            resultingNumericalPoints = [
+              resultingNumericalVertices[0],
+              resultingNumericalVertices[2],
+            ];
+          } else {
+            // just look at center and first vertex
+            // (calculate center from first and third vertex)
 
-          let numericalCenter = [
-            (pointCoords[0][0] + pointCoords[2][0]) / 2,
-            (pointCoords[0][1] + pointCoords[2][1]) / 2,
-          ];
+            let numericalCenter = [
+              (pointCoords[0][0] + pointCoords[2][0]) / 2,
+              (pointCoords[0][1] + pointCoords[2][1]) / 2,
+            ];
 
-          let resultingNumericalCenter = [
-            (resultingNumericalVertices[0][0] +
-              resultingNumericalVertices[2][0]) /
-              2,
-            (resultingNumericalVertices[0][1] +
-              resultingNumericalVertices[2][1]) /
-              2,
-          ];
+            let resultingNumericalCenter = [
+              (resultingNumericalVertices[0][0] +
+                resultingNumericalVertices[2][0]) /
+                2,
+              (resultingNumericalVertices[0][1] +
+                resultingNumericalVertices[2][1]) /
+                2,
+            ];
 
-          numericalPoints = [numericalCenter, pointCoords[0]];
-          resultingNumericalPoints = [
-            resultingNumericalCenter,
-            resultingNumericalVertices[0],
-          ];
-        }
-
-        let pointsChanged = [];
-        let nPointsChanged = 0;
-
-        for (let [ind, pt] of numericalPoints.entries()) {
-          if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
-            pointsChanged.push(ind);
-            nPointsChanged++;
-          }
-        }
-
-        if (nPointsChanged === 1) {
-          // one point was altered from the requested location.
-
-          let changedInd = pointsChanged[0];
-
-          let orig1 = numericalPoints[changedInd];
-          let changed1 = resultingNumericalPoints[changedInd];
-          let changevec1 = orig1.map((v, i) => v - changed1[i]);
-
-          let newNumericalVertices = [];
-
-          for (let i = 0; i < 4; i++) {
-            newNumericalVertices.push(
-              pointCoords[i].map((v, j) => v - changevec1[j]),
-            );
+            numericalPoints = [numericalCenter, pointCoords[0]];
+            resultingNumericalPoints = [
+              resultingNumericalCenter,
+              resultingNumericalVertices[0],
+            ];
           }
 
-          let newVertexComponents = {};
+          let pointsChanged = [];
+          let nPointsChanged = 0;
 
-          for (let ind in newNumericalVertices) {
-            newVertexComponents[ind + ",0"] = me.fromAst(
-              newNumericalVertices[ind][0],
-            );
-            newVertexComponents[ind + ",1"] = me.fromAst(
-              newNumericalVertices[ind][1],
-            );
+          for (let [ind, pt] of numericalPoints.entries()) {
+            if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
+              pointsChanged.push(ind);
+              nPointsChanged++;
+            }
           }
 
-          let newInstructions = [
-            {
-              updateType: "updateValue",
-              componentName: this.componentName,
-              stateVariable: "vertices",
-              value: newVertexComponents,
-            },
-          ];
+          if (nPointsChanged === 1) {
+            // One of the defining points (center or vertex)
+            // was altered from the requested location
+            // while the other point stayed at the requested location.
+            // We interpret this as one point being constrained and the second one being free
+            // and we move the second point to keep their relative position fixed.
 
-          return await this.coreFunctions.performUpdate({
-            updateInstructions: newInstructions,
-            transient,
-            actionId,
-            sourceInformation,
-            skipRendererUpdate,
-          });
+            let changedInd = pointsChanged[0];
+
+            let orig1 = numericalPoints[changedInd];
+            let changed1 = resultingNumericalPoints[changedInd];
+            let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+            let newNumericalVertices = [];
+
+            for (let i = 0; i < 4; i++) {
+              newNumericalVertices.push(
+                pointCoords[i].map((v, j) => v - changevec1[j]),
+              );
+            }
+
+            let newVertexComponents = {};
+
+            for (let ind in newNumericalVertices) {
+              newVertexComponents[ind + ",0"] = me.fromAst(
+                newNumericalVertices[ind][0],
+              );
+              newVertexComponents[ind + ",1"] = me.fromAst(
+                newNumericalVertices[ind][1],
+              );
+            }
+
+            let newInstructions = [
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "vertices",
+                value: newVertexComponents,
+              },
+            ];
+
+            return await this.coreFunctions.performUpdate({
+              updateInstructions: newInstructions,
+              transient,
+              actionId,
+              sourceInformation,
+              skipRendererUpdate,
+            });
+          }
         }
       }
     }

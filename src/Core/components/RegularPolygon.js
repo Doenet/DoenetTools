@@ -1760,6 +1760,9 @@ export default class RegularPolygon extends Polygon {
         return await this.coreFunctions.resolveAction({ actionId });
       }
 
+      // Since the case where drag the entire regular polygon is complicated,
+      // we perform the entire move for a single vertex here and return.
+
       // If a single vertex is dragged, we perform update on the vertex,
       // as one typically does for a polygon
       let vertexComponents = {};
@@ -1833,8 +1836,6 @@ export default class RegularPolygon extends Polygon {
     let center_x = 0,
       center_y = 0;
 
-    console.log({ nVertices, nVerticesMoved, pointCoords });
-
     for (let vertexInd = 0; vertexInd < nVertices; vertexInd++) {
       center_x += pointCoords[vertexInd][0];
       center_y += pointCoords[vertexInd][1];
@@ -1867,6 +1868,8 @@ export default class RegularPolygon extends Polygon {
       },
     ];
 
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
     if (transient) {
       await this.coreFunctions.performUpdate({
         updateInstructions,
@@ -1894,49 +1897,79 @@ export default class RegularPolygon extends Polygon {
       });
     }
 
-    let nVerticesSpecified = await this.stateValues.nVerticesSpecified;
-    let haveSpecifiedCenter = await this.stateValues.haveSpecifiedCenter;
+    // unless allowFlexibleMotion is set,
+    // we will attempt to create a rigid translation of the polygon
+    // even if a subset of the vertices are constrained.
+    if (!(await this.stateValues.allowFlexibleMotion)) {
+      let nVerticesSpecified = await this.stateValues.nVerticesSpecified;
+      let haveSpecifiedCenter = await this.stateValues.haveSpecifiedCenter;
 
-    if (haveSpecifiedCenter) {
-      if (nVerticesSpecified >= 1) {
-        // polygon was determined by center and 1 vertex
+      if (haveSpecifiedCenter) {
+        if (nVerticesSpecified >= 1) {
+          // polygon was determined by center and 1 vertex
 
-        console.log("center and vertex");
+          let resultingCenter = await this.stateValues.centerComponents;
 
-        let resultingCenter = await this.stateValues.centerComponents;
+          let resultingDirectionWithRadius = await this.stateValues
+            .directionWithRadius;
+          let resultingVertex1 = [
+            resultingCenter[0] + resultingDirectionWithRadius[0],
+            resultingCenter[1] + resultingDirectionWithRadius[1],
+          ];
 
-        let resultingDirectionWithRadius = await this.stateValues
-          .directionWithRadius;
-        let resultingVertex1 = [
-          resultingCenter[0] + resultingDirectionWithRadius[0],
-          resultingCenter[1] + resultingDirectionWithRadius[1],
-        ];
+          let tol = 1e-6;
 
-        console.log({ center, vertex1, resultingCenter, resultingVertex1 });
+          let vertex1Changed = !vertex1.every(
+            (v, i) => Math.abs(v - resultingVertex1[i]) < tol,
+          );
+          let centerChanged = !center.every(
+            (v, i) => Math.abs(v - resultingCenter[i]) < tol,
+          );
 
-        let tol = 1e-6;
+          if (centerChanged) {
+            if (!vertex1Changed) {
+              // only center changed
+              // keep directionWithRadius the same
+              // and use new center position
 
-        let vertex1Changed = !vertex1.every(
-          (v, i) => Math.abs(v - resultingVertex1[i]) < tol,
-        );
-        let centerChanged = !center.every(
-          (v, i) => Math.abs(v - resultingCenter[i]) < tol,
-        );
-
-        console.log({ vertex1Changed, centerChanged });
-
-        if (centerChanged) {
-          if (!vertex1Changed) {
-            // only center changed
+              let newInstructions = [
+                {
+                  updateType: "updateValue",
+                  componentName: this.componentName,
+                  stateVariable: "centerComponents",
+                  value: resultingCenter,
+                },
+                {
+                  updateType: "updateValue",
+                  componentName: this.componentName,
+                  stateVariable: "directionWithRadius",
+                  value: directionWithRadius,
+                },
+              ];
+              return await this.coreFunctions.performUpdate({
+                updateInstructions: newInstructions,
+                transient,
+                actionId,
+                sourceInformation,
+                skipRendererUpdate,
+              });
+            }
+          } else if (vertex1Changed) {
+            // only vertex 1 changed
             // keep directionWithRadius the same
-            // and use new center position
+            // adjust center to put vertex 1 at its new location
+
+            let newCenter = [
+              resultingVertex1[0] - directionWithRadius[0],
+              resultingVertex1[1] - directionWithRadius[1],
+            ];
 
             let newInstructions = [
               {
                 updateType: "updateValue",
                 componentName: this.componentName,
                 stateVariable: "centerComponents",
-                value: resultingCenter,
+                value: newCenter,
               },
               {
                 updateType: "updateValue",
@@ -1953,14 +1986,84 @@ export default class RegularPolygon extends Polygon {
               skipRendererUpdate,
             });
           }
-        } else if (vertex1Changed) {
-          // only vertex 1 changed
+        }
+      } else if (nVerticesSpecified >= 2) {
+        //polygon was determined by two vertices
+
+        // calculate the value of vertex2 calculated from center and vertex1
+        let angle = (2 * Math.PI) / nVertices;
+
+        let c = Math.cos(angle);
+        let s = Math.sin(angle);
+
+        let directionWithRadius2 = [
+          directionWithRadius[0] * c - directionWithRadius[1] * s,
+          directionWithRadius[0] * s + directionWithRadius[1] * c,
+        ];
+
+        let vertex2 = [
+          directionWithRadius2[0] + center[0],
+          directionWithRadius2[1] + center[1],
+        ];
+
+        let resultingVertices = await this.stateValues.vertices;
+        let resultingVertex1 = resultingVertices[0].map((x) =>
+          x.evaluate_to_constant(),
+        );
+        let resultingVertex2 = resultingVertices[1].map((x) =>
+          x.evaluate_to_constant(),
+        );
+
+        let tol = 1e-6;
+
+        let vertex1Changed = !vertex1.every(
+          (v, i) => Math.abs(v - resultingVertex1[i]) < tol,
+        );
+        let vertex2Changed = !vertex2.every(
+          (v, i) => Math.abs(v - resultingVertex2[i]) < tol,
+        );
+
+        if (vertex1Changed) {
+          if (!vertex2Changed) {
+            // only vertex 1 changed
+            // keep directionWithRadius the same
+            // adjust center to put vertex 1 at its new location
+
+            let newCenter = [
+              resultingVertex1[0] - directionWithRadius[0],
+              resultingVertex1[1] - directionWithRadius[1],
+            ];
+
+            let newInstructions = [
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "centerComponents",
+                value: newCenter,
+              },
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "directionWithRadius",
+                value: directionWithRadius,
+              },
+            ];
+            return await this.coreFunctions.performUpdate({
+              updateInstructions: newInstructions,
+              transient,
+              actionId,
+              sourceInformation,
+              skipRendererUpdate,
+            });
+          }
+        } else if (vertex2Changed) {
+          // only vertex 2 changed
           // keep directionWithRadius the same
-          // adjust center to put vertex 1 at its new location
+          // adjust center to put vertex 2 at its new location
 
           let newCenter = [
-            resultingVertex1[0] - directionWithRadius[0],
-            resultingVertex1[1] - directionWithRadius[1],
+            resultingVertex2[0] - directionWithRadius2[0],
+            resultingVertex2[1] - directionWithRadius2[1],
           ];
 
           let newInstructions = [
@@ -1985,107 +2088,6 @@ export default class RegularPolygon extends Polygon {
             skipRendererUpdate,
           });
         }
-      }
-    } else if (nVerticesSpecified >= 2) {
-      //polygon was determined by two vertices
-
-      // calculate the value of vertex2 calculated from center and vertex1
-      let angle = (2 * Math.PI) / nVertices;
-
-      let c = Math.cos(angle);
-      let s = Math.sin(angle);
-
-      let directionWithRadius2 = [
-        directionWithRadius[0] * c - directionWithRadius[1] * s,
-        directionWithRadius[0] * s + directionWithRadius[1] * c,
-      ];
-
-      let vertex2 = [
-        directionWithRadius2[0] + center[0],
-        directionWithRadius2[1] + center[1],
-      ];
-
-      let resultingVertices = await this.stateValues.vertices;
-      let resultingVertex1 = resultingVertices[0].map((x) =>
-        x.evaluate_to_constant(),
-      );
-      let resultingVertex2 = resultingVertices[1].map((x) =>
-        x.evaluate_to_constant(),
-      );
-
-      let tol = 1e-6;
-
-      let vertex1Changed = !vertex1.every(
-        (v, i) => Math.abs(v - resultingVertex1[i]) < tol,
-      );
-      let vertex2Changed = !vertex2.every(
-        (v, i) => Math.abs(v - resultingVertex2[i]) < tol,
-      );
-
-      if (vertex1Changed) {
-        if (!vertex2Changed) {
-          // only vertex 1 changed
-          // keep directionWithRadius the same
-          // adjust center to put vertex 1 at its new location
-
-          let newCenter = [
-            resultingVertex1[0] - directionWithRadius[0],
-            resultingVertex1[1] - directionWithRadius[1],
-          ];
-
-          let newInstructions = [
-            {
-              updateType: "updateValue",
-              componentName: this.componentName,
-              stateVariable: "centerComponents",
-              value: newCenter,
-            },
-            {
-              updateType: "updateValue",
-              componentName: this.componentName,
-              stateVariable: "directionWithRadius",
-              value: directionWithRadius,
-            },
-          ];
-          return await this.coreFunctions.performUpdate({
-            updateInstructions: newInstructions,
-            transient,
-            actionId,
-            sourceInformation,
-            skipRendererUpdate,
-          });
-        }
-      } else if (vertex2Changed) {
-        // only vertex 2 changed
-        // keep directionWithRadius the same
-        // adjust center to put vertex 2 at its new location
-
-        let newCenter = [
-          resultingVertex2[0] - directionWithRadius2[0],
-          resultingVertex2[1] - directionWithRadius2[1],
-        ];
-
-        let newInstructions = [
-          {
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "centerComponents",
-            value: newCenter,
-          },
-          {
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "directionWithRadius",
-            value: directionWithRadius,
-          },
-        ];
-        return await this.coreFunctions.performUpdate({
-          updateInstructions: newInstructions,
-          transient,
-          actionId,
-          sourceInformation,
-          skipRendererUpdate,
-        });
       }
     }
 

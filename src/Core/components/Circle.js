@@ -38,6 +38,13 @@ export default class Circle extends Curve {
       forRenderer: true,
     };
 
+    attributes.allowFlexibleMotion = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowFlexibleMotion",
+      defaultValue: false,
+      public: true,
+    };
+
     delete attributes.parMin;
     delete attributes.parMax;
     delete attributes.variable;
@@ -2571,7 +2578,8 @@ export default class Circle extends Curve {
       });
     }
 
-    // move circle
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
     if (transient) {
       await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
@@ -2599,138 +2607,37 @@ export default class Circle extends Curve {
       });
     }
 
-    // if circle is based on more than 1 point (center or throughpoints)
-    // and a subset of those points appear to be constrained while preserving their relationship
-    // then move the other points in attempt to preserve their relationship with the constrained points,
-    // which will keep the radius of the circle fixed
+    // unless allowFlexibleMotion is set
+    // we attempt to keep the radius of the circle fixed
+    // even if one of the points defining it is constrained
 
-    let resultingCenter = await this.stateValues.numericalCenter;
-    let resultingNumericalThroughPoints = await this.stateValues
-      .numericalThroughPoints;
+    if (!(await this.stateValues.allowFlexibleMotion)) {
+      // if circle is based on more than 1 point (center or throughpoints)
+      // and a subset of those points appear to be constrained while preserving their relationship
+      // then move the other points in attempt to preserve their relationship with the constrained points,
+      // which will keep the radius of the circle fixed
 
-    if (numericalPrescribedCenter.length > 0 && nThroughPoints === 1) {
-      // center and one through point
+      let resultingCenter = await this.stateValues.numericalCenter;
+      let resultingNumericalThroughPoints = await this.stateValues
+        .numericalThroughPoints;
 
-      let throughPointUnchanged = numericalThroughPoints[0].every(
-        (v, i) => v === resultingNumericalThroughPoints[0][i],
-      );
+      if (numericalPrescribedCenter.length > 0 && nThroughPoints === 1) {
+        // center and one through point
 
-      let centerUnchanged = center.every((v, i) => v === resultingCenter[i]);
+        let throughPointUnchanged = numericalThroughPoints[0].every(
+          (v, i) => v === resultingNumericalThroughPoints[0][i],
+        );
 
-      if (throughPointUnchanged && !centerUnchanged) {
-        let theta = throughAngles[0];
-        let newNumericalThroughPoints = [
-          [
-            resultingCenter[0] + radius * Math.cos(theta),
-            resultingCenter[1] + radius * Math.sin(theta),
-          ],
-        ];
+        let centerUnchanged = center.every((v, i) => v === resultingCenter[i]);
 
-        let newInstructions = [
-          {
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "numericalThroughPoints",
-            value: newNumericalThroughPoints,
-          },
-        ];
-        return await this.coreFunctions.performUpdate({
-          updateInstructions: newInstructions,
-          transient,
-          actionId,
-          sourceInformation,
-          skipRendererUpdate,
-        });
-      } else if (centerUnchanged && !throughPointUnchanged) {
-        let theta = throughAngles[0];
-        let newCenter = [
-          resultingNumericalThroughPoints[0][0] - radius * Math.cos(theta),
-          resultingNumericalThroughPoints[0][1] - radius * Math.sin(theta),
-        ];
-
-        let newInstructions = [
-          {
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "numericalCenter",
-            value: newCenter,
-          },
-        ];
-        return await this.coreFunctions.performUpdate({
-          updateInstructions: newInstructions,
-          transient,
-          actionId,
-          sourceInformation,
-          skipRendererUpdate,
-        });
-      }
-    } else if (nThroughPoints >= 2) {
-      let throughPointsChanged = [];
-      let nThroughPointsChanged = 0;
-
-      for (let [ind, pt] of numericalThroughPoints.entries()) {
-        if (
-          !pt.every((v, i) => v === resultingNumericalThroughPoints[ind][i])
-        ) {
-          throughPointsChanged.push(ind);
-          nThroughPointsChanged++;
-        }
-      }
-
-      if (nThroughPointsChanged > 0 && nThroughPointsChanged < nThroughPoints) {
-        // A subset of points were altered from the requested location.
-        // Check to see if the relationship among them is preserved
-
-        let changedInd1 = throughPointsChanged[0];
-        let relationshipPreserved = true;
-
-        if (nThroughPointsChanged > 1) {
-          let orig1 = numericalThroughPoints[changedInd1];
-          let changed1 = resultingNumericalThroughPoints[changedInd1];
-          let tol = 1e-6;
-
-          let changevec1 = orig1.map((v, i) => v - changed1[i]);
-
-          for (let ind of throughPointsChanged.slice(1)) {
-            let orig2 = numericalThroughPoints[ind];
-            let changed2 = resultingNumericalThroughPoints[ind];
-            let changevec2 = orig2.map((v, i) => v - changed2[i]);
-
-            if (
-              !changevec1.every((v, i) => Math.abs(v - changevec2[i]) < tol)
-            ) {
-              relationshipPreserved = false;
-              break;
-            }
-          }
-        }
-
-        if (relationshipPreserved) {
-          let thetaOfChanged = throughAngles[changedInd1];
-
-          let newCenter = [
-            resultingNumericalThroughPoints[changedInd1][0] -
-              radius * Math.cos(thetaOfChanged),
-            resultingNumericalThroughPoints[changedInd1][1] -
-              radius * Math.sin(thetaOfChanged),
+        if (throughPointUnchanged && !centerUnchanged) {
+          let theta = throughAngles[0];
+          let newNumericalThroughPoints = [
+            [
+              resultingCenter[0] + radius * Math.cos(theta),
+              resultingCenter[1] + radius * Math.sin(theta),
+            ],
           ];
-
-          let newNumericalThroughPoints = [];
-
-          for (let i = 0; i < nThroughPoints; i++) {
-            if (throughPointsChanged.includes(i)) {
-              newNumericalThroughPoints.push(
-                resultingNumericalThroughPoints[i],
-              );
-            } else {
-              let theta = throughAngles[i];
-              let pt = [
-                newCenter[0] + radius * Math.cos(theta),
-                newCenter[1] + radius * Math.sin(theta),
-              ];
-              newNumericalThroughPoints.push(pt);
-            }
-          }
 
           let newInstructions = [
             {
@@ -2747,6 +2654,116 @@ export default class Circle extends Curve {
             sourceInformation,
             skipRendererUpdate,
           });
+        } else if (centerUnchanged && !throughPointUnchanged) {
+          let theta = throughAngles[0];
+          let newCenter = [
+            resultingNumericalThroughPoints[0][0] - radius * Math.cos(theta),
+            resultingNumericalThroughPoints[0][1] - radius * Math.sin(theta),
+          ];
+
+          let newInstructions = [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "numericalCenter",
+              value: newCenter,
+            },
+          ];
+          return await this.coreFunctions.performUpdate({
+            updateInstructions: newInstructions,
+            transient,
+            actionId,
+            sourceInformation,
+            skipRendererUpdate,
+          });
+        }
+      } else if (nThroughPoints >= 2) {
+        let throughPointsChanged = [];
+        let nThroughPointsChanged = 0;
+
+        for (let [ind, pt] of numericalThroughPoints.entries()) {
+          if (
+            !pt.every((v, i) => v === resultingNumericalThroughPoints[ind][i])
+          ) {
+            throughPointsChanged.push(ind);
+            nThroughPointsChanged++;
+          }
+        }
+
+        if (
+          nThroughPointsChanged > 0 &&
+          nThroughPointsChanged < nThroughPoints
+        ) {
+          // A subset of points were altered from the requested location.
+          // Check to see if the relationship among them is preserved
+
+          let changedInd1 = throughPointsChanged[0];
+          let relationshipPreserved = true;
+
+          if (nThroughPointsChanged > 1) {
+            let orig1 = numericalThroughPoints[changedInd1];
+            let changed1 = resultingNumericalThroughPoints[changedInd1];
+            let tol = 1e-6;
+
+            let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+            for (let ind of throughPointsChanged.slice(1)) {
+              let orig2 = numericalThroughPoints[ind];
+              let changed2 = resultingNumericalThroughPoints[ind];
+              let changevec2 = orig2.map((v, i) => v - changed2[i]);
+
+              if (
+                !changevec1.every((v, i) => Math.abs(v - changevec2[i]) < tol)
+              ) {
+                relationshipPreserved = false;
+                break;
+              }
+            }
+          }
+
+          if (relationshipPreserved) {
+            let thetaOfChanged = throughAngles[changedInd1];
+
+            let newCenter = [
+              resultingNumericalThroughPoints[changedInd1][0] -
+                radius * Math.cos(thetaOfChanged),
+              resultingNumericalThroughPoints[changedInd1][1] -
+                radius * Math.sin(thetaOfChanged),
+            ];
+
+            let newNumericalThroughPoints = [];
+
+            for (let i = 0; i < nThroughPoints; i++) {
+              if (throughPointsChanged.includes(i)) {
+                newNumericalThroughPoints.push(
+                  resultingNumericalThroughPoints[i],
+                );
+              } else {
+                let theta = throughAngles[i];
+                let pt = [
+                  newCenter[0] + radius * Math.cos(theta),
+                  newCenter[1] + radius * Math.sin(theta),
+                ];
+                newNumericalThroughPoints.push(pt);
+              }
+            }
+
+            let newInstructions = [
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "numericalThroughPoints",
+                value: newNumericalThroughPoints,
+              },
+            ];
+            return await this.coreFunctions.performUpdate({
+              updateInstructions: newInstructions,
+              transient,
+              actionId,
+              sourceInformation,
+              skipRendererUpdate,
+            });
+          }
         }
       }
     }
