@@ -165,6 +165,30 @@ export function Home() {
 
   return (
     <>
+      <Center background="doenet.mainGray" padding="20px">
+        <Flex>
+          <Box w="120px" h="120px" mr="20px">
+            <Image src="Doenet_Logo_Frontpage.png" />
+          </Box>
+          <Center>
+            <Box>
+              <Text fontSize="30px" fontWeight="700">
+                The Distributed Open Education Network
+              </Text>
+              <Text fontSize="16px" fontWeight="700" textAlign="center">
+                The free and open data-driven education technology platform
+              </Text>
+            </Box>
+          </Center>
+        </Flex>
+      </Center>
+      <Heading
+        heading="Announcements"
+        // subheading="Quickly create interactive activities"
+      />
+      <Center background="doenet.lightBlue" padding="20px">
+        <Text>Doenet Workshop 2023</Text>
+      </Center>
       <Heading
         heading="Create Content"
         subheading="Quickly create interactive activities"
@@ -194,21 +218,17 @@ export function Home() {
           <HomeIntroVideo />
         </Suspense>
       </CreateContentSection>
-
       <Heading
         heading="Explore"
         subheading="Interact with our existing content"
       />
-
       <CarouselSection>
         <Carousel title="Doenet Team Favorites" data={favorites} />
       </CarouselSection>
-
       <Heading
         heading="Learn"
         subheading="Designed for the In-Person Classroom"
       />
-
       <div
         style={{
           padding: "20px 10px 60px 10px",
