@@ -1795,7 +1795,7 @@ export default class Line extends GraphicalComponent {
     }
 
     if (transient) {
-      return await this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions: [
           {
             updateType: "updateValue",
@@ -1807,10 +1807,10 @@ export default class Line extends GraphicalComponent {
         transient: true,
         actionId,
         sourceInformation,
-        skipRendererUpdate,
+        skipRendererUpdate: true,
       });
     } else {
-      return await this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions: [
           {
             updateType: "updateValue",
@@ -1821,7 +1821,7 @@ export default class Line extends GraphicalComponent {
         ],
         actionId,
         sourceInformation,
-        skipRendererUpdate,
+        skipRendererUpdate: true,
         event: {
           verb: "interacted",
           object: {
@@ -1834,6 +1834,79 @@ export default class Line extends GraphicalComponent {
         },
       });
     }
+
+    if (!(await this.stateValues.basedOnSlope)) {
+      // based on two points
+
+      let numericalPoints = [point1coords, point2coords];
+      let resultingNumericalPoints = await this.stateValues.numericalPoints;
+
+      let pointsChanged = [];
+      let nPointsChanged = 0;
+
+      for (let [ind, pt] of numericalPoints.entries()) {
+        if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
+          pointsChanged.push(ind);
+          nPointsChanged++;
+        }
+      }
+
+      if (nPointsChanged === 1) {
+        // one point was altered from the requested location.
+
+        let changedInd = pointsChanged[0];
+
+        let orig1 = numericalPoints[changedInd];
+        let changed1 = resultingNumericalPoints[changedInd];
+        let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+        let newNumericalPoints = [];
+
+        for (let i = 0; i < 2; i++) {
+          if (i === changedInd) {
+            newNumericalPoints.push(resultingNumericalPoints[i]);
+          } else {
+            newNumericalPoints.push(
+              numericalPoints[i].map((v, j) => v - changevec1[j]),
+            );
+          }
+        }
+
+        let newPointComponents = {};
+        for (let ind in newNumericalPoints) {
+          newPointComponents[ind + ",0"] = me.fromAst(
+            newNumericalPoints[ind][0],
+          );
+          newPointComponents[ind + ",1"] = me.fromAst(
+            newNumericalPoints[ind][1],
+          );
+        }
+
+        let newInstructions = [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "points",
+            value: newPointComponents,
+          },
+        ];
+        return await this.coreFunctions.performUpdate({
+          updateInstructions: newInstructions,
+          transient,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
+        });
+      }
+    }
+
+    // if no modifications were made, still need to update renderers
+    // as original update was performed with skipping renderer update
+    return await this.coreFunctions.updateRenderers({
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
   }
 
   switchLine() {}
