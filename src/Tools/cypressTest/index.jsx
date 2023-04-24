@@ -1,12 +1,12 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import CypressTest from './CypressTest.jsx';
-import axios from 'axios';
-import { RecoilRoot } from 'recoil';
-import { MathJaxContext } from 'better-react-mathjax';
-import { mathjaxConfig } from '../../Core/utils/math.js';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DarkmodeController from '../_framework/DarkmodeController.jsx';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import CypressTest from "./CypressTest.jsx";
+import axios from "axios";
+import { RecoilRoot } from "recoil";
+import { MathJaxContext } from "better-react-mathjax";
+import { mathjaxConfig } from "../../Core/utils/math.js";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import DarkmodeController from "../_framework/DarkmodeController.jsx";
 
 // function CypressTest(props){
 
@@ -15,7 +15,7 @@ import DarkmodeController from '../_framework/DarkmodeController.jsx';
 //   return <p>test</p>
 // }
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
     <Router>
@@ -32,10 +32,11 @@ root.render(
                 <CypressTest />
               </MathJaxContext>
             </DarkmodeController>
-          } />
+          }
+        />
       </Routes>
     </Router>
-  </RecoilRoot>
+  </RecoilRoot>,
 );
 
 // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
@@ -47,4 +48,4 @@ if (import.meta.hot) {
   // }
   // );
   import.meta.hot.accept();
-}  
+}

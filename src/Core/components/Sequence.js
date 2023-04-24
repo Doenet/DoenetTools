@@ -1,7 +1,12 @@
-import CompositeComponent from './abstract/CompositeComponent';
-import { processAssignNames } from '../utils/serializedStateProcessing';
-import { convertAttributesForComponentType } from '../utils/copy';
-import { returnSequenceValues, returnSequenceValueForIndex, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions } from '../utils/sequence';
+import CompositeComponent from "./abstract/CompositeComponent";
+import { processAssignNames } from "../utils/serializedStateProcessing";
+import { convertAttributesForComponentType } from "../utils/copy";
+import {
+  returnSequenceValues,
+  returnSequenceValueForIndex,
+  returnStandardSequenceAttributes,
+  returnStandardSequenceStateVariableDefinitions,
+} from "../utils/sequence";
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
@@ -14,39 +19,35 @@ export default class Sequence extends CompositeComponent {
     let attributes = super.createAttributesObject();
 
     attributes.fixed = {
-      leaveRaw: true
-    }
+      leaveRaw: true,
+    };
 
     attributes.displayDigits = {
-      leaveRaw: true
-    }
+      leaveRaw: true,
+    };
     attributes.displayDecimals = {
-      leaveRaw: true
-    }
+      leaveRaw: true,
+    };
     attributes.displaySmallAsZero = {
-      leaveRaw: true
-    }
+      leaveRaw: true,
+    };
     attributes.padZeros = {
-      leaveRaw: true
-    }
+      leaveRaw: true,
+    };
 
     let sequenceAttributes = returnStandardSequenceAttributes();
     Object.assign(attributes, sequenceAttributes);
 
     return attributes;
-
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let sequenceDefs = returnStandardSequenceStateVariableDefinitions();
     Object.assign(stateVariableDefinitions, sequenceDefs);
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
-
       returnDependencies: () => ({
         from: {
           dependencyType: "stateVariable",
@@ -84,19 +85,22 @@ export default class Sequence extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-
-  static async createSerializedReplacements({ component, workspace, componentInfoObjects, flags }) {
-
+  static async createSerializedReplacements({
+    component,
+    workspace,
+    componentInfoObjects,
+    flags,
+  }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
 
-    if (!await component.stateValues.validSequence) {
+    if (!(await component.stateValues.validSequence)) {
       workspace.lastReplacementParameters = {
         from: null,
         length: null,
         step: null,
         type: null,
         exclude: null,
-      }
+      };
       return { replacements: [] };
     }
 
@@ -106,17 +110,15 @@ export default class Sequence extends CompositeComponent {
     let type = await component.stateValues.type;
     let exclude = await component.stateValues.exclude;
 
-
     workspace.lastReplacementParameters = {
       from,
       length,
       step,
       type,
       exclude,
-    }
+    };
 
     let newNamespace = component.attributes.newNamespace?.primitive;
-
 
     let sequenceValues = returnSequenceValues({
       from,
@@ -124,12 +126,12 @@ export default class Sequence extends CompositeComponent {
       length,
       exclude,
       type,
-      lowercase: await component.stateValues.lowercase
-    })
+      lowercase: await component.stateValues.lowercase,
+    });
 
     let componentType = type;
     if (type === "letters") {
-      componentType = "text"
+      componentType = "text";
     }
 
     // if (type === "number" || type === "letters") {
@@ -138,16 +140,20 @@ export default class Sequence extends CompositeComponent {
 
     let replacements = [];
 
-
     let attributesToConvert = {};
-    for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+    for (let attr of [
+      "fixed",
+      "displayDigits",
+      "displaySmallAsZero",
+      "displayDecimals",
+      "padZeros",
+    ]) {
       if (attr in component.attributes) {
-        attributesToConvert[attr] = component.attributes[attr]
+        attributesToConvert[attr] = component.attributes[attr];
       }
     }
 
     for (let componentValue of sequenceValues) {
-
       // allow one to override the fixed (default true) attribute
       // as well as rounding settings
       // by specifying it on the sequence
@@ -159,15 +165,15 @@ export default class Sequence extends CompositeComponent {
           componentType,
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
-          flags
-        })
+          flags,
+        });
       }
 
       let serializedComponent = {
         componentType,
         attributes: attributesFromComposite,
         state: { value: componentValue, fixed: true },
-      }
+      };
       replacements.push(serializedComponent);
     }
 
@@ -185,17 +191,20 @@ export default class Sequence extends CompositeComponent {
     return { replacements: processResult.serializedComponents };
   }
 
-  static async calculateReplacementChanges({ component, workspace, componentInfoObjects, flags }) {
+  static async calculateReplacementChanges({
+    component,
+    workspace,
+    componentInfoObjects,
+    flags,
+  }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
-
 
     let lrp = workspace.lastReplacementParameters;
 
     let replacementChanges = [];
 
     // if invalid, withhold any previous replacementsreplacements
-    if (!await component.stateValues.validSequence) {
-
+    if (!(await component.stateValues.validSequence)) {
       let currentReplacementsWithheld = component.replacementsToWithhold;
       if (!currentReplacementsWithheld) {
         currentReplacementsWithheld = 0;
@@ -219,7 +228,6 @@ export default class Sequence extends CompositeComponent {
       return replacementChanges;
     }
 
-
     let from = await component.stateValues.from;
     let length = await component.stateValues.length;
     let step = await component.stateValues.step;
@@ -227,19 +235,19 @@ export default class Sequence extends CompositeComponent {
     let exclude = await component.stateValues.exclude;
     let lowercase = await component.stateValues.lowercase;
 
-
     // check if changed type
     // or have excluded elements
     // TODO: don't completely recreate if have excluded elements
-    if (lrp.type !== type ||
-      lrp.exclude.length > 0 ||
-      exclude.length > 0
-    ) {
-
+    if (lrp.type !== type || lrp.exclude.length > 0 || exclude.length > 0) {
       // calculate new serialized replacements
-      let newSerializedReplacements = (await this.createSerializedReplacements({
-        component, workspace, componentInfoObjects, flags
-      })).replacements;
+      let newSerializedReplacements = (
+        await this.createSerializedReplacements({
+          component,
+          workspace,
+          componentInfoObjects,
+          flags,
+        })
+      ).replacements;
 
       let replacementInstruction = {
         changeType: "add",
@@ -251,19 +259,14 @@ export default class Sequence extends CompositeComponent {
       };
 
       replacementChanges.push(replacementInstruction);
-
     } else {
-
       let modifyExistingValues = false;
       if (type === "math") {
-        if (!(from.equals(lrp.from) &&
-          step.equals(lrp.step))) {
+        if (!(from.equals(lrp.from) && step.equals(lrp.step))) {
           modifyExistingValues = true;
         }
-
       } else {
-        if (from !== lrp.from ||
-          step !== lrp.step) {
+        if (from !== lrp.from || step !== lrp.step) {
           modifyExistingValues = true;
         }
       }
@@ -277,7 +280,6 @@ export default class Sequence extends CompositeComponent {
       // if have fewer replacements than before
       // mark old replacements as hidden
       if (length < prevlength) {
-
         newReplacementsToWithhold = component.replacements.length - length;
 
         let replacementInstruction = {
@@ -285,14 +287,13 @@ export default class Sequence extends CompositeComponent {
           replacementsToWithhold: newReplacementsToWithhold,
         };
         replacementChanges.push(replacementInstruction);
-
       } else if (length > prevlength) {
         numReplacementsToAdd = length - prevlength;
 
         if (component.replacementsToWithhold > 0) {
-
           if (component.replacementsToWithhold >= numReplacementsToAdd) {
-            newReplacementsToWithhold = component.replacementsToWithhold - numReplacementsToAdd;
+            newReplacementsToWithhold =
+              component.replacementsToWithhold - numReplacementsToAdd;
             numToModify += numReplacementsToAdd;
             prevlength += numReplacementsToAdd;
             numReplacementsToAdd = 0;
@@ -302,7 +303,6 @@ export default class Sequence extends CompositeComponent {
               replacementsToWithhold: newReplacementsToWithhold,
             };
             replacementChanges.push(replacementInstruction);
-
           } else {
             numReplacementsToAdd -= component.replacementsToWithhold;
             numToModify += component.replacementsToWithhold;
@@ -311,7 +311,6 @@ export default class Sequence extends CompositeComponent {
             // don't need to send changedReplacementsToWithold instructions
             // since will send add instructions,
             // which will also recalculate replacements in parent
-
           }
         }
       }
@@ -324,21 +323,25 @@ export default class Sequence extends CompositeComponent {
       if (numToModify > 0) {
         // need to modify values of the first prevlength components
 
-        for (let ind = firstToModify; ind < firstToModify + numToModify; ind++) {
+        for (
+          let ind = firstToModify;
+          ind < firstToModify + numToModify;
+          ind++
+        ) {
           let componentValue = returnSequenceValueForIndex({
             index: ind,
             from,
             step,
             exclude: [],
             type,
-            lowercase
-          })
+            lowercase,
+          });
 
           let replacementInstruction = {
             changeType: "updateStateVariables",
             component: component.replacements[ind],
-            stateChanges: { value: componentValue }
-          }
+            stateChanges: { value: componentValue },
+          };
           replacementChanges.push(replacementInstruction);
         }
       }
@@ -350,21 +353,31 @@ export default class Sequence extends CompositeComponent {
         let newNamespace = component.attributes.newNamespace?.primitive;
 
         let attributesToConvert = {};
-        for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+        for (let attr of [
+          "fixed",
+          "displayDigits",
+          "displaySmallAsZero",
+          "displayDecimals",
+          "padZeros",
+        ]) {
           if (attr in component.attributes) {
-            attributesToConvert[attr] = component.attributes[attr]
+            attributesToConvert[attr] = component.attributes[attr];
           }
         }
 
-        for (let ind = prevlength; ind < await component.stateValues.length; ind++) {
+        for (
+          let ind = prevlength;
+          ind < (await component.stateValues.length);
+          ind++
+        ) {
           let componentValue = returnSequenceValueForIndex({
             index: ind,
             from,
             step,
             exclude: [],
             type,
-            lowercase
-          })
+            lowercase,
+          });
 
           let componentType = await component.stateValues.type;
           if (componentType === "letters") {
@@ -382,15 +395,15 @@ export default class Sequence extends CompositeComponent {
               componentType,
               componentInfoObjects,
               compositeCreatesNewNamespace: newNamespace,
-              flags
-            })
+              flags,
+            });
           }
 
           let serializedComponent = {
             componentType,
             attributes: attributesFromComposite,
             state: { value: componentValue, fixed: true },
-          }
+          };
 
           newSerializedReplacements.push(serializedComponent);
         }
@@ -404,15 +417,14 @@ export default class Sequence extends CompositeComponent {
           indOffset: prevlength,
         });
 
-
         let replacementInstruction = {
           changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: prevlength,
           serializedReplacements: processResult.serializedComponents,
           replacementsToWithhold: 0,
-          assignNamesOffset: prevlength
-        }
+          assignNamesOffset: prevlength,
+        };
         replacementChanges.push(replacementInstruction);
       }
     }
@@ -424,11 +436,9 @@ export default class Sequence extends CompositeComponent {
     lrp.exclude = exclude;
 
     return replacementChanges;
-
   }
 
   get allPotentialRendererTypes() {
-
     let allPotentialRendererTypes = super.allPotentialRendererTypes;
 
     let type = "number";
@@ -436,16 +446,14 @@ export default class Sequence extends CompositeComponent {
       type = this.attributes.type.primitive;
     }
 
-    let rendererType = this.componentInfoObjects.allComponentClasses[
-      type === "letters" ? "text" : type
-    ].rendererType;
+    let rendererType =
+      this.componentInfoObjects.allComponentClasses[
+        type === "letters" ? "text" : type
+      ].rendererType;
     if (!allPotentialRendererTypes.includes(rendererType)) {
       allPotentialRendererTypes.push(rendererType);
     }
 
     return allPotentialRendererTypes;
   }
-
 }
-
-

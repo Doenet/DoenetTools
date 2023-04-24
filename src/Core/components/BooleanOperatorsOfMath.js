@@ -1,11 +1,9 @@
-import BooleanBaseOperatorOfMath from './abstract/BooleanBaseOperatorOfMath';
+import BooleanBaseOperatorOfMath from "./abstract/BooleanBaseOperatorOfMath";
 
 export class IsInteger extends BooleanBaseOperatorOfMath {
   static componentType = "isInteger";
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.booleanOperator.definition = () => ({
@@ -27,28 +25,26 @@ export class IsInteger extends BooleanBaseOperatorOfMath {
           // to account for round off error, round to nearest integer
           // and check if close to that integer
           let rounded = Math.round(numericValue);
-          if (Math.abs(rounded - numericValue) <= 1E-15 * Math.abs(numericValue)) {
+          if (
+            Math.abs(rounded - numericValue) <=
+            1e-15 * Math.abs(numericValue)
+          ) {
             return true;
           } else {
             return false;
           }
-        }
-      }
-
-    })
-
+        },
+      },
+    });
 
     return stateVariableDefinitions;
-
   }
-
 }
 
 export class IsNumber extends BooleanBaseOperatorOfMath {
   static componentType = "isNumber";
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.booleanOperator.definition = () => ({
@@ -64,16 +60,12 @@ export class IsNumber extends BooleanBaseOperatorOfMath {
           let numericValue = values[0].evaluate_to_constant();
 
           return Number.isFinite(numericValue);
-
-        }
-      }
-
-    })
+        },
+      },
+    });
 
     return stateVariableDefinitions;
-
   }
-
 }
 
 export class IsBetween extends BooleanBaseOperatorOfMath {
@@ -92,24 +84,23 @@ export class IsBetween extends BooleanBaseOperatorOfMath {
       createStateVariable: "strict",
       defaultValue: false,
       public: true,
-    }
+    };
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.booleanOperator = {
       returnDependencies: () => ({
         limits: {
           dependencyType: "stateVariable",
-          variableName: "limits"
+          variableName: "limits",
         },
         strict: {
           dependencyType: "stateVariable",
-          variableName: "strict"
-        }
+          variableName: "strict",
+        },
       }),
       definition({ dependencyValues }) {
         let upperLimit, lowerLimit;
@@ -124,7 +115,7 @@ export class IsBetween extends BooleanBaseOperatorOfMath {
           lowerLimit = lim2;
           upperLimit = lim1;
         } else {
-          return { setValue: { booleanOperator: () => false } }
+          return { setValue: { booleanOperator: () => false } };
         }
 
         let strict = dependencyValues.strict;
@@ -141,22 +132,17 @@ export class IsBetween extends BooleanBaseOperatorOfMath {
               }
               let numericValue = values[0].evaluate_to_constant();
 
-              if(strict) {
+              if (strict) {
                 return numericValue > lowerLimit && numericValue < upperLimit;
               } else {
                 return numericValue >= lowerLimit && numericValue <= upperLimit;
               }
-
-            }
-          }
-        }
-
-      }
-    }
-
+            },
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

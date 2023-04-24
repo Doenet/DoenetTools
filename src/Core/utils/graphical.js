@@ -1,8 +1,6 @@
-import me from 'math-expressions';
-
+import me from "math-expressions";
 
 export function returnAnchorAttributes() {
-
   return {
     anchor: {
       createComponentOfType: "point",
@@ -15,13 +13,22 @@ export function returnAnchorAttributes() {
       forRenderer: true,
       toLowerCase: true,
       isLocation: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right", "center"]
-    }
-  }
+      validValues: [
+        "upperright",
+        "upperleft",
+        "lowerright",
+        "lowerleft",
+        "top",
+        "bottom",
+        "left",
+        "right",
+        "center",
+      ],
+    },
+  };
 }
 
 export function returnAnchorStateVariableDefinition() {
-
   return {
     anchor: {
       defaultValue: me.fromText("(0,0)").tuples_to_vectors(),
@@ -30,54 +37,63 @@ export function returnAnchorStateVariableDefinition() {
       hasEssential: true,
       isLocation: true,
       shadowingInstructions: {
-        createComponentOfType: "point"
+        createComponentOfType: "point",
       },
       returnDependencies: () => ({
         anchorAttr: {
           dependencyType: "attributeComponent",
           attributeName: "anchor",
           variableNames: ["coords"],
-        }
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.anchorAttr) {
-          return { setValue: { anchor: dependencyValues.anchorAttr.stateValues.coords } }
+          return {
+            setValue: {
+              anchor: dependencyValues.anchorAttr.stateValues.coords,
+            },
+          };
         } else {
-          return { useEssentialOrDefaultValue: { anchor: true } }
+          return { useEssentialOrDefaultValue: { anchor: true } };
         }
       },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, initialChange }) {
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
+      async inverseDefinition({
+        desiredStateVariableValues,
+        dependencyValues,
+        stateValues,
+        initialChange,
+      }) {
+        // if not draggable, then disallow initial change
+        if (initialChange && !(await stateValues.draggable)) {
           return { success: false };
         }
 
         if (dependencyValues.anchorAttr) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "anchorAttr",
-              desiredValue: desiredStateVariableValues.anchor,
-              variableIndex: 0,
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "anchorAttr",
+                desiredValue: desiredStateVariableValues.anchor,
+                variableIndex: 0,
+              },
+            ],
+          };
         } else {
           return {
             success: true,
-            instructions: [{
-              setEssentialValue: "anchor",
-              value: desiredStateVariableValues.anchor
-            }]
-          }
+            instructions: [
+              {
+                setEssentialValue: "anchor",
+                value: desiredStateVariableValues.anchor,
+              },
+            ],
+          };
         }
-
-      }
-    }
-  }
-
+      },
+    },
+  };
 }
-
 
 export function getPositionFromAnchorByCoordinate(positionFromAnchor) {
   let anchorx, anchory;
@@ -114,13 +130,17 @@ export function getPositionFromAnchorByCoordinate(positionFromAnchor) {
 }
 
 export async function moveGraphicalObjectWithAnchorAction({
-  x, y, z, transient, actionId,
-  sourceInformation = {}, skipRendererUpdate = false,
-  componentName, componentType,
+  x,
+  y,
+  z,
+  transient,
+  actionId,
+  sourceInformation = {},
+  skipRendererUpdate = false,
+  componentName,
+  componentType,
   coreFunctions,
 }) {
-
-
   let components = ["vector"];
   if (x !== undefined) {
     components[1] = x;
@@ -133,12 +153,14 @@ export async function moveGraphicalObjectWithAnchorAction({
   }
   if (transient) {
     return await coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName,
-        stateVariable: "anchor",
-        value: me.fromAst(components),
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        },
+      ],
       transient,
       actionId,
       sourceInformation,
@@ -146,12 +168,14 @@ export async function moveGraphicalObjectWithAnchorAction({
     });
   } else {
     return await coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName,
-        stateVariable: "anchor",
-        value: me.fromAst(components),
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName,
+          stateVariable: "anchor",
+          value: me.fromAst(components),
+        },
+      ],
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -162,10 +186,11 @@ export async function moveGraphicalObjectWithAnchorAction({
           componentType,
         },
         result: {
-          x, y, z
-        }
-      }
+          x,
+          y,
+          z,
+        },
+      },
     });
   }
-
 }

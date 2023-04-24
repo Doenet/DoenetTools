@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import Button from '../../_reactComponents/PanelHeaderComponents/Button';
-import { BoardContext } from './graph';
-import me from 'math-expressions';
-import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
-
+import React, { useContext, useEffect, useRef } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button";
+import { BoardContext } from "./graph";
+import me from "math-expressions";
+import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
 
 export default React.memo(function ButtonComponent(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
 
-  ButtonComponent.ignoreActionsWithoutCore = actionName => actionName === "moveButton";
+  ButtonComponent.ignoreActionsWithoutCore = (actionName) =>
+    actionName === "moveButton";
 
   let buttonJXG = useRef(null);
   let anchorPointJXG = useRef(null);
@@ -41,12 +41,10 @@ export default React.memo(function ButtonComponent(props) {
       if (buttonJXG.current !== null) {
         deleteButtonJXG();
       }
-
-    }
-  }, [])
+    };
+  }, []);
 
   function createButtonJXG() {
-
     let jsxButtonAttributes = {
       visible: !SVs.hidden,
       fixed: fixed.current,
@@ -55,95 +53,98 @@ export default React.memo(function ButtonComponent(props) {
       parse: false,
     };
 
-
     let newAnchorPointJXG;
 
     try {
       let anchor = me.fromAst(SVs.anchor);
       let anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
 
       if (!Number.isFinite(anchorCoords[0])) {
         anchorCoords[0] = 0;
-        jsxButtonAttributes['visible'] = false;
+        jsxButtonAttributes["visible"] = false;
       }
       if (!Number.isFinite(anchorCoords[1])) {
         anchorCoords[1] = 0;
-        jsxButtonAttributes['visible'] = false;
+        jsxButtonAttributes["visible"] = false;
       }
 
-      newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
-
+      newAnchorPointJXG = board.create("point", anchorCoords, {
+        visible: false,
+      });
     } catch (e) {
-      jsxButtonAttributes['visible'] = false;
-      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
+      jsxButtonAttributes["visible"] = false;
+      newAnchorPointJXG = board.create("point", [0, 0], { visible: false });
       return;
     }
 
     jsxButtonAttributes.anchor = newAnchorPointJXG;
 
-    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+      SVs.positionFromAnchor,
+    );
 
     jsxButtonAttributes.anchorx = anchorx;
     jsxButtonAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
 
-
-    let newButtonJXG = board.create('button', [0, 0, label, () => callAction({ action: actions[SVs.clickAction] })], jsxButtonAttributes);
+    let newButtonJXG = board.create(
+      "button",
+      [0, 0, label, () => callAction({ action: actions[SVs.clickAction] })],
+      jsxButtonAttributes,
+    );
 
     newButtonJXG.isDraggable = !fixLocation.current;
 
-    newButtonJXG.on('down', function (e) {
+    newButtonJXG.on("down", function (e) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
     });
 
-    newButtonJXG.on('hit', function (e) {
+    newButtonJXG.on("hit", function (e) {
       dragged.current = false;
     });
 
-    newButtonJXG.on('up', function (e) {
+    newButtonJXG.on("up", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveButton,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
+          },
         });
         dragged.current = false;
       }
-
     });
 
-    newButtonJXG.on('keyfocusout', function (e) {
+    newButtonJXG.on("keyfocusout", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveButton,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
-        })
+          },
+        });
         dragged.current = false;
       }
-    })
+    });
 
-    newButtonJXG.on('drag', function (e) {
-
+    newButtonJXG.on("drag", function (e) {
       let viaPointer = e.type === "pointermove";
 
       //Protect against very small unintended drags
-      if (!viaPointer ||
-        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        !viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         dragged.current = true;
       }
-
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newButtonJXG.size[0] / board.unitX;
@@ -154,13 +155,13 @@ export default React.memo(function ButtonComponent(props) {
 
       let offsetx = 0;
       if (anchorx === "middle") {
-        offsetx = -width / 2
+        offsetx = -width / 2;
       } else if (anchorx === "right") {
         offsetx = -width;
       }
       let offsety = 0;
       if (anchory === "middle") {
-        offsety = -height / 2
+        offsety = -height / 2;
       } else if (anchory === "top") {
         offsety = -height;
       }
@@ -182,22 +183,28 @@ export default React.memo(function ButtonComponent(props) {
         // TODO: find an example where need this this additional complexity
         var o = board.origin.scrCoords;
 
-        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-          - o[1]) / board.unitX;
+        calculatedX.current =
+          (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) /
+          board.unitX;
 
-        calculatedY.current = (o[2] -
-          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-          / board.unitY;
+        calculatedY.current =
+          (o[2] - (pointAtDown.current[2] + e.y - pointerAtDown.current[1])) /
+          board.unitY;
       } else {
-
-        calculatedX.current = newAnchorPointJXG.X() + newButtonJXG.relativeCoords.usrCoords[1];
-        calculatedY.current = newAnchorPointJXG.Y() + newButtonJXG.relativeCoords.usrCoords[2];
-
+        calculatedX.current =
+          newAnchorPointJXG.X() + newButtonJXG.relativeCoords.usrCoords[1];
+        calculatedY.current =
+          newAnchorPointJXG.Y() + newButtonJXG.relativeCoords.usrCoords[2];
       }
 
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
-      calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
-
+      calculatedX.current = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, calculatedX.current),
+      );
+      calculatedY.current = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, calculatedY.current),
+      );
 
       callAction({
         action: actions.moveButton,
@@ -206,16 +213,17 @@ export default React.memo(function ButtonComponent(props) {
           y: calculatedY.current,
           transient: true,
           skippable: true,
-        }
+        },
       });
 
       newButtonJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
-
+      newAnchorPointJXG.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionFromCore.current,
+      );
     });
 
-    newButtonJXG.on('keydown', function (e) {
-
+    newButtonJXG.on("keydown", function (e) {
       if (e.key === "Enter") {
         if (dragged.current) {
           callAction({
@@ -223,13 +231,12 @@ export default React.memo(function ButtonComponent(props) {
             args: {
               x: calculatedX.current,
               y: calculatedY.current,
-            }
-          })
+            },
+          });
           dragged.current = false;
         }
       }
-    })
-
+    });
 
     buttonJXG.current = newButtonJXG;
     anchorPointJXG.current = newAnchorPointJXG;
@@ -240,25 +247,23 @@ export default React.memo(function ButtonComponent(props) {
     // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
     if (SVs.labelHasLatex) {
       setTimeout(() => {
-
         if (buttonJXG.current) {
           buttonJXG.current.needsUpdate = true;
-          buttonJXG.current.setText(label)
+          buttonJXG.current.setText(label);
           buttonJXG.current.update();
           board?.updateRenderer();
         }
-
-      }, 1000)
+      }, 1000);
     }
   }
 
   function deleteButtonJXG() {
-    buttonJXG.current.off('drag');
-    buttonJXG.current.off('down');
-    buttonJXG.current.off('hit');
-    buttonJXG.current.off('up');
-    buttonJXG.current.off('keyfocusout');
-    buttonJXG.current.off('keydown');
+    buttonJXG.current.off("drag");
+    buttonJXG.current.off("down");
+    buttonJXG.current.off("hit");
+    buttonJXG.current.off("up");
+    buttonJXG.current.off("keyfocusout");
+    buttonJXG.current.off("keydown");
     board.removeObject(buttonJXG.current);
     buttonJXG.current = null;
   }
@@ -269,35 +274,43 @@ export default React.memo(function ButtonComponent(props) {
       let anchor = me.fromAst(SVs.anchor);
       anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
     } catch (e) {
       anchorCoords = [NaN, NaN];
     }
 
     lastPositionFromCore.current = anchorCoords;
 
-
     if (buttonJXG.current === null) {
       createButtonJXG();
     } else {
+      buttonJXG.current.relativeCoords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        [0, 0],
+      );
+      anchorPointJXG.current.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        anchorCoords,
+      );
 
-      buttonJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      anchorPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, anchorCoords);
-
-      buttonJXG.current.setText(label)
+      buttonJXG.current.setText(label);
 
       let visible = !SVs.hidden;
 
-      if (Number.isFinite(anchorCoords[0]) && Number.isFinite(anchorCoords[1])) {
-        let actuallyChangedVisibility = buttonJXG.current.visProp["visible"] !== visible;
+      if (
+        Number.isFinite(anchorCoords[0]) &&
+        Number.isFinite(anchorCoords[1])
+      ) {
+        let actuallyChangedVisibility =
+          buttonJXG.current.visProp["visible"] !== visible;
         buttonJXG.current.visProp["visible"] = visible;
         buttonJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          buttonJXG.current.setAttribute({ visible })
+          buttonJXG.current.setAttribute({ visible });
         }
       } else {
         buttonJXG.current.visProp["visible"] = false;
@@ -306,7 +319,7 @@ export default React.memo(function ButtonComponent(props) {
 
       if (buttonJXG.current.visProp.disabled !== SVs.disabled) {
         buttonJXG.current.visProp.disabled = SVs.disabled;
-        buttonJXG.current.setAttribute({ disabled: SVs.disabled })
+        buttonJXG.current.setAttribute({ disabled: SVs.disabled });
       }
 
       buttonJXG.current.visProp.fixed = fixed.current;
@@ -315,7 +328,9 @@ export default React.memo(function ButtonComponent(props) {
       buttonJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+          SVs.positionFromAnchor,
+        );
         buttonJXG.current.visProp.anchorx = anchorx;
         buttonJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
@@ -330,8 +345,7 @@ export default React.memo(function ButtonComponent(props) {
       board.updateRenderer();
     }
 
-    return <a name={id} />
-
+    return <a name={id} />;
   }
 
   // not in board
@@ -351,5 +365,5 @@ export default React.memo(function ButtonComponent(props) {
         valueHasLatex={SVs.labelHasLatex}
       />
     </div>
-  )
-})
+  );
+});

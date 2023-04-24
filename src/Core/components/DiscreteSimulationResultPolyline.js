@@ -1,6 +1,6 @@
-import GraphicalComponent from './abstract/GraphicalComponent';
-import me from 'math-expressions';
-import { vectorOperators } from '../utils/math';
+import GraphicalComponent from "./abstract/GraphicalComponent";
+import me from "math-expressions";
+import { vectorOperators } from "../utils/math";
 
 export default class DiscreteSimulationResultPolyline extends GraphicalComponent {
   constructor(args) {
@@ -8,9 +8,8 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
     Object.assign(this.actions, {
       movePolyline: this.movePolyline.bind(this),
-      finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
+      finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
     });
-
   }
   static componentType = "discreteSimulationResultPolyline";
   static rendererType = "polyline";
@@ -30,20 +29,18 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       createComponentOfType: "mathList",
       createStateVariable: "allIteratesSub",
       defaultValue: [],
-    }
+    };
 
     attributes.seriesNumber = {
       createComponentOfType: "number",
       createStateVariable: "seriesNumber",
       defaultValue: null,
-    }
+    };
 
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.styleDescription = {
@@ -59,11 +56,10 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         document: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["theme"]
+          variableNames: ["theme"],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let lineColorWord;
         if (dependencyValues.document?.stateValues.theme === "dark") {
           lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
@@ -83,11 +79,11 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           curveDescription += " ";
         }
 
-        curveDescription += lineColorWord
+        curveDescription += lineColorWord;
 
         return { setValue: { styleDescription: curveDescription } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.styleDescriptionWithNoun = {
       public: true,
@@ -101,31 +97,34 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         },
       }),
       definition: function ({ dependencyValues }) {
-
-        let styleDescriptionWithNoun = dependencyValues.styleDescription + " polyline";
+        let styleDescriptionWithNoun =
+          dependencyValues.styleDescription + " polyline";
 
         return { setValue: { styleDescriptionWithNoun } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.allIterates = {
       returnDependencies: () => ({
         allIteratesSub: {
           dependencyType: "stateVariable",
           variableName: "allIteratesSub",
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
-            allIterates: dependencyValues.allIteratesSub.filter(x =>
-              Number.isFinite(x.tree) ||
-              (Array.isArray(x.tree) && vectorOperators.includes(x.tree[0]) && x.tree.slice(1).every(Number.isFinite))
-            )
-          }
-        }
-      }
-    }
+            allIterates: dependencyValues.allIteratesSub.filter(
+              (x) =>
+                Number.isFinite(x.tree) ||
+                (Array.isArray(x.tree) &&
+                  vectorOperators.includes(x.tree[0]) &&
+                  x.tree.slice(1).every(Number.isFinite)),
+            ),
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.nVertices = {
       public: true,
@@ -140,10 +139,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nVertices: dependencyValues.allIterates.length } }
-
-      }
-    }
+        return { setValue: { nVertices: dependencyValues.allIterates.length } };
+      },
+    };
 
     stateVariableDefinitions.nDimensions = {
       public: true,
@@ -153,10 +151,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nDimensions: 2 } }
-
-      }
-    }
+        return { setValue: { nDimensions: 2 } };
+      },
+    };
 
     stateVariableDefinitions.vertices = {
       public: true,
@@ -170,7 +167,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
             // vertex or entire array
             // wrap inner dimension by both <point> and <xs>
             // don't wrap outer dimension (for entire array)
-            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+            return [
+              ["point", { componentType: "mathList", isAttribute: "xs" }],
+            ];
           }
         },
       },
@@ -180,10 +179,11 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
           // vertexX1_2 is the 2nd component of the first vertex
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0
-          )) {
+          let indices = varEnding.split("_").map((x) => Number(x) - 1);
+          if (
+            indices.length === 2 &&
+            indices.every((x, i) => Number.isInteger(x) && x >= 0)
+          ) {
             if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
@@ -214,12 +214,14 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           }
           if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+            return Array.from(
+              Array(arraySize[1]),
+              (_, i) => pointInd + "," + i,
+            );
           } else {
             return [];
           }
         }
-
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "vertices") {
@@ -227,7 +229,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
             return "vertex" + propIndex[0];
           } else {
             // if propIndex has additional entries, ignore them
-            return `vertexX${propIndex[0]}_${propIndex[1]}`
+            return `vertexX${propIndex[0]}_${propIndex[1]}`;
           }
         }
         if (varName.slice(0, 6) === "vertex") {
@@ -235,7 +237,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           let vertexNum = Number(varName.slice(6));
           if (Number.isInteger(vertexNum) && vertexNum > 0) {
             // if propIndex has additional entries, ignore them
-            return `vertexX${vertexNum}_${propIndex[0]}`
+            return `vertexX${vertexNum}_${propIndex[0]}`;
           }
         }
         return null;
@@ -251,9 +253,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
             let subKeys = [];
             for (let ind = 0; ind < currentSize; ind++) {
               if (flatten) {
-                subKeys.push(...subSubKeys.map(x => ind + "," + x))
+                subKeys.push(...subSubKeys.map((x) => ind + "," + x));
               } else {
-                subKeys.push(subSubKeys.map(x => ind + "," + x))
+                subKeys.push(subSubKeys.map((x) => ind + "," + x));
               }
             }
             return subKeys;
@@ -276,7 +278,6 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         } else {
           return getAllArrayKeysSub(arraySize);
         }
-
       },
       returnArraySizeDependencies: () => ({
         nVertices: {
@@ -297,11 +298,10 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
             dependencyType: "stateVariable",
             variableName: "allIterates",
           },
-        }
-        return { globalDependencies }
+        };
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
-
         // console.log('array definition of polyline vertices');
         // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
         // console.log(arrayKeys);
@@ -317,11 +317,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           vertices[`${ind},1`] = val;
         }
 
-        return { setValue: { vertices } }
+        return { setValue: { vertices } };
       },
-
-    }
-
+    };
 
     stateVariableDefinitions.numericalVertices = {
       isArray: true,
@@ -337,49 +335,49 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         return [dependencyValues.nVertices];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
-
         let dependenciesByKey = {};
 
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             vertex: {
               dependencyType: "stateVariable",
-              variableName: "vertex" + (Number(arrayKey) + 1)
-            }
-          }
+              variableName: "vertex" + (Number(arrayKey) + 1),
+            },
+          };
         }
 
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         let numericalVertices = {};
 
         for (let arrayKey of arrayKeys) {
-          let vert = dependencyValuesByKey[arrayKey].vertex.map(x => x.evaluate_to_constant())
-          if (!vert.every(x => Number.isFinite(x))) {
-            vert = Array(vert.length).fill(NaN)
+          let vert = dependencyValuesByKey[arrayKey].vertex.map((x) =>
+            x.evaluate_to_constant(),
+          );
+          if (!vert.every((x) => Number.isFinite(x))) {
+            vert = Array(vert.length).fill(NaN);
           }
           numericalVertices[arrayKey] = vert;
         }
 
-        return { setValue: { numericalVertices } }
-      }
-    }
+        return { setValue: { numericalVertices } };
+      },
+    };
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions"
+          variableName: "nDimensions",
         },
         numericalVertices: {
           dependencyType: "stateVariable",
-          variableName: "numericalVertices"
+          variableName: "numericalVertices",
         },
         nVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices"
+          variableName: "nVertices",
         },
       }),
       definition({ dependencyValues }) {
@@ -400,13 +398,18 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           nxPty = numericalVertices[i]?.[1];
 
           // only implement for constants
-          if (!(Number.isFinite(prPtx) && Number.isFinite(prPty) &&
-            Number.isFinite(nxPtx) && Number.isFinite(nxPty))) {
+          if (
+            !(
+              Number.isFinite(prPtx) &&
+              Number.isFinite(prPty) &&
+              Number.isFinite(nxPtx) &&
+              Number.isFinite(nxPty)
+            )
+          ) {
             vals.push(null);
           } else {
-
-            let BA1sub = (nxPtx - prPtx);
-            let BA2sub = (nxPty - prPty);
+            let BA1sub = nxPtx - prPtx;
+            let BA2sub = nxPty - prPty;
 
             if (BA1sub === 0 && BA2sub === 0) {
               vals.push(null);
@@ -416,11 +419,9 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           }
         }
 
-
         return {
           setValue: {
             nearestPoint: function ({ variables, scales }) {
-
               let xscale = scales[0];
               let yscale = scales[1];
 
@@ -453,10 +454,12 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
                 let BA1 = val[0] / xscale;
                 let BA2 = val[1] / yscale;
-                let denom = (BA1 * BA1 + BA2 * BA2);
+                let denom = BA1 * BA1 + BA2 * BA2;
 
-
-                let t = ((x1 - prevPtx) / xscale * BA1 + (x2 - prevPty) / yscale * BA2) / denom;
+                let t =
+                  (((x1 - prevPtx) / xscale) * BA1 +
+                    ((x2 - prevPty) / yscale) * BA2) /
+                  denom;
 
                 let result;
 
@@ -471,37 +474,41 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
                   };
                 }
 
-                let distance2 = Math.pow((x1 - result.x1) / xscale, 2)
-                  + Math.pow((x2 - result.x2) / yscale, 2);
+                let distance2 =
+                  Math.pow((x1 - result.x1) / xscale, 2) +
+                  Math.pow((x2 - result.x2) / yscale, 2);
 
                 if (distance2 < closestDistance2) {
                   closestDistance2 = distance2;
                   closestResult = result;
                 }
-
               }
 
-              if (variables.x3 !== undefined && Object.keys(closestResult).length > 0) {
+              if (
+                variables.x3 !== undefined &&
+                Object.keys(closestResult).length > 0
+              ) {
                 closestResult.x3 = 0;
               }
 
               return closestResult;
-
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 
-
-  async movePolyline({ pointCoords, transient, sourceDetails, actionId,
-    sourceInformation = {}, skipRendererUpdate = false
+  async movePolyline({
+    pointCoords,
+    transient,
+    sourceDetails,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-
     let vertexComponents = {};
     for (let ind in pointCoords) {
       vertexComponents[ind + ",0"] = me.fromAst(pointCoords[ind][0]);
@@ -510,28 +517,31 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
     if (transient) {
       return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "vertices",
-          value: vertexComponents,
-          sourceDetails
-        }],
+        updateInstructions: [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "vertices",
+            value: vertexComponents,
+            sourceDetails,
+          },
+        ],
         transient: true,
         actionId,
         sourceInformation,
         skipRendererUpdate,
       });
     } else {
-
       return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "vertices",
-          value: vertexComponents,
-          sourceDetails
-        }],
+        updateInstructions: [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "vertices",
+            value: vertexComponents,
+            sourceDetails,
+          },
+        ],
         actionId,
         sourceInformation,
         skipRendererUpdate,
@@ -542,25 +552,28 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
             componentType: this.componentType,
           },
           result: {
-            pointCoordinates: pointCoords
-          }
+            pointCoordinates: pointCoords,
+          },
         },
       });
     }
-
   }
 
-  async finalizePolylinePosition({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
-    // trigger a movePolyline 
+  async finalizePolylinePosition({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    // trigger a movePolyline
     // to send the final values with transient=false
     // so that the final position will be recorded
 
     return await this.actions.movePolyline({
       pointCoords: await this.stateValues.numericalVertices,
       transient: false,
-      actionId, sourceInformation, skipRendererUpdate
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
   }
-
-
 }

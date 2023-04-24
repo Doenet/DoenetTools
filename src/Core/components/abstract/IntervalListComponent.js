@@ -1,4 +1,4 @@
-import BaseComponent from './BaseComponent';
+import BaseComponent from "./BaseComponent";
 
 export default class IntervalListComponent extends BaseComponent {
   static componentType = "_intervalListComponent";
@@ -8,15 +8,13 @@ export default class IntervalListComponent extends BaseComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-
     let createIntervalList = function ({ matchedChildren }) {
-
       let results = breakEmbeddedStringsIntoIntervalPieces({
         componentList: matchedChildren,
       });
 
       if (results.success !== true) {
-        return { success: false }
+        return { success: false };
       }
 
       return {
@@ -25,37 +23,33 @@ export default class IntervalListComponent extends BaseComponent {
           if (piece.length > 1 || typeof piece[0] === "string") {
             return {
               componentType: "interval",
-              children: piece
-            }
+              children: piece,
+            };
           } else {
-            return piece[0]
+            return piece[0];
           }
-        })
-      }
-    }
+        }),
+      };
+    };
 
     sugarInstructions.push({
       // childrenRegex: /s+(.*s)?/,
-      replacementFunction: createIntervalList
+      replacementFunction: createIntervalList,
     });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "intervals",
-      componentTypes: ["interval"]
-    }]
-
+    return [
+      {
+        group: "intervals",
+        componentTypes: ["interval"],
+      },
+    ];
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nIntervals = {
@@ -64,16 +58,15 @@ export default class IntervalListComponent extends BaseComponent {
           dependencyType: "child",
           childGroups: ["intervals"],
           skipComponentNames: true,
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
         return {
           setValue: { nIntervals: dependencyValues.intervalChildren.length },
-          checkForActualChange: { nIntervals: true }
-        }
-      }
-    }
-
+          checkForActualChange: { nIntervals: true },
+        };
+      },
+    };
 
     stateVariableDefinitions.intervals = {
       isArray: true,
@@ -97,15 +90,13 @@ export default class IntervalListComponent extends BaseComponent {
               childGroups: ["intervals"],
               variableNames: ["value"],
               childIndices: [arrayKey],
-            }
-          }
+            },
+          };
         }
 
         return { dependenciesByKey };
-
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         // console.log('array definition of intervals for intervallist')
         // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
         // console.log(arrayKeys);
@@ -122,44 +113,36 @@ export default class IntervalListComponent extends BaseComponent {
         // console.log("result")
         // console.log(JSON.parse(JSON.stringify(intervals)));
 
-        return { setValue: { intervals } }
-
+        return { setValue: { intervals } };
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyNamesByKey
+      inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        dependencyNamesByKey,
       }) {
-
         // console.log('array inverse definition of intervals of intervallist')
         // console.log(desiredStateVariableValues)
         // console.log(arrayKeys);
 
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.intervals) {
-
           instructions.push({
             setDependency: dependencyNamesByKey[arrayKey].intervalChild,
             desiredValue: desiredStateVariableValues.intervals[arrayKey],
             childIndex: 0,
-            variableIndex: 0
-          })
-
+            variableIndex: 0,
+          });
         }
 
         return {
           success: true,
-          instructions
-        }
-
-      }
-    }
+          instructions,
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }
-
-
 
 function breakEmbeddedStringsIntoIntervalPieces({ componentList }) {
   let Nparens = 0;
@@ -167,11 +150,10 @@ function breakEmbeddedStringsIntoIntervalPieces({ componentList }) {
   let currentPiece = [];
 
   for (let component of componentList) {
-
     if (typeof component !== "string") {
       if (Nparens === 0) {
         // if not in a parenthesis, isn't an interval
-        return {success: false};
+        return { success: false };
       } else {
         currentPiece.push(component);
       }
@@ -196,7 +178,7 @@ function breakEmbeddedStringsIntoIntervalPieces({ componentList }) {
           // found end of piece in parens
           if (ind + 1 > beginInd) {
             let lastInd = ind + 1;
-            let newString = s.substring(beginInd, lastInd).trim()
+            let newString = s.substring(beginInd, lastInd).trim();
             if (newString.length > 0) {
               currentPiece.push(newString);
             }
@@ -205,13 +187,12 @@ function breakEmbeddedStringsIntoIntervalPieces({ componentList }) {
           pieces.push(currentPiece);
           currentPiece = [];
           beginInd = ind + 1;
-
         }
-        Nparens--
+        Nparens--;
       } else if (Nparens === 0 && !char.match(/\s/)) {
         // starting a new piece
         // each piece must begin with parens
-        return { success: false }
+        return { success: false };
       }
     }
 
@@ -219,7 +200,6 @@ function breakEmbeddedStringsIntoIntervalPieces({ componentList }) {
       let newString = s.substring(beginInd, s.length).trim();
       currentPiece.push(newString);
     }
-
   }
 
   // parens didn't match, so return failure
@@ -235,6 +215,5 @@ function breakEmbeddedStringsIntoIntervalPieces({ componentList }) {
   return {
     success: true,
     pieces: pieces,
-  }
+  };
 }
-

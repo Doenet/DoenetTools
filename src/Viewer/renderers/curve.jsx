@@ -1,13 +1,18 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import { createFunctionFromDefinition } from '../../Core/utils/function';
-import useDoenetRender from '../useDoenetRenderer';
-import { BoardContext, CONTROL_POINT_LAYER_OFFSET, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from './graph';
-import { useRecoilValue } from 'recoil';
-import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
-
+import React, { useContext, useEffect, useRef } from "react";
+import { createFunctionFromDefinition } from "../../Core/utils/function";
+import useDoenetRender from "../useDoenetRenderer";
+import {
+  BoardContext,
+  CONTROL_POINT_LAYER_OFFSET,
+  LINE_LAYER_OFFSET,
+  VERTEX_LAYER_OFFSET,
+} from "./graph";
+import { useRecoilValue } from "recoil";
+import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 
 export default React.memo(function Curve(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } =
+    useDoenetRender(props);
 
   Curve.ignoreActionsWithoutCore = () => true;
 
@@ -57,7 +62,6 @@ export default React.memo(function Curve(props) {
   const darkMode = useRecoilValue(darkModeAtom);
 
   useEffect(() => {
-
     //On unmount
     return () => {
       // if point is defined
@@ -66,29 +70,26 @@ export default React.memo(function Curve(props) {
       }
 
       if (board) {
-        board.off('move', boardMoveHandler);
+        board.off("move", boardMoveHandler);
       }
-    }
-  }, [])
-
+    };
+  }, []);
 
   useEffect(() => {
     if (board) {
-      board.on('move', boardMoveHandler)
+      board.on("move", boardMoveHandler);
     }
-  }, [board])
-
-
+  }, [board]);
 
   function createCurveJXG() {
-
-    if (SVs.curveType === "bezier" &&
-      SVs.numericalThroughPoints.length < 2
-    ) {
+    if (SVs.curveType === "bezier" && SVs.numericalThroughPoints.length < 2) {
       return null;
     }
 
-    let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+    let lineColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.lineColorDarkMode
+        : SVs.selectedStyle.lineColor;
 
     var curveAttributes = {
       name: SVs.labelForGraph,
@@ -101,43 +102,42 @@ export default React.memo(function Curve(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
       highlight: false,
-      lineCap: "butt"
+      lineCap: "butt",
     };
-
 
     if (SVs.showLabel && SVs.labelForGraph !== "") {
       let anchorx, offset, position;
       if (SVs.labelPosition === "upperright") {
-        position = 'urt';
+        position = "urt";
         offset = [-5, -10];
         anchorx = "right";
       } else if (SVs.labelPosition === "upperleft") {
-        position = 'ulft';
+        position = "ulft";
         offset = [5, -10];
         anchorx = "left";
       } else if (SVs.labelPosition === "lowerright") {
-        position = 'lrt';
+        position = "lrt";
         offset = [-5, 10];
         anchorx = "right";
       } else if (SVs.labelPosition === "lowerleft") {
-        position = 'llft';
+        position = "llft";
         offset = [5, 10];
         anchorx = "left";
       } else if (SVs.labelPosition === "top") {
-        position = 'top';
+        position = "top";
         offset = [0, -10];
         anchorx = "left";
       } else if (SVs.labelPosition === "bottom") {
-        position = 'bot';
+        position = "bot";
         offset = [0, 10];
         anchorx = "left";
       } else if (SVs.labelPosition === "left") {
-        position = 'lft';
+        position = "lft";
         offset = [10, 0];
         anchorx = "left";
       } else {
         // right
-        position = 'rt';
+        position = "rt";
         offset = [-10, 0];
         anchorx = "right";
       }
@@ -146,7 +146,7 @@ export default React.memo(function Curve(props) {
         offset,
         position,
         anchorx,
-        highlight: false
+        highlight: false,
       };
 
       if (SVs.labelHasLatex) {
@@ -160,13 +160,12 @@ export default React.memo(function Curve(props) {
       }
     } else {
       curveAttributes.label = {
-        highlight: false
-      }
+        highlight: false,
+      };
       if (SVs.labelHasLatex) {
         curveAttributes.label.useMathJax = true;
       }
     }
-
 
     let newCurveJXG;
 
@@ -174,19 +173,19 @@ export default React.memo(function Curve(props) {
       let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
       let f2 = createFunctionFromDefinition(SVs.fDefinitions[1]);
 
-      newCurveJXG = board.create('curve', [
-        f1, f2,
-        SVs.parMin, SVs.parMax
-      ], curveAttributes);
-
+      newCurveJXG = board.create(
+        "curve",
+        [f1, f2, SVs.parMin, SVs.parMax],
+        curveAttributes,
+      );
     } else if (SVs.curveType === "bezier") {
       let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
       let f2 = createFunctionFromDefinition(SVs.fDefinitions[1]);
-      newCurveJXG = board.create('curve', [
-        f1, f2,
-        SVs.parMin, SVs.parMax
-      ], curveAttributes);
-
+      newCurveJXG = board.create(
+        "curve",
+        [f1, f2, SVs.parMin, SVs.parMax],
+        curveAttributes,
+      );
     } else {
       let f = createFunctionFromDefinition(SVs.fDefinitions[0]);
       if (SVs.flipFunction) {
@@ -194,16 +193,23 @@ export default React.memo(function Curve(props) {
         let ymax = SVs.graphYmax;
         let minForF = Math.max(ymin - (ymax - ymin) * 0.1, SVs.parMin);
         let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, SVs.parMax);
-        newCurveJXG = board.create('curve', [f, x => x, minForF, maxForF], curveAttributes);
+        newCurveJXG = board.create(
+          "curve",
+          [f, (x) => x, minForF, maxForF],
+          curveAttributes,
+        );
       } else {
         let xmin = SVs.graphXmin;
         let xmax = SVs.graphXmax;
         let minForF = Math.max(xmin - (xmax - xmin) * 0.1, SVs.parMin);
         let maxForF = Math.min(xmax + (xmax - xmin) * 0.1, SVs.parMax);
-        newCurveJXG = board.create('functiongraph', [f, minForF, maxForF], curveAttributes);
+        newCurveJXG = board.create(
+          "functiongraph",
+          [f, minForF, maxForF],
+          curveAttributes,
+        );
       }
       previousFlipFunction.current = SVs.flipFunction;
-
     }
 
     previousCurveType.current = SVs.curveType;
@@ -213,43 +219,39 @@ export default React.memo(function Curve(props) {
 
     newCurveJXG.isDraggable = false;
 
-    newCurveJXG.on('up', function (e) {
+    newCurveJXG.on("up", function (e) {
       if (!pointerMovedSinceDown.current && !fixed.current) {
         if (switchable.current) {
           callAction({
-            action: actions.switchCurve
+            action: actions.switchCurve,
           });
         }
         callAction({
           action: actions.curveClicked,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
       pointerIsDown.current = false;
     });
 
-
-    newCurveJXG.on('keydown', function (e) {
-
+    newCurveJXG.on("keydown", function (e) {
       if (e.key === "Enter") {
         if (switchable.current) {
           callAction({
-            action: actions.switchCurve
+            action: actions.switchCurve,
           });
         }
         callAction({
           action: actions.curveClicked,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
-    })
-
+    });
 
     if (SVs.curveType === "bezier") {
+      board.on("up", upBoard);
 
-      board.on('up', upBoard);
-
-      newCurveJXG.on('down', (e) => {
+      newCurveJXG.on("down", (e) => {
         pointerAtDown.current = [e.x, e.y];
         pointerIsDown.current = true;
         pointerMovedSinceDown.current = false;
@@ -258,19 +260,17 @@ export default React.memo(function Curve(props) {
         if (!fixed.current) {
           callAction({
             action: actions.curveFocused,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         }
-
       });
 
-
-      newCurveJXG.on('hit', function (e) {
+      newCurveJXG.on("hit", function (e) {
         downOther();
 
         callAction({
           action: actions.curveFocused,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       });
 
@@ -278,8 +278,8 @@ export default React.memo(function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: true,
-        strokeColor: 'var(--mainGray)',
-        highlightStrokeColor: 'var(--mainGray)',
+        strokeColor: "var(--mainGray)",
+        highlightStrokeColor: "var(--mainGray)",
         layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
         strokeWidth: 1,
         highlightStrokeWidth: 1,
@@ -288,32 +288,32 @@ export default React.memo(function Curve(props) {
         visible: !SVs.hidden,
         withLabel: false,
         fixed: false,
-        fillColor: 'none',
-        strokeColor: 'none',
-        highlightFillColor: 'var(--mainGray)',
-        highlightStrokeColor: 'var(--mainGray)',
+        fillColor: "none",
+        strokeColor: "none",
+        highlightFillColor: "var(--mainGray)",
+        highlightStrokeColor: "var(--mainGray)",
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
         size: 3,
       };
       throughPointAlwaysVisible.current = {
-        fillcolor: 'var(--mainGray)',
-        strokecolor: 'var(--mainGray)',
+        fillcolor: "var(--mainGray)",
+        strokecolor: "var(--mainGray)",
       };
       throughPointHoverVisible.current = {
-        fillcolor: 'none',
-        strokecolor: 'none',
+        fillcolor: "none",
+        strokecolor: "none",
       };
 
       controlPointAttributes.current = {
         visible: false,
         withLabel: false,
         fixed: false,
-        fillColor: 'var(--mainGray)',
-        strokeColor: 'var(--mainGray)',
-        highlightFillColor: 'var(--mainGray)',
-        highlightStrokeColor: 'var(--mainGray)',
+        fillColor: "var(--mainGray)",
+        strokeColor: "var(--mainGray)",
+        highlightFillColor: "var(--mainGray)",
+        highlightStrokeColor: "var(--mainGray)",
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + CONTROL_POINT_LAYER_OFFSET,
@@ -321,8 +321,6 @@ export default React.memo(function Curve(props) {
       };
 
       if (!fixLocation.current) {
-
-
         createControls();
 
         if (SVs.bezierControlsAlwaysVisible) {
@@ -333,12 +331,12 @@ export default React.memo(function Curve(props) {
         board.updateRenderer();
 
         previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
-        previousVectorControlDirections.current = [...SVs.vectorControlDirections];
+        previousVectorControlDirections.current = [
+          ...SVs.vectorControlDirections,
+        ];
       }
-
     } else {
-
-      newCurveJXG.on('down', function (e) {
+      newCurveJXG.on("down", function (e) {
         pointerAtDown.current = [e.x, e.y];
         pointerIsDown.current = true;
         pointerMovedSinceDown.current = false;
@@ -346,19 +344,17 @@ export default React.memo(function Curve(props) {
         if (!fixed.current) {
           callAction({
             action: actions.curveFocused,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         }
-
       });
 
-      newCurveJXG.on('hit', function (e) {
+      newCurveJXG.on("hit", function (e) {
         callAction({
           action: actions.curveFocused,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       });
-
     }
 
     return newCurveJXG;
@@ -367,8 +363,9 @@ export default React.memo(function Curve(props) {
   function boardMoveHandler(e) {
     if (pointerIsDown.current) {
       //Protect against very small unintended move
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         pointerMovedSinceDown.current = true;
       }
@@ -376,10 +373,10 @@ export default React.memo(function Curve(props) {
   }
 
   function deleteCurveJXG() {
-    board.off('up', upBoard);
-    curveJXG.current.off('down');
-    curveJXG.current.off('up');
-    curveJXG.current.off('keydown');
+    board.off("up", upBoard);
+    curveJXG.current.off("down");
+    curveJXG.current.off("up");
+    curveJXG.current.off("keydown");
     board.removeObject(curveJXG.current);
     curveJXG.current = null;
     deleteControls();
@@ -390,61 +387,75 @@ export default React.memo(function Curve(props) {
     controlPointsJXG.current = [];
     segmentsJXG.current = [];
 
-
     for (let i = 0; i < SVs.numericalThroughPoints.length; i++) {
       // middle through points have two controls
-      let tp = board.create('point', [...SVs.numericalThroughPoints[i]], throughPointAttributes.current);
+      let tp = board.create(
+        "point",
+        [...SVs.numericalThroughPoints[i]],
+        throughPointAttributes.current,
+      );
       throughPointsJXG.current.push(tp);
-      let cp1 = board.create('point', [...SVs.numericalControlPoints[i][0]], controlPointAttributes.current);
-      let cp2 = board.create('point', [...SVs.numericalControlPoints[i][1]], controlPointAttributes.current);
+      let cp1 = board.create(
+        "point",
+        [...SVs.numericalControlPoints[i][0]],
+        controlPointAttributes.current,
+      );
+      let cp2 = board.create(
+        "point",
+        [...SVs.numericalControlPoints[i][1]],
+        controlPointAttributes.current,
+      );
       controlPointsJXG.current.push([cp1, cp2]);
-      let seg1 = board.create('segment', [tp, cp1], segmentAttributes.current);
-      let seg2 = board.create('segment', [tp, cp2], segmentAttributes.current);
+      let seg1 = board.create("segment", [tp, cp1], segmentAttributes.current);
+      let seg2 = board.create("segment", [tp, cp2], segmentAttributes.current);
       segmentsJXG.current.push([seg1, seg2]);
-      tp.on('drag', e => dragThroughPoint(i));
-      tp.on('down', e => downThroughPoint(i, e));
-      tp.on('hit', e => downThroughPoint(i, e));
-      tp.on('up', e => upThroughPoint(i));
-      tp.on('keyfocusout', e => upThroughPoint(i));
-      cp1.on('drag', e => dragControlPoint(i, 0));
-      cp2.on('drag', e => dragControlPoint(i, 1));
-      cp1.on('down', downOther);
-      cp2.on('down', downOther);
-      seg1.on('down', downOther);
-      seg2.on('down', downOther);
-      cp1.on('up', e => upControlPoint(i, 0));
-      cp2.on('up', e => upControlPoint(i, 1));
+      tp.on("drag", (e) => dragThroughPoint(i));
+      tp.on("down", (e) => downThroughPoint(i, e));
+      tp.on("hit", (e) => downThroughPoint(i, e));
+      tp.on("up", (e) => upThroughPoint(i));
+      tp.on("keyfocusout", (e) => upThroughPoint(i));
+      cp1.on("drag", (e) => dragControlPoint(i, 0));
+      cp2.on("drag", (e) => dragControlPoint(i, 1));
+      cp1.on("down", downOther);
+      cp2.on("down", downOther);
+      seg1.on("down", downOther);
+      seg2.on("down", downOther);
+      cp1.on("up", (e) => upControlPoint(i, 0));
+      cp2.on("up", (e) => upControlPoint(i, 1));
     }
 
     vectorControlsVisible.current = [];
-
   }
 
   function deleteControls() {
     if (segmentsJXG.current.length > 0) {
-      segmentsJXG.current.forEach(x => x.forEach(y => {
-        if (y) {
-          y.off('down');
-          board.removeObject(y)
-        }
-      }));
+      segmentsJXG.current.forEach((x) =>
+        x.forEach((y) => {
+          if (y) {
+            y.off("down");
+            board.removeObject(y);
+          }
+        }),
+      );
       segmentsJXG.current = [];
-      controlPointsJXG.current.forEach(x => x.forEach(y => {
-        if (y) {
-          y.off('drag')
-          y.off('down')
-          y.off('up')
-          board.removeObject(y)
-        }
-      }));
+      controlPointsJXG.current.forEach((x) =>
+        x.forEach((y) => {
+          if (y) {
+            y.off("drag");
+            y.off("down");
+            y.off("up");
+            board.removeObject(y);
+          }
+        }),
+      );
       controlPointsJXG.current = [];
-      throughPointsJXG.current.forEach(x => {
-        x.off('drag')
-        x.off('down')
-        x.off('hit')
-        x.off('up')
-        x.off('keyfocusout')
-        board.removeObject(x)
+      throughPointsJXG.current.forEach((x) => {
+        x.off("drag");
+        x.off("down");
+        x.off("hit");
+        x.off("up");
+        x.off("keyfocusout");
+        board.removeObject(x);
       });
       throughPointsJXG.current = [];
     }
@@ -473,7 +484,10 @@ export default React.memo(function Curve(props) {
   function dragThroughPoint(i) {
     draggedThroughPoint.current = i;
 
-    tpCoords.current[i] = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
+    tpCoords.current[i] = [
+      throughPointsJXG.current[i].X(),
+      throughPointsJXG.current[i].Y(),
+    ];
 
     callAction({
       action: actions.moveThroughPoint,
@@ -482,12 +496,14 @@ export default React.memo(function Curve(props) {
         throughPointInd: i,
         transient: true,
         skippable: true,
-      }
-    })
+      },
+    });
 
-    throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughPointPositionsFromCore.current[i]);
+    throughPointsJXG.current[i].coords.setCoordinates(
+      JXG.COORDS_BY_USER,
+      lastThroughPointPositionsFromCore.current[i],
+    );
     board.updateInfobox(throughPointsJXG.current[i]);
-
   }
 
   function upThroughPoint(i) {
@@ -502,9 +518,8 @@ export default React.memo(function Curve(props) {
       args: {
         throughPoint: tpCoords.current[i],
         throughPointInd: i,
-      }
-    })
-
+      },
+    });
   }
 
   function dragControlPoint(point, i) {
@@ -513,13 +528,15 @@ export default React.memo(function Curve(props) {
     draggedControlPoint.current = point + "_" + i;
 
     if (!cvCoords.current[point]) {
-      cvCoords.current[point] = {}
+      cvCoords.current[point] = {};
     }
 
     cvCoords.current[point][i] = [
-      controlPointsJXG.current[point][i].X() - throughPointsJXG.current[point].X(),
-      controlPointsJXG.current[point][i].Y() - throughPointsJXG.current[point].Y()
-    ]
+      controlPointsJXG.current[point][i].X() -
+        throughPointsJXG.current[point].X(),
+      controlPointsJXG.current[point][i].Y() -
+        throughPointsJXG.current[point].Y(),
+    ];
 
     callAction({
       action: actions.moveControlVector,
@@ -528,13 +545,14 @@ export default React.memo(function Curve(props) {
         controlVectorInds: [point, i],
         transient: true,
         skippable: true,
-      }
+      },
     });
 
-    controlPointsJXG.current[point][i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastControlPointPositionsFromCore.current[point][i]]);
+    controlPointsJXG.current[point][i].coords.setCoordinates(
+      JXG.COORDS_BY_USER,
+      [...lastControlPointPositionsFromCore.current[point][i]],
+    );
     board.updateInfobox(controlPointsJXG.current[point][i]);
-
-
   }
 
   function upControlPoint(point, i) {
@@ -549,9 +567,8 @@ export default React.memo(function Curve(props) {
       args: {
         controlVector: cvCoords.current[point][i],
         controlVectorInds: [point, i],
-      }
+      },
     });
-
   }
 
   function makeThroughPointsAlwaysVisible() {
@@ -617,8 +634,11 @@ export default React.memo(function Curve(props) {
   function makeVectorControlVisible(i) {
     if (!SVs.hiddenControls[i]) {
       if (controlPointsJXG.current[i][0]) {
-        let isVisible = (i > 0 || SVs.extrapolateBackward)
-          && ["symmetric", "both", "previous"].includes(vectorControlDirections.current[i]);
+        let isVisible =
+          (i > 0 || SVs.extrapolateBackward) &&
+          ["symmetric", "both", "previous"].includes(
+            vectorControlDirections.current[i],
+          );
         controlPointsJXG.current[i][0].visProp.visible = isVisible;
         controlPointsJXG.current[i][0].visPropCalc.visible = isVisible;
         controlPointsJXG.current[i][0].needsUpdate = true;
@@ -630,8 +650,11 @@ export default React.memo(function Curve(props) {
       }
 
       if (controlPointsJXG.current[i][1]) {
-        let isVisible = (i < throughPointsJXG.current.length - 1 || SVs.extrapolateForward)
-          && ["symmetric", "both", "next"].includes(vectorControlDirections.current[i]);
+        let isVisible =
+          (i < throughPointsJXG.current.length - 1 || SVs.extrapolateForward) &&
+          ["symmetric", "both", "next"].includes(
+            vectorControlDirections.current[i],
+          );
         controlPointsJXG.current[i][1].visProp.visible = isVisible;
         controlPointsJXG.current[i][1].visPropCalc.visible = isVisible;
         controlPointsJXG.current[i][1].needsUpdate = true;
@@ -660,40 +683,31 @@ export default React.memo(function Curve(props) {
     board.updateRenderer();
   }
 
-
   if (board) {
-
     if (!curveJXG.current) {
       // attempt to create curveJXG.current if it doesn't exist yet
 
       curveJXG.current = createCurveJXG();
-
-
-    } else if (SVs.curveType === "bezier" &&
+    } else if (
+      SVs.curveType === "bezier" &&
       SVs.numericalThroughPoints.length < 2
     ) {
       deleteCurveJXG();
     } else if (
       previousCurveType.current !== SVs.curveType ||
-      (
-        previousCurveType.current === "function" &&
-        previousFlipFunction.current !== SVs.flipFunction
-      )
+      (previousCurveType.current === "function" &&
+        previousFlipFunction.current !== SVs.flipFunction)
     ) {
-
       // if curve type changed or if flip of function changed
       // delete and recreate curve
 
       deleteCurveJXG();
-      curveJXG.current = createCurveJXG()
-
+      curveJXG.current = createCurveJXG();
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
         board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
-
     } else {
-
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
         board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
@@ -719,24 +733,29 @@ export default React.memo(function Curve(props) {
         controlPointAttributes.current.layer = controlPointLayer;
       }
 
-
-      let lineColor = darkMode === "dark" ? SVs.selectedStyle.lineColorDarkMode : SVs.selectedStyle.lineColor;
+      let lineColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.lineColorDarkMode
+          : SVs.selectedStyle.lineColor;
 
       if (curveJXG.current.visProp.strokecolor !== lineColor) {
         curveJXG.current.visProp.strokecolor = lineColor;
         curveJXG.current.visProp.highlightstrokecolor = lineColor;
       }
-      if (curveJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+      if (
+        curveJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity
+      ) {
         curveJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
       }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (curveJXG.current.visProp.dash !== newDash) {
         curveJXG.current.visProp.dash = newDash;
       }
-      if (curveJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
-        curveJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+      if (
+        curveJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth
+      ) {
+        curveJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
       }
-
 
       if (SVs.curveType === "parameterization") {
         let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
@@ -746,13 +765,11 @@ export default React.memo(function Curve(props) {
         curveJXG.current.Y = f2;
         curveJXG.current.minX = () => SVs.parMin;
         curveJXG.current.maxX = () => SVs.parMax;
-
       } else if (SVs.curveType === "bezier") {
         curveJXG.current.X = createFunctionFromDefinition(SVs.fDefinitions[0]);
         curveJXG.current.Y = createFunctionFromDefinition(SVs.fDefinitions[1]);
         curveJXG.current.minX = () => SVs.parMin;
         curveJXG.current.maxX = () => SVs.parMax;
-
       } else {
         let f = createFunctionFromDefinition(SVs.fDefinitions[0]);
         if (SVs.flipFunction) {
@@ -780,39 +797,51 @@ export default React.memo(function Curve(props) {
       curveJXG.current.updateCurve();
       if (curveJXG.current.hasLabel) {
         curveJXG.current.label.needsUpdate = true;
-        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.labelForGraph !== "";
+        curveJXG.current.label.visPropCalc.visible =
+          SVs.showLabel && SVs.labelForGraph !== "";
         if (SVs.applyStyleToLabel) {
-          curveJXG.current.label.visProp.strokecolor = lineColor
+          curveJXG.current.label.visProp.strokecolor = lineColor;
         } else {
           curveJXG.current.label.visProp.strokecolor = "var(canvastext)";
         }
         curveJXG.current.label.update();
       }
 
-
-
       if (SVs.curveType !== "bezier") {
         board.updateRenderer();
-        return <><a name={id} /></>
+        return (
+          <>
+            <a name={id} />
+          </>
+        );
       }
-
 
       if (fixLocation.current) {
         if (segmentsJXG.current.length > 0) {
           deleteControls();
         }
         board.updateRenderer();
-        return <><a name={id} /></>
+        return (
+          <>
+            <a name={id} />
+          </>
+        );
       }
 
       if (segmentsJXG.current.length === 0) {
         createControls();
 
         previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
-        previousVectorControlDirections.current = [...SVs.vectorControlDirections];
+        previousVectorControlDirections.current = [
+          ...SVs.vectorControlDirections,
+        ];
 
         board.updateRenderer();
-        return <><a name={id} /></>
+        return (
+          <>
+            <a name={id} />
+          </>
+        );
       }
 
       // add or delete segments and points if number changed
@@ -821,23 +850,53 @@ export default React.memo(function Curve(props) {
 
         let iPreviousLast = previousNumberOfPoints.current - 1;
 
-        let attributesForNewThroughPoints = Object.assign({}, throughPointAttributes.current)
-        if (throughPointsJXG.current[iPreviousLast].visProp.fillcolor
-          === throughPointAlwaysVisible.current.fillcolor
+        let attributesForNewThroughPoints = Object.assign(
+          {},
+          throughPointAttributes.current,
+        );
+        if (
+          throughPointsJXG.current[iPreviousLast].visProp.fillcolor ===
+          throughPointAlwaysVisible.current.fillcolor
         ) {
-          Object.assign(attributesForNewThroughPoints, throughPointAlwaysVisible.current)
+          Object.assign(
+            attributesForNewThroughPoints,
+            throughPointAlwaysVisible.current,
+          );
         }
 
-        for (let i = previousNumberOfPoints.current; i < SVs.numericalThroughPoints.length; i++) {
-
+        for (
+          let i = previousNumberOfPoints.current;
+          i < SVs.numericalThroughPoints.length;
+          i++
+        ) {
           // add point and its controls
-          let tp = board.create('point', [...SVs.numericalThroughPoints[i]], attributesForNewThroughPoints);
+          let tp = board.create(
+            "point",
+            [...SVs.numericalThroughPoints[i]],
+            attributesForNewThroughPoints,
+          );
           throughPointsJXG.current.push(tp);
-          let cp1 = board.create('point', [...SVs.numericalControlPoints[i][0]], controlPointAttributes.current);
-          let cp2 = board.create('point', [...SVs.numericalControlPoints[i][1]], controlPointAttributes.current);
+          let cp1 = board.create(
+            "point",
+            [...SVs.numericalControlPoints[i][0]],
+            controlPointAttributes.current,
+          );
+          let cp2 = board.create(
+            "point",
+            [...SVs.numericalControlPoints[i][1]],
+            controlPointAttributes.current,
+          );
           controlPointsJXG.current.push([cp1, cp2]);
-          let seg1 = board.create('segment', [tp, cp1], segmentAttributes.current);
-          let seg2 = board.create('segment', [tp, cp2], segmentAttributes.current);
+          let seg1 = board.create(
+            "segment",
+            [tp, cp1],
+            segmentAttributes.current,
+          );
+          let seg2 = board.create(
+            "segment",
+            [tp, cp2],
+            segmentAttributes.current,
+          );
           segmentsJXG.current.push([seg1, seg2]);
 
           cp1.visProp.visible = false;
@@ -845,21 +904,19 @@ export default React.memo(function Curve(props) {
           cp2.visProp.visible = false;
           seg2.visProp.visible = false;
 
-
-          tp.on('drag', e => dragThroughPoint(i));
-          tp.on('down', e => downThroughPoint(i, e));
-          tp.on('hit', e => downThroughPoint(i, e));
-          tp.on('up', e => upThroughPoint(i));
-          tp.on('keyfocusout', e => upThroughPoint(i));
-          cp1.on('drag', e => dragControlPoint(i, 0));
-          cp1.on('down', downOther);
-          cp1.on('up', e => upControlPoint(i, 0));
-          cp2.on('drag', e => dragControlPoint(i, 1));
-          cp2.on('down', downOther);
-          cp2.on('up', e => upControlPoint(i, 1));
-          seg1.on('down', downOther);
-          seg2.on('down', downOther);
-
+          tp.on("drag", (e) => dragThroughPoint(i));
+          tp.on("down", (e) => downThroughPoint(i, e));
+          tp.on("hit", (e) => downThroughPoint(i, e));
+          tp.on("up", (e) => upThroughPoint(i));
+          tp.on("keyfocusout", (e) => upThroughPoint(i));
+          cp1.on("drag", (e) => dragControlPoint(i, 0));
+          cp1.on("down", downOther);
+          cp1.on("up", (e) => upControlPoint(i, 0));
+          cp2.on("drag", (e) => dragControlPoint(i, 1));
+          cp2.on("down", downOther);
+          cp2.on("up", (e) => upControlPoint(i, 1));
+          seg1.on("down", downOther);
+          seg2.on("down", downOther);
         }
 
         if (vectorControlsVisible.current[iPreviousLast]) {
@@ -868,73 +925,94 @@ export default React.memo(function Curve(props) {
           // refresh visibility to add extra handle
           makeVectorControlVisible(iPreviousLast);
         }
-      } else if (SVs.numericalThroughPoints.length < previousNumberOfPoints.current) {
+      } else if (
+        SVs.numericalThroughPoints.length < previousNumberOfPoints.current
+      ) {
         // delete old segments and points
 
-        for (let i = previousNumberOfPoints.current - 1; i >= SVs.numericalThroughPoints.length; i--) {
-
-          segmentsJXG.current[i][0].off('down')
-          segmentsJXG.current[i][1].off('down')
-          board.removeObject(segmentsJXG.current[i][0])
+        for (
+          let i = previousNumberOfPoints.current - 1;
+          i >= SVs.numericalThroughPoints.length;
+          i--
+        ) {
+          segmentsJXG.current[i][0].off("down");
+          segmentsJXG.current[i][1].off("down");
+          board.removeObject(segmentsJXG.current[i][0]);
           board.removeObject(segmentsJXG.current[i][1]);
           segmentsJXG.current.pop();
 
-          controlPointsJXG.current[i][0].off('drag')
-          controlPointsJXG.current[i][0].off('down')
-          controlPointsJXG.current[i][0].off('up')
-          controlPointsJXG.current[i][1].off('drag')
-          controlPointsJXG.current[i][1].off('down')
-          controlPointsJXG.current[i][1].off('up')
-          board.removeObject(controlPointsJXG.current[i][0])
+          controlPointsJXG.current[i][0].off("drag");
+          controlPointsJXG.current[i][0].off("down");
+          controlPointsJXG.current[i][0].off("up");
+          controlPointsJXG.current[i][1].off("drag");
+          controlPointsJXG.current[i][1].off("down");
+          controlPointsJXG.current[i][1].off("up");
+          board.removeObject(controlPointsJXG.current[i][0]);
           board.removeObject(controlPointsJXG.current[i][1]);
           controlPointsJXG.current.pop();
 
-
           let tp = throughPointsJXG.current.pop();
-          tp.off('drag')
-          tp.off('down')
-          tp.off('up')
-          tp.off('hit')
-          tp.off('keyfocusout')
+          tp.off("drag");
+          tp.off("down");
+          tp.off("up");
+          tp.off("hit");
+          tp.off("keyfocusout");
           board.removeObject(tp);
         }
 
-        let iNewLast = SVs.numericalThroughPoints.length - 1
+        let iNewLast = SVs.numericalThroughPoints.length - 1;
         if (vectorControlsVisible.current[iNewLast]) {
           makeVectorControlVisible(iNewLast);
         }
-
       }
 
       // move old points and modify attributes, if needed
-      let nOld = Math.min(SVs.numericalThroughPoints.length, previousNumberOfPoints.current);
+      let nOld = Math.min(
+        SVs.numericalThroughPoints.length,
+        previousNumberOfPoints.current,
+      );
 
       for (let i = 0; i < nOld; i++) {
-
-        if (previousVectorControlDirections.current[i] !== SVs.vectorControlDirections[i]
-          && vectorControlsVisible.current[i]
+        if (
+          previousVectorControlDirections.current[i] !==
+            SVs.vectorControlDirections[i] &&
+          vectorControlsVisible.current[i]
         ) {
           // refresh visibility
           makeVectorControlVisible(i);
         }
 
         if (layerChanged) {
-          throughPointsJXG.current[i].setAttribute({ layer: throughPointLayer });
+          throughPointsJXG.current[i].setAttribute({
+            layer: throughPointLayer,
+          });
           segmentsJXG.current[i][0].setAttribute({ layer: segmentLayer });
-          controlPointsJXG.current[i][0].setAttribute({ layer: controlPointLayer });
+          controlPointsJXG.current[i][0].setAttribute({
+            layer: controlPointLayer,
+          });
           segmentsJXG.current[i][1].setAttribute({ layer: segmentLayer });
-          controlPointsJXG.current[i][1].setAttribute({ layer: controlPointLayer });
+          controlPointsJXG.current[i][1].setAttribute({
+            layer: controlPointLayer,
+          });
         }
 
-        throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalThroughPoints[i]]);
+        throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [
+          ...SVs.numericalThroughPoints[i],
+        ]);
         throughPointsJXG.current[i].needsUpdate = true;
         throughPointsJXG.current[i].update();
-        controlPointsJXG.current[i][0].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalControlPoints[i][0]]);
+        controlPointsJXG.current[i][0].coords.setCoordinates(
+          JXG.COORDS_BY_USER,
+          [...SVs.numericalControlPoints[i][0]],
+        );
         controlPointsJXG.current[i][0].needsUpdate = true;
         controlPointsJXG.current[i][0].update();
         segmentsJXG.current[i][0].needsUpdate = true;
         segmentsJXG.current[i][0].update();
-        controlPointsJXG.current[i][1].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalControlPoints[i][1]]);
+        controlPointsJXG.current[i][1].coords.setCoordinates(
+          JXG.COORDS_BY_USER,
+          [...SVs.numericalControlPoints[i][1]],
+        );
         controlPointsJXG.current[i][1].needsUpdate = true;
         controlPointsJXG.current[i][1].update();
         segmentsJXG.current[i][1].needsUpdate = true;
@@ -946,8 +1024,8 @@ export default React.memo(function Curve(props) {
         throughPointsJXG.current[i].visPropCalc["visible"] = !SVs.hidden;
       }
 
-
-      if (sourceOfUpdate.sourceInformation &&
+      if (
+        sourceOfUpdate.sourceInformation &&
         name in sourceOfUpdate.sourceInformation
       ) {
         let ind = sourceOfUpdate.sourceInformation[name].throughPointMoved;
@@ -962,21 +1040,25 @@ export default React.memo(function Curve(props) {
       }
 
       previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
-      previousVectorControlDirections.current = [...SVs.vectorControlDirections];
+      previousVectorControlDirections.current = [
+        ...SVs.vectorControlDirections,
+      ];
 
       board.updateRenderer();
     }
   }
-
 
   if (SVs.hidden) {
     return null;
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={id} /></>
-
-})
+  return (
+    <>
+      <a name={id} />
+    </>
+  );
+});
 
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {
@@ -989,5 +1071,3 @@ function styleToDash(style, dash) {
     return 0;
   }
 }
-
-

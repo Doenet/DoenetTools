@@ -1,8 +1,15 @@
-import InlineComponent from './abstract/InlineComponent';
-import me from 'math-expressions';
-import { latexToAst, superSubscriptsToUnicode } from '../utils/math';
-import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../utils/style';
-import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
+import InlineComponent from "./abstract/InlineComponent";
+import me from "math-expressions";
+import { latexToAst, superSubscriptsToUnicode } from "../utils/math";
+import {
+  returnSelectedStyleStateVariableDefinition,
+  returnTextStyleDescriptionDefinitions,
+} from "../utils/style";
+import {
+  moveGraphicalObjectWithAnchorAction,
+  returnAnchorAttributes,
+  returnAnchorStateVariableDefinition,
+} from "../utils/graphical";
 
 export class M extends InlineComponent {
   constructor(args) {
@@ -13,7 +20,6 @@ export class M extends InlineComponent {
       mathClicked: this.mathClicked.bind(this),
       mathFocused: this.mathFocused.bind(this),
     });
-
   }
   static componentType = "m";
   static rendererType = "math";
@@ -31,7 +37,7 @@ export class M extends InlineComponent {
       createStateVariable: "draggable",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.layer = {
@@ -39,27 +45,24 @@ export class M extends InlineComponent {
       createStateVariable: "layer",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
-    Object.assign(attributes, returnAnchorAttributes())
+    Object.assign(attributes, returnAnchorAttributes());
 
     return attributes;
-
-  };
-
-  static returnChildGroups() {
-
-    return [{
-      group: "inline",
-      componentTypes: ["_inline"]
-    }]
-
   }
 
+  static returnChildGroups() {
+    return [
+      {
+        group: "inline",
+        componentTypes: ["_inline"],
+      },
+    ];
+  }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
@@ -88,13 +91,12 @@ export class M extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-
         if (dependencyValues.inlineChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              latex: true
-            }
-          }
+              latex: true,
+            },
+          };
         }
 
         let latex = "";
@@ -103,70 +105,75 @@ export class M extends InlineComponent {
           if (typeof child !== "object") {
             latex += child;
           } else if (typeof child.stateValues.latex === "string") {
-            latex += child.stateValues.latex
+            latex += child.stateValues.latex;
           } else if (typeof child.stateValues.text === "string") {
-            latex += child.stateValues.text
+            latex += child.stateValues.text;
           }
         }
 
-        return { setValue: { latex } }
-
+        return { setValue: { latex } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (typeof desiredStateVariableValues.latex !== "string") {
-          return { success: false }
+          return { success: false };
         }
 
         if (dependencyValues.inlineChildren.length === 0) {
           return {
             success: true,
-            instructions: [{
-              setEssentialValue: "latex",
-              value: desiredStateVariableValues.latex
-            }]
-          }
+            instructions: [
+              {
+                setEssentialValue: "latex",
+                value: desiredStateVariableValues.latex,
+              },
+            ],
+          };
         } else if (dependencyValues.inlineChildren.length === 1) {
           let child = dependencyValues.inlineChildren[0];
           if (typeof child !== "object") {
             return {
               success: true,
-              instructions: [{
-                setDependency: "inlineChildren",
-                desiredValue: desiredStateVariableValues.latex,
-                childIndex: 0,
-              }]
-            }
+              instructions: [
+                {
+                  setDependency: "inlineChildren",
+                  desiredValue: desiredStateVariableValues.latex,
+                  childIndex: 0,
+                },
+              ],
+            };
           } else if (typeof child.stateValues.latex === "string") {
             return {
               success: true,
-              instructions: [{
-                setDependency: "inlineChildren",
-                desiredValue: desiredStateVariableValues.latex,
-                childIndex: 0,
-                variableIndex: 0  // "latex" state variable
-              }]
-            }
-
+              instructions: [
+                {
+                  setDependency: "inlineChildren",
+                  desiredValue: desiredStateVariableValues.latex,
+                  childIndex: 0,
+                  variableIndex: 0, // "latex" state variable
+                },
+              ],
+            };
           } else if (typeof child.stateValues.text === "string") {
             return {
               success: true,
-              instructions: [{
-                setDependency: "inlineChildren",
-                desiredValue: desiredStateVariableValues.latex,
-                childIndex: 0,
-                variableIndex: 1  // "text" state variable
-              }]
-            }
+              instructions: [
+                {
+                  setDependency: "inlineChildren",
+                  desiredValue: desiredStateVariableValues.latex,
+                  childIndex: 0,
+                  variableIndex: 1, // "text" state variable
+                },
+              ],
+            };
           } else {
-            return { success: false }
+            return { success: false };
           }
         } else {
           // more than one inline child
-          return { success: false }
+          return { success: false };
         }
-      }
-
-    }
+      },
+    };
 
     stateVariableDefinitions.latexWithInputChildren = {
       forRenderer: true,
@@ -179,17 +186,16 @@ export class M extends InlineComponent {
         },
         latex: {
           dependencyType: "stateVariable",
-          variableName: "latex"
-        }
+          variableName: "latex",
+        },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-
         if (dependencyValues.inlineChildren.length === 0) {
           return {
             setValue: {
-              latexWithInputChildren: [dependencyValues.latex]
-            }
-          }
+              latexWithInputChildren: [dependencyValues.latex],
+            },
+          };
         }
 
         let latexWithInputChildren = [];
@@ -198,10 +204,12 @@ export class M extends InlineComponent {
         for (let child of dependencyValues.inlineChildren) {
           if (typeof child !== "object") {
             lastLatex += child;
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "input"
-          })) {
+          } else if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "input",
+            })
+          ) {
             if (lastLatex.length > 0) {
               latexWithInputChildren.push(lastLatex);
               lastLatex = "";
@@ -210,9 +218,9 @@ export class M extends InlineComponent {
             inputInd++;
           } else {
             if (typeof child.stateValues.latex === "string") {
-              lastLatex += child.stateValues.latex
+              lastLatex += child.stateValues.latex;
             } else if (typeof child.stateValues.text === "string") {
-              lastLatex += child.stateValues.text
+              lastLatex += child.stateValues.text;
             }
           }
         }
@@ -220,19 +228,15 @@ export class M extends InlineComponent {
           latexWithInputChildren.push(lastLatex);
         }
 
-        return { setValue: { latexWithInputChildren } }
-
-      }
-
-    }
-
+        return { setValue: { latexWithInputChildren } };
+      },
+    };
 
     stateVariableDefinitions.renderMode = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { renderMode: "inline" } })
-    }
-
+      definition: () => ({ setValue: { renderMode: "inline" } }),
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -242,8 +246,8 @@ export class M extends InlineComponent {
       returnDependencies: () => ({
         latex: {
           dependencyType: "stateVariable",
-          variableName: "latex"
-        }
+          variableName: "latex",
+        },
       }),
       definition: function ({ dependencyValues }) {
         let expression;
@@ -254,71 +258,85 @@ export class M extends InlineComponent {
           return { setValue: { text: dependencyValues.latex } };
         }
 
-        return { setValue: { text: superSubscriptsToUnicode(expression.toString()) } };
-      }
-    }
+        return {
+          setValue: { text: superSubscriptsToUnicode(expression.toString()) },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
-  async moveMath({ x, y, z, transient, actionId,
-    sourceInformation = {}, skipRendererUpdate = false
+  async moveMath({
+    x,
+    y,
+    z,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-
     return await moveGraphicalObjectWithAnchorAction({
-      x, y, z, transient, actionId,
-      sourceInformation, skipRendererUpdate,
+      x,
+      y,
+      z,
+      transient,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       componentName: this.componentName,
       componentType: this.componentType,
-      coreFunctions: this.coreFunctions
-    })
-
+      coreFunctions: this.coreFunctions,
+    });
   }
 
-  async mathClicked({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
-
-    if (! await this.stateValues.fixed) {
+  async mathClicked({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
       await this.coreFunctions.triggerChainedActions({
         triggeringAction: "click",
-        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        componentName: name, // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      })
+      });
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
 
-  async mathFocused({ actionId, name, sourceInformation = {}, skipRendererUpdate = false }) {
-
-    if (! await this.stateValues.fixed) {
+  async mathFocused({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
       await this.coreFunctions.triggerChainedActions({
         triggeringAction: "focus",
-        componentName: name,  // use name rather than this.componentName to get original name if adapted
+        componentName: name, // use name rather than this.componentName to get original name if adapted
         actionId,
         sourceInformation,
         skipRendererUpdate,
-      })
+      });
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
-
 }
 
 export class Me extends M {
   static componentType = "me";
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.renderMode.definition = () => ({
-      setValue: { renderMode: "display" }
+      setValue: { renderMode: "display" },
     });
     return stateVariableDefinitions;
   }
@@ -328,11 +346,10 @@ export class Men extends M {
   static componentType = "men";
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.renderMode.definition = () => ({
-      setValue: { renderMode: "numbered" }
+      setValue: { renderMode: "numbered" },
     });
 
     stateVariableDefinitions.equationTag = {
@@ -345,18 +362,16 @@ export class Men extends M {
       returnDependencies: () => ({
         equationCounter: {
           dependencyType: "counter",
-          counterName: "equation"
-        }
+          counterName: "equation",
+        },
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { equationTag: String(dependencyValues.equationCounter) }
-        }
-      }
-    }
+          setValue: { equationTag: String(dependencyValues.equationCounter) },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 }
-
-

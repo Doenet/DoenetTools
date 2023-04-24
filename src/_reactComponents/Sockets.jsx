@@ -2,8 +2,8 @@
  * External deps
  */
 // import React, { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
-import { nanoid } from 'nanoid';
+import axios from "axios";
+import { nanoid } from "nanoid";
 import {
   atom,
   selector,
@@ -11,12 +11,12 @@ import {
   selectorFamily,
   // useRecoilValue,
   useRecoilCallback,
-} from 'recoil';
-import { Manager } from 'socket.io-client';
+} from "recoil";
+import { Manager } from "socket.io-client";
 /**
  * Internal deps
  */
-import { useToast, toastType } from '../Tools/_framework/Toast';
+import { useToast, toastType } from "../Tools/_framework/Toast";
 import {
   folderCacheDirtyAtom,
   folderDictionary,
@@ -24,8 +24,8 @@ import {
   globalSelectedNodesAtom,
   selectedDriveItemsAtom,
   sortOptions,
-} from './Drive/NewDrive';
-import { DateToUTCDateString } from '../_utils/dateUtilityFunction';
+} from "./Drive/NewDrive";
+import { DateToUTCDateString } from "../_utils/dateUtilityFunction";
 
 /**
  * a stored manger to allow for multiplexed socket connections.
@@ -33,11 +33,11 @@ import { DateToUTCDateString } from '../_utils/dateUtilityFunction';
  * object freezing in recoil
  */
 const socketManger = atom({
-  key: 'socketManger',
+  key: "socketManger",
   default: selector({
-    key: 'socketManger/Default',
+    key: "socketManger/Default",
     get: () => {
-      return new Manager('http://localhost:81', {
+      return new Manager("http://localhost:81", {
         withCredentials: true,
       });
     },
@@ -52,26 +52,26 @@ const socketManger = atom({
  * flag must be set to stop dev mode object freezing in recoil
  */
 const sockets = atomFamily({
-  key: 'socketStore',
+  key: "socketStore",
   default: selectorFamily({
-    key: 'socketStore/Default',
+    key: "socketStore/Default",
     get:
       (nsp) =>
-        ({ get }) => {
-          const manager = get(socketManger);
-          const socket = manager.socket(`/${nsp}`);
-          return socket;
-        },
+      ({ get }) => {
+        const manager = get(socketManger);
+        const socket = manager.socket(`/${nsp}`);
+        return socket;
+      },
     dangerouslyAllowMutability: true,
   }),
   dangerouslyAllowMutability: true,
 });
 
 export const itemType = Object.freeze({
-  FOLDER: 'Folder',
-  DOENETML: 'DoenetML',
-  URL: 'Url',
-  COLLECTION: 'Collection',
+  FOLDER: "Folder",
+  DOENETML: "DoenetML",
+  URL: "Url",
+  COLLECTION: "Collection",
 });
 
 /**
@@ -85,7 +85,7 @@ export default function useSockets(nsp) {
   // realtime upgrade
   // const [namespace] = useState(nsp);
   // const socket = useRecoilValue(sockets(namespace));
-  const dragShadowId = 'dragShadow';
+  const dragShadowId = "dragShadow";
   const { acceptAddItem, acceptDeleteItem, acceptMoveItems, acceptRenameItem } =
     useAcceptBindings();
 
@@ -109,7 +109,7 @@ export default function useSockets(nsp) {
      * Create a new item
      * @param {addOptions} param0 configuration for new Item
      */
-    async ({ driveIdFolderId, type, label = 'Untitled', selectedItemId = null, url = null }) => {
+    async ({ driveIdFolderId, type, label = "Untitled", selectedItemId = null, url = null }) => {
       // Item creation
       const dt = new Date();
       const creationDate = DateToUTCDateString(dt); //TODO: get from sever
@@ -144,19 +144,18 @@ export default function useSockets(nsp) {
         url,
       };
 
-      if (type === 'DoenetML') {
+      if (type === "DoenetML") {
         payload = {
           ...payload,
           assignedDate: null,
-          attemptAggregation: 'm',
+          attemptAggregation: "m",
           dueDate: null,
-          gradeCategory: '',
+          gradeCategory: "",
           individualize: true,
-          isAssigned: '0',
-          isPublished: '0',
-          cid:
-            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-          numberOfAttemptsAllowed: '1',
+          isAssigned: "0",
+          isPublished: "0",
+          cid: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          numberOfAttemptsAllowed: "1",
           showFinishButton: false,
           proctorMakesAvailable: false,
           autoSubmit: false,
@@ -166,8 +165,8 @@ export default function useSockets(nsp) {
           showSolution: true,
           showSolutionInGradebook: true,
           timeLimit: null,
-          totalPointsOrPercent: '10',
-          assignment_isPublished: '0',
+          totalPointsOrPercent: "10",
+          assignment_isPublished: "0",
         };
       }
 
@@ -175,15 +174,14 @@ export default function useSockets(nsp) {
         payload = {
           ...payload,
           assignedDate: null,
-          attemptAggregation: 'm',
+          attemptAggregation: "m",
           dueDate: null,
-          gradeCategory: '',
+          gradeCategory: "",
           individualize: true,
-          isAssigned: '0',
-          isPublished: '0',
-          cid:
-            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-          numberOfAttemptsAllowed: '1',
+          isAssigned: "0",
+          isPublished: "0",
+          cid: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          numberOfAttemptsAllowed: "1",
           showFinishButton: false,
           proctorMakesAvailable: false,
           autoSubmit: false,
@@ -193,13 +191,13 @@ export default function useSockets(nsp) {
           showSolution: true,
           showSolutionInGradebook: true,
           timeLimit: null,
-          totalPointsOrPercent: '10',
-          assignment_isPublished: '0',
+          totalPointsOrPercent: "10",
+          assignment_isPublished: "0",
         };
       }
       try {
-        const resp = await axios.post('/api/addItem.php', payload);
-        console.log('resp from add item', resp)
+        const resp = await axios.post("/api/addItem.php", payload);
+        console.log("resp from add item", resp);
         if (resp.data.success) {
           acceptAddItem(payload);
         } else {
@@ -234,7 +232,7 @@ export default function useSockets(nsp) {
           driveInstanceId,
         };
         try {
-          const resp = await axios.get('/api/deleteItem.php', {
+          const resp = await axios.get("/api/deleteItem.php", {
             params: payload,
           });
 
@@ -288,7 +286,7 @@ export default function useSockets(nsp) {
 
       // Interrupt move action if nothing selected
       if (globalSelectedNodes.length === 0) {
-        throw 'No items selected';
+        throw "No items selected";
       }
 
       // Interrupt move action if dragging folder to itself or adding non ML to Collection
@@ -301,18 +299,20 @@ export default function useSockets(nsp) {
           }),
         );
         if (gItem.itemId === targetFolderId) {
-          throw 'Cannot move folder into itself';
+          throw "Cannot move folder into itself";
         } else if (
           destinationFolderObj.folderInfo.itemType === itemType.COLLECTION &&
           sourceFolderInfo.contentsDictionary[gItem.itemId].itemType !==
-          itemType.DOENETML
+            itemType.DOENETML
         ) {
           addToast(
-            `Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+            `Can not ${
+              sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
             }s into a Collection`,
             toastType.ERROR,
           );
-          throw `Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+          throw `Can not ${
+            sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
           }s into a Collection`;
         }
       }
@@ -325,7 +325,7 @@ export default function useSockets(nsp) {
       let editedCache = {};
       let driveIdChanged = [];
       const insertIndex = index ?? 0;
-      let newSortOrder = '';
+      let newSortOrder = "";
 
       for (let gItem of globalSelectedNodes) {
         // Deselect Item
@@ -351,35 +351,35 @@ export default function useSockets(nsp) {
         // Handle moving item out of folder
         if (gItem.parentFolderId !== targetFolderId) {
           // Remove item from original parent contentIds
-          let index = newSourceFInfo['contentIds']['defaultOrder'].indexOf(
+          let index = newSourceFInfo["contentIds"]["defaultOrder"].indexOf(
             gItem.itemId,
           );
-          newSourceFInfo['contentIds']['defaultOrder'].splice(index, 1);
+          newSourceFInfo["contentIds"]["defaultOrder"].splice(index, 1);
 
           // Add item to destination dictionary
-          newDestinationFolderObj['contentsDictionary'][gItem.itemId] = {
-            ...newSourceFInfo['contentsDictionary'][gItem.itemId],
+          newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {
+            ...newSourceFInfo["contentsDictionary"][gItem.itemId],
           };
 
-          if (!newDestinationFolderObj['contentsDictionaryByDoenetId']) {
-            newDestinationFolderObj['contentsDictionaryByDoenetId'] = {};
+          if (!newDestinationFolderObj["contentsDictionaryByDoenetId"]) {
+            newDestinationFolderObj["contentsDictionaryByDoenetId"] = {};
           }
-          newDestinationFolderObj['contentsDictionaryByDoenetId'][
-            newSourceFInfo['contentsDictionary'][gItem.itemId].doenetId
-          ] = { ...newSourceFInfo['contentsDictionary'][gItem.itemId] };
+          newDestinationFolderObj["contentsDictionaryByDoenetId"][
+            newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId
+          ] = { ...newSourceFInfo["contentsDictionary"][gItem.itemId] };
 
           // Remove item from original dictionary
-          delete newSourceFInfo['contentsDictionaryByDoenetId'][
-            newSourceFInfo['contentsDictionary'][gItem.itemId].doenetId
+          delete newSourceFInfo["contentsDictionaryByDoenetId"][
+            newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId
           ];
-          delete newSourceFInfo['contentsDictionary'][gItem.itemId];
+          delete newSourceFInfo["contentsDictionary"][gItem.itemId];
 
           // Ensure item removed from cached parent and added to edited cache
           if (!editedCache[gItem.driveId]) editedCache[gItem.driveId] = {};
           editedCache[gItem.driveId][gItem.parentFolderId] = newSourceFInfo;
 
           // Insert item into contentIds of destination
-          newDestinationFolderObj['contentIds']['defaultOrder'].splice(
+          newDestinationFolderObj["contentIds"]["defaultOrder"].splice(
             insertIndex,
             0,
             gItem.itemId,
@@ -415,16 +415,16 @@ export default function useSockets(nsp) {
           nodeObjs: newDestinationFolderObj.contentsDictionary,
           defaultFolderChildrenIds: cleanDefaultOrder,
         });
-        newDestinationFolderObj['contentsDictionary'][gItem.itemId].sortOrder =
+        newDestinationFolderObj["contentsDictionary"][gItem.itemId].sortOrder =
           newSortOrder;
-        newDestinationFolderObj['contentsDictionary'][
+        newDestinationFolderObj["contentsDictionary"][
           gItem.itemId
         ].parentFolderId = targetFolderId;
 
         // If moved item is a folder, update folder info
         if (
-          oldSourceFInfo['contentsDictionary'][gItem.itemId].itemType ===
-          'Folder'
+          oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType ===
+          "Folder"
         ) {
           // Retrieval from folderDictionary necessary when moving to different drive
           const gItemFolderInfoObj = await snapshot.getPromise(
@@ -453,8 +453,8 @@ export default function useSockets(nsp) {
 
           // Update driveId of all children in the subtree
           if (
-            oldSourceFInfo['contentsDictionary'][gItem.itemId].itemType ===
-            'Folder'
+            oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType ===
+            "Folder"
           ) {
             let gItemChildIds = [];
             let queue = [gItem.itemId];
@@ -476,7 +476,7 @@ export default function useSockets(nsp) {
                 ]) {
                   if (
                     folderInfoObj?.contentsDictionary[childId].itemType ===
-                    'Folder'
+                    "Folder"
                   ) {
                     // migrate child folderInfo into destination driveId
                     const childFolderInfoObj = await snapshot.getPromise(
@@ -522,7 +522,7 @@ export default function useSockets(nsp) {
       };
 
       try {
-        const resp = await axios.post('/api/moveItems.php', payload);
+        const resp = await axios.post("/api/moveItems.php", payload);
 
         if (resp.data.success) {
           acceptMoveItems(payload, newDestinationFolderObj, editedCache);
@@ -554,7 +554,7 @@ export default function useSockets(nsp) {
       async ({ driveIdFolderId, itemId, itemType, newLabel }) => {
         // Rename in database
         const payload = {
-          instruction: 'rename',
+          instruction: "rename",
           driveId: driveIdFolderId.driveId,
           folderId: driveIdFolderId.folderId,
           itemId: itemId,
@@ -563,7 +563,7 @@ export default function useSockets(nsp) {
         };
 
         try {
-          const resp = await axios.get('/api/updateItem.php', {
+          const resp = await axios.get("/api/updateItem.php", {
             params: payload,
           });
 
@@ -602,7 +602,7 @@ export default function useSockets(nsp) {
       async ({ items = [], targetDriveId, targetFolderId, index }) => {
         // Interrupt copy action if items is empty
         if (items.length === 0) {
-          throw 'No items to be copied';
+          throw "No items to be copied";
         }
 
         let destinationFolderObj = await snapshot.getPromise(
@@ -615,7 +615,7 @@ export default function useSockets(nsp) {
           JSON.stringify(destinationFolderObj),
         );
         const insertIndex = index ?? 0;
-        let newSortOrder = '';
+        let newSortOrder = "";
         const dt = new Date();
         const creationTimestamp = formatDate(dt); //TODO: Emilio Make sure we have the right time zones
         let globalDictionary = {};
@@ -623,7 +623,7 @@ export default function useSockets(nsp) {
 
         for (let item of items) {
           if (!item.driveId || !item.driveInstanceId || !item.itemId)
-            throw 'Invalid arguments error';
+            throw "Invalid arguments error";
 
           // Deselect currently selected items
           let selectedItem = {
@@ -651,8 +651,8 @@ export default function useSockets(nsp) {
           }
 
           // Generate sortOrder for cloned item
-          const cleanDefaultOrder = newDestinationFolderObj['contentIds'][
-            'defaultOrder'
+          const cleanDefaultOrder = newDestinationFolderObj["contentIds"][
+            "defaultOrder"
           ].filter((itemId) => itemId !== dragShadowId);
           newSortOrder = getLexicographicOrder({
             index: insertIndex,
@@ -662,8 +662,8 @@ export default function useSockets(nsp) {
           newItem.sortOrder = newSortOrder;
 
           // Insert root of cloned tree/item into destination
-          newDestinationFolderObj['contentsDictionary'][newItemId] = newItem;
-          newDestinationFolderObj['contentIds']['defaultOrder'].splice(
+          newDestinationFolderObj["contentsDictionary"][newItemId] = newItem;
+          newDestinationFolderObj["contentIds"]["defaultOrder"].splice(
             insertIndex,
             0,
             newItemId,
@@ -686,23 +686,23 @@ export default function useSockets(nsp) {
             label: newItem.label,
             type: newItem.itemType,
             sortOrder: newItem.sortOrder,
-            isNewCopy: '1',
+            isNewCopy: "1",
           };
 
           // Clone DoenetML
-          if (newItem.itemType === 'DoenetML') {
+          if (newItem.itemType === "DoenetML") {
             const newDoenetML = cloneDoenetML({
               item: newItem,
               timestamp: creationTimestamp,
             });
 
-            promises.push(axios.post('/api/saveNewVersion.php', newDoenetML));
+            promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
             // Unify new doenetId
             // addItemsParams["doenetId"] = newDoenetML?.doenetId;
           }
 
-          const result = axios.get('/api/addItem.php', {
+          const result = axios.get("/api/addItem.php", {
             params: addItemsParams,
           });
           promises.push(result);
@@ -723,7 +723,7 @@ export default function useSockets(nsp) {
               // Add new cloned items into folderDictionary
               for (let newItemId of Object.keys(globalDictionary)) {
                 let newItem = globalDictionary[newItemId];
-                if (newItem.itemType === 'Folder') {
+                if (newItem.itemType === "Folder") {
                   // BFS tree-walk to iterate through tree nodes
                   let queue = [newItemId];
                   while (queue.length) {
@@ -731,7 +731,7 @@ export default function useSockets(nsp) {
                     for (let i = 0; i < size; i++) {
                       const currentItemId = queue.shift();
                       const currentItem = globalDictionary[currentItemId];
-                      if (currentItem.itemType !== 'Folder') continue;
+                      if (currentItem.itemType !== "Folder") continue;
 
                       // Build contentsDictionary
                       let contentsDictionary = {};
@@ -804,7 +804,7 @@ export default function useSockets(nsp) {
         folderId: item.parentFolderId,
       }),
     );
-    const itemInfo = itemParentFolder['contentsDictionary'][item.itemId];
+    const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
 
     // Clone item (Note this should be the source of new ids)
     const newItem = { ...itemInfo };
@@ -814,7 +814,7 @@ export default function useSockets(nsp) {
     newItem.versionId = nanoid();
     newItem.previousDoenetId = itemInfo.doenetId;
 
-    if (itemInfo.itemType === 'Folder') {
+    if (itemInfo.itemType === "Folder") {
       const { contentIds } = await snapshot.getPromise(
         folderDictionary({ driveId: item.driveId, folderId: item.itemId }),
       );
@@ -854,9 +854,9 @@ export default function useSockets(nsp) {
       cid: item.cid,
       versionId: item.versionId,
       timestamp,
-      isDraft: '0',
-      isNamed: '1',
-      isNewCopy: '1',
+      isDraft: "0",
+      isNamed: "1",
+      isNewCopy: "1",
       doenetML: item.doenetML,
       previousDoenetId: item.previousDoenetId,
     };
@@ -965,7 +965,7 @@ function useAcceptBindings() {
           label,
           sortOrder,
           creationDate, //get this from sever??
-          isPublished: '0',
+          isPublished: "0",
           url,
           urlDescription: null,
           urlId: null,
@@ -996,7 +996,7 @@ function useAcceptBindings() {
         );
 
         // addtional folder type updates
-        if (type === 'Folder' || type === 'Collection') {
+        if (type === "Folder" || type === "Collection") {
           set(
             folderDictionary({
               driveId: driveId,
@@ -1052,15 +1052,15 @@ function useAcceptBindings() {
 
         // Remove from folder
         let newFInfo = { ...fInfo };
-        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
-        newFInfo['contentsDictionaryByDoenetId'] = {
+        newFInfo["contentsDictionary"] = { ...fInfo.contentsDictionary };
+        newFInfo["contentsDictionaryByDoenetId"] = {
           ...fInfo.contentsDictionaryByDoenetId,
         };
 
-        delete newFInfo['contentsDictionaryByDoenetId'][
-          newFInfo['contentsDictionary'][itemId].doenetId
+        delete newFInfo["contentsDictionaryByDoenetId"][
+          newFInfo["contentsDictionary"][itemId].doenetId
         ];
-        delete newFInfo['contentsDictionary'][itemId];
+        delete newFInfo["contentsDictionary"][itemId];
         newFInfo.folderInfo = { ...fInfo.folderInfo };
         newFInfo.contentIds = {};
         newFInfo.contentIds[sortOptions.DEFAULT] = [
@@ -1138,23 +1138,23 @@ function useAcceptBindings() {
 
         // Rename in folder
         let newFInfo = { ...fInfo };
-        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
-        newFInfo['contentsDictionaryByDoenetId'] = {
+        newFInfo["contentsDictionary"] = { ...fInfo.contentsDictionary };
+        newFInfo["contentsDictionaryByDoenetId"] = {
           ...fInfo.contentsDictionaryByDoenetId,
         };
 
-        newFInfo['contentsDictionary'][itemId] = {
+        newFInfo["contentsDictionary"][itemId] = {
           ...fInfo.contentsDictionary[itemId],
         };
-        newFInfo['contentsDictionary'][itemId].label = label;
+        newFInfo["contentsDictionary"][itemId].label = label;
 
-        newFInfo['contentsDictionaryByDoenetId'][
-          newFInfo['contentsDictionary'][itemId].doenetId
+        newFInfo["contentsDictionaryByDoenetId"][
+          newFInfo["contentsDictionary"][itemId].doenetId
         ] = {
           ...fInfo.contentsDictionary[itemId],
         };
-        newFInfo['contentsDictionaryByDoenetId'][
-          newFInfo['contentsDictionary'][itemId].doenetId
+        newFInfo["contentsDictionaryByDoenetId"][
+          newFInfo["contentsDictionary"][itemId].doenetId
         ].label = label;
 
         set(
@@ -1166,7 +1166,7 @@ function useAcceptBindings() {
         );
 
         // If a folder, update the label in the child folder
-        if (type === 'Folder' || type === 'Collection') {
+        if (type === "Folder" || type === "Collection") {
           set(
             folderDictionary({
               driveId,
@@ -1193,17 +1193,17 @@ function useAcceptBindings() {
 }
 
 const formatDate = (dt) => {
-  const formattedDate = `${dt.getFullYear().toString().padStart(2, '0')}-${(
+  const formattedDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(
     dt.getMonth() + 1
   )
     .toString()
-    .padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt
-      .getHours()
-      .toString()
-      .padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt
-        .getSeconds()
-        .toString()
-        .padStart(2, '0')}`;
+    .padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt
+    .getHours()
+    .toString()
+    .padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt
+    .getSeconds()
+    .toString()
+    .padStart(2, "0")}`;
 
   return formattedDate;
 };

@@ -1,20 +1,16 @@
-import { cesc } from '../../../../src/_utils/url';
+import { cesc } from "../../../../src/_utils/url";
 
-
-describe('TriggerSet Tag Tests', function () {
-
+describe("TriggerSet Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
-  })
-
-
-  it('triggerSet', () => {
-
+  it("triggerSet", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>Boolean to swap: <boolean name="b" /></p>
     <p>Say hello: <text name="hello"></text></p>
@@ -39,15 +35,18 @@ describe('TriggerSet Tag Tests', function () {
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/flip')).should('not.exist');
-    cy.get(cesc('#\\/addHello')).should('not.exist');
-    cy.get(cesc('#\\/addOne')).should('not.exist');
-    cy.get(cesc('#\\/rs')).should('not.exist');
-    cy.get(cesc('#\\/addPoint')).should('not.exist');
+    cy.get(cesc("#\\/flip")).should("not.exist");
+    cy.get(cesc("#\\/addHello")).should("not.exist");
+    cy.get(cesc("#\\/addOne")).should("not.exist");
+    cy.get(cesc("#\\/rs")).should("not.exist");
+    cy.get(cesc("#\\/addPoint")).should("not.exist");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -56,82 +55,92 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        numbers = text.split(',').map(Number);
-        expect(numbers.length).eq(5);
-        for (let num of numbers) {
-          expect(Number.isInteger(num)).be.true;
-          expect(num).gte(1)
-          expect(num).lte(6)
-        }
-      })
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          numbers = text.split(",").map(Number);
+          expect(numbers.length).eq(5);
+          for (let num of numbers) {
+            expect(Number.isInteger(num)).be.true;
+            expect(num).gte(1);
+            expect(num).lte(6);
+          }
+        });
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "1");
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "1");
 
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 2;
+        }),
+      );
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 2;
-      }))
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
 
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 3;
+        }),
+      );
 
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 3;
-      }))
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 4;
+        }),
+      );
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "4");
+    });
+  });
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 4;
-      }))
-
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
-
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "4");
-
-    })
-  })
-
-  it('triggerSet and chain to updatevalue and call action', () => {
-
+  it("triggerSet and chain to updatevalue and call action", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>Boolean to swap: <boolean name="b" /></p>
     <p>Say hello: <text name="hello"></text></p>
@@ -157,15 +166,18 @@ describe('TriggerSet Tag Tests', function () {
       <label>add point</label>
       <point>(3,4)</point>
     </callAction>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/flip')).should('not.exist');
-    cy.get(cesc('#\\/addHello')).should('not.exist');
-    cy.get(cesc('#\\/addOne')).should('not.exist');
-    cy.get(cesc('#\\/rs')).should('not.exist');
-    cy.get(cesc('#\\/addPoint')).should('not.exist');
+    cy.get(cesc("#\\/flip")).should("not.exist");
+    cy.get(cesc("#\\/addHello")).should("not.exist");
+    cy.get(cesc("#\\/addOne")).should("not.exist");
+    cy.get(cesc("#\\/rs")).should("not.exist");
+    cy.get(cesc("#\\/addPoint")).should("not.exist");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -174,82 +186,92 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        numbers = text.split(',').map(Number);
-        expect(numbers.length).eq(5);
-        for (let num of numbers) {
-          expect(Number.isInteger(num)).be.true;
-          expect(num).gte(1)
-          expect(num).lte(6)
-        }
-      })
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          numbers = text.split(",").map(Number);
+          expect(numbers.length).eq(5);
+          for (let num of numbers) {
+            expect(Number.isInteger(num)).be.true;
+            expect(num).gte(1);
+            expect(num).lte(6);
+          }
+        });
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "1");
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "1");
 
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 2;
+        }),
+      );
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 2;
-      }))
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
 
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 3;
+        }),
+      );
 
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 3;
-      }))
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 4;
+        }),
+      );
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "4");
+    });
+  });
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 4;
-      }))
-
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
-
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "4");
-    })
-
-  })
-
-  it('triggerSet and chain to triggerset', () => {
-
+  it("triggerSet and chain to triggerset", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>Boolean to swap: <boolean name="b" /></p>
     <p>Say hello: <text name="hello"></text></p>
@@ -279,15 +301,18 @@ describe('TriggerSet Tag Tests', function () {
       </callAction>
     </triggerSet>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/flip')).should('not.exist');
-    cy.get(cesc('#\\/addHello')).should('not.exist');
-    cy.get(cesc('#\\/addOne')).should('not.exist');
-    cy.get(cesc('#\\/rs')).should('not.exist');
-    cy.get(cesc('#\\/addPoint')).should('not.exist');
+    cy.get(cesc("#\\/flip")).should("not.exist");
+    cy.get(cesc("#\\/addHello")).should("not.exist");
+    cy.get(cesc("#\\/addOne")).should("not.exist");
+    cy.get(cesc("#\\/rs")).should("not.exist");
+    cy.get(cesc("#\\/addPoint")).should("not.exist");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -296,82 +321,92 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        numbers = text.split(',').map(Number);
-        expect(numbers.length).eq(5);
-        for (let num of numbers) {
-          expect(Number.isInteger(num)).be.true;
-          expect(num).gte(1)
-          expect(num).lte(6)
-        }
-      })
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          numbers = text.split(",").map(Number);
+          expect(numbers.length).eq(5);
+          for (let num of numbers) {
+            expect(Number.isInteger(num)).be.true;
+            expect(num).gte(1);
+            expect(num).lte(6);
+          }
+        });
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "1");
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "1");
 
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 2;
+        }),
+      );
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 2;
-      }))
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
 
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 3;
+        }),
+      );
 
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 3;
-      }))
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 4;
+        }),
+      );
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "4");
+    });
+  });
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 4;
-      }))
-
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
-
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "4");
-    })
-
-  })
-
-  it('triggerSet and chain multiple sources to triggerset', () => {
-
+  it("triggerSet and chain multiple sources to triggerset", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>Boolean to swap: <boolean name="b" /></p>
     <p>Say hello: <text name="hello"></text></p>
@@ -406,15 +441,18 @@ describe('TriggerSet Tag Tests', function () {
       <label>update number and others</label>
     </updateValue>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/flip')).should('not.exist');
-    cy.get(cesc('#\\/addHello')).should('not.exist');
-    cy.get(cesc('#\\/addOne')).should('not.exist');
-    cy.get(cesc('#\\/rs')).should('not.exist');
-    cy.get(cesc('#\\/addPoint')).should('not.exist');
+    cy.get(cesc("#\\/flip")).should("not.exist");
+    cy.get(cesc("#\\/addHello")).should("not.exist");
+    cy.get(cesc("#\\/addOne")).should("not.exist");
+    cy.get(cesc("#\\/rs")).should("not.exist");
+    cy.get(cesc("#\\/addPoint")).should("not.exist");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -423,63 +461,66 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        numbers = text.split(',').map(Number);
-        expect(numbers.length).eq(5);
-        for (let num of numbers) {
-          expect(Number.isInteger(num)).be.true;
-          expect(num).gte(1)
-          expect(num).lte(6)
-        }
-      })
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          numbers = text.split(",").map(Number);
+          expect(numbers.length).eq(5);
+          for (let num of numbers) {
+            expect(Number.isInteger(num)).be.true;
+            expect(num).gte(1);
+            expect(num).lte(6);
+          }
+        });
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "1");
-      cy.get(cesc('#\\/n2')).should('have.text', "1");
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "1");
+      cy.get(cesc("#\\/n2")).should("have.text", "1");
 
+      cy.get(cesc("#\\/tset_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 2;
+        }),
+      );
 
-      cy.get(cesc('#\\/tset_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 2;
-      }))
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          let numbers2 = text.split(",").map(Number);
+          expect(numbers2).not.eqls(numbers);
+          numbers = numbers2;
+        });
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        let numbers2 = text.split(',').map(Number);
-        expect(numbers2).not.eqls(numbers)
-        numbers = numbers2;
-      })
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
+      cy.get(cesc("#\\/n2")).should("have.text", "1");
 
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
-      cy.get(cesc('#\\/n2')).should('have.text', "1");
+      cy.get(cesc("#\\/in_button")).click();
+      cy.waitUntil(() =>
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let g = stateVariables["/g"];
+          return g.activeChildren.length === 3;
+        }),
+      );
 
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
+      cy.get(cesc("#\\/n2")).should("have.text", "2");
+    });
+  });
 
-
-      cy.get(cesc('#\\/in_button')).click()
-      cy.waitUntil(() => cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let g = stateVariables["/g"];
-        return g.activeChildren.length === 3;
-      }))
-
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
-      cy.get(cesc('#\\/n2')).should('have.text', "2");
-
-
-    })
-  })
-
-  it('triggerSet based on trigger', () => {
-
+  it("triggerSet based on trigger", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <graph>
     <point name="P">(-1,2)</point>
@@ -491,142 +532,215 @@ describe('TriggerSet Tag Tests', function () {
     <updateValue name="trip" target="x" newValue="3$x" simplify />
     <updateValue name="quad" target="y" newValue="4$y" simplify />
   </triggerSet>
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x')
+    cy.get(cesc("#\\/x"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+    cy.get(cesc("#\\/y"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("y");
+      });
+
+    cy.get(cesc("#\\/trip")).should("not.exist");
+    cy.get(cesc("#\\/quad")).should("not.exist");
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 },
+      });
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("y");
+        });
     });
-    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('y')
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -4 },
+      });
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("y");
+        });
     });
 
-    cy.get(cesc('#\\/trip')).should('not.exist');
-    cy.get(cesc('#\\/quad')).should('not.exist');
-
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: -1, y: -7 }
+        args: { x: 1, y: 7 },
       });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('y')
-      });
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 3, y: -4 }
-      });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('y')
-      });
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 1, y: 7 }
-      });
-      cy.get(cesc('#\\/x')).should('contain.text', '3x')
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 5, y: 9 }
-      });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: -3, y: 4 }
-      });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: -6, y: 5 }
-      });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 4, y: 2 }
-      });
-      cy.get(cesc('#\\/x')).should('contain.text', '9x')
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('9x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('16y')
-      });
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 9, y: 7 }
-      });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('9x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('16y')
-      });
-
-
+      cy.get(cesc("#\\/x")).should("contain.text", "3x");
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
     });
-  })
-
-  it('triggerSet triggered when click', () => {
 
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 },
+      });
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -3, y: 4 },
+      });
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -6, y: 5 },
+      });
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: 2 },
+      });
+      cy.get(cesc("#\\/x")).should("contain.text", "9x");
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16y");
+        });
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 },
+      });
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16y");
+        });
+    });
+  });
+
+  it("triggerSet triggered when click", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <graph>
     <point name="P">(-1,2)</point>
@@ -638,101 +752,149 @@ describe('TriggerSet Tag Tests', function () {
     <updateValue name="trip" target="x" newValue="3$x" simplify />
     <updateValue name="quad" target="y" newValue="4$y" simplify />
   </triggerSet>
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x')
-    });
-    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('y')
-    });
+    cy.get(cesc("#\\/x"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+    cy.get(cesc("#\\/y"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("y");
+      });
 
-    cy.get(cesc('#\\/trip')).should('not.exist');
-    cy.get(cesc('#\\/quad')).should('not.exist');
+    cy.get(cesc("#\\/trip")).should("not.exist");
+    cy.get(cesc("#\\/quad")).should("not.exist");
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: -1, y: -7 }
+        args: { x: -1, y: -7 },
       });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('y')
-      });
-    })
-
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
-        args: { name: "/P" }
+        args: { name: "/P" },
       });
-      cy.get(cesc('#\\/x')).should('contain.text', '3x')
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
+      cy.get(cesc("#\\/x")).should("contain.text", "3x");
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: 5, y: 9 }
+        args: { x: 5, y: 9 },
       });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "pointClicked",
         componentName: "/P",
-        args: { name: "/P" }
+        args: { name: "/P" },
       });
-      cy.get(cesc('#\\/x')).should('contain.text', '9x')
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('9x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('16y')
-      });
-    })
+      cy.get(cesc("#\\/x")).should("contain.text", "9x");
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: 9, y: 7 }
+        args: { x: 9, y: 7 },
       });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('9x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('16y')
-      });
-
-
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16y");
+        });
     });
-  })
+  });
 
-  it('triggerSet triggered when object focused', () => {
-
+  it("triggerSet triggered when object focused", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <graph>
     <point name="P">(-1,2)</point>
@@ -744,101 +906,149 @@ describe('TriggerSet Tag Tests', function () {
     <updateValue name="trip" target="x" newValue="3$x" simplify />
     <updateValue name="quad" target="y" newValue="4$y" simplify />
   </triggerSet>
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x')
-    });
-    cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('y')
-    });
+    cy.get(cesc("#\\/x"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+    cy.get(cesc("#\\/y"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("y");
+      });
 
-    cy.get(cesc('#\\/trip')).should('not.exist');
-    cy.get(cesc('#\\/quad')).should('not.exist');
+    cy.get(cesc("#\\/trip")).should("not.exist");
+    cy.get(cesc("#\\/quad")).should("not.exist");
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: -1, y: -7 }
+        args: { x: -1, y: -7 },
       });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('y')
-      });
-    })
-
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "pointFocused",
         componentName: "/P",
-        args: { name: "/P" }
+        args: { name: "/P" },
       });
-      cy.get(cesc('#\\/x')).should('contain.text', '3x')
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
+      cy.get(cesc("#\\/x")).should("contain.text", "3x");
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: 5, y: 9 }
+        args: { x: 5, y: 9 },
       });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4y')
-      });
-    })
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "pointFocused",
         componentName: "/P",
-        args: { name: "/P" }
+        args: { name: "/P" },
       });
-      cy.get(cesc('#\\/x')).should('contain.text', '9x')
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('9x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('16y')
-      });
-    })
+      cy.get(cesc("#\\/x")).should("contain.text", "9x");
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16y");
+        });
+    });
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: 9, y: 7 }
+        args: { x: 9, y: 7 },
       });
-      cy.get(cesc('#\\/x')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('9x')
-      });
-      cy.get(cesc('#\\/y')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('16y')
-      });
-
-
+      cy.get(cesc("#\\/x"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9x");
+        });
+      cy.get(cesc("#\\/y"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16y");
+        });
     });
-  })
+  });
 
-  it('triggerWhen supercedes chaining for triggerset', () => {
-
+  it("triggerWhen supercedes chaining for triggerset", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <graph>
       <point name="P">(-1,2)</point>
@@ -861,121 +1071,122 @@ describe('TriggerSet Tag Tests', function () {
       <updateValue target="m" newValue="$m-1" type="number"  />
     </triggerSet>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/b')).should('have.text', "false");
-    cy.get(cesc('#\\/hello')).should('have.text', "");
-    cy.get(cesc('#\\/n')).should('have.text', "1");
-    cy.get(cesc('#\\/m')).should('have.text', "5");
-    cy.get(cesc('#\\/_triggerset1')).should('not.exist');
-    cy.get(cesc('#\\/_triggerset2')).should('not.exist');
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: -1, y: -7 }
-      });
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
-      cy.get(cesc('#\\/m')).should('have.text', "4");
-    })
+    cy.get(cesc("#\\/b")).should("have.text", "false");
+    cy.get(cesc("#\\/hello")).should("have.text", "");
+    cy.get(cesc("#\\/n")).should("have.text", "1");
+    cy.get(cesc("#\\/m")).should("have.text", "5");
+    cy.get(cesc("#\\/_triggerset1")).should("not.exist");
+    cy.get(cesc("#\\/_triggerset2")).should("not.exist");
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
-        args: { x: 3, y: -4 }
+        args: { x: -1, y: -7 },
       });
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
-      cy.get(cesc('#\\/m')).should('have.text', "4");
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 1, y: 7 }
-      });
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
-      cy.get(cesc('#\\/m')).should('have.text', "4");
-
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 5, y: 9 }
-      });
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "2");
-      cy.get(cesc('#\\/m')).should('have.text', "4");
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: -3, y: -4 }
-      });
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
-      cy.get(cesc('#\\/m')).should('have.text', "3");
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: -6, y: -5 }
-      });
-      cy.get(cesc('#\\/b')).should('have.text', "true");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
-      cy.get(cesc('#\\/m')).should('have.text', "3");
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 4, y: 2 }
-      });
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
-      cy.get(cesc('#\\/m')).should('have.text', "3");
-    })
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/P",
-        args: { x: 9, y: 7 }
-      });
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-      cy.get(cesc('#\\/n')).should('have.text', "3");
-      cy.get(cesc('#\\/m')).should('have.text', "3");
-
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
+      cy.get(cesc("#\\/m")).should("have.text", "4");
     });
-  })
-
-  it('triggerset supercedes triggerWhen for updateValue and callAction children', () => {
 
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -4 },
+      });
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
+      cy.get(cesc("#\\/m")).should("have.text", "4");
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 1, y: 7 },
+      });
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
+      cy.get(cesc("#\\/m")).should("have.text", "4");
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 },
+      });
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "2");
+      cy.get(cesc("#\\/m")).should("have.text", "4");
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -3, y: -4 },
+      });
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
+      cy.get(cesc("#\\/m")).should("have.text", "3");
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -6, y: -5 },
+      });
+      cy.get(cesc("#\\/b")).should("have.text", "true");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
+      cy.get(cesc("#\\/m")).should("have.text", "3");
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: 2 },
+      });
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
+      cy.get(cesc("#\\/m")).should("have.text", "3");
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 },
+      });
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+      cy.get(cesc("#\\/n")).should("have.text", "3");
+      cy.get(cesc("#\\/m")).should("have.text", "3");
+    });
+  });
+
+  it("triggerset supercedes triggerWhen for updateValue and callAction children", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <graph name="g">
       <point name="P">(-1,2)</point>
@@ -1001,9 +1212,12 @@ describe('TriggerSet Tag Tests', function () {
       </callAction>
     </triggerSet>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1012,194 +1226,214 @@ describe('TriggerSet Tag Tests', function () {
 
       expect(g.activeChildren.length).eq(1);
 
-      cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-        numbers = text.split(',').map(Number);
-        expect(numbers.length).eq(5);
-        for (let num of numbers) {
-          expect(Number.isInteger(num)).be.true;
-          expect(num).gte(1)
-          expect(num).lte(6)
-        }
-      })
+      cy.get(cesc("#\\/nums"))
+        .invoke("text")
+        .then((text) => {
+          numbers = text.split(",").map(Number);
+          expect(numbers.length).eq(5);
+          for (let num of numbers) {
+            expect(Number.isInteger(num)).be.true;
+            expect(num).gte(1);
+            expect(num).lte(6);
+          }
+        });
 
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "1");
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "1");
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: -1, y: -7 }
+          args: { x: -1, y: -7 },
         });
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(1);
-        })
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).eqls(numbers);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', "");
-        cy.get(cesc('#\\/n')).should('have.text', "1");
-      })
+        });
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).eqls(numbers);
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", "");
+        cy.get(cesc("#\\/n")).should("have.text", "1");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 3, y: -4 }
+          args: { x: 3, y: -4 },
         });
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(1);
-        })
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).eqls(numbers);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', "");
-        cy.get(cesc('#\\/n')).should('have.text', "1");
-      })
+        });
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).eqls(numbers);
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", "");
+        cy.get(cesc("#\\/n")).should("have.text", "1");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 1, y: 7 }
+          args: { x: 1, y: 7 },
         });
 
-        cy.waitUntil(() => cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables1();
-          let g = stateVariables["/g"];
-          return g.activeChildren.length === 2;
-        }))
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).not.eqls(numbers);
-          numbers = numbers2;
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-
-      })
-
-      cy.window().then(async (win) => {
-        await win.callAction1({
-          actionName: "movePoint",
-          componentName: "/P",
-          args: { x: 5, y: 9 }
-        });
-        cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables1();
-          let g = stateVariables["/g"];
-          expect(g.activeChildren.length).eq(2);
-        })
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).eqls(numbers);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-      })
+        cy.waitUntil(() =>
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            let g = stateVariables["/g"];
+            return g.activeChildren.length === 2;
+          }),
+        );
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).not.eqls(numbers);
+            numbers = numbers2;
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: -3, y: -4 }
+          args: { x: 5, y: 9 },
         });
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
-        })
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).eqls(numbers);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-      })
+        });
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).eqls(numbers);
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: -6, y: -5 }
+          args: { x: -3, y: -4 },
         });
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
-        })
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).eqls(numbers);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-      })
+        });
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).eqls(numbers);
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 4, y: 2 }
+          args: { x: -6, y: -5 },
         });
-
-        cy.waitUntil(() => cy.window().then(async (win) => {
+        cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
-          return g.activeChildren.length === 3;
-        }))
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).not.eqls(numbers);
-          numbers = numbers2;
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-        cy.get(cesc('#\\/n')).should('have.text', "3");
-      })
+          expect(g.activeChildren.length).eq(2);
+        });
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).eqls(numbers);
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 9, y: 7 }
+          args: { x: 4, y: 2 },
+        });
+
+        cy.waitUntil(() =>
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            let g = stateVariables["/g"];
+            return g.activeChildren.length === 3;
+          }),
+        );
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).not.eqls(numbers);
+            numbers = numbers2;
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+        cy.get(cesc("#\\/n")).should("have.text", "3");
+      });
+
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: "/P",
+          args: { x: 9, y: 7 },
         });
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(3);
-        })
-        cy.get(cesc('#\\/nums')).invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).eqls(numbers);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-        cy.get(cesc('#\\/n')).should('have.text', "3");
-
+        });
+        cy.get(cesc("#\\/nums"))
+          .invoke("text")
+          .then((text) => {
+            let numbers2 = text.split(",").map(Number);
+            expect(numbers2).eqls(numbers);
+          });
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+        cy.get(cesc("#\\/n")).should("have.text", "3");
       });
-    })
-  })
+    });
+  });
 
-  it('triggerset supercedes chaining for updateValue children', () => {
-
+  it("triggerset supercedes chaining for updateValue children", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <graph name="g">
       <point name="P">(-1,2)</point>
@@ -1223,162 +1457,168 @@ describe('TriggerSet Tag Tests', function () {
 
     <updateValue name="uv" target="m" newValue="$m-1" type="number" triggerWhen="$(P.x)<0 and $(P.y)<0" />
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
-      cy.get(cesc('#\\/b')).should('have.text', "false");
-      cy.get(cesc('#\\/hello')).should('have.text', "");
-      cy.get(cesc('#\\/n')).should('have.text', "1");
-      cy.get(cesc('#\\/m')).should('have.text', "5");
-      cy.get(cesc('#\\/_triggerset1')).should('not.exist');
-      cy.get(cesc('#\\/uv')).should('not.exist');
+      cy.get(cesc("#\\/b")).should("have.text", "false");
+      cy.get(cesc("#\\/hello")).should("have.text", "");
+      cy.get(cesc("#\\/n")).should("have.text", "1");
+      cy.get(cesc("#\\/m")).should("have.text", "5");
+      cy.get(cesc("#\\/_triggerset1")).should("not.exist");
+      cy.get(cesc("#\\/uv")).should("not.exist");
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: -1, y: -7 }
+          args: { x: -1, y: -7 },
         });
-        cy.get(cesc('#\\/m')).should('have.text', "4");
+        cy.get(cesc("#\\/m")).should("have.text", "4");
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(1);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', "");
-        cy.get(cesc('#\\/n')).should('have.text', "1");
-      })
-
-      cy.window().then(async (win) => {
-        await win.callAction1({
-          actionName: "movePoint",
-          componentName: "/P",
-          args: { x: 3, y: -4 }
         });
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', "");
-        cy.get(cesc('#\\/n')).should('have.text', "1");
-        cy.get(cesc('#\\/m')).should('have.text', "4");
-      })
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", "");
+        cy.get(cesc("#\\/n")).should("have.text", "1");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 1, y: 7 }
+          args: { x: 3, y: -4 },
+        });
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", "");
+        cy.get(cesc("#\\/n")).should("have.text", "1");
+        cy.get(cesc("#\\/m")).should("have.text", "4");
+      });
+
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: "/P",
+          args: { x: 1, y: 7 },
         });
 
-        cy.waitUntil(() => cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables1();
-          let g = stateVariables["/g"];
-          return g.activeChildren.length === 2;
-        }))
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-        cy.get(cesc('#\\/m')).should('have.text', "4");
-      })
+        cy.waitUntil(() =>
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            let g = stateVariables["/g"];
+            return g.activeChildren.length === 2;
+          }),
+        );
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+        cy.get(cesc("#\\/m")).should("have.text", "4");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 5, y: 9 }
-        });
-        cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables1();
-          let g = stateVariables["/g"];
-          expect(g.activeChildren.length).eq(2);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-        cy.get(cesc('#\\/m')).should('have.text', "4");
-      })
-
-      cy.window().then(async (win) => {
-        await win.callAction1({
-          actionName: "movePoint",
-          componentName: "/P",
-          args: { x: -3, y: -4 }
+          args: { x: 5, y: 9 },
         });
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-        cy.get(cesc('#\\/m')).should('have.text', "3");
-      })
+        });
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+        cy.get(cesc("#\\/m")).should("have.text", "4");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: -6, y: -5 }
+          args: { x: -3, y: -4 },
         });
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(2);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "true");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello");
-        cy.get(cesc('#\\/n')).should('have.text', "2");
-        cy.get(cesc('#\\/m')).should('have.text', "3");
-      })
+        });
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+        cy.get(cesc("#\\/m")).should("have.text", "3");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 4, y: 2 }
+          args: { x: -6, y: -5 },
         });
-        cy.waitUntil(() => cy.window().then(async (win) => {
+        cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
-          return g.activeChildren.length === 3;
-        }))
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-        cy.get(cesc('#\\/n')).should('have.text', "3");
-        cy.get(cesc('#\\/m')).should('have.text', "3");
-      })
+          expect(g.activeChildren.length).eq(2);
+        });
+        cy.get(cesc("#\\/b")).should("have.text", "true");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello");
+        cy.get(cesc("#\\/n")).should("have.text", "2");
+        cy.get(cesc("#\\/m")).should("have.text", "3");
+      });
 
       cy.window().then(async (win) => {
         await win.callAction1({
           actionName: "movePoint",
           componentName: "/P",
-          args: { x: 9, y: 7 }
+          args: { x: 4, y: 2 },
+        });
+        cy.waitUntil(() =>
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            let g = stateVariables["/g"];
+            return g.activeChildren.length === 3;
+          }),
+        );
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+        cy.get(cesc("#\\/n")).should("have.text", "3");
+        cy.get(cesc("#\\/m")).should("have.text", "3");
+      });
+
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: "/P",
+          args: { x: 9, y: 7 },
         });
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           let g = stateVariables["/g"];
           expect(g.activeChildren.length).eq(3);
-        })
-        cy.get(cesc('#\\/b')).should('have.text', "false");
-        cy.get(cesc('#\\/hello')).should('have.text', " hello hello");
-        cy.get(cesc('#\\/n')).should('have.text', "3");
-        cy.get(cesc('#\\/m')).should('have.text', "3");
-
+        });
+        cy.get(cesc("#\\/b")).should("have.text", "false");
+        cy.get(cesc("#\\/hello")).should("have.text", " hello hello");
+        cy.get(cesc("#\\/n")).should("have.text", "3");
+        cy.get(cesc("#\\/m")).should("have.text", "3");
       });
-    })
-  })
+    });
+  });
 
-  it('triggerSet with math in label', () => {
-
+  it("triggerSet with math in label", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>Boolean to swap: <boolean name="b" /></p>
 
@@ -1386,49 +1626,54 @@ describe('TriggerSet Tag Tests', function () {
       <label>It is <math>∂f/∂x</math></label>
       <updateValue name="flip" target="b" newValue="not$b" type="boolean" />
     </triggerSet>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/tset')).should('contain.text', 'It is ∂f∂x')
+    cy.get(cesc("#\\/tset")).should("contain.text", "It is ∂f∂x");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/tset'].stateValues.label).eq("It is \\(\\frac{ \\partial f }{ \\partial x }\\)");
+      expect(stateVariables["/tset"].stateValues.label).eq(
+        "It is \\(\\frac{ \\partial f }{ \\partial x }\\)",
+      );
     });
+  });
 
-
-  })
-
-  it('triggerSet with label is name', () => {
-
+  it("triggerSet with label is name", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>Boolean to swap: <boolean name="b" /></p>
 
     <triggerSet name="trigger-me" labelIsName>
       <updateValue name="flip" target="b" newValue="not$b" type="boolean" />
     </triggerSet>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc('#\\/trigger-me')).should('contain.text', 'trigger me')
+    cy.get(cesc("#\\/trigger-me")).should("contain.text", "trigger me");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/trigger-me'].stateValues.label).eq("trigger me");
+      expect(stateVariables["/trigger-me"].stateValues.label).eq("trigger me");
     });
+  });
 
-
-  })
-
-  it('triggerset in graph', () => {
+  it("triggerset in graph", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>n: <number name="n">1</number></p>
     <graph >
@@ -1499,208 +1744,280 @@ describe('TriggerSet Tag Tests', function () {
     <p>Change fixLocation 2 <booleanInput name="fixLocation2" bindValueTo="$triggerset2.fixLocation" /></p>
     <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
 
-    ` }, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // TODO: how to click on the buttons and test if they are disabled?
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,3)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(0,0)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,3)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,0)");
 
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: upperright')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: center')
-    cy.get(cesc("#\\/positionFromAnchor1")).should('have.value', '1')
-    cy.get(cesc("#\\/positionFromAnchor2")).should('have.value', '9')
-    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
-    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: upperright",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: center",
+    );
+    cy.get(cesc("#\\/positionFromAnchor1")).should("have.value", "1");
+    cy.get(cesc("#\\/positionFromAnchor2")).should("have.value", "9");
+    cy.get(cesc("#\\/pDraggable1")).should("have.text", "Draggable 1: true");
+    cy.get(cesc("#\\/pDraggable2")).should("have.text", "Draggable 2: true");
 
-
-    cy.log("move triggersets by dragging")
+    cy.log("move triggersets by dragging");
 
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset1",
-        args: { x: -2, y: 3 }
-      })
+        args: { x: -2, y: 3 },
+      });
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset2",
-        args: { x: 4, y: -5 }
-      })
-    })
+        args: { x: 4, y: -5 },
+      });
+    });
 
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(4,−5)')
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow").should(
+      "contain.text",
+      "(4,−5)",
+    );
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−2,3)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(4,−5)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−2,3)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,−5)");
 
+    cy.log("move triggersets by entering coordinates");
 
-    cy.log("move triggersets by entering coordinates")
+    cy.get(cesc("#\\/anchorCoords1") + " textarea").type(
+      "{home}{shift+end}{backspace}(6,7){enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/anchorCoords2") + " textarea").type(
+      "{home}{shift+end}{backspace}(8,9){enter}",
+      { force: true },
+    );
 
-    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(6,7){enter}", { force: true })
-    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(8,9){enter}", { force: true })
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow").should("contain.text", "(8,9)");
 
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(8,9)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(8,9)");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.log("change position from anchor");
+    cy.get(cesc("#\\/positionFromAnchor1")).select("lowerLeft");
+    cy.get(cesc("#\\/positionFromAnchor2")).select("lowerRight");
 
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: lowerleft",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: lowerright",
+    );
 
-    cy.log('change position from anchor');
-    cy.get(cesc('#\\/positionFromAnchor1')).select("lowerLeft")
-    cy.get(cesc('#\\/positionFromAnchor2')).select("lowerRight")
+    cy.log("make not draggable");
 
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: lowerleft')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+    cy.get(cesc("#\\/draggable1")).click();
+    cy.get(cesc("#\\/draggable2")).click();
+    cy.get(cesc("#\\/pDraggable1")).should("have.text", "Draggable 1: false");
+    cy.get(cesc("#\\/pDraggable2")).should("have.text", "Draggable 2: false");
 
-
-    cy.log('make not draggable')
-
-    cy.get(cesc('#\\/draggable1')).click();
-    cy.get(cesc('#\\/draggable2')).click();
-    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: false')
-    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: false')
-
-
-    cy.log('cannot move triggersets by dragging')
+    cy.log("cannot move triggersets by dragging");
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset1",
-        args: { x: -10, y: -9 }
-      })
+        args: { x: -10, y: -9 },
+      });
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset2",
-        args: { x: -8, y: -7 }
-      })
-    })
+        args: { x: -8, y: -7 },
+      });
+    });
 
     // since nothing will change, wait for boolean input to change to know core has responded
     cy.get(cesc("#\\/bi")).click();
-    cy.get(cesc("#\\/b")).should('have.text', 'true');
+    cy.get(cesc("#\\/b")).should("have.text", "true");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(6,7)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(8,9)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(8,9)");
 
-    cy.log('make draggable again')
+    cy.log("make draggable again");
 
-    cy.get(cesc('#\\/draggable1')).click();
-    cy.get(cesc('#\\/draggable2')).click();
-    cy.get(cesc("#\\/pDraggable1")).should('have.text', 'Draggable 1: true')
-    cy.get(cesc("#\\/pDraggable2")).should('have.text', 'Draggable 2: true')
+    cy.get(cesc("#\\/draggable1")).click();
+    cy.get(cesc("#\\/draggable2")).click();
+    cy.get(cesc("#\\/pDraggable1")).should("have.text", "Draggable 1: true");
+    cy.get(cesc("#\\/pDraggable2")).should("have.text", "Draggable 2: true");
 
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset1",
-        args: { x: -10, y: -9 }
-      })
+        args: { x: -10, y: -9 },
+      });
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset2",
-        args: { x: -8, y: -7 }
-      })
-    })
+        args: { x: -8, y: -7 },
+      });
+    });
 
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').should('contain.text', '(−8,−7)')
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow").should(
+      "contain.text",
+      "(−8,−7)",
+    );
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(−10,−9)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−10,−9)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−8,−7)");
 
+    cy.log("fix location");
 
+    cy.get(cesc("#\\/fixLocation1")).click();
+    cy.get(cesc("#\\/fixLocation2")).click();
+    cy.get(cesc("#\\/pFixLocation1")).should(
+      "have.text",
+      "FixLocation 1: true",
+    );
+    cy.get(cesc("#\\/pFixLocation2")).should(
+      "have.text",
+      "FixLocation 2: true",
+    );
 
-    cy.log('fix location')
+    cy.log("can change coordinates entering coordinates only for button 1");
 
-    cy.get(cesc('#\\/fixLocation1')).click();
-    cy.get(cesc('#\\/fixLocation2')).click();
-    cy.get(cesc("#\\/pFixLocation1")).should('have.text', 'FixLocation 1: true')
-    cy.get(cesc("#\\/pFixLocation2")).should('have.text', 'FixLocation 2: true')
+    cy.get(cesc("#\\/anchorCoords2") + " textarea").type(
+      "{home}{shift+end}{backspace}(3,4){enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/anchorCoords1") + " textarea").type(
+      "{home}{shift+end}{backspace}(1,2){enter}",
+      { force: true },
+    );
 
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow").should("contain.text", "(1,2)");
 
-    cy.log('can change coordinates entering coordinates only for button 1')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,2)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−8,−7)");
 
-    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(3,4){enter}", { force: true })
-    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(1,2){enter}", { force: true })
-
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(1,2)')
-
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
-
-
-    cy.log('cannot move triggersets by dragging')
+    cy.log("cannot move triggersets by dragging");
     cy.window().then(async (win) => {
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset1",
-        args: { x: 4, y: 6 }
-      })
+        args: { x: 4, y: 6 },
+      });
       win.callAction1({
         actionName: "moveButton",
         componentName: "/triggerset2",
-        args: { x: 7, y: 8 }
-      })
-    })
+        args: { x: 7, y: 8 },
+      });
+    });
 
     // since nothing will change, wait for boolean input to change to know core has responded
     cy.get(cesc("#\\/bi")).click();
-    cy.get(cesc("#\\/b")).should('have.text', 'false');
+    cy.get(cesc("#\\/b")).should("have.text", "false");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(1,2)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,2)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−8,−7)");
 
+    cy.log("can change position from anchor only for button 1");
+    cy.get(cesc("#\\/positionFromAnchor2")).select("bottom");
+    cy.get(cesc("#\\/positionFromAnchor1")).select("top");
 
-    cy.log('can change position from anchor only for button 1');
-    cy.get(cesc('#\\/positionFromAnchor2')).select("bottom")
-    cy.get(cesc('#\\/positionFromAnchor1')).select("top")
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: top",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: lowerright",
+    );
 
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: top')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
+    cy.log("can change disabled attribute");
+    cy.get(cesc("#\\/disabled1")).click();
+    cy.get(cesc("#\\/disabled2")).click();
+    cy.get(cesc("#\\/pDisabled1")).should("have.text", "Disabled 1: false");
+    cy.get(cesc("#\\/pDisabled2")).should("have.text", "Disabled 2: true");
 
-    cy.log("can change disabled attribute")
-    cy.get(cesc('#\\/disabled1')).click();
-    cy.get(cesc('#\\/disabled2')).click();
-    cy.get(cesc("#\\/pDisabled1")).should('have.text', 'Disabled 1: false')
-    cy.get(cesc("#\\/pDisabled2")).should('have.text', 'Disabled 2: true')
+    cy.log("make completely fixed");
+    cy.get(cesc("#\\/fixed1")).click();
+    cy.get(cesc("#\\/fixed2")).click();
+    cy.get(cesc("#\\/pFixed1")).should("have.text", "Fixed 1: true");
+    cy.get(cesc("#\\/pFixed2")).should("have.text", "Fixed 2: true");
 
+    cy.log("can change coordinates entering coordinates only for button 1");
 
-    cy.log('make completely fixed')
-    cy.get(cesc('#\\/fixed1')).click();
-    cy.get(cesc('#\\/fixed2')).click();
-    cy.get(cesc("#\\/pFixed1")).should('have.text', 'Fixed 1: true')
-    cy.get(cesc("#\\/pFixed2")).should('have.text', 'Fixed 2: true')
+    cy.get(cesc("#\\/anchorCoords2") + " textarea").type(
+      "{home}{shift+end}{backspace}(7,8){enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/anchorCoords1") + " textarea").type(
+      "{home}{shift+end}{backspace}(5,6){enter}",
+      { force: true },
+    );
 
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow").should("contain.text", "(5,6)");
 
-    cy.log('can change coordinates entering coordinates only for button 1')
+    cy.get(cesc("#\\/pAnchor1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/pAnchor2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−8,−7)");
 
-    cy.get(cesc('#\\/anchorCoords2') + ' textarea').type("{home}{shift+end}{backspace}(7,8){enter}", { force: true })
-    cy.get(cesc('#\\/anchorCoords1') + ' textarea').type("{home}{shift+end}{backspace}(5,6){enter}", { force: true })
+    cy.log("can change position from anchor only for button 1");
+    cy.get(cesc("#\\/positionFromAnchor2")).select("left");
+    cy.get(cesc("#\\/positionFromAnchor1")).select("right");
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').should('contain.text', '(5,6)')
+    cy.get(cesc("#\\/pPositionFromAnchor1")).should(
+      "have.text",
+      "Position from anchor 1: right",
+    );
+    cy.get(cesc("#\\/pPositionFromAnchor2")).should(
+      "have.text",
+      "Position from anchor 2: lowerright",
+    );
 
-    cy.get(cesc('#\\/pAnchor1') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)')
-    cy.get(cesc('#\\/pAnchor2') + ' .mjx-mrow').eq(0).should('have.text', '(−8,−7)')
-
-
-    cy.log('can change position from anchor only for button 1');
-    cy.get(cesc('#\\/positionFromAnchor2')).select("left")
-    cy.get(cesc('#\\/positionFromAnchor1')).select("right")
-
-    cy.get(cesc("#\\/pPositionFromAnchor1")).should('have.text', 'Position from anchor 1: right')
-    cy.get(cesc("#\\/pPositionFromAnchor2")).should('have.text', 'Position from anchor 2: lowerright')
-
-
-    cy.log("can change disabled attribute only for button 1")
-    cy.get(cesc('#\\/disabled2')).click();
-    cy.get(cesc('#\\/disabled1')).click();
-    cy.get(cesc("#\\/pDisabled1")).should('have.text', 'Disabled 1: true')
-    cy.get(cesc("#\\/pDisabled2")).should('have.text', 'Disabled 2: true')
-
-
-  })
-
+    cy.log("can change disabled attribute only for button 1");
+    cy.get(cesc("#\\/disabled2")).click();
+    cy.get(cesc("#\\/disabled1")).click();
+    cy.get(cesc("#\\/pDisabled1")).should("have.text", "Disabled 1: true");
+    cy.get(cesc("#\\/pDisabled2")).should("have.text", "Disabled 2: true");
+  });
 });

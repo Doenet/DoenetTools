@@ -1,14 +1,14 @@
-import { Box, Center, Icon, Text } from '@chakra-ui/react';
-import React, { useRef } from 'react';
-import { Outlet, useLoaderData, useNavigate } from 'react-router';
-import { NavLink } from 'react-router-dom';
-import styled from 'styled-components';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-import RouterLogo from '../RouterLogo';
-import { pageToolViewAtom } from '../NewToolRoot';
-import { useRecoilState } from 'recoil';
-import { FaCog } from 'react-icons/fa';
+import { Box, Center, Icon, Text } from "@chakra-ui/react";
+import React, { useRef } from "react";
+import { Outlet, useLoaderData, useNavigate } from "react-router";
+import { NavLink } from "react-router-dom";
+import styled from "styled-components";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
+import RouterLogo from "../RouterLogo";
+import { pageToolViewAtom } from "../NewToolRoot";
+import { useRecoilState } from "recoil";
+import { FaCog } from "react-icons/fa";
 
 export async function loader() {
   //Check if signedIn
@@ -21,12 +21,12 @@ export async function loader() {
   let isAdmin = false;
   if (signedIn) {
     //Check on portfolio courseId
-    const response = await fetch('/api/getPorfolioCourseId.php');
+    const response = await fetch("/api/getPorfolioCourseId.php");
 
     const data = await response.json();
     portfolioCourseId = data.portfolioCourseId;
-    if (data.portfolioCourseId == '') {
-      portfolioCourseId = 'not_created';
+    if (data.portfolioCourseId == "") {
+      portfolioCourseId = "not_created";
     }
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const isAdminJson = await isAdminResponse.json();
@@ -75,11 +75,11 @@ function MenuItem({ to, children, dataTest }) {
       to={to}
       data-test={dataTest}
       className={({ isActive, isPending }) =>
-        location.pathname === '/' || isActive
-          ? 'active'
+        location.pathname === "/" || isActive
+          ? "active"
           : isPending
-          ? 'pending'
-          : ''
+          ? "pending"
+          : ""
       }
     >
       {children}
@@ -95,11 +95,11 @@ export function SiteHeader(props) {
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
 
-  let navigateTo = useRef('');
+  let navigateTo = useRef("");
 
-  if (navigateTo.current != '') {
+  if (navigateTo.current != "") {
     const newHref = navigateTo.current;
-    navigateTo.current = '';
+    navigateTo.current = "";
     location.href = newHref;
   }
 
@@ -109,11 +109,11 @@ export function SiteHeader(props) {
       size="medium"
       value="My Courses"
       onClick={() => {
-        navigateTo.current = '/course';
+        navigateTo.current = "/course";
         setRecoilPageToolView({
-          page: 'course',
-          tool: '',
-          view: '',
+          page: "course",
+          tool: "",
+          view: "",
           params: {},
         });
       }}
@@ -126,11 +126,11 @@ export function SiteHeader(props) {
         size="medium"
         value="Sign In"
         onClick={() => {
-          navigateTo.current = '/signin';
+          navigateTo.current = "/signin";
           setRecoilPageToolView({
-            page: 'signin',
-            tool: '',
-            view: '',
+            page: "signin",
+            tool: "",
+            view: "",
             params: {},
           });
         }}
@@ -171,11 +171,11 @@ export function SiteHeader(props) {
                 fontSize="16pt"
                 as={FaCog}
                 onClick={() => {
-                  navigateTo.current = '/settings';
+                  navigateTo.current = "/settings";
                   setRecoilPageToolView({
-                    page: 'settings',
-                    tool: '',
-                    view: '',
+                    page: "settings",
+                    tool: "",
+                    view: "",
                     params: {},
                   });
                 }}

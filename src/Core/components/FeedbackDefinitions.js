@@ -1,4 +1,4 @@
-import BaseComponent from './abstract/BaseComponent';
+import BaseComponent from "./abstract/BaseComponent";
 
 export class FeedbackDefinition extends BaseComponent {
   static componentType = "feedbackDefinition";
@@ -14,9 +14,7 @@ export class FeedbackDefinition extends BaseComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.feedbackDefinition = {
@@ -24,54 +22,53 @@ export class FeedbackDefinition extends BaseComponent {
         codeAttr: {
           dependencyType: "attributeComponent",
           attributeName: "code",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         textAttr: {
           dependencyType: "attributeComponent",
           attributeName: "text",
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.codeAttr !== null && dependencyValues.textAttr !== null) {
+        if (
+          dependencyValues.codeAttr !== null &&
+          dependencyValues.textAttr !== null
+        ) {
           let code = dependencyValues.codeAttr.stateValues.value.toLowerCase();
           return {
             setValue: {
-              feedbackDefinition: { [code]: dependencyValues.textAttr.stateValues.value }
-            }
-          }
+              feedbackDefinition: {
+                [code]: dependencyValues.textAttr.stateValues.value,
+              },
+            },
+          };
         } else {
           return {
-            setValue: { feedbackDefinition: null }
-          }
+            setValue: { feedbackDefinition: null },
+          };
         }
-      }
-    }
-
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }
-
 
 export class FeedbackDefinitions extends BaseComponent {
   static componentType = "feedbackDefinitions";
   static rendererType = undefined;
 
   static returnChildGroups() {
-
-    return [{
-      group: "feedbackDefinition",
-      componentTypes: ["feedbackDefinition"]
-    }]
-
+    return [
+      {
+        group: "feedbackDefinition",
+        componentTypes: ["feedbackDefinition"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
@@ -83,21 +80,18 @@ export class FeedbackDefinitions extends BaseComponent {
         },
       }),
       definition({ dependencyValues }) {
-
         let value = {};
 
         for (let child of dependencyValues.feedbackDefinitionChildren) {
-          if(child.stateValues.feedbackDefinition) {
-            Object.assign(value, child.stateValues.feedbackDefinition)
+          if (child.stateValues.feedbackDefinition) {
+            Object.assign(value, child.stateValues.feedbackDefinition);
           }
         }
 
-        return { setValue: { value } }
-      }
-    }
+        return { setValue: { value } };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

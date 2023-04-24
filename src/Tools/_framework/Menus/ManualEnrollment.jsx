@@ -1,10 +1,14 @@
-import React from 'react';
-import { nanoid } from 'nanoid';
-import axios from 'axios';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { enrolllearnerAtom, peopleTableDataAtom, processAtom } from './LoadPeople';
+import React from "react";
+import { nanoid } from "nanoid";
+import axios from "axios";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import {
+  enrolllearnerAtom,
+  peopleTableDataAtom,
+  processAtom,
+} from "./LoadPeople";
 
 export default function ManualEnrollment(props) {
   //array containing column names
@@ -13,7 +17,7 @@ export default function ManualEnrollment(props) {
   const [enrolllearner, setEnrolllearner] = useRecoilState(enrolllearnerAtom);
   const setEnrollmentTableData = useSetRecoilState(peopleTableDataAtom);
 
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
 
   const enrollManual = (enrolllearner, driveId) => {
     if (enrolllearner) {
@@ -22,9 +26,9 @@ export default function ManualEnrollment(props) {
         userId: nanoid(),
         driveId: driveId,
       };
-      console.log('>>>>payload', payload);
-      axios.post('/api/manualEnrollment.php', payload).then((resp) => {
-        console.log('>>>>resp', resp.data);
+      console.log(">>>>payload", payload);
+      axios.post("/api/manualEnrollment.php", payload).then((resp) => {
+        console.log(">>>>resp", resp.data);
         // axios.get('/api/getEnrollment.php', { params: { driveId } })
         //   .then((resp) => {
         //     console.log(">>>>resp",resp.data)
@@ -56,7 +60,7 @@ export default function ManualEnrollment(props) {
           placeholder="example@example.com"
           onChange={(e) => setEnrolllearner(e.currentTarget.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               enrollManual(enrolllearner, driveId);
             }
           }}

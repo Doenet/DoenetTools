@@ -1,10 +1,8 @@
-import SingleCharacterInline from './abstract/SingleCharacterInline';
-
+import SingleCharacterInline from "./abstract/SingleCharacterInline";
 
 export class Ndash extends SingleCharacterInline {
   static componentType = "ndash";
   static unicodeCharacter = "\u2013";
-
 }
 
 export class Mdash extends SingleCharacterInline {
@@ -15,7 +13,6 @@ export class Mdash extends SingleCharacterInline {
 export class NBSP extends SingleCharacterInline {
   static componentType = "nbsp";
   static unicodeCharacter = "\u00a0";
-
 }
 
 export class Ellipsis extends SingleCharacterInline {

@@ -1,22 +1,20 @@
-import Text from './Text';
-import { renameStateVariable } from '../utils/stateVariables';
+import Text from "./Text";
+import { renameStateVariable } from "../utils/stateVariables";
 
-
-// convert number to number separated by commas, a la django humanize's intcomma 
+// convert number to number separated by commas, a la django humanize's intcomma
 
 export default class IntComma extends Text {
   static componentType = "intcomma";
   static rendererType = "text";
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // rename value to originalValue
     renameStateVariable({
       stateVariableDefinitions,
       oldName: "value",
-      newName: "originalValue"
+      newName: "originalValue",
     });
 
     stateVariableDefinitions.value = {
@@ -27,22 +25,22 @@ export default class IntComma extends Text {
       returnDependencies: () => ({
         originalValue: {
           dependencyType: "stateVariable",
-          variableName: "originalValue"
-        }
+          variableName: "originalValue",
+        },
       }),
       definition: function ({ dependencyValues }) {
         let value = dependencyValues.originalValue;
 
-        let startAtLeastFourNumRegex = /^(-?\d+)(\d{3})/
+        let startAtLeastFourNumRegex = /^(-?\d+)(\d{3})/;
         let matchObj = value.match(startAtLeastFourNumRegex);
         while (matchObj !== null) {
-          value = value.replace(startAtLeastFourNumRegex, `$1,$2`)
+          value = value.replace(startAtLeastFourNumRegex, `$1,$2`);
           matchObj = value.match(startAtLeastFourNumRegex);
         }
 
-        return { setValue: { value } }
-      }
-    }
+        return { setValue: { value } };
+      },
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -53,15 +51,14 @@ export default class IntComma extends Text {
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
-          variableName: "value"
-        }
+          variableName: "value",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { text: dependencyValues.value }
-      })
-    }
+        setValue: { text: dependencyValues.value },
+      }),
+    };
 
     return stateVariableDefinitions;
   }
-
 }

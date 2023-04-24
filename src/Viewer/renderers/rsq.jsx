@@ -1,5 +1,5 @@
-import React from 'react';
-import useDoenetRender from '../useDoenetRenderer';
+import React from "react";
+import useDoenetRender from "../useDoenetRenderer";
 
 export default React.memo(function Rsq(props) {
   let { SVs } = useDoenetRender(props, false);
@@ -8,6 +8,5 @@ export default React.memo(function Rsq(props) {
     return null;
   }
 
-  return <>&rsquo;</>
-
-})
+  return <>&rsquo;</>;
+});

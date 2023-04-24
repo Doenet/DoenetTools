@@ -1,4 +1,4 @@
-import Template from './Template';
+import Template from "./Template";
 
 export default class Module extends Template {
   static componentType = "module";
@@ -13,6 +13,4 @@ export default class Module extends Template {
 
     return attributes;
   }
-
-
 }

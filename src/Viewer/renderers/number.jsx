@@ -1,19 +1,19 @@
-import { MathJax } from 'better-react-mathjax';
+import { MathJax } from "better-react-mathjax";
 
-import React, { useContext, useEffect, useRef } from 'react';
-import { BoardContext, TEXT_LAYER_OFFSET } from './graph';
-import useDoenetRender from '../useDoenetRenderer';
-import me from 'math-expressions';
-import { useRecoilValue } from 'recoil';
-import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
-import { textRendererStyle } from '../../Core/utils/style';
-import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
+import React, { useContext, useEffect, useRef } from "react";
+import { BoardContext, TEXT_LAYER_OFFSET } from "./graph";
+import useDoenetRender from "../useDoenetRenderer";
+import me from "math-expressions";
+import { useRecoilValue } from "recoil";
+import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { textRendererStyle } from "../../Core/utils/style";
+import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
 
 export default React.memo(function NumberComponent(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } =
+    useDoenetRender(props);
 
   NumberComponent.ignoreActionsWithoutCore = () => true;
-
 
   let numberJXG = useRef(null);
   let anchorPointJXG = useRef(null);
@@ -41,7 +41,6 @@ export default React.memo(function NumberComponent(props) {
 
   const darkMode = useRecoilValue(darkModeAtom);
 
-
   useEffect(() => {
     //On unmount
     return () => {
@@ -50,24 +49,26 @@ export default React.memo(function NumberComponent(props) {
       }
 
       if (board) {
-        board.off('move', boardMoveHandler);
+        board.off("move", boardMoveHandler);
       }
-
-    }
-  }, [])
-
+    };
+  }, []);
 
   useEffect(() => {
     if (board) {
-      board.on('move', boardMoveHandler)
+      board.on("move", boardMoveHandler);
     }
-  }, [board])
-
+  }, [board]);
 
   function createNumberJXG() {
-
-    let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
-    let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+    let textColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.textColorDarkMode
+        : SVs.selectedStyle.textColor;
+    let backgroundColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.backgroundColorDarkMode
+        : SVs.selectedStyle.backgroundColor;
 
     let cssStyle = ``;
     if (backgroundColor) {
@@ -95,35 +96,42 @@ export default React.memo(function NumberComponent(props) {
       let anchor = me.fromAst(SVs.anchor);
       let anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
       if (!Number.isFinite(anchorCoords[0])) {
         anchorCoords[0] = 0;
-        jsxNumberAttributes['visible'] = false;
+        jsxNumberAttributes["visible"] = false;
       }
       if (!Number.isFinite(anchorCoords[1])) {
         anchorCoords[1] = 0;
-        jsxNumberAttributes['visible'] = false;
+        jsxNumberAttributes["visible"] = false;
       }
 
-      newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
-
+      newAnchorPointJXG = board.create("point", anchorCoords, {
+        visible: false,
+      });
     } catch (e) {
-      jsxNumberAttributes['visible'] = false;
-      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
+      jsxNumberAttributes["visible"] = false;
+      newAnchorPointJXG = board.create("point", [0, 0], { visible: false });
     }
 
     jsxNumberAttributes.anchor = newAnchorPointJXG;
 
-    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+      SVs.positionFromAnchor,
+    );
     jsxNumberAttributes.anchorx = anchorx;
     jsxNumberAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
 
-    let newNumberJXG = board.create('text', [0, 0, SVs.text], jsxNumberAttributes);
+    let newNumberJXG = board.create(
+      "text",
+      [0, 0, SVs.text],
+      jsxNumberAttributes,
+    );
     newNumberJXG.isDraggable = !fixLocation.current;
 
-    newNumberJXG.on('down', function (e) {
+    newNumberJXG.on("down", function (e) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
@@ -132,65 +140,63 @@ export default React.memo(function NumberComponent(props) {
       if (!fixed.current) {
         callAction({
           action: actions.numberFocused,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
     });
 
-    newNumberJXG.on('hit', function (e) {
+    newNumberJXG.on("hit", function (e) {
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
       callAction({
         action: actions.numberFocused,
-        args: { name }   // send name so get original name if adapted
+        args: { name }, // send name so get original name if adapted
       });
     });
 
-    newNumberJXG.on('up', function (e) {
+    newNumberJXG.on("up", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveNumber,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
+          },
         });
         dragged.current = false;
       } else if (!pointerMovedSinceDown.current && !fixed.current) {
         callAction({
           action: actions.numberClicked,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
       pointerIsDown.current = false;
-
     });
 
-    newNumberJXG.on('keyfocusout', function (e) {
+    newNumberJXG.on("keyfocusout", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveNumber,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
-        })
+          },
+        });
         dragged.current = false;
       }
-    })
+    });
 
-    newNumberJXG.on('drag', function (e) {
-
+    newNumberJXG.on("drag", function (e) {
       let viaPointer = e.type === "pointermove";
 
       //Protect against very small unintended drags
-      if (!viaPointer ||
-        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        !viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         dragged.current = true;
       }
-
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       let width = newNumberJXG.size[0] / board.unitX;
@@ -201,13 +207,13 @@ export default React.memo(function NumberComponent(props) {
 
       let offsetx = 0;
       if (anchorx === "middle") {
-        offsetx = -width / 2
+        offsetx = -width / 2;
       } else if (anchorx === "right") {
         offsetx = -width;
       }
       let offsety = 0;
       if (anchory === "middle") {
-        offsety = -height / 2
+        offsety = -height / 2;
       } else if (anchory === "top") {
         offsety = -height;
       }
@@ -229,22 +235,28 @@ export default React.memo(function NumberComponent(props) {
         // TODO: find an example where need this this additional complexity
         var o = board.origin.scrCoords;
 
-        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-          - o[1]) / board.unitX;
+        calculatedX.current =
+          (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) /
+          board.unitX;
 
-        calculatedY.current = (o[2] -
-          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-          / board.unitY;
-
+        calculatedY.current =
+          (o[2] - (pointAtDown.current[2] + e.y - pointerAtDown.current[1])) /
+          board.unitY;
       } else {
-
-        calculatedX.current = newAnchorPointJXG.X() + newNumberJXG.relativeCoords.usrCoords[1];
-        calculatedY.current = newAnchorPointJXG.Y() + newNumberJXG.relativeCoords.usrCoords[2];
-
+        calculatedX.current =
+          newAnchorPointJXG.X() + newNumberJXG.relativeCoords.usrCoords[1];
+        calculatedY.current =
+          newAnchorPointJXG.Y() + newNumberJXG.relativeCoords.usrCoords[2];
       }
 
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
-      calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
+      calculatedX.current = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, calculatedX.current),
+      );
+      calculatedY.current = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, calculatedY.current),
+      );
 
       callAction({
         action: actions.moveNumber,
@@ -253,17 +265,17 @@ export default React.memo(function NumberComponent(props) {
           y: calculatedY.current,
           transient: true,
           skippable: true,
-        }
+        },
       });
 
       newNumberJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
-
-
+      newAnchorPointJXG.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionFromCore.current,
+      );
     });
 
-    newNumberJXG.on('keydown', function (e) {
-
+    newNumberJXG.on("keydown", function (e) {
       if (e.key === "Enter") {
         if (dragged.current) {
           callAction({
@@ -271,30 +283,28 @@ export default React.memo(function NumberComponent(props) {
             args: {
               x: calculatedX.current,
               y: calculatedY.current,
-            }
-          })
+            },
+          });
           dragged.current = false;
         }
         callAction({
           action: actions.numberClicked,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
-    })
-
+    });
 
     numberJXG.current = newNumberJXG;
     anchorPointJXG.current = newAnchorPointJXG;
     previousPositionFromAnchor.current = SVs.positionFromAnchor;
-
-
   }
 
   function boardMoveHandler(e) {
     if (pointerIsDown.current) {
       //Protect against very small unintended move
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         pointerMovedSinceDown.current = true;
       }
@@ -302,12 +312,12 @@ export default React.memo(function NumberComponent(props) {
   }
 
   function deleteNumberJXG() {
-    numberJXG.current.off('drag');
-    numberJXG.current.off('down');
-    numberJXG.current.off('hit');
-    numberJXG.current.off('up');
-    numberJXG.current.off('keyfocusout');
-    numberJXG.current.off('keydown');
+    numberJXG.current.off("drag");
+    numberJXG.current.off("down");
+    numberJXG.current.off("hit");
+    numberJXG.current.off("up");
+    numberJXG.current.off("keyfocusout");
+    numberJXG.current.off("keydown");
     board.removeObject(numberJXG.current);
     numberJXG.current = null;
   }
@@ -318,36 +328,43 @@ export default React.memo(function NumberComponent(props) {
       let anchor = me.fromAst(SVs.anchor);
       anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
     } catch (e) {
       anchorCoords = [NaN, NaN];
     }
 
     lastPositionFromCore.current = anchorCoords;
 
-
     if (numberJXG.current === null) {
       createNumberJXG();
     } else {
+      numberJXG.current.relativeCoords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        [0, 0],
+      );
+      anchorPointJXG.current.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        anchorCoords,
+      );
 
-      numberJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      anchorPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, anchorCoords);
-
-
-      numberJXG.current.setText(SVs.text)
+      numberJXG.current.setText(SVs.text);
 
       let visible = !SVs.hidden;
 
-      if (Number.isFinite(anchorCoords[0]) && Number.isFinite(anchorCoords[1])) {
-        let actuallyChangedVisibility = numberJXG.current.visProp["visible"] !== visible;
+      if (
+        Number.isFinite(anchorCoords[0]) &&
+        Number.isFinite(anchorCoords[1])
+      ) {
+        let actuallyChangedVisibility =
+          numberJXG.current.visProp["visible"] !== visible;
         numberJXG.current.visProp["visible"] = visible;
         numberJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          numberJXG.current.setAttribute({ visible })
+          numberJXG.current.setAttribute({ visible });
         }
       } else {
         numberJXG.current.visProp["visible"] = false;
@@ -361,8 +378,14 @@ export default React.memo(function NumberComponent(props) {
         numberJXG.current.setAttribute({ layer });
       }
 
-      let textColor = darkMode === "dark" ? SVs.selectedStyle.textColorDarkMode : SVs.selectedStyle.textColor;
-      let backgroundColor = darkMode === "dark" ? SVs.selectedStyle.backgroundColorDarkMode : SVs.selectedStyle.backgroundColor;
+      let textColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.textColorDarkMode
+          : SVs.selectedStyle.textColor;
+      let backgroundColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.backgroundColorDarkMode
+          : SVs.selectedStyle.backgroundColor;
       let cssStyle = ``;
       if (backgroundColor) {
         cssStyle += `background-color: ${backgroundColor}`;
@@ -386,7 +409,9 @@ export default React.memo(function NumberComponent(props) {
       numberJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+          SVs.positionFromAnchor,
+        );
         numberJXG.current.visProp.anchorx = anchorx;
         numberJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
@@ -401,8 +426,7 @@ export default React.memo(function NumberComponent(props) {
       board.updateRenderer();
     }
 
-    return <a name={id} />
-
+    return <a name={id} />;
   }
 
   // not in board
@@ -413,9 +437,18 @@ export default React.memo(function NumberComponent(props) {
 
   let number = SVs.text;
   if (SVs.renderAsMath) {
-    number = "\\(" + number + "\\)"
+    number = "\\(" + number + "\\)";
   }
 
   let style = textRendererStyle(darkMode, SVs.selectedStyle);
-  return <><a name={id} /><span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{number}</MathJax></span></>
-})
+  return (
+    <>
+      <a name={id} />
+      <span id={id} style={style}>
+        <MathJax hideUntilTypeset={"first"} inline dynamic>
+          {number}
+        </MathJax>
+      </span>
+    </>
+  );
+});

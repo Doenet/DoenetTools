@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
@@ -16,7 +16,6 @@ const ControlsWrapper = styled.div`
   border-radius: 4px 4px 0 0;
   overflow: auto hidden;
 `;
-
 
 export default function MainPanel({ children, responsiveControls }) {
   return (

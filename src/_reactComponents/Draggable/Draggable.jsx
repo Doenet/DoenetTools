@@ -2,17 +2,25 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 
 const POSITION = { x: 0, y: 0 };
 
-const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd, ghostElement=null }) => {
+const Draggable = ({
+  children,
+  id,
+  className = "",
+  onDragStart,
+  onDrag,
+  onDragEnd,
+  ghostElement = null,
+}) => {
   const [state, setState] = useState({
     isDragging: false,
     origin: POSITION,
     translation: POSITION,
-    actionType: null
+    actionType: null,
   });
 
   const timerRef = useRef(null);
   const targetEvent = useRef(null);
-  const [initializingDrag, setInitializingDrag] = useState(false); 
+  const [initializingDrag, setInitializingDrag] = useState(false);
 
   const handleMouseDown = useCallback(
     (ev) => {
@@ -20,13 +28,13 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
       if (ev.button !== 0) return;
 
       setInitializingDrag(true);
-      targetEvent.current = { ...ev };      
+      targetEvent.current = { ...ev };
 
       timerRef.current = setTimeout(() => {
         let ev = targetEvent.current;
         let clientX = ev.clientX,
-        clientY = ev.clientY,
-        actionType = "mouse";
+          clientY = ev.clientY,
+          actionType = "mouse";
         if (ev.type === "touchstart") {
           clientX = ev.touches[0]?.clientX;
           clientY = ev.touches[0]?.clientY;
@@ -36,15 +44,15 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
           ...state,
           isDragging: true,
           origin: { x: clientX, y: clientY },
-          actionType: actionType
+          actionType: actionType,
         }));
         onDragStart?.({
-          ev: targetEvent.current
+          ev: targetEvent.current,
         });
         timerRef.current = null;
       }, 300);
     },
-    [onDragStart, id]
+    [onDragStart, id],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -54,7 +62,7 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
       setState((state) => ({
         ...state,
         isDragging: false,
-        actionType: null
+        actionType: null,
       }));
       onDragEnd?.();
     }
@@ -73,18 +81,18 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
 
       const translation = {
         x: clientX - state.origin.x,
-        y: clientY - state.origin.y
+        y: clientY - state.origin.y,
       };
       // console.log(state.isDragging);
 
       setState((state) => ({
         ...state,
-        translation
+        translation,
       }));
 
       onDrag?.({ clientX, clientY, translation, id, ev });
     },
-    [state.origin, onDrag, id]
+    [state.origin, onDrag, id],
   );
 
   useEffect(() => {
@@ -100,7 +108,6 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
       window.removeEventListener("touchend", handleMouseUp);
     };
   }, [initializingDrag, handleMouseUp]);
-
 
   useEffect(() => {
     if (state.isDragging) {
@@ -131,16 +138,17 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
     transform: state.isDragging
       ? `translate(${state.translation.x}px, ${state.translation.y}px)`
       : "",
-    transition: state.isDragging ? "visibility 0s, opacity 0.2s linear" : "visibility 0s, opacity 0.2s linear, transform 500ms",
+    transition: state.isDragging
+      ? "visibility 0s, opacity 0.2s linear"
+      : "visibility 0s, opacity 0.2s linear, transform 500ms",
     zIndex: state.isDragging ? 2 : 1,
     opacity: state.isDragging ? 1 : 0,
     visibility: state.isDragging ? "visible" : "hidden",
     height: state.isDragging ? "auto" : "0",
     position: state.isDragging ? "absolute" : "relative",
     left: state.origin.x,
-    top: state.origin.y
-
-  }
+    top: state.origin.y,
+  };
   return (
     <div
       key={`draggable${id}`}
@@ -149,7 +157,7 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}
     >
-      { children }
+      {children}
       <div style={ghostStyles}>{ghostElement}</div>
     </div>
   );

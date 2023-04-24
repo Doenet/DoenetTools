@@ -1,69 +1,84 @@
-import { faCode } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { faCode } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  itemByDoenetId,
+  selectedCourseItems,
+  useCourse,
+} from "../../../_reactComponents/Course/CourseActions";
 // import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { useToast, toastType } from '@Toast';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
+import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
+import { useToast, toastType } from "@Toast";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import ActionButton from "../../../_reactComponents/PanelHeaderComponents/ActionButton";
+import ActionButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 
 export default function SelectedPage() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const pageId = useRecoilValue(selectedCourseItems)[0];
   const pageObj = useRecoilValue(itemByDoenetId(pageId));
-  const containingObj = useRecoilValue(itemByDoenetId(pageObj.containingDoenetId));
+  const containingObj = useRecoilValue(
+    itemByDoenetId(pageObj.containingDoenetId),
+  );
   const sectionId = containingObj.parentDoenetId;
   const doenetId = containingObj.doenetId;
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const { create, renameItem, compileActivity, deleteItem, copyItems, cutItems } = useCourse(courseId);
-  const [itemTextFieldLabel,setItemTextFieldLabel] = useState(pageObj.label)
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const {
+    create,
+    renameItem,
+    compileActivity,
+    deleteItem,
+    copyItems,
+    cutItems,
+  } = useCourse(courseId);
+  const [itemTextFieldLabel, setItemTextFieldLabel] = useState(pageObj.label);
   const addToast = useToast();
 
-  useEffect(()=>{
-    if (itemTextFieldLabel !== pageObj.label){
-      setItemTextFieldLabel(pageObj.label)
+  useEffect(() => {
+    if (itemTextFieldLabel !== pageObj.label) {
+      setItemTextFieldLabel(pageObj.label);
     }
-  },[pageId]) //Only check when the pageId changes
+  }, [pageId]); //Only check when the pageId changes
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
-    if (itemTextFieldLabel === '') {
+    if (itemTextFieldLabel === "") {
       effectiveItemLabel = pageObj.label;
-      if (pageObj.label === ''){
-        effectiveItemLabel = 'Untitled';
+      if (pageObj.label === "") {
+        effectiveItemLabel = "Untitled";
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
       //addToast('Every item must have a label.');
     }
     //Only update the server when it changes
-    if (pageObj.label !== effectiveItemLabel){
-      renameItem(pageId,effectiveItemLabel)
+    if (pageObj.label !== effectiveItemLabel) {
+      renameItem(pageId, effectiveItemLabel);
     }
   };
 
-  let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
-    <FontAwesomeIcon icon={faCode} /> {pageObj.label} 
-  </h2>)
+  let heading = (
+    <h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }}>
+      <FontAwesomeIcon icon={faCode} /> {pageObj.label}
+    </h2>
+  );
 
-  
-  return <>
-  {heading}
-  <ActionButtonGroup vertical>
-  <ActionButton
+  return (
+    <>
+      {heading}
+      <ActionButtonGroup vertical>
+        <ActionButton
           width="menu"
           value="Edit Page"
-          dataTest="Edit Page" 
+          dataTest="Edit Page"
           onClick={() => {
             setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
+              page: "course",
+              tool: "editor",
+              view: "",
               params: {
                 pageId,
                 doenetId,
@@ -71,53 +86,49 @@ export default function SelectedPage() {
             });
           }}
         />
-  </ActionButtonGroup>
-  <Textfield
-      label="Label"
-      dataTest="Label Page"
-      vertical
-      width="menu"
-      value={itemTextFieldLabel}
-      onChange={(e) => setItemTextFieldLabel(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.keyCode === 13) handelLabelModfication();
-      }}
-      onBlur={handelLabelModfication}
-    />
-    <br />
-    <ButtonGroup vertical>
+      </ActionButtonGroup>
+      <Textfield
+        label="Label"
+        dataTest="Label Page"
+        vertical
+        width="menu"
+        value={itemTextFieldLabel}
+        onChange={(e) => setItemTextFieldLabel(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) handelLabelModfication();
+        }}
+        onBlur={handelLabelModfication}
+      />
+      <br />
+      <ButtonGroup vertical>
+        <Button
+          width="menu"
+          onClick={() => create({ itemType: "page" })}
+          value="Add Page"
+          dataTest="Add Page"
+        />
+        {containingObj.type == "activity" ? (
+          <Button
+            width="menu"
+            onClick={() => create({ itemType: "order" })}
+            value="Add Order"
+            dataTest="Add Order"
+          />
+        ) : null}
+      </ButtonGroup>
+      <br />
       <Button
         width="menu"
-        onClick={() =>
-          create({itemType:"page"})
-        }
-        value="Add Page"
-        dataTest="Add Page"
+        value="Delete Page"
+        dataTest="Delete Page"
+        alert
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          deleteItem({ doenetId: pageId });
+        }}
       />
-    {containingObj.type == 'activity' ? 
-     <Button
-     width="menu"
-     onClick={() =>
-       create({itemType:"order"})
-     }
-     value="Add Order"
-     dataTest="Add Order"
-   /> : null
-    }
-     
-    </ButtonGroup>
-    <br />
-    <Button
-      width="menu"
-      value="Delete Page"
-      dataTest="Delete Page"
-      alert
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      
-        deleteItem({doenetId:pageId});
-      }}
-    />
-  </>
+    </>
+  );
 }

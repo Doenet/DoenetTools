@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ActivityViewer from '../../../Viewer/ActivityViewer';
+import React, { useEffect, useRef, useState } from "react";
+import ActivityViewer from "../../../Viewer/ActivityViewer";
 import {
   useRecoilValue,
   atom,
@@ -7,30 +7,35 @@ import {
   useSetRecoilState,
   useRecoilValueLoadable,
   useRecoilState,
-} from 'recoil';
+} from "recoil";
+import { searchParamAtomFamily, profileAtom } from "../NewToolRoot";
+
+import axios from "axios";
+import { returnNumberOfActivityVariantsForCid } from "../../../_utils/activityUtils";
 import {
-  searchParamAtomFamily,
-  profileAtom,
-} from '../NewToolRoot';
-
-import axios from 'axios';
-import { returnNumberOfActivityVariantsForCid } from '../../../_utils/activityUtils';
-import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
-import { activityVariantPanelAtom } from '../../../_sharedRecoil/PageViewerRecoil';
-
+  itemByDoenetId,
+  courseIdAtom,
+  useInitCourseItems,
+  useSetCourseIdFromDoenetId,
+} from "../../../_reactComponents/Course/CourseActions";
+import { activityVariantPanelAtom } from "../../../_sharedRecoil/PageViewerRecoil";
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
-  const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const courseId = useRecoilValue(courseIdAtom);
 
-  const requestedVariantParam = useRecoilValue(searchParamAtomFamily('requestedVariant'));
-  const requestedVariantIndex = requestedVariantParam && Number.isFinite(Number(requestedVariantParam))
-    ? Number(requestedVariantParam) : 1;
+  const requestedVariantParam = useRecoilValue(
+    searchParamAtomFamily("requestedVariant"),
+  );
+  const requestedVariantIndex =
+    requestedVariantParam && Number.isFinite(Number(requestedVariantParam))
+      ? Number(requestedVariantParam)
+      : 1;
 
   const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
-  let [stage, setStage] = useState('Initializing');
-  let [message, setMessage] = useState('');
+  let [stage, setStage] = useState("Initializing");
+  let [message, setMessage] = useState("");
   const [
     {
       showCorrectness,
@@ -60,53 +65,53 @@ export default function DraftAssignmentViewer() {
     }
     return () => {
       document.title = prevTitle;
-    }
-  }, [label])
-
+    };
+  }, [label]);
 
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
-  }, [itemObj, recoilDoenetId])
+  }, [itemObj, recoilDoenetId]);
 
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
-
   // const loadProfile = useRecoilValueLoadable(profileAtom);
   // userId.current = loadProfile.contents.userId;
-
 
   function variantCallback(variantIndex, numberOfVariants) {
     // console.log(">>>variantCallback",variantIndex,numberOfVariants)
     setVariantPanel({
       index: variantIndex,
-      numberOfVariants
+      numberOfVariants,
     });
   }
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (doenetId, {
-        type,
-        timeLimit,
-        assignedDate,
-        dueDate,
-        showCorrectness,
-        showCreditAchievedMenu,
-        paginate,
-        showFeedback,
-        showHints,
-        autoSubmit,
-        showSolution,
-        proctorMakesAvailable,
-      }) => {
+      async (
+        doenetId,
+        {
+          type,
+          timeLimit,
+          assignedDate,
+          dueDate,
+          showCorrectness,
+          showCreditAchievedMenu,
+          paginate,
+          showFeedback,
+          showHints,
+          autoSubmit,
+          showSolution,
+          proctorMakesAvailable,
+        },
+      ) => {
         // if itemObj has not yet been loaded, don't process yet
         if (type === undefined) {
           return;
         }
 
-        let solutionDisplayMode = 'button';
+        let solutionDisplayMode = "button";
         if (!showSolution) {
-          solutionDisplayMode = 'none';
+          solutionDisplayMode = "none";
         }
 
         //TODO: test if assignment should be shown here
@@ -114,13 +119,12 @@ export default function DraftAssignmentViewer() {
         let cid = null;
 
         // determine cid
-        let resp = await axios.get(
-          `/api/getCidForAssignment.php`,
-          { params: { doenetId, latestAttemptOverrides: false, getDraft: true } },
-        );
+        let resp = await axios.get(`/api/getCidForAssignment.php`, {
+          params: { doenetId, latestAttemptOverrides: false, getDraft: true },
+        });
 
         if (!resp.data.success || !resp.data.cid) {
-          setStage('Problem');
+          setStage("Problem");
           setMessage(`Error loading assignment: ${resp.data.message}`);
           return;
         } else {
@@ -130,12 +134,14 @@ export default function DraftAssignmentViewer() {
         let result = await returnNumberOfActivityVariantsForCid(cid);
 
         if (!result.success) {
-          setStage('Problem');
+          setStage("Problem");
           setMessage(result.message);
           return;
         }
 
-        allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map(x => (x + 1));
+        allPossibleVariants.current = [
+          ...Array(result.numberOfVariants).keys(),
+        ].map((x) => x + 1);
 
         setLoad({
           showCorrectness,
@@ -148,17 +154,15 @@ export default function DraftAssignmentViewer() {
           solutionDisplayMode,
         });
 
-        setStage('Ready');
-
+        setStage("Ready");
       },
     [],
   );
 
-
   // console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
-  if (recoilDoenetId === '') {
+  if (recoilDoenetId === "") {
     return null;
   }
 
@@ -166,10 +170,10 @@ export default function DraftAssignmentViewer() {
 
   if (courseId === "__not_found__") {
     return <h1>Content not found or no permission to view content</h1>;
-  } else if (stage === 'Initializing') {
+  } else if (stage === "Initializing") {
     // initializeValues(recoilDoenetId);
     return null;
-  } else if (stage === 'Problem') {
+  } else if (stage === "Problem") {
     return <h1>{message}</h1>;
   }
 
@@ -199,7 +203,3 @@ export default function DraftAssignmentViewer() {
     </>
   );
 }
-
-
-
-

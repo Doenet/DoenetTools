@@ -1,7 +1,6 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
-
-describe('visibility events test', function () {
+describe("visibility events test", function () {
   const userId = "cyuserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
@@ -13,25 +12,28 @@ describe('visibility events test', function () {
     cy.signin({ userId });
     cy.clearAllOfAUsersCoursesAndItems({ userId });
     cy.createCourse({ userId, courseId });
-  })
+  });
   beforeEach(() => {
     cy.signin({ userId });
     cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId })
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId });
-    cy.clearEvents({ doenetId })
+    cy.clearAllOfAUsersActivities({ userId });
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+    });
+    cy.clearEvents({ doenetId });
+  });
 
-  })
-
-
-  Cypress.on('uncaught:exception', (err, runnable) => {
+  Cypress.on("uncaught:exception", (err, runnable) => {
     // returning false here prevents Cypress from
     // failing the test
-    return false
-  })
+    return false;
+  });
 
   // cy.clock doesn't work in a web worker, so don't know how to check visibility events
-  it.skip('single page activity, ', () => {
+  it.skip("single page activity, ", () => {
     const doenetML = `
   <section name="section1">
     <title>First section</title>
@@ -82,19 +84,19 @@ describe('visibility events test', function () {
     <p name="pend">The end</p>
 
   </section>
-  `
+  `;
 
     cy.saveDoenetML({ doenetML, pageId: pageDoenetId, courseId });
-    cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
+    cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast"]').contains("Activity Assigned");
 
     cy.clock();
 
-    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`)
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`);
     //Interact with content
-    cy.get('[data-test="Crumb 3"]').contains('Cypress Activity');
+    cy.get('[data-test="Crumb 3"]').contains("Cypress Activity");
     cy.tick(1000);
     cy.wait(1000);
     cy.tick(1000);
@@ -103,107 +105,97 @@ describe('visibility events test', function () {
     cy.wait(1000);
     cy.tick(1000);
 
-    cy.get(cesc("#\\/_title1")).should('be.visible');
+    cy.get(cesc("#\\/_title1")).should("be.visible");
 
-
-    cy.log("scroll to section 2 after 10 seconds")
+    cy.log("scroll to section 2 after 10 seconds");
     cy.wait(1000);
     cy.tick(10 * 1000);
-    cy.get(cesc("#\\/section2")).scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/section2")).scrollIntoView().should("be.visible");
 
-    cy.log('scroll to graph after 60 seconds')
+    cy.log("scroll to graph after 60 seconds");
     cy.wait(1000);
     cy.tick(60 * 1000);
-    cy.get(cesc("#\\/g")).scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/g")).scrollIntoView().should("be.visible");
 
-
-    cy.log('scroll to subsection 12 after 10 minutes')
+    cy.log("scroll to subsection 12 after 10 minutes");
     cy.wait(1000);
     cy.tick(10 * 60 * 1000);
-    cy.get(cesc("#\\/g")).scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/g")).scrollIntoView().should("be.visible");
 
-    cy.log('scroll to bottom after 30 seconds')
+    cy.log("scroll to bottom after 30 seconds");
     cy.wait(1000);
     cy.tick(30 * 1000);
-    cy.get(cesc("#\\/pend")).scrollIntoView().should('be.visible');
+    cy.get(cesc("#\\/pend")).scrollIntoView().should("be.visible");
 
-    cy.log('wait 5 minutes')
+    cy.log("wait 5 minutes");
     cy.wait(1000);
-    cy.tick(5 * 60 * 1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
-    cy.tick(1000)
+    cy.tick(5 * 60 * 1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
+    cy.tick(1000);
 
     cy.wait(1000);
 
     //Test if interactions were recorded
-    cy.request(`/api/getEventData.php?doenetId[]=${doenetId}`)
-      .then((resp) => {
-        const events = resp.body.events;
+    cy.request(`/api/getEventData.php?doenetId[]=${doenetId}`).then((resp) => {
+      const events = resp.body.events;
 
-        console.log([...events]);
-
-
-      });
-
-
-  })
-
-
-
-})
+      console.log([...events]);
+    });
+  });
+});

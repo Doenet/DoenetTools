@@ -1,7 +1,7 @@
-import React, { Component, useState } from 'react';
-import './header.css';
-import doenetImage from '/Doenet_Logo_cloud_only.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Component, useState } from "react";
+import "./header.css";
+import doenetImage from "/Doenet_Logo_cloud_only.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTh,
   faUser,
@@ -9,14 +9,14 @@ import {
   faBars,
   faCaretRight,
   faCaretDown,
-} from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+} from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 axios.defaults.withCredentials = true;
-import styled from 'styled-components';
+import styled from "styled-components";
 
 // import { animated, useSpring } from '@react-spring/web';
 // import Menu from "./menu.js";
-import MenuDropDown from './MenuDropDown';
+import MenuDropDown from "./MenuDropDown";
 // import IndexedDB from '../services/IndexedDB';
 // import axios from 'axios';
 // import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
@@ -35,7 +35,7 @@ const ExtendedHeader = styled.div`
     }
 
     &.off {
-      margin-top: ${(props) => '-' + props.extendedMarginOffTop + 'px'};
+      margin-top: ${(props) => "-" + props.extendedMarginOffTop + "px"};
       opacity: 0;
       margin-bottom: 50px;
     }
@@ -49,7 +49,7 @@ const Icon = styled.div`
 
 const ProfilePicture = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/profile_pictures/${(props) => props.pic}.jpg');
+    url("/media/profile_pictures/${(props) => props.pic}.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -66,7 +66,7 @@ const ProfilePicture = styled.button`
 `;
 const ProfilePictureLrg = styled.div`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/profile_pictures/${({ pic }) => pic}.jpg');
+    url("/media/profile_pictures/${({ pic }) => pic}.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -107,10 +107,10 @@ class UserProfile extends Component {
       this.instructorRights = this.props.rights.instructorRights;
 
       if (this.instructorRights) {
-        this.roles.push('Instructor');
+        this.roles.push("Instructor");
       }
       if (this.rightToView) {
-        this.roles.push('Student');
+        this.roles.push("Student");
       }
 
       this.coursesPermissions = this.props.rights.permissions;
@@ -121,7 +121,7 @@ class UserProfile extends Component {
     }
 
     this.selectPermission = null;
-    this.currentCourseId = '';
+    this.currentCourseId = "";
     if (this.props.rights) {
       this.currentCourseId = this.props.rights.defaultId;
     }
@@ -131,7 +131,7 @@ class UserProfile extends Component {
       this.props.rights.arrayIds.map((id, index) => {
         this.options.push(
           <option key={this.updateNumber++} value={id}>
-            {this.props.rights.courseInfo[id]['courseName']}
+            {this.props.rights.courseInfo[id]["courseName"]}
           </option>,
         );
       });
@@ -145,15 +145,17 @@ class UserProfile extends Component {
         className="select"
         onChange={(e) => {
           this.currentCourseId = e.target.value;
-          this.accessAllowed = this.coursesPermissions['courseInfo'][
-            this.currentCourseId
-          ]['accessAllowed'];
-          this.adminAccess = this.coursesPermissions['courseInfo'][
-            this.currentCourseId
-          ]['adminAccess'];
-          if (this.accessAllowed === '1') {
+          this.accessAllowed =
+            this.coursesPermissions["courseInfo"][this.currentCourseId][
+              "accessAllowed"
+            ];
+          this.adminAccess =
+            this.coursesPermissions["courseInfo"][this.currentCourseId][
+              "adminAccess"
+            ];
+          if (this.accessAllowed === "1") {
             this.rightToView = true;
-            if (this.adminAccess === '1') {
+            if (this.adminAccess === "1") {
               this.rightToEdit = true;
               this.instructorRights = true;
             }
@@ -166,14 +168,10 @@ class UserProfile extends Component {
       </select>
     );
 
-  
     this.prepareProfileDropDown(this.profilePicture);
   }
 
- 
-
   prepareProfileDropDown(picture) {
-
     this.profileMenuMap = [
       {
         optionElem: (
@@ -183,75 +181,66 @@ class UserProfile extends Component {
             id="changeProfilePicture"
           />
         ),
-        id: 'profile',
+        id: "profile",
         label: `${this.props.profile.screenName}`,
         // subLabel: `Device Here`,
         subLabel: `${this.props.profile.device}`,
-      }]
+      },
+    ];
 
-      for (let toolName of this.toolAccess){
-        let name = toolName.toLowerCase()
-   
-        switch (name){
-          case "library":
-          this.profileMenuMap.push(
-            {
-              id: 'Library',
-              label: 'Library',
-              link: '/library/',
-            }
-          )
+    for (let toolName of this.toolAccess) {
+      let name = toolName.toLowerCase();
+
+      switch (name) {
+        case "library":
+          this.profileMenuMap.push({
+            id: "Library",
+            label: "Library",
+            link: "/library/",
+          });
           break;
-          case "course":
-            this.profileMenuMap.push(
-              {
-                id: 'Course',
-                label: 'Course',
-                link: '/course/',
-              }
-            )
+        case "course":
+          this.profileMenuMap.push({
+            id: "Course",
+            label: "Course",
+            link: "/course/",
+          });
           break;
-          case "documentation":
-            this.profileMenuMap.push(
-              {
-                id: 'Documentation',
-                label: 'Documentation',
-                link: '/docs/',
-              }
-            )
+        case "documentation":
+          this.profileMenuMap.push({
+            id: "Documentation",
+            label: "Documentation",
+            link: "/docs/",
+          });
           break;
-          case "gradebook":
-            this.profileMenuMap.push(
-              {
-                id: 'Gradebook',
-                label: 'Gradebook',
-                link: '/gradebook/',
-              }
-            )
+        case "gradebook":
+          this.profileMenuMap.push({
+            id: "Gradebook",
+            label: "Gradebook",
+            link: "/gradebook/",
+          });
           break;
-          case "account":
-            this.profileMenuMap.push(
-              {
-                id: 'Account',
-                label: 'Account Settings',
-                link: '/accountSettings/',
-              }
-            )
+        case "account":
+          this.profileMenuMap.push({
+            id: "Account",
+            label: "Account Settings",
+            link: "/accountSettings/",
+          });
           break;
-        }
       }
+    }
 
     if (this.props.profile.signedIn == "1") {
       this.profileMenuMap.push({
-        id: 'SignOut',
-        label: 'Sign out',
-        link: '/signout/',
+        id: "SignOut",
+        label: "Sign out",
+        link: "/signout/",
       });
     } else {
       this.profileMenuMap.push({
-        id: 'SignIn',
-        label: 'Sign in',
-        link: '/signin/',
+        id: "SignIn",
+        label: "Sign in",
+        link: "/signin/",
       });
     }
   }
@@ -282,9 +271,9 @@ class UserProfile extends Component {
 
   toogleToolbox() {
     if (!this.state.showToolbox) {
-      document.addEventListener('click', this.toogleToolbox, false);
+      document.addEventListener("click", this.toogleToolbox, false);
     } else {
-      document.removeEventListener('click', this.toogleToolbox, false);
+      document.removeEventListener("click", this.toogleToolbox, false);
     }
 
     this.setState((prevState) => ({
@@ -300,9 +289,9 @@ class UserProfile extends Component {
   }
 
   render() {
-    this.profilePicture = this.props?.profile?.profilePicture ?? 'anonymous';
+    this.profilePicture = this.props?.profile?.profilePicture ?? "anonymous";
     this.prepareProfileDropDown(this.profilePicture);
-    const sliderClass = this.state.sliderVisible ? 'on' : 'off';
+    const sliderClass = this.state.sliderVisible ? "on" : "off";
     if (!!this.refs.extendedHeader) {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
     }
@@ -310,12 +299,12 @@ class UserProfile extends Component {
 
     const menuIcon = (
       <Icon>
-        <FontAwesomeIcon icon={faTh} size={'lg'} />
+        <FontAwesomeIcon icon={faTh} size={"lg"} />
       </Icon>
     );
     const profilePicture = (
       <ProfilePicture
-        position={'left'}
+        position={"left"}
         pic={this.profilePicture}
         name="changeProfilePicture"
         id="changeProfilePicture"
@@ -332,7 +321,7 @@ class UserProfile extends Component {
     // );
     const profileMenu = (
       <MenuDropDown
-        position={'left'}
+        position={"left"}
         menuBase={profilePicture}
         offset={-20}
         showThisMenuText={this.props.toolName}
@@ -376,18 +365,18 @@ class UserProfile extends Component {
               <div className="headingToolbar">
                 {isMultipleRoles && (
                   <MenuDropDown
-                    position={'left'}
+                    position={"left"}
                     offsetPos={-20}
-                    showThisMenuText={'Instructor'}
+                    showThisMenuText={"Instructor"}
                     options={this.state.myRoles.permissionRoles}
-                    placeholder={'Select Course'}
+                    placeholder={"Select Course"}
                   />
                 )}
                 {isSingleRole && (
                   <button
                     style={{
-                      alignItems: 'center',
-                      borderRadius: '5px',
+                      alignItems: "center",
+                      borderRadius: "5px",
                     }}
                   >
                     {this.state.myRoles.permissionRoles[0].label}

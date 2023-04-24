@@ -1,4 +1,4 @@
-import InlineComponent from './InlineComponent';
+import InlineComponent from "./InlineComponent";
 
 export default class Input extends InlineComponent {
   static componentType = "_input";
@@ -14,18 +14,14 @@ export default class Input extends InlineComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // how many values an input returns
     stateVariableDefinitions.nValues = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nValues: 1 } })
-    }
-
-
+      definition: () => ({ setValue: { nValues: 1 } }),
+    };
 
     stateVariableDefinitions.answerAncestor = {
       returnDependencies: () => ({
@@ -37,49 +33,50 @@ export default class Input extends InlineComponent {
             "justSubmitted",
             "creditAchieved",
             "showCorrectness",
-            "numberOfAttemptsLeft"
-          ]
-        }
+            "numberOfAttemptsLeft",
+          ],
+        },
       }),
       definition: function ({ dependencyValues }) {
         return {
-          setValue: { answerAncestor: dependencyValues.answerAncestor }
-        }
-      }
-    }
+          setValue: { answerAncestor: dependencyValues.answerAncestor },
+        };
+      },
+    };
 
     stateVariableDefinitions.includeCheckWork = {
       forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {
           dependencyType: "stateVariable",
-          variableName: "answerAncestor"
+          variableName: "answerAncestor",
         },
       }),
       definition: function ({ dependencyValues }) {
         let includeCheckWork = false;
         if (dependencyValues.answerAncestor) {
-          includeCheckWork = dependencyValues.answerAncestor.stateValues.delegateCheckWorkToInput;
+          includeCheckWork =
+            dependencyValues.answerAncestor.stateValues
+              .delegateCheckWorkToInput;
         }
         return {
-          setValue: { includeCheckWork }
-        }
-      }
-
-    }
+          setValue: { includeCheckWork },
+        };
+      },
+    };
 
     stateVariableDefinitions.suppressCheckwork = {
       forRenderer: true,
       returnDependencies: () => ({
         autoSubmit: {
           dependencyType: "flag",
-          flagName: "autoSubmit"
-        }
+          flagName: "autoSubmit",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
-      }
-    }
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } };
+      },
+    };
 
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
@@ -91,19 +88,20 @@ export default class Input extends InlineComponent {
       returnDependencies: () => ({
         answerAncestor: {
           dependencyType: "stateVariable",
-          variableName: "answerAncestor"
+          variableName: "answerAncestor",
         },
       }),
       definition: function ({ dependencyValues }) {
         let creditAchieved = 0;
         if (dependencyValues.answerAncestor) {
-          creditAchieved = dependencyValues.answerAncestor.stateValues.creditAchieved;
+          creditAchieved =
+            dependencyValues.answerAncestor.stateValues.creditAchieved;
         }
         return {
-          setValue: { creditAchieved }
-        }
-      }
-    }
+          setValue: { creditAchieved },
+        };
+      },
+    };
     //TODO: disabled is now in basecomponent - how to make it work with collaborateGroups
     // stateVariableDefinitions.disabled = {
     //   forRenderer: true,
@@ -126,70 +124,72 @@ export default class Input extends InlineComponent {
     //   }
     // }
 
-
     stateVariableDefinitions.valueHasBeenValidated = {
       forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {
           dependencyType: "stateVariable",
-          variableName: "answerAncestor"
+          variableName: "answerAncestor",
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let valueHasBeenValidated = false;
 
-        if (dependencyValues.answerAncestor &&
-          dependencyValues.answerAncestor.stateValues.justSubmitted) {
+        if (
+          dependencyValues.answerAncestor &&
+          dependencyValues.answerAncestor.stateValues.justSubmitted
+        ) {
           valueHasBeenValidated = true;
         }
         return {
-          setValue: { valueHasBeenValidated }
-        }
-      }
-    }
+          setValue: { valueHasBeenValidated },
+        };
+      },
+    };
 
     stateVariableDefinitions.showCorrectness = {
       forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessFlag: {
           dependencyType: "flag",
-          flagName: "showCorrectness"
+          flagName: "showCorrectness",
         },
         answerAncestor: {
           dependencyType: "stateVariable",
-          variableName: "answerAncestor"
+          variableName: "answerAncestor",
         },
       }),
       definition({ dependencyValues }) {
         let showCorrectness;
         if (dependencyValues.answerAncestor) {
-          showCorrectness = dependencyValues.answerAncestor.stateValues.showCorrectness;
+          showCorrectness =
+            dependencyValues.answerAncestor.stateValues.showCorrectness;
         } else {
           showCorrectness = dependencyValues.showCorrectnessFlag !== false;
         }
-        return { setValue: { showCorrectness } }
-      }
-    }
+        return { setValue: { showCorrectness } };
+      },
+    };
 
     stateVariableDefinitions.numberOfAttemptsLeft = {
       forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {
           dependencyType: "stateVariable",
-          variableName: "answerAncestor"
+          variableName: "answerAncestor",
         },
       }),
       definition({ dependencyValues }) {
         let numberOfAttemptsLeft;
         if (dependencyValues.answerAncestor) {
-          numberOfAttemptsLeft = dependencyValues.answerAncestor.stateValues.numberOfAttemptsLeft;
+          numberOfAttemptsLeft =
+            dependencyValues.answerAncestor.stateValues.numberOfAttemptsLeft;
         } else {
           numberOfAttemptsLeft = Infinity;
         }
-        return { setValue: { numberOfAttemptsLeft } }
-      }
-    }
+        return { setValue: { numberOfAttemptsLeft } };
+      },
+    };
 
     return stateVariableDefinitions;
   }

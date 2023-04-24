@@ -1,7 +1,6 @@
-import BooleanComponent from './Boolean';
+import BooleanComponent from "./Boolean";
 
-import { evaluateLogic } from '../utils/booleanLogic';
-
+import { evaluateLogic } from "../utils/booleanLogic";
 
 export default class When extends BooleanComponent {
   static componentType = "when";
@@ -19,14 +18,19 @@ export default class When extends BooleanComponent {
       fallBackToParentStateVariable: "matchPartial",
     };
 
-    for (let attrName of ["symbolicEquality", "expandOnCompare",
-      "simplifyOnCompare", "unorderedCompare", "matchByExactPositions",
-      "allowedErrorInNumbers", "includeErrorInNumberExponents",
+    for (let attrName of [
+      "symbolicEquality",
+      "expandOnCompare",
+      "simplifyOnCompare",
+      "unorderedCompare",
+      "matchByExactPositions",
+      "allowedErrorInNumbers",
+      "includeErrorInNumberExponents",
       "allowedErrorIsAbsolute",
       "nSignErrorsMatched",
       "nPeriodicSetMatchesRequired",
       "caseInsensitiveMatch",
-      "matchBlanks"
+      "matchBlanks",
     ]) {
       attributes[attrName].fallBackToParentStateVariable = attrName;
     }
@@ -34,9 +38,7 @@ export default class When extends BooleanComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // condition satisfied is just an alias to value
@@ -52,13 +54,14 @@ export default class When extends BooleanComponent {
           shadowingInstructions: {
             createComponentOfType: "number",
           },
-        }, {
+        },
+        {
           variableName: "conditionSatisfied",
           public: true,
           shadowingInstructions: {
             createComponentOfType: "boolean",
           },
-        }
+        },
       ],
       returnDependencies: () => ({
         matchPartial: {
@@ -83,7 +86,7 @@ export default class When extends BooleanComponent {
         },
         matchByExactPositions: {
           dependencyType: "stateVariable",
-          variableName: "matchByExactPositions"
+          variableName: "matchByExactPositions",
         },
         allowedErrorInNumbers: {
           dependencyType: "stateVariable",
@@ -155,7 +158,6 @@ export default class When extends BooleanComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         // evaluate logic in parsedExpression and return fraction correct
 
         if (dependencyValues.parsedExpression === null) {
@@ -167,8 +169,8 @@ export default class When extends BooleanComponent {
               conditionSatisfied: false,
               value: false,
               fractionSatisfied: 0,
-            }
-          }
+            },
+          };
         }
 
         let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
@@ -182,14 +184,15 @@ export default class When extends BooleanComponent {
         let conditionSatisfied = fractionSatisfied === 1;
 
         return {
-          setValue: { fractionSatisfied, conditionSatisfied, value: conditionSatisfied }
-        }
-
-      }
+          setValue: {
+            fractionSatisfied,
+            conditionSatisfied,
+            value: conditionSatisfied,
+          },
+        };
+      },
     };
 
     return stateVariableDefinitions;
   }
-
 }
-

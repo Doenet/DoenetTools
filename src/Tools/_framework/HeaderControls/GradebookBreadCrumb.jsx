@@ -1,22 +1,27 @@
-import React, { Suspense } from 'react';
-import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { useCourseChooserCrumb, useDashboardCrumb, useGradebookCrumbs } from '../../../_utils/breadcrumbUtil';
+import React, { Suspense } from "react";
+import { useRecoilValue } from "recoil";
+import { BreadCrumb } from "../../../_reactComponents/PanelHeaderComponents/BreadCrumb";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import {
+  useCourseChooserCrumb,
+  useDashboardCrumb,
+  useGradebookCrumbs,
+} from "../../../_utils/breadcrumbUtil";
 
 export default function GradebookBreadCrumb() {
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const courseChooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
   const gradebookCrumbs = useGradebookCrumbs();
 
   return (
     <Suspense fallback={<div>loading Breadcrumbs...</div>}>
-      <BreadCrumb crumbs={[courseChooserCrumb,dashboardCrumb,...gradebookCrumbs]}/>
+      <BreadCrumb
+        crumbs={[courseChooserCrumb, dashboardCrumb, ...gradebookCrumbs]}
+      />
     </Suspense>
   );
 }
-
 
 // import React, { Suspense } from 'react';
 // import { useRecoilValue, useRecoilValueLoadable } from 'recoil';
@@ -42,8 +47,8 @@ export default function GradebookBreadCrumb() {
 
 //   return (
 //     <Suspense fallback={<div>loading Drive...</div>}>
-//       <div style={{ 
-//         margin: '-9px 0px 0px -25px', 
+//       <div style={{
+//         margin: '-9px 0px 0px -25px',
 //         maxWidth: '850px' }}>
 //         {assignments.state === 'hasValue' && students.state === 'hasValue' ? <BreadCrumb path={path} tool='Gradebook' doenetId = {doenetId} userId = {userId} attemptNumber = {attemptNumber} source = {source} assignments = {legacyAssignments} students = {students}/> : <p>Loading...</p>}
 //       </div>

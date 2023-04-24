@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Image,
@@ -12,19 +12,19 @@ import {
   MenuButton,
   Icon,
   MenuList,
-} from '@chakra-ui/react';
-import { GoKebabVertical } from 'react-icons/go';
-import { Link } from 'react-router-dom';
+} from "@chakra-ui/react";
+import { GoKebabVertical } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 export default function ActivityCard({
-  imageLink = '',
+  imageLink = "",
   imagePath,
   label,
   fullName,
   menuItems,
 }) {
   if (!imagePath) {
-    imagePath = '/activity_default.jpg';
+    imagePath = "/activity_default.jpg";
   }
   //Note: when we have a menu width 140px becomes 120px
   return (

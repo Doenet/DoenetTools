@@ -1,12 +1,13 @@
-import InlineComponent from '../abstract/InlineComponent';
-import me from 'math-expressions';
-import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../../utils/style';
-
+import InlineComponent from "../abstract/InlineComponent";
+import me from "math-expressions";
+import {
+  returnSelectedStyleStateVariableDefinition,
+  returnTextStyleDescriptionDefinitions,
+} from "../../utils/style";
 
 export default class IonicCompound extends InlineComponent {
   static componentType = "ionicCompound";
   static rendererType = "math";
-
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -21,22 +22,21 @@ export default class IonicCompound extends InlineComponent {
 
     attributes.charge = {
       createComponentOfType: "integer",
-    }
+    };
 
     return attributes;
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "ions",
-      componentTypes: ["ion"]
-    }]
-
+    return [
+      {
+        group: "ions",
+        componentTypes: ["ion"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
@@ -44,7 +44,6 @@ export default class IonicCompound extends InlineComponent {
 
     let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
     Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
-
 
     stateVariableDefinitions.ionicCompound = {
       // public: true,
@@ -55,21 +54,26 @@ export default class IonicCompound extends InlineComponent {
         ionChildren: {
           dependencyType: "child",
           childGroups: ["ions"],
-          variableNames: ["symbol", "charge", "atomicNumber", "name"]
-        }
+          variableNames: ["symbol", "charge", "atomicNumber", "name"],
+        },
       }),
       definition({ dependencyValues }) {
-
-        let charges = dependencyValues.ionChildren.map(child => child.stateValues.charge);
+        let charges = dependencyValues.ionChildren.map(
+          (child) => child.stateValues.charge,
+        );
 
         if (charges.length !== 2) {
-          console.warn("have not implemented ionic compound for anything other than two ions");
-          return { setValue: { ionicCompound: null } }
+          console.warn(
+            "have not implemented ionic compound for anything other than two ions",
+          );
+          return { setValue: { ionicCompound: null } };
         }
 
         if (!(charges[0] * charges[1] < 0)) {
-          console.warn("ionic compound implemented only for one cation and one anion");
-          return { setValue: { ionicCompound: null } }
+          console.warn(
+            "ionic compound implemented only for one cation and one anion",
+          );
+          return { setValue: { ionicCompound: null } };
         }
 
         let n1 = Math.abs(charges[1]);
@@ -79,31 +83,33 @@ export default class IonicCompound extends InlineComponent {
         n1 /= gcd;
         n2 /= gcd;
 
-        let ionicCompound = [{
-          symbol: dependencyValues.ionChildren[0].stateValues.symbol,
-          atomicNumber: dependencyValues.ionChildren[0].stateValues.atomicNumber,
-          name: dependencyValues.ionChildren[0].stateValues.name,
-          charge: charges[0],
-          count: n1
-        }, {
-          symbol: dependencyValues.ionChildren[1].stateValues.symbol,
-          atomicNumber: dependencyValues.ionChildren[1].stateValues.atomicNumber,
-          name: dependencyValues.ionChildren[1].stateValues.name,
-          charge: charges[1],
-          count: n2
-        }
-        ]
+        let ionicCompound = [
+          {
+            symbol: dependencyValues.ionChildren[0].stateValues.symbol,
+            atomicNumber:
+              dependencyValues.ionChildren[0].stateValues.atomicNumber,
+            name: dependencyValues.ionChildren[0].stateValues.name,
+            charge: charges[0],
+            count: n1,
+          },
+          {
+            symbol: dependencyValues.ionChildren[1].stateValues.symbol,
+            atomicNumber:
+              dependencyValues.ionChildren[1].stateValues.atomicNumber,
+            name: dependencyValues.ionChildren[1].stateValues.name,
+            charge: charges[1],
+            count: n2,
+          },
+        ];
 
-        return { setValue: { ionicCompound } }
-
-      }
-    }
-
+        return { setValue: { ionicCompound } };
+      },
+    };
 
     stateVariableDefinitions.math = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "math"
+        createComponentOfType: "math",
       },
       returnDependencies: () => ({
         ionicCompound: {
@@ -119,9 +125,9 @@ export default class IonicCompound extends InlineComponent {
           for (let piece of dependencyValues.ionicCompound) {
             let pieceTree = piece.symbol;
             if (piece.count > 1) {
-              pieceTree = ["_", pieceTree, piece.count]
+              pieceTree = ["_", pieceTree, piece.count];
             }
-            tree.push(pieceTree)
+            tree.push(pieceTree);
           }
           if (tree.length > 1) {
             tree = ["*", ...tree];
@@ -134,20 +140,22 @@ export default class IonicCompound extends InlineComponent {
           tree = "\uff3f";
         }
         return {
-          setValue: { math: me.fromAst(tree) }
-        }
-      }
-    }
+          setValue: { math: me.fromAst(tree) },
+        };
+      },
+    };
 
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "latex"
+        createComponentOfType: "latex",
       },
-      additionalStateVariablesDefined: [{
-        variableName: "latexWithInputChildren",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "latexWithInputChildren",
+          forRenderer: true,
+        },
+      ],
       returnDependencies: () => ({
         ionicCompound: {
           dependencyType: "stateVariable",
@@ -162,24 +170,20 @@ export default class IonicCompound extends InlineComponent {
           for (let piece of dependencyValues.ionicCompound) {
             latex += `\\text{${piece.symbol}}`;
             if (piece.count > 1) {
-              latex += `_{${piece.count}}`
+              latex += `_{${piece.count}}`;
             }
           }
         } else {
           latex = "[\\text{Invalid Ionic Compound}]";
         }
         return {
-          setValue: { latex, latexWithInputChildren: [latex] }
-        }
-      }
-    }
-
+          setValue: { latex, latexWithInputChildren: [latex] },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
   static adapters = ["math"];
-
 }
-
-

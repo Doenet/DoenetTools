@@ -1,16 +1,16 @@
 // import axios from 'axios';
-import { Avatar, Box, Flex, Icon, Image, Text, Wrap } from '@chakra-ui/react';
-import React from 'react';
+import { Avatar, Box, Flex, Icon, Image, Text, Wrap } from "@chakra-ui/react";
+import React from "react";
 import {
   redirect,
   Form,
   useOutletContext,
   useLoaderData,
   Link,
-} from 'react-router-dom';
-import styled from 'styled-components';
-import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
-import { RiEmotionSadLine } from 'react-icons/ri';
+} from "react-router-dom";
+import styled from "styled-components";
+import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import { RiEmotionSadLine } from "react-icons/ri";
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 // export async function action() {

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { driveColors, driveImages } from '../Drive/util.js';
-import styled, { css } from 'styled-components';
+import React, { useState } from "react";
+import { driveColors, driveImages } from "../Drive/util.js";
+import styled, { css } from "styled-components";
 
 const Display = styled.button`
   border-radius: var(--mainBorderRadius);
@@ -10,8 +10,8 @@ const Display = styled.button`
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  background-color: ${(props) => props.color || 'var(--canvas)'};
-  background-image: ${(props) => props.image || 'none'};
+  background-color: ${(props) => props.color || "var(--canvas)"};
+  background-image: ${(props) => props.image || "none"};
   cursor: pointer;
   &:focus {
     outline: 2px solid var(--canvastext);
@@ -30,7 +30,7 @@ const Menu = styled.div`
   top: 40px;
   overflow: scroll;
   ${(props) =>
-    props.visible === 'True' &&
+    props.visible === "True" &&
     css`
       display: block;
     `};
@@ -58,13 +58,13 @@ const Color = styled.div`
   height: 20px;
   width: 20px;
   margin: 4px;
-  background-color: ${(props) => props.color || 'var(--canvas)'};
+  background-color: ${(props) => props.color || "var(--canvas)"};
 `;
 
 const Label = styled.p`
   display: static;
   margin-right: 5px;
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   margin-bottom: 6px;
 `;
 
@@ -81,16 +81,16 @@ const Image = styled.div`
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  background-image: ${(props) => props.image || 'none'};
+  background-image: ${(props) => props.image || "none"};
 `;
 
 export default function ColorImagePicker(props) {
-  const [menuOpen, setMenuOpen] = useState('False');
+  const [menuOpen, setMenuOpen] = useState("False");
   const [displayColor, setDisplayColor] = useState(
-    props.initialColor ? props.initialColor : 'var(--canvas)',
+    props.initialColor ? props.initialColor : "var(--canvas)",
   );
   const [displayImage, setDisplayImage] = useState(
-    props.initialImage ? props.initialImage : 'none',
+    props.initialImage ? props.initialImage : "none",
   );
 
   // if (props.initialValue){
@@ -116,24 +116,24 @@ export default function ColorImagePicker(props) {
   // });
 
   function handleClick(e) {
-    if (menuOpen == 'True') {
-      setMenuOpen('False');
-    } else if (menuOpen == 'False') {
-      setMenuOpen('True');
+    if (menuOpen == "True") {
+      setMenuOpen("False");
+    } else if (menuOpen == "False") {
+      setMenuOpen("True");
     }
   }
 
   function changeColor(newColor) {
     setDisplayColor(newColor);
-    setDisplayImage('none');
-    setMenuOpen('False');
+    setDisplayImage("none");
+    setMenuOpen("False");
     if (props.colorCallback) props.colorCallback(newColor);
   }
 
   function changeImage(newImage) {
     setDisplayImage(newImage);
-    setDisplayColor('none');
-    setMenuOpen('False');
+    setDisplayColor("none");
+    setMenuOpen("False");
     if (props.imageCallback) props.imageCallback(newImage);
   }
 
@@ -142,7 +142,7 @@ export default function ColorImagePicker(props) {
     colorArray.push(
       <Color
         key={i}
-        color={'#' + driveColors[i].Color}
+        color={"#" + driveColors[i].Color}
         onClick={() => {
           changeColor(driveColors[i].Color);
         }}
@@ -156,7 +156,7 @@ export default function ColorImagePicker(props) {
     imageArray.push(
       <Image
         key={i}
-        image={'url(/drive_pictures/' + driveImages[i].Image + ')'}
+        image={"url(/drive_pictures/" + driveImages[i].Image + ")"}
         onClick={() => {
           changeImage(driveImages[i].Image);
         }}
@@ -175,8 +175,8 @@ export default function ColorImagePicker(props) {
         onClick={(e) => {
           handleClick(e);
         }}
-        color={'#' + displayColor}
-        image={'url(/drive_pictures/' + displayImage + ')'}
+        color={"#" + displayColor}
+        image={"url(/drive_pictures/" + displayImage + ")"}
       >
         <Menu visible={menuOpen}>
           <ColorSection>{colorArray}</ColorSection>

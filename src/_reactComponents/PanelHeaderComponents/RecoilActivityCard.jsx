@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import {
   Box,
   Image,
@@ -12,12 +12,12 @@ import {
   MenuButton,
   Icon,
   MenuList,
-} from '@chakra-ui/react';
-import { GoKebabVertical } from 'react-icons/go';
-import { Link, useFetcher } from 'react-router-dom';
-import { itemByDoenetId, useCourse } from '../Course/CourseActions';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
+} from "@chakra-ui/react";
+import { GoKebabVertical } from "react-icons/go";
+import { Link, useFetcher } from "react-router-dom";
+import { itemByDoenetId, useCourse } from "../Course/CourseActions";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
 
 export default function RecoilActivityCard({
   doenetId,
@@ -37,12 +37,12 @@ export default function RecoilActivityCard({
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
 
-  let navigateTo = useRef('');
+  let navigateTo = useRef("");
 
-  if (navigateTo.current != '') {
+  if (navigateTo.current != "") {
     const newHref = navigateTo.current;
-    navigateTo.current = '';
-    fetcher.submit({ _action: 'noop' }, { method: 'post' });
+    navigateTo.current = "";
+    fetcher.submit({ _action: "noop" }, { method: "post" });
     location.href = newHref;
   }
 
@@ -62,10 +62,10 @@ export default function RecoilActivityCard({
         onClick={() => {
           navigateTo.current = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
           setRecoilPageToolView({
-            page: 'portfolioeditor',
+            page: "portfolioeditor",
             optionalURLParam: doenetId,
-            tool: 'editor',
-            view: '',
+            tool: "editor",
+            view: "",
             params: { doenetId, pageId: pageDoenetId },
           });
         }}
@@ -99,8 +99,8 @@ export default function RecoilActivityCard({
                 <MenuItem
                   onClick={() => {
                     fetcher.submit(
-                      { _action: 'Make Private', doenetId },
-                      { method: 'post' },
+                      { _action: "Make Private", doenetId },
+                      { method: "post" },
                     );
                   }}
                 >
@@ -113,7 +113,6 @@ export default function RecoilActivityCard({
                     //- Version of DoenetML
                     //Eventually we want the content too (multipage)
 
-
                     compileActivity({
                       activityDoenetId: doenetId,
                       isAssigned: true,
@@ -122,7 +121,7 @@ export default function RecoilActivityCard({
                         version,
                         isSinglePage: true,
                         content,
-                      }
+                      },
                       // successCallback: () => {
                       //   addToast('Activity Assigned.', toastType.INFO);
                       // },
@@ -132,8 +131,8 @@ export default function RecoilActivityCard({
                       isAssigned: true,
                       successCallback: () => {
                         fetcher.submit(
-                          { _action: 'Make Public', doenetId },
-                          { method: 'post' },
+                          { _action: "Make Public", doenetId },
+                          { method: "post" },
                         );
                         //addToast(assignActivityToast, toastType.INFO);
                       },
@@ -146,8 +145,8 @@ export default function RecoilActivityCard({
               <MenuItem
                 onClick={() => {
                   fetcher.submit(
-                    { _action: 'Delete', doenetId },
-                    { method: 'post' },
+                    { _action: "Delete", doenetId },
+                    { method: "post" },
                   );
                 }}
               >
