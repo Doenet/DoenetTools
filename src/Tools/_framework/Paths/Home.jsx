@@ -187,7 +187,25 @@ export function Home() {
         // subheading="Quickly create interactive activities"
       />
       <Center background="doenet.lightBlue" padding="20px">
-        <Text>Doenet Workshop 2023</Text>
+        <Flex flexDirection="column">
+          <Text fontSize="16px" fontWeight="700" textAlign="left">
+            Doenet Workshop
+          </Text>
+          <Text maxWidth="800px">
+            From May 22 - May 26, 2023, we will host the second{" "}
+            <Link
+              color="doenet.mainBlue"
+              href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2023"
+              isExternal
+            >
+              workshop
+            </Link>{" "}
+            on developing content and learning experiments in Doenet. It will be
+            held at the University of Minnesota, the workshop for instructors of
+            college STEM courses will be a hands-on introduction to authoring
+            and running experiments, led by the developers of Doenet.
+          </Text>
+        </Flex>
       </Center>
       <Heading
         heading="Create Content"
@@ -342,6 +360,7 @@ export function Home() {
             >
               Creative Commons Attribution 4.0 International License
             </Link>
+            .
           </Text>
           Doenet is a collaborative project involving the University of
           Minnesota, the Ohio State University, and Cornell University, with
