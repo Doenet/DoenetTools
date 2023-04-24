@@ -223,7 +223,7 @@ const router = createBrowserRouter([
         path: "portfolioeditor/:doenetId",
         loader: async ({ params }) => {
           //Redirect as an activity can have no pageids
-          return redirect(`/portfolioeditor/${params.doenetId}/noPageId/`);
+          return redirect(`/portfolioeditor/${params.doenetId}/_`);
         },
         element: <div>Loading...</div>,
       },

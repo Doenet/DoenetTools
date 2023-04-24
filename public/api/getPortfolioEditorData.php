@@ -16,18 +16,17 @@ $response_arr;
 try {
 
     //TODO: Check if they have permission to edit it
-    //TODO: Separate error messages for banned and deleted?
 
     $sql = "
     SELECT 
     type,
     imagePath,
     label,
+    isBanned,
     CAST(jsonDefinition as CHAR) AS json
     FROM course_content
     WHERE doenetId = '$doenetId'
     AND isDeleted = '0'
-    AND isBanned = '0'
     ";
 $result = $conn->query($sql);
 
@@ -36,8 +35,12 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $type = $row['type'];
     $imagePath = $row['imagePath'];
+    $isBanned = $row['isBanned'];
     $label = $row['label'];
     $json = json_decode($row['json'], true);
+    if ($isBanned == '1'){
+        throw new Exception("Activity has been banned.");
+    }
 
 }else{
     throw new Exception("Activity not found.");
