@@ -10,6 +10,11 @@ export const textEditorDoenetMLAtom = atom({
   default: "",
 });
 
+export const textEditorLastKnownCidAtom = atom({
+  key: "textEditorLastKnownCidAtom",
+  default: "",
+});
+
 export const updateTextEditorDoenetMLAtom = atom({
   key: "updateTextEditorDoenetMLAtom",
   default: "",

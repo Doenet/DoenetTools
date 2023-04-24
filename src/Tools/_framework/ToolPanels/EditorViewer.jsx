@@ -25,6 +25,7 @@ import {
   editorViewerErrorStateAtom,
   refreshNumberAtom,
   textEditorDoenetMLAtom,
+  textEditorLastKnownCidAtom,
   updateTextEditorDoenetMLAtom,
   viewerDoenetMLAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
@@ -34,6 +35,7 @@ import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
 } from "../../../_sharedRecoil/PageViewerRecoil";
+import { cidFromText } from "../../../Core/utils/cid";
 
 export const useUpdateViewer = () => {
   const updateViewer = useRecoilCallback(({ snapshot, set }) => async () => {
@@ -135,10 +137,13 @@ export default function EditorViewer() {
         // }
         // const doenetML = response;
 
+        const cid = await cidFromText(doenetML);
+
         set(updateTextEditorDoenetMLAtom, doenetML);
         set(textEditorDoenetMLAtom, doenetML);
         set(viewerDoenetMLAtom, doenetML);
         set(editorPageIdInitAtom, pageId);
+        set(textEditorLastKnownCidAtom, cid);
         let suppress = [];
         if (containingObj.type == "bank") {
           suppress.push("AssignmentSettingsMenu");
@@ -214,11 +219,9 @@ export default function EditorViewer() {
           previousLocations.current[location.key]?.lastScrollPosition !==
           undefined
         ) {
-          document
-            .getElementById("mainPanel")
-            .scroll({
-              top: previousLocations.current[location.key].lastScrollPosition,
-            });
+          document.getElementById("mainPanel").scroll({
+            top: previousLocations.current[location.key].lastScrollPosition,
+          });
         }
       }
 
