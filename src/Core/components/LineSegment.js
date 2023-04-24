@@ -51,6 +51,13 @@ export default class LineSegment extends GraphicalComponent {
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft"],
     };
 
+    attributes.allowFlexibleMotion = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowFlexibleMotion",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
@@ -696,6 +703,8 @@ export default class LineSegment extends GraphicalComponent {
       newComponents["1,1"] = me.fromAst(point2coords[1]);
     }
 
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
     if (transient) {
       await this.coreFunctions.performUpdate({
         updateInstructions: [
@@ -740,69 +749,79 @@ export default class LineSegment extends GraphicalComponent {
       });
     }
 
-    // if dragged the whole line segment,
-    // address case where only one endpoint is constrained
-    // to make line segment just translate in this case
-    if (point1coords !== undefined && point2coords !== undefined) {
-      let numericalPoints = [point1coords, point2coords];
-      let resultingNumericalPoints = await this.stateValues.numericalEndpoints;
+    // Unless allowFlexibleMotion is set
+    // we will attempt to keep the relationship between the two endpoints fixed
+    // when the whole line segment is moved,
+    // even if one of the endpoints is constrained.
+    if (!(await this.stateValues.allowFlexibleMotion)) {
+      // if dragged the whole line segment,
+      // address case where only one endpoint is constrained
+      // to make line segment just translate in this case
+      if (point1coords !== undefined && point2coords !== undefined) {
+        let numericalPoints = [point1coords, point2coords];
+        let resultingNumericalPoints = await this.stateValues
+          .numericalEndpoints;
 
-      let pointsChanged = [];
-      let nPointsChanged = 0;
+        let pointsChanged = [];
+        let nPointsChanged = 0;
 
-      for (let [ind, pt] of numericalPoints.entries()) {
-        if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
-          pointsChanged.push(ind);
-          nPointsChanged++;
-        }
-      }
-
-      if (nPointsChanged === 1) {
-        // one point was altered from the requested location.
-
-        let changedInd = pointsChanged[0];
-
-        let orig1 = numericalPoints[changedInd];
-        let changed1 = resultingNumericalPoints[changedInd];
-        let changevec1 = orig1.map((v, i) => v - changed1[i]);
-
-        let newNumericalPoints = [];
-
-        for (let i = 0; i < 2; i++) {
-          if (i === changedInd) {
-            newNumericalPoints.push(resultingNumericalPoints[i]);
-          } else {
-            newNumericalPoints.push(
-              numericalPoints[i].map((v, j) => v - changevec1[j]),
-            );
+        for (let [ind, pt] of numericalPoints.entries()) {
+          if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
+            pointsChanged.push(ind);
+            nPointsChanged++;
           }
         }
 
-        let newPointComponents = {};
-        for (let ind in newNumericalPoints) {
-          newPointComponents[ind + ",0"] = me.fromAst(
-            newNumericalPoints[ind][0],
-          );
-          newPointComponents[ind + ",1"] = me.fromAst(
-            newNumericalPoints[ind][1],
-          );
-        }
+        if (nPointsChanged === 1) {
+          // One endpoint was altered from the requested location
+          // while the other endpoint stayed at the requested location.
+          // We interpret this as one endpoint being constrained and the second one being free
+          // and we move the second endpoint to keep their relative position fixed.
 
-        let newInstructions = [
-          {
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "endpoints",
-            value: newPointComponents,
-          },
-        ];
-        return await this.coreFunctions.performUpdate({
-          updateInstructions: newInstructions,
-          transient,
-          actionId,
-          sourceInformation,
-          skipRendererUpdate,
-        });
+          let changedInd = pointsChanged[0];
+
+          let orig1 = numericalPoints[changedInd];
+          let changed1 = resultingNumericalPoints[changedInd];
+          let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+          let newNumericalPoints = [];
+
+          for (let i = 0; i < 2; i++) {
+            if (i === changedInd) {
+              newNumericalPoints.push(resultingNumericalPoints[i]);
+            } else {
+              newNumericalPoints.push(
+                numericalPoints[i].map((v, j) => v - changevec1[j]),
+              );
+            }
+          }
+
+          let newPointComponents = {};
+          for (let ind in newNumericalPoints) {
+            newPointComponents[ind + ",0"] = me.fromAst(
+              newNumericalPoints[ind][0],
+            );
+            newPointComponents[ind + ",1"] = me.fromAst(
+              newNumericalPoints[ind][1],
+            );
+          }
+
+          let newInstructions = [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "endpoints",
+              value: newPointComponents,
+            },
+          ];
+          return await this.coreFunctions.performUpdate({
+            updateInstructions: newInstructions,
+            transient,
+            actionId,
+            sourceInformation,
+            skipRendererUpdate,
+          });
+        }
       }
     }
 
