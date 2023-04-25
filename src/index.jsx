@@ -71,6 +71,7 @@ const theme = extendTheme({
       lightBlue: "#b8d2ea",
       solidLightBlue: "#8fb8de",
       mainGray: "#e3e3e3",
+      mediumGray: "#949494",
       donutBody: "#eea177",
       donutTopping: "#6d4445",
       mainRed: "#c1292e",
