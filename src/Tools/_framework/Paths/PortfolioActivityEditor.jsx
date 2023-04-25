@@ -5,6 +5,8 @@ import {
   useNavigate,
   useOutletContext,
 } from "react-router";
+import CodeMirror from "../CodeMirror";
+
 import styled from "styled-components";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
@@ -13,10 +15,15 @@ import {
   pageVariantPanelAtom,
 } from "../../../_sharedRecoil/PageViewerRecoil";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-import { Form, Link } from "react-router-dom";
-import { Avatar } from "@chakra-ui/react";
-import { pageToolViewAtom } from "../NewToolRoot";
+import {
+  Box,
+  Card,
+  Center,
+  Flex,
+  Grid,
+  GridItem,
+  Text,
+} from "@chakra-ui/react";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -50,7 +57,9 @@ export async function loader({ params }) {
   }
 
   //TODO: get the doenetML of the pageId.
-  let doenetML = "";
+  let doenetML = "<graph ><point name='p'/></graph>$p.x";
+  // let doenetML =
+  //   "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
 
   return {
     activityData,
@@ -58,15 +67,6 @@ export async function loader({ params }) {
     doenetML,
   };
 }
-
-// background: var(--canvas);
-const ViewerOutsideContainer = styled.div`
-  grid-row: 2 / 3;
-  display: grid;
-  grid-template-columns: auto min-content auto;
-  min-height: calc(100vh - 100px);
-  background: var(--solidLightBlue); //Gutter color
-`;
 
 const ViewerInsideContainer = styled.div`
   grid-column: 2 / 3;
@@ -88,6 +88,10 @@ export function PortfolioActivityEditor() {
   console.log("activityData", activityData);
   console.log("pageId", pageId);
   console.log("doenetML", doenetML);
+  const updateInternalValue = doenetML;
+  let editorDoenetML = doenetML;
+
+  let editorRef = useRef(null);
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -107,9 +111,48 @@ export function PortfolioActivityEditor() {
   }
 
   return (
-    <>
-      <ViewerOutsideContainer>
-        <ViewerInsideContainer>
+    <Grid
+      minHeight="calc(100vh - 40px)" //40px header height
+      // background="grey"
+      templateAreas={`"header header header header"
+      "leftGutter viewer rightGutter textEditor"
+      `}
+      templateRows="40px auto"
+      templateColumns="auto minmax(400px,600px) auto minmax(300px,600px)"
+      // templateColumns="auto minmax(400px,600px) auto minmax(300px,auto)"
+      // templateColumns="auto minMax('400px','850px') auto min-content"
+      // templateColumns="auto max-content auto min-content"
+    >
+      <GridItem area="header">
+        <Flex>
+          <Text>Icon Buttons</Text>
+          <Text>Label Here</Text>
+        </Flex>
+      </GridItem>
+      <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
+      <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
+      <GridItem
+        area="viewer"
+        placeSelf="center"
+        // background="blue.400"
+        // minWidth="400px"
+        minHeight="100%"
+        width="100%"
+        background="doenet.lightBlue"
+        overflow="scroll"
+        // maxWidth="850px"
+      >
+        <Box
+          // width="850px"
+          maxWidth="850px"
+          minWidth="600px"
+          minHeight="calc(100vh - 100px)"
+          background="var(--canvas)"
+          border="1px solid #949494" //Viewer Outline
+          margin="20px 0px 20px 0px" //Only need when there is an outline
+          padding="20px 5px 20px 5px"
+          flexGrow={1}
+        >
           <PageViewer
             key={`HPpageViewer`}
             doenetML={doenetML}
@@ -133,8 +176,39 @@ export function PortfolioActivityEditor() {
             // setIsInErrorState={setIsInErrorState}
             pageIsActive={true}
           />
-        </ViewerInsideContainer>
-      </ViewerOutsideContainer>
-    </>
+        </Box>
+      </GridItem>
+      <GridItem area="textEditor" background="blue.700" maxWidth="600px">
+        <CodeMirror
+          key="codemirror"
+          // readOnly={false}
+          editorRef={editorRef}
+          // setInternalValue={updateInternalValue}
+          setInternalValue={`one
+two
+three`}
+          // value={editorDoenetML}
+          // value="starter value"
+          onBeforeChange={(value) => {
+            // console.log(value);
+            //   setEditorDoenetML(value);
+            //   // Debounce save to server at 3 seconds
+            //   clearTimeout(timeout.current);
+            //   timeout.current = setTimeout(function () {
+            //     saveDraft({
+            //       pageId: initializedPageId,
+            //       courseId,
+            //       backup: backupOldDraft.current,
+            //     }).then(({ success }) => {
+            //       if (success) {
+            //         backupOldDraft.current = false;
+            //       }
+            //     });
+            //     timeout.current = null;
+            //   }, 3000); //3 seconds
+          }}
+        />
+      </GridItem>
+    </Grid>
   );
 }
