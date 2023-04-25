@@ -57,9 +57,9 @@ export async function loader({ params }) {
   }
 
   //TODO: get the doenetML of the pageId.
-  // let doenetML = "<graph ><point name='p'/></graph>$p.x";
-  let doenetML =
-    "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
+  let doenetML = "<graph ><point name='p'/></graph>$p.x";
+  // let doenetML =
+  //   "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
 
   return {
     activityData,
@@ -102,7 +102,7 @@ export function PortfolioActivityEditor() {
       "leftGutter viewer middleGutter textEditor rightGutter "
       `}
       templateRows="40px auto"
-      templateColumns="auto minmax(500px,800px) minmax(6px,auto) minmax(350px,600px) auto"
+      templateColumns="minmax(10px,auto) minmax(500px,800px) minmax(10px,auto) minmax(350px,600px) minmax(10px,auto)"
       position="relative"
     >
       <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
@@ -132,8 +132,10 @@ export function PortfolioActivityEditor() {
         <Box
           minHeight="calc(100vh - 100px)"
           background="var(--canvas)"
-          border="1px solid #949494" //Viewer Outline
-          margin="20px 0px 20px 0px" //Only need when there is an outline
+          borderWidth="1px"
+          borderStyle="solid"
+          borderColor="doenet.mediumGray"
+          margin="10px 0px 10px 0px" //Only need when there is an outline
           padding="20px 5px 20px 5px"
           flexGrow={1}
           overflow="scroll"
@@ -169,15 +171,18 @@ export function PortfolioActivityEditor() {
         background="doenet.lightBlue"
         height="100%"
         alignSelf="start"
-        paddingTop="30px"
+        paddingTop="10px"
       >
         <Box
           position="sticky"
-          top="70px"
+          top="50px"
           boxSizing="border-box"
           background="doenet.canvas"
-          height="calc(100vh - 120px)"
+          height="calc(100vh - 100px)"
           overflowY="scroll"
+          borderWidth="1px"
+          borderStyle="solid"
+          borderColor="doenet.mediumGray"
         >
           <CodeMirror
             key="codemirror"
