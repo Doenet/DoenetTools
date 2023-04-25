@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import styled from 'styled-components';
-import { useTable, useSortBy, useFilters, useGlobalFilter } from 'react-table';
+import React, { useEffect } from "react";
+import styled from "styled-components";
+import { useTable, useSortBy, useFilters, useGlobalFilter } from "react-table";
 
 import {
   atom,
@@ -10,24 +10,24 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
-} from 'recoil';
+} from "recoil";
 
-import axios from 'axios';
+import axios from "axios";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSort,
   faSortUp,
   faSortDown,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
 import {
   pageToolViewAtom,
   searchParamAtomFamily,
   suppressMenusAtom,
-} from '../NewToolRoot';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
+} from "../NewToolRoot";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
 
 // React Table Styling
 export const Styles = styled.div`
@@ -131,15 +131,15 @@ export const Styles = styled.div`
 `;
 
 const assignmentDataQuery = atom({
-  key: 'assignmentDataQuery',
+  key: "assignmentDataQuery",
   default: selector({
-    key: 'assignmentDataQuery/Default',
+    key: "assignmentDataQuery/Default",
     get: async ({ get }) => {
-      const courseId = get(searchParamAtomFamily('courseId'));
+      const courseId = get(searchParamAtomFamily("courseId"));
       try {
         const {
           data: { success, message, assignments },
-        } = await axios.get('/api/loadGradebookAssignments.php', {
+        } = await axios.get("/api/loadGradebookAssignments.php", {
           params: { courseId },
         });
         if (success) {
@@ -147,7 +147,7 @@ const assignmentDataQuery = atom({
         }
         throw new Error(message);
       } catch (error) {
-        console.warn('No assignments associated with courseId ID: ', courseId);
+        console.warn("No assignments associated with courseId ID: ", courseId);
         return {};
       }
     },
@@ -159,11 +159,11 @@ function isIterable(obj) {
   if (obj == null) {
     return false;
   }
-  return typeof obj[Symbol.iterator] === 'function';
+  return typeof obj[Symbol.iterator] === "function";
 }
 
 export const assignmentData = selector({
-  key: 'assignmentData',
+  key: "assignmentData",
   get: ({ get }) => {
     let assignmentArray = {};
     let data = get(assignmentDataQuery);
@@ -178,15 +178,15 @@ export const assignmentData = selector({
 });
 
 export const studentDataQuery = atom({
-  key: 'studentDataQuery',
+  key: "studentDataQuery",
   default: selector({
-    key: 'studentDataQuery/Default',
+    key: "studentDataQuery/Default",
     get: async ({ get }) => {
-      const courseId = get(searchParamAtomFamily('courseId'));
+      const courseId = get(searchParamAtomFamily("courseId"));
       try {
         const {
           data: { success, message, gradebookEnrollment },
-        } = await axios.get('/api/loadGradebookEnrollment.php', {
+        } = await axios.get("/api/loadGradebookEnrollment.php", {
           params: { courseId },
         });
         if (success) {
@@ -195,7 +195,7 @@ export const studentDataQuery = atom({
         throw new Error(message);
       } catch (error) {
         console.warn(
-          'No students associated with course ID: ',
+          "No students associated with course ID: ",
           courseId,
           error,
         );
@@ -206,7 +206,7 @@ export const studentDataQuery = atom({
 });
 
 export const studentData = selector({
-  key: 'studentData',
+  key: "studentData",
   get: ({ get }) => {
     let data = get(studentDataQuery);
     let students = {};
@@ -234,15 +234,15 @@ export const studentData = selector({
 });
 
 export const overviewDataQuery = atom({
-  key: 'overviewDataQuery',
+  key: "overviewDataQuery",
   default: selector({
-    key: 'overviewDataQuery/Default',
+    key: "overviewDataQuery/Default",
     get: async ({ get }) => {
-      const courseId = get(searchParamAtomFamily('courseId'));
+      const courseId = get(searchParamAtomFamily("courseId"));
       try {
         let {
           data: { success, message, overview },
-        } = await axios.get('/api/loadGradebookOverview.php', {
+        } = await axios.get("/api/loadGradebookOverview.php", {
           params: { courseId },
         });
         if (success) {
@@ -258,7 +258,7 @@ export const overviewDataQuery = atom({
 });
 
 export const overviewData = selector({
-  key: 'overviewData',
+  key: "overviewData",
   get: ({ get }) => {
     const students = get(studentData);
     const assignments = get(assignmentData);
@@ -290,33 +290,31 @@ export const overviewData = selector({
     set(overviewDataQuery, (prev) => {
       let next = [];
       for (let userActivityArr of prev) {
-        if (userActivityArr[0] == doenetId &&
-          userActivityArr[2] == userId
-        ) {
+        if (userActivityArr[0] == doenetId && userActivityArr[2] == userId) {
           let newArr = [...userActivityArr];
           newArr[1] = credit;
-          next.push(newArr)
+          next.push(newArr);
         } else {
           next.push(userActivityArr);
         }
       }
       return next;
-    })
-  }
+    });
+  },
 });
 
 export const attemptDataQuery = atomFamily({
-  key: 'attemptDataQuery',
+  key: "attemptDataQuery",
   default: selectorFamily({
-    key: 'attemptDataQuery/Default',
+    key: "attemptDataQuery/Default",
     get:
       (doenetId) =>
       async ({ get }) => {
-        const courseId = get(searchParamAtomFamily('courseId'));
+        const courseId = get(searchParamAtomFamily("courseId"));
         try {
           let {
             data: { success, message, assignmentAttemptsData },
-          } = await axios.get('/api/loadGradebookAssignmentAttempts.php', {
+          } = await axios.get("/api/loadGradebookAssignmentAttempts.php", {
             params: { courseId, doenetId },
           });
           if (success) {
@@ -325,7 +323,7 @@ export const attemptDataQuery = atomFamily({
           throw new Error(message);
         } catch (error) {
           console.warn(
-            'Error loading attempts data for doenetId: ',
+            "Error loading attempts data for doenetId: ",
             doenetId,
             error.message,
           );
@@ -336,7 +334,7 @@ export const attemptDataQuery = atomFamily({
 });
 
 export const attemptData = selectorFamily({
-  key: 'attemptData',
+  key: "attemptData",
   get:
     (doenetId) =>
     ({ get }) => {
@@ -373,15 +371,15 @@ export const attemptData = selectorFamily({
 });
 
 const specificAttemptDataQuery = atomFamily({
-  key: 'specificAttemptDataQuery',
+  key: "specificAttemptDataQuery",
   default: selectorFamily({
-    key: 'specificAttemptDataQuery/Default',
+    key: "specificAttemptDataQuery/Default",
     get: (params) => async () => {
       try {
         //TODO: Make sure variant is the most recent in content_interactions
         let {
           data: { success, message, attemptData },
-        } = await axios.get('/api/loadAssignmentAttempt.php', { ...params });
+        } = await axios.get("/api/loadAssignmentAttempt.php", { ...params });
         if (success) {
           return attemptData;
         } else {
@@ -389,7 +387,7 @@ const specificAttemptDataQuery = atomFamily({
         }
       } catch (error) {
         console.warn(
-          'Error loading specific attempt data for assignmentId: ',
+          "Error loading specific attempt data for assignmentId: ",
           params?.doenetId,
           error.message,
         );
@@ -400,7 +398,7 @@ const specificAttemptDataQuery = atomFamily({
 });
 
 export const specificAttemptData = selectorFamily({
-  key: 'specificAttemptData',
+  key: "specificAttemptData",
   get:
     (params) =>
     ({ get }) => {
@@ -425,16 +423,16 @@ export const specificAttemptData = selectorFamily({
 });
 
 const doenetMLQuery = atomFamily({
-  key: 'doenetMLQuery',
+  key: "doenetMLQuery",
   default: selectorFamily({
-    key: 'doenetMLQuery/Default',
+    key: "doenetMLQuery/Default",
     get: (contentId) => async () => {
       try {
         const server = await axios.get(`/media/${contentId}.doenet`);
         return server.data;
       } catch (err) {
         //TODO: Handle 404
-        return 'File not found';
+        return "File not found";
       }
     },
   }),
@@ -501,8 +499,8 @@ export function Table({ columns, data }) {
             {headerGroup.headers.map((column) => (
               // eslint-disable-next-line react/jsx-key
               <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                <p>{column.render('Header')}</p>
-                <div>{column.canFilter ? column.render('Filter') : null}</div>
+                <p>{column.render("Header")}</p>
+                <div>{column.canFilter ? column.render("Filter") : null}</div>
                 {column.canSort ? (
                   <span className="sortIcon">
                     {column.isSorted ? (
@@ -530,7 +528,7 @@ export function Table({ columns, data }) {
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
                 // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
             </tr>
           );
@@ -546,7 +544,7 @@ export function Table({ columns, data }) {
           {footerGroups[0].headers.map((column) => (
             // eslint-disable-next-line react/jsx-key
             <td {...column.getFooterProps()}>
-              <p>{column.render('Footer')}</p>
+              <p>{column.render("Footer")}</p>
             </td>
           ))}
         </tr>
@@ -556,15 +554,15 @@ export function Table({ columns, data }) {
 }
 
 export function gradeSorting(a, b, columnID) {
-  const order = { '+': -1, '-': 1, undefined: 0 };
+  const order = { "+": -1, "-": 1, undefined: 0 };
   const ga = a.cells[9].value;
   const gb = b.cells[9].value;
 
-  if ((ga == null || ga == '') && (gb == null || gb == '')) {
+  if ((ga == null || ga == "") && (gb == null || gb == "")) {
     return 0;
-  } else if (ga == null || ga == '') {
+  } else if (ga == null || ga == "") {
     return 1;
-  } else if (gb == null || gb == '') {
+  } else if (gb == null || gb == "") {
     return -1;
   }
 
@@ -578,12 +576,12 @@ function DefaultColumnFilter({
 
   return (
     <input
-      value={filterValue || ''}
+      value={filterValue || ""}
       onChange={(e) => {
         setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
       }}
       placeholder={`Search ${count} records...`}
-      style={{ border: '2px solid var(--canvastext)', borderRadius: '5px' }}
+      style={{ border: "2px solid var(--canvastext)", borderRadius: "5px" }}
     />
   );
 }
@@ -596,17 +594,17 @@ function DefaultColumnFilter({
  * </p>
  */
 export const gradeCategories = [
-  { category: 'Gateway', scaleFactor: 0 },
-  { category: 'Exams' },
-  { category: 'Quizzes', maximumNumber: 10 },
-  { category: 'Problem sets', maximumNumber: 30 },
-  { category: 'Projects' },
-  { category: 'Participation', maximumValue: 50 },
+  { category: "Gateway", scaleFactor: 0 },
+  { category: "Exams" },
+  { category: "Quizzes", maximumNumber: 10 },
+  { category: "Problem sets", maximumNumber: 30 },
+  { category: "Projects" },
+  { category: "Participation", maximumValue: 50 },
 ];
 
 function GradebookOverview() {
   //const { openOverlay, activateMenuPanel } = useToolControlHelper();
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let students = useRecoilValueLoadable(studentData);
   let assignments = useRecoilValueLoadable(assignmentData);
@@ -617,7 +615,7 @@ function GradebookOverview() {
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
   useEffect(() => {
-    setSuppressMenus(canViewAndModifyGrades === '1' ? [] : ['GradeDownload']);
+    setSuppressMenus(canViewAndModifyGrades === "1" ? [] : ["GradeDownload"]);
   }, [canViewAndModifyGrades, setSuppressMenus]);
   // console.log(">>>>students",students)
   // console.log(">>>>assignments",assignments)
@@ -625,16 +623,15 @@ function GradebookOverview() {
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0'){
-    return <h1>No Access to view this page.</h1>
+  if (course?.canViewCourse == "0") {
+    return <h1>No Access to view this page.</h1>;
   }
-
 
   //Protect from values not being loaded
   if (
-    assignments.state !== 'hasValue' ||
-    students.state !== 'hasValue' ||
-    overview.state !== 'hasValue'
+    assignments.state !== "hasValue" ||
+    students.state !== "hasValue" ||
+    overview.state !== "hasValue"
   ) {
     return null;
   }
@@ -646,15 +643,15 @@ function GradebookOverview() {
   let totalPossiblePoints = 0;
 
   overviewTable.headers.push({
-    Header: 'Name',
-    accessor: 'name',
-    Footer: 'Possible Points',
+    Header: "Name",
+    accessor: "name",
+    Footer: "Possible Points",
   });
 
   let sortedAssignments = Object.entries(assignments.contents);
   sortedAssignments.sort((a, b) => (a[1].sortOrder < b[1].sortOrder ? -1 : 1));
 
-  possiblePointRow['name'] = 'Possible Points';
+  possiblePointRow["name"] = "Possible Points";
   for (let {
     category,
     scaleFactor = 1,
@@ -684,17 +681,17 @@ function GradebookOverview() {
             Header: (
               <a
                 style={{
-                  display: 'block',
-                  fontWeight: 'normal',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
+                  display: "block",
+                  fontWeight: "normal",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
                 }}
                 onClick={() => {
                   setPageToolView({
-                    page: 'course',
-                    tool: 'gradebookAssignment',
-                    view: '',
+                    page: "course",
+                    tool: "gradebookAssignment",
+                    view: "",
                     params: { courseId, doenetId },
                   });
                 }}
@@ -747,10 +744,10 @@ function GradebookOverview() {
           {
             Header: (
               <div>
-                {`${category} Total`}{' '}
+                {`${category} Total`}{" "}
                 {description.length > 0 && (
-                  <div style={{ fontSize: '.7em' }}>
-                    Based on {description.join(',')}
+                  <div style={{ fontSize: ".7em" }}>
+                    Based on {description.join(",")}
                   </div>
                 )}
               </div>
@@ -763,10 +760,7 @@ function GradebookOverview() {
       });
     } else {
       overviewTable.headers.push({
-        Header: (
-          <div>
-          </div>
-        ),
+        Header: <div></div>,
         accessor: category,
         Footer: categoryPossiblePoints,
         disableFilters: true,
@@ -778,7 +772,7 @@ function GradebookOverview() {
 
   overviewTable.headers.push({
     Header: <div>Course Total</div>,
-    accessor: 'course total',
+    accessor: "course total",
     Footer: totalPossiblePoints,
     disableFilters: true,
   });
@@ -795,21 +789,21 @@ function GradebookOverview() {
 
     let row = {};
 
-    let name = firstName + ' ' + lastName;
-    row['name'] = (
+    let name = firstName + " " + lastName;
+    row["name"] = (
       <a
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: "pointer" }}
         onClick={() => {
           setPageToolView({
-            page: 'course',
-            tool: 'gradebookStudent',
-            view: '',
+            page: "course",
+            tool: "gradebookStudent",
+            view: "",
             params: { courseId, userId },
           });
         }}
       >
-        {' '}
-        {name}{' '}
+        {" "}
+        {name}{" "}
       </a>
     );
 
@@ -841,14 +835,14 @@ function GradebookOverview() {
           <a
             onClick={() => {
               setPageToolView({
-                page: 'course',
-                tool: 'gradebookStudentAssignment',
-                view: '',
+                page: "course",
+                tool: "gradebookStudentAssignment",
+                view: "",
                 params: {
                   courseId,
                   doenetId,
                   userId,
-                  previousCrumb: 'student',
+                  previousCrumb: "student",
                 },
               });
             }}
@@ -877,7 +871,7 @@ function GradebookOverview() {
     }
 
     totalScore = Math.round(totalScore * 100) / 100;
-    row['course total'] = totalScore;
+    row["course total"] = totalScore;
 
     overviewTable.rows.push(row);
   }

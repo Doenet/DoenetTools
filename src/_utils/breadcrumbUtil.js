@@ -3,29 +3,29 @@ import {
   useRecoilState,
   useRecoilValue,
   useSetRecoilState,
-} from 'recoil';
-import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
-import { effectivePermissionsByCourseId } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
+} from "recoil";
+import { pageToolViewAtom } from "../Tools/_framework/NewToolRoot";
+import { effectivePermissionsByCourseId } from "../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import {
   studentData,
   assignmentData,
-} from '../Tools/_framework/ToolPanels/Gradebook';
+} from "../Tools/_framework/ToolPanels/Gradebook";
 import {
   itemByDoenetId,
   coursePermissionsAndSettingsByCourseId,
   findFirstPageOfActivity,
-} from '../_reactComponents/Course/CourseActions';
+} from "../_reactComponents/Course/CourseActions";
 
 export function useCourseChooserCrumb() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   return {
-    label: 'Courses',
+    label: "Courses",
     onClick: () => {
       setPageToolView({
-        page: 'course',
-        tool: 'courseChooser',
-        view: '',
+        page: "course",
+        tool: "courseChooser",
+        view: "",
       });
     },
   };
@@ -43,9 +43,9 @@ export function useDashboardCrumb(courseId) {
     label,
     onClick: () => {
       setPageToolView({
-        page: 'course',
-        tool: 'dashboard',
-        view: '',
+        page: "course",
+        tool: "dashboard",
+        view: "",
         params: {
           courseId,
         },
@@ -55,12 +55,12 @@ export function useDashboardCrumb(courseId) {
 }
 
 const navigationSelectorFamily = selectorFamily({
-  key: 'navigationSelectorFamily/Default',
+  key: "navigationSelectorFamily/Default",
   get:
     ({ courseId, parentDoenetId }) =>
     async ({ get }) => {
       async function getSections({ courseId, parentDoenetId }) {
-        if (parentDoenetId === '' || parentDoenetId === undefined) {
+        if (parentDoenetId === "" || parentDoenetId === undefined) {
           return [];
         }
         const {
@@ -90,12 +90,12 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
 
   const crumbs = [
     {
-      label: 'Content',
+      label: "Content",
       onClick: () => {
         setPageToolView({
-          page: 'course',
-          tool: 'navigation',
-          view: '',
+          page: "course",
+          tool: "navigation",
+          view: "",
           params: {
             courseId,
           },
@@ -106,14 +106,14 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
 
   for (let { label, parentDoenetId, type } of folderInfoArray) {
     switch (type) {
-      case 'section':
+      case "section":
         crumbs.push({
           label,
           onClick: () => {
             setPageToolView({
-              page: 'course',
-              tool: 'navigation',
-              view: '',
+              page: "course",
+              tool: "navigation",
+              view: "",
               params: {
                 courseId,
                 sectionId: parentDoenetId,
@@ -151,19 +151,19 @@ export function useEditorCrumb({ pageId, doenetId, linkPageId }) {
   const pageObj = useRecoilValue(itemByDoenetId(pageId));
   let { label: pageLabel } = pageObj;
   const linkPageObj = useRecoilValue(itemByDoenetId(linkPageId));
-  if (linkPageId){
+  if (linkPageId) {
     ({ label: pageLabel } = linkPageObj);
   }
   const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   let { label: activityLabel } = activityObj;
   let crumbs = [
     {
-      label: activityLabel ?? '_',
+      label: activityLabel ?? "_",
       onClick: () => {
         setPageToolView({
-          page: 'course',
-          tool: 'editor',
-          view: '',
+          page: "course",
+          tool: "editor",
+          view: "",
           params: {
             doenetId,
             pageId,
@@ -173,16 +173,16 @@ export function useEditorCrumb({ pageId, doenetId, linkPageId }) {
     },
   ];
 
-  if (!activityObj.isSinglePage && activityObj.type != 'bank' && !linkPageId) {
+  if (!activityObj.isSinglePage && activityObj.type != "bank" && !linkPageId) {
     let firstPageDoenetId = findFirstPageOfActivity(activityObj.content);
     crumbs = [
       {
-        label: activityLabel ?? '_',
+        label: activityLabel ?? "_",
         onClick: () => {
           setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
+            page: "course",
+            tool: "editor",
+            view: "",
             params: {
               doenetId,
               pageId: firstPageDoenetId,
@@ -191,12 +191,12 @@ export function useEditorCrumb({ pageId, doenetId, linkPageId }) {
         },
       },
       {
-        label: pageLabel ?? '_',
+        label: pageLabel ?? "_",
         onClick: () => {
           setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
+            page: "course",
+            tool: "editor",
+            view: "",
             params: {
               doenetId,
               pageId,
@@ -207,15 +207,15 @@ export function useEditorCrumb({ pageId, doenetId, linkPageId }) {
     ];
   }
 
-  if (activityObj.type == 'bank') {
+  if (activityObj.type == "bank") {
     crumbs = [
       {
-        label: pageLabel ?? '_',
+        label: pageLabel ?? "_",
         onClick: () => {
           setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
+            page: "course",
+            tool: "editor",
+            view: "",
             params: {
               doenetId,
               pageId,
@@ -229,12 +229,12 @@ export function useEditorCrumb({ pageId, doenetId, linkPageId }) {
   if (linkPageId) {
     crumbs = [
       {
-        label: pageLabel ?? '_',
+        label: pageLabel ?? "_",
         onClick: () => {
           setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
+            page: "course",
+            tool: "editor",
+            view: "",
             params: {
               linkPageId,
             },
@@ -252,12 +252,12 @@ export function useAssignmentCrumb({ doenetId }) {
   const { label } = useRecoilValue(itemByDoenetId(doenetId));
 
   return {
-    label: label ?? '_',
+    label: label ?? "_",
     onClick: () => {
       setPageToolView({
-        page: 'course',
-        tool: 'assignment',
-        view: '',
+        page: "course",
+        tool: "assignment",
+        view: "",
         params: {
           doenetId,
         },
@@ -270,12 +270,12 @@ export function usePeopleCrumb(courseId) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   return {
-    label: 'People',
+    label: "People",
     onClick: () => {
       setPageToolView({
-        page: 'course',
-        tool: 'people',
-        view: '',
+        page: "course",
+        tool: "people",
+        view: "",
         params: {
           courseId,
         },
@@ -291,12 +291,12 @@ export function useDataCrumb(courseId, parentDoenetId) {
   );
   const crumbs = [
     {
-      label: 'Data',
+      label: "Data",
       onClick: () => {
         setPageToolView({
-          page: 'course',
-          tool: 'data',
-          view: '',
+          page: "course",
+          tool: "data",
+          view: "",
           params: {
             courseId,
           },
@@ -307,14 +307,14 @@ export function useDataCrumb(courseId, parentDoenetId) {
 
   for (let { label, parentDoenetId, type } of folderInfoArray) {
     switch (type) {
-      case 'section':
+      case "section":
         crumbs.push({
           label,
           onClick: () => {
             setPageToolView({
-              page: 'course',
-              tool: 'data',
-              view: '',
+              page: "course",
+              tool: "data",
+              view: "",
               params: {
                 courseId,
                 sectionId: parentDoenetId,
@@ -340,12 +340,12 @@ export function useSurveyCrumb(driveId, doenetId) {
   };
 
   let firstCrumb = {
-    label: 'Surveys',
+    label: "Surveys",
     onClick: () => {
       setPageToolView({
-        page: 'course',
-        tool: 'surveyList',
-        view: '',
+        page: "course",
+        tool: "surveyList",
+        view: "",
         params,
       });
     },
@@ -358,12 +358,12 @@ export function useSurveyCrumb(driveId, doenetId) {
     return [
       firstCrumb,
       {
-        label: 'Data',
+        label: "Data",
         onClick: () => {
           setPageToolView({
-            page: 'course',
-            tool: 'surveyData',
-            view: '',
+            page: "course",
+            tool: "surveyData",
+            view: "",
             params: params2,
           });
         },
@@ -385,18 +385,18 @@ export function useGradebookCrumbs() {
   const assignments = useRecoilValue(assignmentData);
 
   //Define gradebook tool crumb
-  if (canViewAndModifyGrades == '1') {
+  if (canViewAndModifyGrades == "1") {
     {
       let params = {
         courseId: pageToolParams?.courseId,
       };
       crumbs.push({
-        label: 'Gradebook',
+        label: "Gradebook",
         onClick: () => {
           setPageToolView({
-            page: 'course',
-            tool: 'gradebook',
-            view: '',
+            page: "course",
+            tool: "gradebook",
+            view: "",
             params,
           });
         },
@@ -404,19 +404,19 @@ export function useGradebookCrumbs() {
     }
   }
 
-  if (tool == 'gradebook') {
+  if (tool == "gradebook") {
     return crumbs;
   }
 
   //Handle gradebookStudent
   if (
-    tool == 'gradebookStudent' ||
-    (canViewAndModifyGrades != '1' && tool == 'gradebookStudentAssignment') ||
-    (pageToolParams?.previousCrumb == 'student' &&
-      tool == 'gradebookStudentAssignment')
+    tool == "gradebookStudent" ||
+    (canViewAndModifyGrades != "1" && tool == "gradebookStudentAssignment") ||
+    (pageToolParams?.previousCrumb == "student" &&
+      tool == "gradebookStudentAssignment")
   ) {
-    let label = 'Gradebook';
-    if (canViewAndModifyGrades == '1') {
+    let label = "Gradebook";
+    if (canViewAndModifyGrades == "1") {
       const student = students[pageToolParams?.userId];
       label = `${student.firstName} ${student.lastName}`;
     }
@@ -429,31 +429,31 @@ export function useGradebookCrumbs() {
       label,
       onClick: () => {
         setPageToolView({
-          page: 'course',
-          tool: 'gradebookStudent',
-          view: '',
+          page: "course",
+          tool: "gradebookStudent",
+          view: "",
           params,
         });
       },
     });
   }
 
-  if (tool == 'gradebookStudent') {
+  if (tool == "gradebookStudent") {
     return crumbs;
   }
 
   //Only instructors see this
   if (
-    tool == 'gradebookAssignment' ||
-    (pageToolParams?.previousCrumb == 'assignment' &&
-      tool == 'gradebookStudentAssignment')
+    tool == "gradebookAssignment" ||
+    (pageToolParams?.previousCrumb == "assignment" &&
+      tool == "gradebookStudentAssignment")
   ) {
-    if (canViewAndModifyGrades != '1') {
-      crumbs.push({ label: 'Not Available' });
+    if (canViewAndModifyGrades != "1") {
+      crumbs.push({ label: "Not Available" });
     } else {
       let assignmentName = assignments?.[pageToolParams?.doenetId]?.label;
       if (!assignmentName) {
-        assignmentName = '_';
+        assignmentName = "_";
       }
 
       let params = {
@@ -464,9 +464,9 @@ export function useGradebookCrumbs() {
         label: assignmentName,
         onClick: () => {
           setPageToolView({
-            page: 'course',
-            tool: 'gradebookAssignment',
-            view: '',
+            page: "course",
+            tool: "gradebookAssignment",
+            view: "",
             params,
           });
         },
@@ -474,15 +474,15 @@ export function useGradebookCrumbs() {
     }
   }
 
-  if (tool == 'gradebookAssignment') {
+  if (tool == "gradebookAssignment") {
     return crumbs;
   }
 
   //tool is gradebookStudentAssignment
-  if (canViewAndModifyGrades != '1') {
+  if (canViewAndModifyGrades != "1") {
     let assignmentName = assignments?.[pageToolParams?.doenetId]?.label;
     if (!assignmentName) {
-      assignmentName = '_';
+      assignmentName = "_";
     }
     let params = {
       courseId: pageToolParams?.courseId,
@@ -493,19 +493,19 @@ export function useGradebookCrumbs() {
       label: assignmentName,
       onClick: () => {
         setPageToolView({
-          page: 'course',
-          tool: 'gradebookStudentAssignment',
-          view: '',
+          page: "course",
+          tool: "gradebookStudentAssignment",
+          view: "",
           params,
         });
       },
     });
   } else {
-    let crumbLabel = '_';
-    if (pageToolParams?.previousCrumb == 'student') {
+    let crumbLabel = "_";
+    if (pageToolParams?.previousCrumb == "student") {
       crumbLabel = assignments[pageToolParams?.doenetId].label;
     }
-    if (pageToolParams?.previousCrumb == 'assignment') {
+    if (pageToolParams?.previousCrumb == "assignment") {
       const student = students[pageToolParams?.userId];
       crumbLabel = `${student.firstName} ${student.lastName}`;
     }
@@ -520,9 +520,9 @@ export function useGradebookCrumbs() {
       label: crumbLabel,
       onClick: () => {
         setPageToolView({
-          page: 'course',
-          tool: 'gradebookStudentAssignment',
-          view: '',
+          page: "course",
+          tool: "gradebookStudentAssignment",
+          view: "",
           params,
         });
       },

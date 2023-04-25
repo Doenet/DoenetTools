@@ -1,21 +1,21 @@
-import { faFolderTree } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { faFolderTree } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import {
   itemByDoenetId,
   selectedCourseItems,
   useCourse,
-} from '../../../_reactComponents/Course/CourseActions';
-import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { toastType, useToast } from '../Toast';
+} from "../../../_reactComponents/Course/CourseActions";
+import ActionButton from "../../../_reactComponents/PanelHeaderComponents/ActionButton";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import { toastType, useToast } from "../Toast";
 
 export default function SelectedSection() {
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const { canEditContent } = useRecoilValue(
     effectivePermissionsByCourseId(courseId),
@@ -27,9 +27,9 @@ export default function SelectedSection() {
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const { updateAssignItem } = useCourse(courseId);
 
-  let assignSectionText = 'Assign Section';
+  let assignSectionText = "Assign Section";
   if (isAssigned) {
-    assignSectionText = 'Unassign Section';
+    assignSectionText = "Unassign Section";
   }
 
   useEffect(() => {
@@ -38,10 +38,10 @@ export default function SelectedSection() {
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
-    if (itemTextFieldLabel === '') {
+    if (itemTextFieldLabel === "") {
       effectiveItemLabel = recoilLabel;
-      if (recoilLabel === '') {
-        effectiveItemLabel = 'Untitled';
+      if (recoilLabel === "") {
+        effectiveItemLabel = "Untitled";
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
@@ -55,12 +55,12 @@ export default function SelectedSection() {
 
   const addToast = useToast();
   let heading = (
-    <h2 data-test="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
+    <h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }}>
       <FontAwesomeIcon icon={faFolderTree} /> {recoilLabel}
     </h2>
   );
 
-  if (canEditContent === '1') {
+  if (canEditContent === "1") {
     return (
       <>
         {heading}
@@ -68,9 +68,9 @@ export default function SelectedSection() {
           width="menu"
           value={assignSectionText}
           onClick={() => {
-            let toastText = 'Section Assigned.';
+            let toastText = "Section Assigned.";
             if (isAssigned) {
-              toastText = 'Section Unassigned.';
+              toastText = "Section Unassigned.";
             }
             updateAssignItem({
               doenetId,

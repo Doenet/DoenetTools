@@ -1,14 +1,14 @@
-import React from 'react';
-import { atom, useRecoilValue } from 'recoil';
+import React from "react";
+import { atom, useRecoilValue } from "recoil";
 // import useMediaQuery from '../../_utils/hooks/useMediaQuery';
 
 export const darkModeAtom = atom({
-  key: 'darkModeAtom',
-  default: JSON.parse(localStorage.getItem('theme')),
+  key: "darkModeAtom",
+  default: JSON.parse(localStorage.getItem("theme")),
   effects: [
     ({ onSet }) => {
       onSet((newValue) => {
-        localStorage.setItem('theme', JSON.stringify(newValue));
+        localStorage.setItem("theme", JSON.stringify(newValue));
       });
     },
   ],

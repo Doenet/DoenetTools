@@ -1,4 +1,4 @@
-import Polyline from './Polyline';
+import Polyline from "./Polyline";
 
 export default class Polygon extends Polyline {
   constructor(args) {
@@ -9,7 +9,6 @@ export default class Polygon extends Polyline {
       polygonClicked: this.polygonClicked.bind(this),
       polygonFocused: this.polygonFocused.bind(this),
     });
-
   }
   static componentType = "polygon";
   static representsClosedPath = true;
@@ -41,7 +40,6 @@ export default class Polygon extends Polyline {
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.styleDescription = {
@@ -61,11 +59,10 @@ export default class Polygon extends Polyline {
         document: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["theme"]
+          variableNames: ["theme"],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let lineColorWord;
         if (dependencyValues.document?.stateValues.theme === "dark") {
           lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
@@ -88,10 +85,10 @@ export default class Polygon extends Polyline {
         if (!dependencyValues.filled) {
           styleDescription = borderDescription + lineColorWord;
         } else {
-
           let fillColorWord;
           if (dependencyValues.document?.stateValues.theme === "dark") {
-            fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
+            fillColorWord =
+              dependencyValues.selectedStyle.fillColorWordDarkMode;
           } else {
             fillColorWord = dependencyValues.selectedStyle.fillColorWord;
           }
@@ -102,15 +99,19 @@ export default class Polygon extends Polyline {
               styleDescription += " with " + borderDescription + "border";
             }
           } else {
-            styleDescription = "filled " + fillColorWord
-              + " with " + borderDescription + lineColorWord
-              + " border";
+            styleDescription =
+              "filled " +
+              fillColorWord +
+              " with " +
+              borderDescription +
+              lineColorWord +
+              " border";
           }
         }
 
         return { setValue: { styleDescription } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.styleDescriptionWithNoun = {
       public: true,
@@ -129,18 +130,16 @@ export default class Polygon extends Polyline {
         document: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["theme"]
+          variableNames: ["theme"],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let lineColorWord;
         if (dependencyValues.document?.stateValues.theme === "dark") {
           lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
         } else {
           lineColorWord = dependencyValues.selectedStyle.lineColorWord;
         }
-
 
         let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -155,34 +154,37 @@ export default class Polygon extends Polyline {
 
         let styleDescriptionWithNoun;
         if (!dependencyValues.filled) {
-          styleDescriptionWithNoun = borderDescription + lineColorWord
-            + " polygon";
+          styleDescriptionWithNoun =
+            borderDescription + lineColorWord + " polygon";
         } else {
-
           let fillColorWord;
           if (dependencyValues.document?.stateValues.theme === "dark") {
-            fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
+            fillColorWord =
+              dependencyValues.selectedStyle.fillColorWordDarkMode;
           } else {
             fillColorWord = dependencyValues.selectedStyle.fillColorWord;
           }
 
           if (fillColorWord === lineColorWord) {
-            styleDescriptionWithNoun = "filled " + fillColorWord
-              + " polygon";
+            styleDescriptionWithNoun = "filled " + fillColorWord + " polygon";
             if (borderDescription) {
-              styleDescriptionWithNoun += " with a " + borderDescription + "border";
+              styleDescriptionWithNoun +=
+                " with a " + borderDescription + "border";
             }
           } else {
-            styleDescriptionWithNoun = "filled " + fillColorWord
-              + " polygon with a " + borderDescription + lineColorWord
-              + " border";
+            styleDescriptionWithNoun =
+              "filled " +
+              fillColorWord +
+              " polygon with a " +
+              borderDescription +
+              lineColorWord +
+              " border";
           }
         }
 
         return { setValue: { styleDescriptionWithNoun } };
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.borderStyleDescription = {
       public: true,
@@ -197,11 +199,10 @@ export default class Polygon extends Polyline {
         document: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["theme"]
+          variableNames: ["theme"],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let lineColorWord;
         if (dependencyValues.document?.stateValues.theme === "dark") {
           lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
@@ -209,24 +210,25 @@ export default class Polygon extends Polyline {
           lineColorWord = dependencyValues.selectedStyle.lineColorWord;
         }
 
-
-        let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        let borderStyleDescription =
+          dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
           if (borderStyleDescription) {
             borderStyleDescription += " ";
           }
-          borderStyleDescription += dependencyValues.selectedStyle.lineStyleWord;
+          borderStyleDescription +=
+            dependencyValues.selectedStyle.lineStyleWord;
         }
 
         if (borderStyleDescription) {
           borderStyleDescription += " ";
         }
 
-        borderStyleDescription += lineColorWord
+        borderStyleDescription += lineColorWord;
 
         return { setValue: { borderStyleDescription } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.fillStyleDescription = {
       public: true,
@@ -245,18 +247,16 @@ export default class Polygon extends Polyline {
         document: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["theme"]
+          variableNames: ["theme"],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let fillColorWord;
         if (dependencyValues.document?.stateValues.theme === "dark") {
           fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
         } else {
           fillColorWord = dependencyValues.selectedStyle.fillColorWord;
         }
-
 
         let fillStyleDescription;
         if (!dependencyValues.filled) {
@@ -266,24 +266,24 @@ export default class Polygon extends Polyline {
         }
 
         return { setValue: { fillStyleDescription } };
-      }
-    }
+      },
+    };
 
-    // overwrite nearestPoint so that it includes 
+    // overwrite nearestPoint so that it includes
     // segement between first and last vertex
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions"
+          variableName: "nDimensions",
         },
         numericalVertices: {
           dependencyType: "stateVariable",
-          variableName: "numericalVertices"
+          variableName: "numericalVertices",
         },
         nVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices"
+          variableName: "nVertices",
         },
       }),
       definition({ dependencyValues }) {
@@ -304,13 +304,18 @@ export default class Polygon extends Polyline {
           nxPty = numericalVertices[i]?.[1];
 
           // only implement for constants
-          if (!(Number.isFinite(prPtx) && Number.isFinite(prPty) &&
-            Number.isFinite(nxPtx) && Number.isFinite(nxPty))) {
+          if (
+            !(
+              Number.isFinite(prPtx) &&
+              Number.isFinite(prPty) &&
+              Number.isFinite(nxPtx) &&
+              Number.isFinite(nxPty)
+            )
+          ) {
             vals.push(null);
           } else {
-
-            let BA1sub = (nxPtx - prPtx);
-            let BA2sub = (nxPty - prPty);
+            let BA1sub = nxPtx - prPtx;
+            let BA2sub = nxPty - prPty;
 
             if (BA1sub === 0 && BA2sub === 0) {
               vals.push(null);
@@ -320,11 +325,9 @@ export default class Polygon extends Polyline {
           }
         }
 
-
         return {
           setValue: {
             nearestPoint: function ({ variables, scales }) {
-
               let xscale = scales[0];
               let yscale = scales[1];
 
@@ -357,9 +360,12 @@ export default class Polygon extends Polyline {
 
                 let BA1 = val[0] / xscale;
                 let BA2 = val[1] / yscale;
-                let denom = (BA1 * BA1 + BA2 * BA2);
+                let denom = BA1 * BA1 + BA2 * BA2;
 
-                let t = ((x1 - prevPtx) / xscale * BA1 + (x2 - prevPty) / yscale * BA2) / denom;
+                let t =
+                  (((x1 - prevPtx) / xscale) * BA1 +
+                    ((x2 - prevPty) / yscale) * BA2) /
+                  denom;
 
                 let result;
 
@@ -374,29 +380,29 @@ export default class Polygon extends Polyline {
                   };
                 }
 
-                let distance2 = Math.pow((x1 - result.x1) / xscale, 2)
-                  + Math.pow((x2 - result.x2) / yscale, 2);
+                let distance2 =
+                  Math.pow((x1 - result.x1) / xscale, 2) +
+                  Math.pow((x2 - result.x2) / yscale, 2);
 
                 if (distance2 < closestDistance2) {
                   closestDistance2 = distance2;
                   closestResult = result;
                 }
-
               }
 
-              if (variables.x3 !== undefined && Object.keys(closestResult).length > 0) {
+              if (
+                variables.x3 !== undefined &&
+                Object.keys(closestResult).length > 0
+              ) {
                 closestResult.x3 = 0;
               }
 
               return closestResult;
-
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        };
+      },
+    };
     return stateVariableDefinitions;
   }
-
-
 }

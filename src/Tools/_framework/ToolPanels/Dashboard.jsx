@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
   useRecoilValue,
   useSetRecoilState,
   useRecoilValueLoadable,
-} from 'recoil';
-import Card from '../../../_reactComponents/PanelHeaderComponents/Card';
+} from "recoil";
+import Card from "../../../_reactComponents/PanelHeaderComponents/Card";
 import {
   pageToolViewAtom,
   searchParamAtomFamily,
@@ -20,12 +20,12 @@ import {
   faUser,
   faChartPie,
   faTasks,
-} from '@fortawesome/free-solid-svg-icons';
-import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
+} from "@fortawesome/free-solid-svg-icons";
+import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {
     canModifyCourseSettings,
     canManageUsers,
@@ -37,14 +37,13 @@ export default function Dashboard(props) {
   let profile = loadProfile.contents;
 
   useEffect(() => {
-    setSuppressMenus(canModifyCourseSettings === '1' ? [] : ['ClassTimes']);
+    setSuppressMenus(canModifyCourseSettings === "1" ? [] : ["ClassTimes"]);
   }, [canModifyCourseSettings, setSuppressMenus]);
-
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0'){
-    return <h1>No Access to view this page.</h1>
+  if (course?.canViewCourse == "0") {
+    return <h1>No Access to view this page.</h1>;
   }
 
   return (
@@ -71,11 +70,11 @@ export default function Dashboard(props) {
             onClick={() => {
               setPageToolView((was) => {
                 // console.log(">>>>was",was);
-                return { ...was, tool: 'navigation' };
+                return { ...was, tool: "navigation" };
               });
             }}
           />
-          {canManageUsers === '1' ? (
+          {canManageUsers === "1" ? (
             <Card
               dataTest="Dashboard People Card"
               name="People"
@@ -83,41 +82,41 @@ export default function Dashboard(props) {
               value="People"
               onClick={() =>
                 setPageToolView({
-                  page: 'course',
-                  tool: 'people',
-                  view: '',
+                  page: "course",
+                  tool: "people",
+                  view: "",
                   params: { courseId },
                 })
               }
             />
           ) : null}
-          {(dataAccessPermission ?? 'None') !== 'None' ? (
+          {(dataAccessPermission ?? "None") !== "None" ? (
             <Card
-            dataTest="Dashboard Data Card"
+              dataTest="Dashboard Data Card"
               name="Data"
               icon={<FontAwesomeIcon icon={faChartPie} />}
               value="Data"
               onClick={() =>
                 setPageToolView({
-                  page: 'course',
-                  tool: 'data',
-                  view: '',
+                  page: "course",
+                  tool: "data",
+                  view: "",
                   params: { courseId },
                 })
               }
             />
           ) : null}
-          {canViewAndModifyGrades === '1' ? (
+          {canViewAndModifyGrades === "1" ? (
             <Card
-            dataTest="Dashboard Gradebook Card"
-            name="Gradebook"
+              dataTest="Dashboard Gradebook Card"
+              name="Gradebook"
               icon={<FontAwesomeIcon icon={faTasks} />}
               value="Gradebook"
               onClick={() =>
                 setPageToolView((was) => {
                   return {
-                    page: 'course',
-                    tool: 'gradebook',
+                    page: "course",
+                    tool: "gradebook",
                     view: was.view,
                     params: { courseId },
                   };
@@ -128,13 +127,13 @@ export default function Dashboard(props) {
             <Card
               name="Gradebook"
               icon={<FontAwesomeIcon icon={faTasks} />}
-              style={{ marginLeft: '-600px' }}
+              style={{ marginLeft: "-600px" }}
               value="Gradebook"
               onClick={() =>
                 setPageToolView((was) => {
                   return {
-                    page: 'course',
-                    tool: 'gradebookStudent',
+                    page: "course",
+                    tool: "gradebookStudent",
                     view: was.view,
                     params: { courseId, userId: profile.userId },
                   };

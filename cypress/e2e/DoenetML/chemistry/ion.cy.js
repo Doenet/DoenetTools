@@ -1,17 +1,17 @@
-import me from 'math-expressions';
-import { cesc, cesc2 } from '../../../../src/_utils/url';
+import me from "math-expressions";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
-describe('Ion Tests', function () {
-
+describe("Ion Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
-  })
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
-  it('ion names and charges', () => {
+  it("ion names and charges", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
 
   <section name="H" newNamespace><title>Hydrogen</title>
@@ -123,83 +123,116 @@ describe('Ion Tests', function () {
 
 
 
-  `}, "*");
-    })
+  `,
+        },
+        "*",
+      );
+    });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/H\\/H') + ' .mjx-mrow').eq(0).should('have.text', 'H+');
-    cy.get(cesc('#\\/H\\/Hname')).should('have.text', 'Hydrogen');
-    cy.get(cesc('#\\/H\\/Hcharge')).should('have.text', '1');
+    cy.get(cesc("#\\/H\\/H") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "H+");
+    cy.get(cesc("#\\/H\\/Hname")).should("have.text", "Hydrogen");
+    cy.get(cesc("#\\/H\\/Hcharge")).should("have.text", "1");
 
-    cy.get(cesc('#\\/H\\/Hminus') + ' .mjx-mrow').eq(0).should('have.text', 'H−');
-    cy.get(cesc('#\\/H\\/Hminusname')).should('have.text', 'Hydride');
-    cy.get(cesc('#\\/H\\/Hminuscharge')).should('have.text', '-1');
+    cy.get(cesc("#\\/H\\/Hminus") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "H−");
+    cy.get(cesc("#\\/H\\/Hminusname")).should("have.text", "Hydride");
+    cy.get(cesc("#\\/H\\/Hminuscharge")).should("have.text", "-1");
 
-    cy.get(cesc('#\\/H\\/Hcrazy') + ' .mjx-mrow').eq(0).should('have.text', 'H10+');
-    cy.get(cesc('#\\/H\\/Hcrazyname')).should('have.text', 'Hydrogen');
-    cy.get(cesc('#\\/H\\/Hcrazycharge')).should('have.text', '10');
+    cy.get(cesc("#\\/H\\/Hcrazy") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "H10+");
+    cy.get(cesc("#\\/H\\/Hcrazyname")).should("have.text", "Hydrogen");
+    cy.get(cesc("#\\/H\\/Hcrazycharge")).should("have.text", "10");
 
-    cy.get(cesc('#\\/Cl\\/Cl') + ' .mjx-mrow').eq(0).should('have.text', 'Cl−');
-    cy.get(cesc('#\\/Cl\\/Clname')).should('have.text', 'Chloride');
-    cy.get(cesc('#\\/Cl\\/Clcharge')).should('have.text', '-1');
+    cy.get(cesc("#\\/Cl\\/Cl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Cl−");
+    cy.get(cesc("#\\/Cl\\/Clname")).should("have.text", "Chloride");
+    cy.get(cesc("#\\/Cl\\/Clcharge")).should("have.text", "-1");
 
-    cy.get(cesc('#\\/Cl\\/Clminus') + ' .mjx-mrow').eq(0).should('have.text', 'Cl−');
-    cy.get(cesc('#\\/Cl\\/Clminusname')).should('have.text', 'Chloride');
-    cy.get(cesc('#\\/Cl\\/Clminuscharge')).should('have.text', '-1');
+    cy.get(cesc("#\\/Cl\\/Clminus") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Cl−");
+    cy.get(cesc("#\\/Cl\\/Clminusname")).should("have.text", "Chloride");
+    cy.get(cesc("#\\/Cl\\/Clminuscharge")).should("have.text", "-1");
 
-    cy.get(cesc('#\\/Cl\\/Clplus') + ' .mjx-mrow').eq(0).should('have.text', 'Cl+');
-    cy.get(cesc('#\\/Cl\\/Clplusname')).should('have.text', 'Chlorine');
-    cy.get(cesc('#\\/Cl\\/Clpluscharge')).should('have.text', '1');
+    cy.get(cesc("#\\/Cl\\/Clplus") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Cl+");
+    cy.get(cesc("#\\/Cl\\/Clplusname")).should("have.text", "Chlorine");
+    cy.get(cesc("#\\/Cl\\/Clpluscharge")).should("have.text", "1");
 
+    cy.get(cesc("#\\/Fe\\/Fe") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe");
+    cy.get(cesc("#\\/Fe\\/Fename")).should("have.text", "Iron");
+    cy.get(cesc("#\\/Fe\\/Fecharge")).should("have.text", "0");
 
-    cy.get(cesc('#\\/Fe\\/Fe') + ' .mjx-mrow').eq(0).should('have.text', 'Fe');
-    cy.get(cesc('#\\/Fe\\/Fename')).should('have.text', 'Iron');
-    cy.get(cesc('#\\/Fe\\/Fecharge')).should('have.text', '0');
+    cy.get(cesc("#\\/Fe\\/Fe1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe+");
+    cy.get(cesc("#\\/Fe\\/Fe1name")).should("have.text", "Iron (I)");
+    cy.get(cesc("#\\/Fe\\/Fe1charge")).should("have.text", "1");
 
-    cy.get(cesc('#\\/Fe\\/Fe1') + ' .mjx-mrow').eq(0).should('have.text', 'Fe+');
-    cy.get(cesc('#\\/Fe\\/Fe1name')).should('have.text', 'Iron (I)');
-    cy.get(cesc('#\\/Fe\\/Fe1charge')).should('have.text', '1');
+    cy.get(cesc("#\\/Fe\\/Fe2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe2+");
+    cy.get(cesc("#\\/Fe\\/Fe2name")).should("have.text", "Iron (II)");
+    cy.get(cesc("#\\/Fe\\/Fe2charge")).should("have.text", "2");
 
-    cy.get(cesc('#\\/Fe\\/Fe2') + ' .mjx-mrow').eq(0).should('have.text', 'Fe2+');
-    cy.get(cesc('#\\/Fe\\/Fe2name')).should('have.text', 'Iron (II)');
-    cy.get(cesc('#\\/Fe\\/Fe2charge')).should('have.text', '2');
+    cy.get(cesc("#\\/Fe\\/Fe3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe3+");
+    cy.get(cesc("#\\/Fe\\/Fe3name")).should("have.text", "Iron (III)");
+    cy.get(cesc("#\\/Fe\\/Fe3charge")).should("have.text", "3");
 
-    cy.get(cesc('#\\/Fe\\/Fe3') + ' .mjx-mrow').eq(0).should('have.text', 'Fe3+');
-    cy.get(cesc('#\\/Fe\\/Fe3name')).should('have.text', 'Iron (III)');
-    cy.get(cesc('#\\/Fe\\/Fe3charge')).should('have.text', '3');
+    cy.get(cesc("#\\/Fe\\/Fe4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe4+");
+    cy.get(cesc("#\\/Fe\\/Fe4name")).should("have.text", "Iron (IV)");
+    cy.get(cesc("#\\/Fe\\/Fe4charge")).should("have.text", "4");
 
-    cy.get(cesc('#\\/Fe\\/Fe4') + ' .mjx-mrow').eq(0).should('have.text', 'Fe4+');
-    cy.get(cesc('#\\/Fe\\/Fe4name')).should('have.text', 'Iron (IV)');
-    cy.get(cesc('#\\/Fe\\/Fe4charge')).should('have.text', '4');
+    cy.get(cesc("#\\/Fe\\/Fe5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe5+");
+    cy.get(cesc("#\\/Fe\\/Fe5name")).should("have.text", "Iron (V)");
+    cy.get(cesc("#\\/Fe\\/Fe5charge")).should("have.text", "5");
 
-    cy.get(cesc('#\\/Fe\\/Fe5') + ' .mjx-mrow').eq(0).should('have.text', 'Fe5+');
-    cy.get(cesc('#\\/Fe\\/Fe5name')).should('have.text', 'Iron (V)');
-    cy.get(cesc('#\\/Fe\\/Fe5charge')).should('have.text', '5');
+    cy.get(cesc("#\\/Fe\\/Fe6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe6+");
+    cy.get(cesc("#\\/Fe\\/Fe6name")).should("have.text", "Iron (VI)");
+    cy.get(cesc("#\\/Fe\\/Fe6charge")).should("have.text", "6");
 
-    cy.get(cesc('#\\/Fe\\/Fe6') + ' .mjx-mrow').eq(0).should('have.text', 'Fe6+');
-    cy.get(cesc('#\\/Fe\\/Fe6name')).should('have.text', 'Iron (VI)');
-    cy.get(cesc('#\\/Fe\\/Fe6charge')).should('have.text', '6');
+    cy.get(cesc("#\\/Fe\\/Fe7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe7+");
+    cy.get(cesc("#\\/Fe\\/Fe7name")).should("have.text", "Iron (VII)");
+    cy.get(cesc("#\\/Fe\\/Fe7charge")).should("have.text", "7");
 
-    cy.get(cesc('#\\/Fe\\/Fe7') + ' .mjx-mrow').eq(0).should('have.text', 'Fe7+');
-    cy.get(cesc('#\\/Fe\\/Fe7name')).should('have.text', 'Iron (VII)');
-    cy.get(cesc('#\\/Fe\\/Fe7charge')).should('have.text', '7');
+    cy.get(cesc("#\\/Fe\\/Fe8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe8+");
+    cy.get(cesc("#\\/Fe\\/Fe8name")).should("have.text", "Iron (VIII)");
+    cy.get(cesc("#\\/Fe\\/Fe8charge")).should("have.text", "8");
 
-    cy.get(cesc('#\\/Fe\\/Fe8') + ' .mjx-mrow').eq(0).should('have.text', 'Fe8+');
-    cy.get(cesc('#\\/Fe\\/Fe8name')).should('have.text', 'Iron (VIII)');
-    cy.get(cesc('#\\/Fe\\/Fe8charge')).should('have.text', '8');
-
-    cy.get(cesc('#\\/Fe\\/Fen1') + ' .mjx-mrow').eq(0).should('have.text', 'Fe−');
-    cy.get(cesc('#\\/Fe\\/Fen1name')).should('have.text', 'Iron');
-    cy.get(cesc('#\\/Fe\\/Fen1charge')).should('have.text', '-1');
-
-
+    cy.get(cesc("#\\/Fe\\/Fen1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "Fe−");
+    cy.get(cesc("#\\/Fe\\/Fen1name")).should("have.text", "Iron");
+    cy.get(cesc("#\\/Fe\\/Fen1charge")).should("have.text", "-1");
   });
 
-  it('anion names', () => {
+  it("anion names", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
 
   <p>Symbol: 
@@ -262,30 +295,33 @@ describe('Ion Tests', function () {
     name: <text copySource="Tsminus" name="Tsminusname" />
   </p>
 
-  `}, "*");
-    })
+  `,
+        },
+        "*",
+      );
+    });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/Hminusname')).should('have.text', 'Hydride');
-    cy.get(cesc('#\\/Cminusname')).should('have.text', 'Carbide');
-    cy.get(cesc('#\\/Nminusname')).should('have.text', 'Nitride');
-    cy.get(cesc('#\\/Ominusname')).should('have.text', 'Oxide');
-    cy.get(cesc('#\\/Fminusname')).should('have.text', 'Fluoride');
-    cy.get(cesc('#\\/Pminusname')).should('have.text', 'Phosphide');
-    cy.get(cesc('#\\/Sminusname')).should('have.text', 'Sulfide');
-    cy.get(cesc('#\\/Clminusname')).should('have.text', 'Chloride');
-    cy.get(cesc('#\\/Brminusname')).should('have.text', 'Bromide');
-    cy.get(cesc('#\\/Iminusname')).should('have.text', 'Iodide');
-    cy.get(cesc('#\\/Atminusname')).should('have.text', 'Astatide');
-    cy.get(cesc('#\\/Tsminusname')).should('have.text', 'Tennesside');
-
+    cy.get(cesc("#\\/Hminusname")).should("have.text", "Hydride");
+    cy.get(cesc("#\\/Cminusname")).should("have.text", "Carbide");
+    cy.get(cesc("#\\/Nminusname")).should("have.text", "Nitride");
+    cy.get(cesc("#\\/Ominusname")).should("have.text", "Oxide");
+    cy.get(cesc("#\\/Fminusname")).should("have.text", "Fluoride");
+    cy.get(cesc("#\\/Pminusname")).should("have.text", "Phosphide");
+    cy.get(cesc("#\\/Sminusname")).should("have.text", "Sulfide");
+    cy.get(cesc("#\\/Clminusname")).should("have.text", "Chloride");
+    cy.get(cesc("#\\/Brminusname")).should("have.text", "Bromide");
+    cy.get(cesc("#\\/Iminusname")).should("have.text", "Iodide");
+    cy.get(cesc("#\\/Atminusname")).should("have.text", "Astatide");
+    cy.get(cesc("#\\/Tsminusname")).should("have.text", "Tennesside");
   });
 
-  it('caion name suffixes', () => {
+  it("caion name suffixes", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
 
   <p>Symbol: 
@@ -420,44 +456,47 @@ describe('Ion Tests', function () {
 
 
 
-  `}, "*");
-    })
+  `,
+        },
+        "*",
+      );
+    });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/Scname')).should('have.text', 'Scandium (I)');
-    cy.get(cesc('#\\/Tiname')).should('have.text', 'Titanium (II)');
-    cy.get(cesc('#\\/Vname')).should('have.text', 'Vanadium (III)');
-    cy.get(cesc('#\\/Crname')).should('have.text', 'Chromium (IV)');
-    cy.get(cesc('#\\/Mnname')).should('have.text', 'Manganese (V)');
-    cy.get(cesc('#\\/Fename')).should('have.text', 'Iron (VI)');
-    cy.get(cesc('#\\/Coname')).should('have.text', 'Cobalt (VII)');
-    cy.get(cesc('#\\/Niname')).should('have.text', 'Nickel (VIII)');
-    cy.get(cesc('#\\/Cuname')).should('have.text', 'Copper (I)');
-    cy.get(cesc('#\\/Znname')).should('have.text', 'Zinc (II)');
-    cy.get(cesc('#\\/Alname')).should('have.text', 'Aluminum (III)');
-    cy.get(cesc('#\\/Ganame')).should('have.text', 'Gallium (IV)');
-    cy.get(cesc('#\\/Inname')).should('have.text', 'Indium (V)');
-    cy.get(cesc('#\\/Snname')).should('have.text', 'Tin (VI)');
-    cy.get(cesc('#\\/Tlname')).should('have.text', 'Thallium (VII)');
-    cy.get(cesc('#\\/Pbname')).should('have.text', 'Lead (VIII)');
-    cy.get(cesc('#\\/Biname')).should('have.text', 'Bismuth (I)');
-    cy.get(cesc('#\\/Poname')).should('have.text', 'Polonium (II)');
-    cy.get(cesc('#\\/Cename')).should('have.text', 'Cerium (III)');
-    cy.get(cesc('#\\/Tmname')).should('have.text', 'Thulium (IV)');
-    cy.get(cesc('#\\/Luname')).should('have.text', 'Lutetium (V)');
-    cy.get(cesc('#\\/Thname')).should('have.text', 'Thorium (VI)');
-    cy.get(cesc('#\\/Esname')).should('have.text', 'Einsteinium (VII)');
-    cy.get(cesc('#\\/Lrname')).should('have.text', 'Lawrencium (VIII)');
-    cy.get(cesc('#\\/Caname')).should('have.text', 'Calcium');
-    cy.get(cesc('#\\/Siname')).should('have.text', 'Silicon');
-
+    cy.get(cesc("#\\/Scname")).should("have.text", "Scandium (I)");
+    cy.get(cesc("#\\/Tiname")).should("have.text", "Titanium (II)");
+    cy.get(cesc("#\\/Vname")).should("have.text", "Vanadium (III)");
+    cy.get(cesc("#\\/Crname")).should("have.text", "Chromium (IV)");
+    cy.get(cesc("#\\/Mnname")).should("have.text", "Manganese (V)");
+    cy.get(cesc("#\\/Fename")).should("have.text", "Iron (VI)");
+    cy.get(cesc("#\\/Coname")).should("have.text", "Cobalt (VII)");
+    cy.get(cesc("#\\/Niname")).should("have.text", "Nickel (VIII)");
+    cy.get(cesc("#\\/Cuname")).should("have.text", "Copper (I)");
+    cy.get(cesc("#\\/Znname")).should("have.text", "Zinc (II)");
+    cy.get(cesc("#\\/Alname")).should("have.text", "Aluminum (III)");
+    cy.get(cesc("#\\/Ganame")).should("have.text", "Gallium (IV)");
+    cy.get(cesc("#\\/Inname")).should("have.text", "Indium (V)");
+    cy.get(cesc("#\\/Snname")).should("have.text", "Tin (VI)");
+    cy.get(cesc("#\\/Tlname")).should("have.text", "Thallium (VII)");
+    cy.get(cesc("#\\/Pbname")).should("have.text", "Lead (VIII)");
+    cy.get(cesc("#\\/Biname")).should("have.text", "Bismuth (I)");
+    cy.get(cesc("#\\/Poname")).should("have.text", "Polonium (II)");
+    cy.get(cesc("#\\/Cename")).should("have.text", "Cerium (III)");
+    cy.get(cesc("#\\/Tmname")).should("have.text", "Thulium (IV)");
+    cy.get(cesc("#\\/Luname")).should("have.text", "Lutetium (V)");
+    cy.get(cesc("#\\/Thname")).should("have.text", "Thorium (VI)");
+    cy.get(cesc("#\\/Esname")).should("have.text", "Einsteinium (VII)");
+    cy.get(cesc("#\\/Lrname")).should("have.text", "Lawrencium (VIII)");
+    cy.get(cesc("#\\/Caname")).should("have.text", "Calcium");
+    cy.get(cesc("#\\/Siname")).should("have.text", "Silicon");
   });
 
-  it('answer ion symbols', () => {
+  it("answer ion symbols", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
 
   <p>Enter symbol for common ion of <atom name="Cl" symbol="Cl" />.  
@@ -480,74 +519,90 @@ describe('Ion Tests', function () {
     <answer name="ansS" splitSymbols="false"><ion copySource="S" /></answer>
   </p>
 
-  `}, "*");
-    })
+  `,
+        },
+        "*",
+      );
+    });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathinputClName = stateVariables['/ansCl'].stateValues.inputChildren[0].componentName
-      let mathinputClAnchor = cesc2('#' + mathinputClName) + " textarea";
-      let mathinputClSubmitAnchor = cesc2('#' + mathinputClName + '_submit');
-      let mathinputClCorrectAnchor = cesc2('#' + mathinputClName + '_correct');
-      let mathinputClIncorrectAnchor = cesc2('#' + mathinputClName + '_incorrect');
+      let mathinputClName =
+        stateVariables["/ansCl"].stateValues.inputChildren[0].componentName;
+      let mathinputClAnchor = cesc2("#" + mathinputClName) + " textarea";
+      let mathinputClSubmitAnchor = cesc2("#" + mathinputClName + "_submit");
+      let mathinputClCorrectAnchor = cesc2("#" + mathinputClName + "_correct");
+      let mathinputClIncorrectAnchor = cesc2(
+        "#" + mathinputClName + "_incorrect",
+      );
 
-      let mathinputHName = stateVariables['/ansH'].stateValues.inputChildren[0].componentName
-      let mathinputHAnchor = cesc2('#' + mathinputHName) + " textarea";
-      let mathinputHSubmitAnchor = cesc2('#' + mathinputHName + '_submit');
-      let mathinputHCorrectAnchor = cesc2('#' + mathinputHName + '_correct');
-      let mathinputHIncorrectAnchor = cesc2('#' + mathinputHName + '_incorrect');
+      let mathinputHName =
+        stateVariables["/ansH"].stateValues.inputChildren[0].componentName;
+      let mathinputHAnchor = cesc2("#" + mathinputHName) + " textarea";
+      let mathinputHSubmitAnchor = cesc2("#" + mathinputHName + "_submit");
+      let mathinputHCorrectAnchor = cesc2("#" + mathinputHName + "_correct");
+      let mathinputHIncorrectAnchor = cesc2(
+        "#" + mathinputHName + "_incorrect",
+      );
 
-      let mathinputMgName = stateVariables['/ansMg'].stateValues.inputChildren[0].componentName
-      let mathinputMgAnchor = cesc2('#' + mathinputMgName) + " textarea";
-      let mathinputMgSubmitAnchor = cesc2('#' + mathinputMgName + '_submit');
-      let mathinputMgCorrectAnchor = cesc2('#' + mathinputMgName + '_correct');
-      let mathinputMgIncorrectAnchor = cesc2('#' + mathinputMgName + '_incorrect');
+      let mathinputMgName =
+        stateVariables["/ansMg"].stateValues.inputChildren[0].componentName;
+      let mathinputMgAnchor = cesc2("#" + mathinputMgName) + " textarea";
+      let mathinputMgSubmitAnchor = cesc2("#" + mathinputMgName + "_submit");
+      let mathinputMgCorrectAnchor = cesc2("#" + mathinputMgName + "_correct");
+      let mathinputMgIncorrectAnchor = cesc2(
+        "#" + mathinputMgName + "_incorrect",
+      );
 
-      let mathinputPName = stateVariables['/ansP'].stateValues.inputChildren[0].componentName
-      let mathinputPAnchor = cesc2('#' + mathinputPName) + " textarea";
-      let mathinputPSubmitAnchor = cesc2('#' + mathinputPName + '_submit');
-      let mathinputPCorrectAnchor = cesc2('#' + mathinputPName + '_correct');
-      let mathinputPIncorrectAnchor = cesc2('#' + mathinputPName + '_incorrect');
+      let mathinputPName =
+        stateVariables["/ansP"].stateValues.inputChildren[0].componentName;
+      let mathinputPAnchor = cesc2("#" + mathinputPName) + " textarea";
+      let mathinputPSubmitAnchor = cesc2("#" + mathinputPName + "_submit");
+      let mathinputPCorrectAnchor = cesc2("#" + mathinputPName + "_correct");
+      let mathinputPIncorrectAnchor = cesc2(
+        "#" + mathinputPName + "_incorrect",
+      );
 
-      let mathinputSName = stateVariables['/ansS'].stateValues.inputChildren[0].componentName
-      let mathinputSAnchor = cesc2('#' + mathinputSName) + " textarea";
-      let mathinputSSubmitAnchor = cesc2('#' + mathinputSName + '_submit');
-      let mathinputSCorrectAnchor = cesc2('#' + mathinputSName + '_correct');
-      let mathinputSIncorrectAnchor = cesc2('#' + mathinputSName + '_incorrect');
+      let mathinputSName =
+        stateVariables["/ansS"].stateValues.inputChildren[0].componentName;
+      let mathinputSAnchor = cesc2("#" + mathinputSName) + " textarea";
+      let mathinputSSubmitAnchor = cesc2("#" + mathinputSName + "_submit");
+      let mathinputSCorrectAnchor = cesc2("#" + mathinputSName + "_correct");
+      let mathinputSIncorrectAnchor = cesc2(
+        "#" + mathinputSName + "_incorrect",
+      );
 
       cy.get(mathinputClAnchor).type("Cl{enter}", { force: true });
-      cy.get(mathinputClIncorrectAnchor).should('be.visible')
+      cy.get(mathinputClIncorrectAnchor).should("be.visible");
 
       cy.get(mathinputClAnchor).type("{end}^-{enter}", { force: true });
-      cy.get(mathinputClCorrectAnchor).should('be.visible')
+      cy.get(mathinputClCorrectAnchor).should("be.visible");
 
       cy.get(mathinputHAnchor).type("H{enter}", { force: true });
-      cy.get(mathinputHIncorrectAnchor).should('be.visible')
+      cy.get(mathinputHIncorrectAnchor).should("be.visible");
 
       cy.get(mathinputHAnchor).type("{end}^+{enter}", { force: true });
-      cy.get(mathinputHCorrectAnchor).should('be.visible')
+      cy.get(mathinputHCorrectAnchor).should("be.visible");
 
       cy.get(mathinputMgAnchor).type("Mg{enter}", { force: true });
-      cy.get(mathinputMgIncorrectAnchor).should('be.visible')
+      cy.get(mathinputMgIncorrectAnchor).should("be.visible");
 
       cy.get(mathinputMgAnchor).type("{end}^2+{enter}", { force: true });
-      cy.get(mathinputMgCorrectAnchor).should('be.visible')
+      cy.get(mathinputMgCorrectAnchor).should("be.visible");
 
       cy.get(mathinputPAnchor).type("P{enter}", { force: true });
-      cy.get(mathinputPIncorrectAnchor).should('be.visible')
+      cy.get(mathinputPIncorrectAnchor).should("be.visible");
 
       cy.get(mathinputPAnchor).type("{end}^3-{enter}", { force: true });
-      cy.get(mathinputPCorrectAnchor).should('be.visible')
+      cy.get(mathinputPCorrectAnchor).should("be.visible");
 
       cy.get(mathinputSAnchor).type("S{enter}", { force: true });
-      cy.get(mathinputSIncorrectAnchor).should('be.visible')
+      cy.get(mathinputSIncorrectAnchor).should("be.visible");
 
       cy.get(mathinputSAnchor).type("{end}^2-{enter}", { force: true });
-      cy.get(mathinputSCorrectAnchor).should('be.visible')
-
-    })
+      cy.get(mathinputSCorrectAnchor).should("be.visible");
+    });
   });
-
-})
+});

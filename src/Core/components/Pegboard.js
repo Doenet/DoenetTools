@@ -1,4 +1,4 @@
-import GraphicalComponent from './abstract/GraphicalComponent';
+import GraphicalComponent from "./abstract/GraphicalComponent";
 
 export default class Pegboard extends GraphicalComponent {
   static componentType = "pegboard";
@@ -11,7 +11,7 @@ export default class Pegboard extends GraphicalComponent {
       createStateVariable: "dx",
       defaultValue: 1,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.dy = {
@@ -19,7 +19,7 @@ export default class Pegboard extends GraphicalComponent {
       createStateVariable: "dy",
       defaultValue: 1,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.xoffset = {
@@ -27,7 +27,7 @@ export default class Pegboard extends GraphicalComponent {
       createStateVariable: "xoffset",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.yoffset = {
@@ -35,11 +35,9 @@ export default class Pegboard extends GraphicalComponent {
       createStateVariable: "yoffset",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     return attributes;
-
   }
-
 }

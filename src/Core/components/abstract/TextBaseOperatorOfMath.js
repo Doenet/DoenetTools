@@ -1,20 +1,19 @@
-import TextComponent from '../Text';
+import TextComponent from "../Text";
 
 export default class TextBaseOperatorOfMath extends TextComponent {
   static componentType = "_textOperatorOfMath";
   static rendererType = "text";
 
   static returnChildGroups() {
-
-    return [{
-      group: "maths",
-      componentTypes: ["math"]
-    }]
-
+    return [
+      {
+        group: "maths",
+        componentTypes: ["math"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let constructor = this;
@@ -29,24 +28,20 @@ export default class TextBaseOperatorOfMath extends TextComponent {
         mathChildren: {
           dependencyType: "child",
           childGroups: ["maths"],
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
             value: constructor.applyTextOperator(
-              dependencyValues.mathChildren
-                .map(x => x.stateValues.value)
-            )
-          }
-        }
-      }
-    }
+              dependencyValues.mathChildren.map((x) => x.stateValues.value),
+            ),
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
 }

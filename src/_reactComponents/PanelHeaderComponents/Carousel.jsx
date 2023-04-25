@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 
 import SwiperCore, {
   // Navigation,
@@ -6,25 +6,25 @@ import SwiperCore, {
   Mousewheel,
   Pagination,
   A11y,
-} from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
+} from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
-import 'swiper/css';
+import "swiper/css";
 // import "swiper/css/navigation";
-import 'swiper/css/pagination';
-import 'swiper/css/keyboard';
-import './Carousel.css';
+import "swiper/css/pagination";
+import "swiper/css/keyboard";
+import "./Carousel.css";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
-import { Avatar, Box, Image, Text, MenuItem } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
-import ActivityCard from './ActivityCard';
+} from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
+import { Avatar, Box, Image, Text, MenuItem } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import ActivityCard from "./ActivityCard";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
@@ -48,7 +48,7 @@ const RightChevron = styled(FontAwesomeIcon)`
   }
 `;
 
-export function Carousel({ title = '', data = [] }) {
+export function Carousel({ title = "", data = [] }) {
   const swiperElRef = useRef(null);
 
   const pagination = {
@@ -76,13 +76,13 @@ export function Carousel({ title = '', data = [] }) {
     <>
       <div
         style={{
-          border: '2px solid #949494',
-          borderRadius: '6px',
-          padding: '10px',
-          minWidth: '320px',
-          maxWidth: '1000px',
-          width: '80%',
-          textAlign: 'center',
+          border: "2px solid #949494",
+          borderRadius: "6px",
+          padding: "10px",
+          minWidth: "320px",
+          maxWidth: "1000px",
+          width: "80%",
+          textAlign: "center",
         }}
       >
         <Text fontSize="18px" fontWeight="700">
@@ -100,7 +100,7 @@ export function Carousel({ title = '', data = [] }) {
 
           <Swiper
             ref={swiperElRef}
-            style={{ height: '230px' }}
+            style={{ height: "230px" }}
             modules={[Pagination, A11y]}
             // modules={[Navigation, Pagination, A11y]}
             // navigation
@@ -140,7 +140,7 @@ export function Carousel({ title = '', data = [] }) {
                 <SwiperSlide key={`swipercard${i}`}>
                   <ActivityCard
                     {...cardObj}
-                    fullName={cardObj.firstName + ' ' + cardObj.lastName}
+                    fullName={cardObj.firstName + " " + cardObj.lastName}
                     imageLink={`/portfolioviewer/${cardObj.doenetId}`}
                     menuItems={
                       null

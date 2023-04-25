@@ -1,36 +1,36 @@
 import {
   faCalendarPlus,
   faCalendarTimes,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { DateToDateString } from '../../_utils/dateUtilityFunction';
-import DateTime from '../PanelHeaderComponents/DateTime';
-import { useActivity } from './ActivityActions';
-import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
-import Increment from '../PanelHeaderComponents/IncrementMenu';
-import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
-import { atomFamily, useRecoilState, useRecoilValue } from 'recoil';
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { DateToDateString } from "../../_utils/dateUtilityFunction";
+import DateTime from "../PanelHeaderComponents/DateTime";
+import { useActivity } from "./ActivityActions";
+import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox";
+import Increment from "../PanelHeaderComponents/IncrementMenu";
+import DropdownMenu from "../PanelHeaderComponents/DropdownMenu";
+import { atomFamily, useRecoilState, useRecoilValue } from "recoil";
 import {
   peopleByCourseId,
   itemByDoenetId,
   useCourse,
-} from '../Course/CourseActions';
-import axios from 'axios';
-import RelatedItems from '../PanelHeaderComponents/RelatedItems';
-import ActionButtonGroup from '../PanelHeaderComponents/ActionButtonGroup';
-import ActionButton from '../PanelHeaderComponents/ActionButton';
-import { toastType, useToast } from '@Toast';
-import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
-import { prerenderActivity } from '../../_utils/activtyWebWorker';
-import Textfield from '../PanelHeaderComponents/Textfield';
-import { useSaveDraft } from '../../_utils/hooks/useSaveDraft';
+} from "../Course/CourseActions";
+import axios from "axios";
+import RelatedItems from "../PanelHeaderComponents/RelatedItems";
+import ActionButtonGroup from "../PanelHeaderComponents/ActionButtonGroup";
+import ActionButton from "../PanelHeaderComponents/ActionButton";
+import { toastType, useToast } from "@Toast";
+import { searchParamAtomFamily } from "../../Tools/_framework/NewToolRoot";
+import { prerenderActivity } from "../../_utils/activtyWebWorker";
+import Textfield from "../PanelHeaderComponents/Textfield";
+import { useSaveDraft } from "../../_utils/hooks/useSaveDraft";
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
-  display: ${(props) => (props.flex ? 'flex' : 'block')};
-  align-items: ${(props) => props.flex && 'center'};
+  display: ${(props) => (props.flex ? "flex" : "block")};
+  align-items: ${(props) => props.flex && "center"};
 `;
 
 const LabelText = styled.span`
@@ -50,12 +50,12 @@ const InputControl = styled.div`
 `;
 
 const initializingWorkersAtom = atomFamily({
-  key: 'initializingWorkersAtom',
+  key: "initializingWorkersAtom",
   default: null,
-})
+});
 
 export const AssignUnassignActivity = ({ doenetId, courseId }) => {
-  const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
+  const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
   const { saveDraft } = useSaveDraft();
   const { compileActivity, updateAssignItem } = useCourse(courseId);
   const itemObj = useRecoilValue(itemByDoenetId(doenetId));
@@ -63,80 +63,86 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   const addToast = useToast();
   const [initializeStatus, setInitializeStatus] = useState("");
 
-  let assignActivityText = 'Assign Activity';
-  let assignActivityToast = 'Activity Assigned';
+  let assignActivityText = "Assign Activity";
+  let assignActivityToast = "Activity Assigned";
   if (isAssigned) {
     // if (assignedCid != null) {
-    assignActivityText = 'Update Assigned Activity';
-    assignActivityToast = 'Assigned Activity Updated';
+    assignActivityText = "Update Assigned Activity";
+    assignActivityToast = "Assigned Activity Updated";
   }
 
-  let [initializingWorker, setInitializingWorker] = useRecoilState(initializingWorkersAtom(doenetId));
+  let [initializingWorker, setInitializingWorker] = useRecoilState(
+    initializingWorkersAtom(doenetId),
+  );
 
-
-  let assignButton = <ActionButton
-    width="menu"
-    dataTest="Assign Activity"
-    value={assignActivityText}
-    onClick={async () => {
-      if (pageId) {
-        await saveDraft({ pageId, courseId });
-      }
-      compileActivity({
-        activityDoenetId: doenetId,
-        isAssigned: true,
-        courseId,
-        // successCallback: () => {
-        //   addToast('Activity Assigned.', toastType.INFO);
-        // },
-      });
-      updateAssignItem({
-        doenetId,
-        isAssigned: true,
-        successCallback: () => {
-          //addToast(assignActivityToast, toastType.INFO);
-        },
-      });
-    }}
-  />
+  let assignButton = (
+    <ActionButton
+      width="menu"
+      dataTest="Assign Activity"
+      value={assignActivityText}
+      onClick={async () => {
+        if (pageId) {
+          await saveDraft({ pageId, courseId });
+        }
+        compileActivity({
+          activityDoenetId: doenetId,
+          isAssigned: true,
+          courseId,
+          // successCallback: () => {
+          //   addToast('Activity Assigned.', toastType.INFO);
+          // },
+        });
+        updateAssignItem({
+          doenetId,
+          isAssigned: true,
+          successCallback: () => {
+            //addToast(assignActivityToast, toastType.INFO);
+          },
+        });
+      }}
+    />
+  );
 
   let unAssignButton = null;
   let prerenderButton = null;
 
   if (isAssigned) {
-    unAssignButton = <ActionButton
-      width="menu"
-      dataTest="Unassign Activity"
-      value="Unassign Activity"
-      alert
-      onClick={() => {
-        updateAssignItem({
-          doenetId,
-          isAssigned: false,
-          successCallback: () => {
-           // addToast('Activity Unassigned', toastType.INFO);
-          },
-        });
-      }}
-    />
-
-    if (initializingWorker) {
-      prerenderButton = <ActionButton
+    unAssignButton = (
+      <ActionButton
         width="menu"
-        dataTest="Cancel prerendering"
-        value={`${initializeStatus} (Cancel)`}
+        dataTest="Unassign Activity"
+        value="Unassign Activity"
+        alert
         onClick={() => {
-          initializingWorker.terminate();
-          setInitializingWorker(null)
+          updateAssignItem({
+            doenetId,
+            isAssigned: false,
+            successCallback: () => {
+              // addToast('Activity Unassigned', toastType.INFO);
+            },
+          });
         }}
       />
-    } else {
+    );
 
+    if (initializingWorker) {
+      prerenderButton = (
+        <ActionButton
+          width="menu"
+          dataTest="Cancel prerendering"
+          value={`${initializeStatus} (Cancel)`}
+          onClick={() => {
+            initializingWorker.terminate();
+            setInitializingWorker(null);
+          }}
+        />
+      );
+    } else {
       let initializePrerender = async () => {
         let flags = {
           showCorrectness: itemObj.showCorrectness,
           readOnly: false,
-          solutionDisplayMode: itemObj.showSolution ? 'button' : "none",
+          solutionDisplayMode: itemObj.showSolution ? "button" : "none",
           showFeedback: itemObj.showFeedback,
           showHints: itemObj.showHints,
           allowLoadState: false,
@@ -144,35 +150,40 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
           allowLocalState: false,
           allowSaveSubmissions: false,
           allowSaveEvents: false,
-        }
-        let resp = await axios.get(
-          `/api/getCidForAssignment.php`,
-          { params: { doenetId } },
-        );
+        };
+        let resp = await axios.get(`/api/getCidForAssignment.php`, {
+          params: { doenetId },
+        });
         if (resp.data.cid) {
           setInitializeStatus("");
-          let worker = prerenderActivity({ cid: resp.data.cid, doenetId, flags })
+          let worker = prerenderActivity({
+            cid: resp.data.cid,
+            doenetId,
+            flags,
+          });
           setInitializingWorker(worker);
-          worker.onmessage = e => {
+          worker.onmessage = (e) => {
             if (e.data.messageType === "status") {
-              setInitializeStatus(`${e.data.stage} ${Math.round(e.data.complete*100)}%`)
+              setInitializeStatus(
+                `${e.data.stage} ${Math.round(e.data.complete * 100)}%`,
+              );
             } else {
               worker.terminate();
               setInitializingWorker(null);
             }
-          }
+          };
         }
-      }
+      };
 
-      prerenderButton = <ActionButton
-        width="menu"
-        dataTest="Prerender activity"
-        value="Prerender activity"
-        onClick={initializePrerender}
-      />
-
+      prerenderButton = (
+        <ActionButton
+          width="menu"
+          dataTest="Prerender activity"
+          value="Prerender activity"
+          onClick={initializePrerender}
+        />
+      );
     }
-
   }
 
   return (
@@ -204,44 +215,44 @@ export const AssignedDate = ({ doenetId, courseId, editable = false }) => {
       <LabelText>Assigned Date</LabelText>
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
-          style={{ marginRight: '5px' }}
+          style={{ marginRight: "5px" }}
           dataTest="Assigned Date Checkbox"
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={assignedDate !== null && assignedDate !== undefined}
           onClick={() => {
-            let valueDescription = 'None';
+            let valueDescription = "None";
             let value = null;
 
             if (assignedDate === null || assignedDate === undefined) {
-              valueDescription = 'Now';
+              valueDescription = "Now";
               value = DateToDateString(new Date());
             }
 
             setAssignedDate(value);
             updateAssignmentSettings({
-              keyToUpdate: 'assignedDate',
+              keyToUpdate: "assignedDate",
               value,
-              description: 'Assigned Date',
+              description: "Assigned Date",
               valueDescription,
             });
           }}
         />
         <DateTime
-          width='176px'
+          width="176px"
           disabled={assignedDate === null || assignedDate === undefined}
           value={assignedDate ? new Date(assignedDate) : null}
           dataTest="Assigned Date"
           disabledText="No Assigned Date"
           disabledOnClick={() => {
-            let valueDescription = 'Now';
+            let valueDescription = "Now";
             let value = DateToDateString(new Date());
             // setAssignedDate(value);
 
             updateAssignmentSettings({
-              keyToUpdate: 'assignedDate',
+              keyToUpdate: "assignedDate",
               value,
-              description: 'Assigned Date',
+              description: "Assigned Date",
               valueDescription,
             });
           }}
@@ -259,13 +270,13 @@ export const AssignedDate = ({ doenetId, courseId, editable = false }) => {
                 setAssignedDate(DateToDateString(value));
 
                 updateAssignmentSettings(doenetId, {
-                  keyToUpdate: 'assignedDate',
+                  keyToUpdate: "assignedDate",
                   value: DateToDateString(value),
-                  description: 'Assigned Date',
+                  description: "Assigned Date",
                 });
               }
             } else {
-              addToast('Invalid Assigned Date');
+              addToast("Invalid Assigned Date");
             }
           }}
         />
@@ -293,17 +304,17 @@ export const DueDate = ({ courseId, doenetId }) => {
       <LabelText>Due Date</LabelText>
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
-          style={{ marginRight: '5px' }}
+          style={{ marginRight: "5px" }}
           dataTest="Due Date Checkbox"
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={dueDate !== null && dueDate !== undefined}
           onClick={() => {
-            let valueDescription = 'None';
+            let valueDescription = "None";
             let value = null;
 
             if (dueDate === null || dueDate === undefined) {
-              valueDescription = 'Next Week';
+              valueDescription = "Next Week";
               let nextWeek = new Date();
               nextWeek.setDate(nextWeek.getDate() + 7);
               value = DateToDateString(nextWeek);
@@ -311,16 +322,16 @@ export const DueDate = ({ courseId, doenetId }) => {
             setDueDate(value);
 
             updateAssignmentSettings({
-              keyToUpdate: 'dueDate',
+              keyToUpdate: "dueDate",
               value,
-              description: 'Due Date',
+              description: "Due Date",
               valueDescription,
             });
           }}
         />
 
         <DateTime
-          width='176px'
+          width="176px"
           disabled={dueDate === null || dueDate === undefined}
           value={dueDate ? new Date(dueDate) : null}
           dataTest="Due Date"
@@ -337,26 +348,26 @@ export const DueDate = ({ courseId, doenetId }) => {
               ) {
                 setDueDate(DateToDateString(value));
                 updateAssignmentSettings({
-                  keyToUpdate: 'dueDate',
+                  keyToUpdate: "dueDate",
                   value: DateToDateString(value),
-                  description: 'Due Date',
+                  description: "Due Date",
                 });
               }
             } else {
-              addToast('Invalid Due Date');
+              addToast("Invalid Due Date");
             }
           }}
           disabledText="No Due Date"
           disabledOnClick={() => {
-            let valueDescription = 'Next Week';
+            let valueDescription = "Next Week";
             let nextWeek = new Date();
             nextWeek.setDate(nextWeek.getDate() + 7);
             let value = DateToDateString(nextWeek);
             setDueDate(value);
             updateAssignmentSettings({
-              keyToUpdate: 'dueDate',
+              keyToUpdate: "dueDate",
               value,
-              description: 'Due Date',
+              description: "Due Date",
               valueDescription,
             });
           }}
@@ -371,34 +382,34 @@ export const TimeLimit = ({ courseId, doenetId }) => {
     value: { timeLimit: recoilValue },
     updateAssignmentSettings,
   } = useActivity(courseId, doenetId);
-  
+
   const [timeLimit, setTimeLimit] = useState(recoilValue);
-  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false)
+  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false);
 
   return (
     <InputWrapper>
       <LabelText>Time Limit in Minutes</LabelText>
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
-          style={{ marginRight: '5px' }}
+          style={{ marginRight: "5px" }}
           dataTest="Time Limit Checkbox"
           checked={isEnabled}
           onClick={() => {
-            let valueDescription = 'Not Limited' ;
+            let valueDescription = "Not Limited";
             let value = null;
             let enable = false;
             if (!isEnabled) {
-              valueDescription = 60 + ' Minutes';
+              valueDescription = 60 + " Minutes";
               value = 60;
               enable = true;
             }
             setTimeLimit(value);
-            setIsEnabled(enable)
+            setIsEnabled(enable);
             updateAssignmentSettings({
-              keyToUpdate: 'timeLimit',
+              keyToUpdate: "timeLimit",
               value,
-              description: 'Time Limit ',
-              valueDescription
+              description: "Time Limit ",
+              valueDescription,
             });
           }}
         />
@@ -407,18 +418,18 @@ export const TimeLimit = ({ courseId, doenetId }) => {
           value={timeLimit}
           dataTest="Time Limit"
           min={1}
-          width='180px'
-          onBlur={limit => {
-            if (isNaN(limit) || limit < 1) limit = 1
-            setTimeLimit(parseInt(limit))
+          width="180px"
+          onBlur={(limit) => {
+            if (isNaN(limit) || limit < 1) limit = 1;
+            setTimeLimit(parseInt(limit));
             updateAssignmentSettings({
-              keyToUpdate: 'timeLimit',
+              keyToUpdate: "timeLimit",
               value: parseInt(limit),
-              description: 'Time Limit',
-              valueDescription: `${limit} Minutes`
+              description: "Time Limit",
+              valueDescription: `${limit} Minutes`,
             });
           }}
-          onChange={limit => setTimeLimit(parseInt(limit))}
+          onChange={(limit) => setTimeLimit(parseInt(limit))}
         />
       </InputControl>
     </InputWrapper>
@@ -431,32 +442,33 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
     updateAssignmentSettings,
   } = useActivity(courseId, doenetId);
 
-  const [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(recoilValue);
-  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false)
+  const [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] =
+    useState(recoilValue);
+  const [isEnabled, setIsEnabled] = useState(recoilValue ? true : false);
 
   return (
     <InputWrapper>
       <LabelText>Attempts</LabelText>
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
-          style={{ marginRight: '5px' }}
+          style={{ marginRight: "5px" }}
           dataTest="Attempt Limit Checkbox"
           checked={isEnabled}
           onClick={() => {
-            let valueDescription = 'Not Limited';
+            let valueDescription = "Not Limited";
             let value = null;
             let enable = false;
             if (!isEnabled) {
-              valueDescription = '1';
+              valueDescription = "1";
               value = 1;
               enable = true;
             }
             setNumberOfAttemptsAllowed(value);
-            setIsEnabled(enable)
+            setIsEnabled(enable);
             updateAssignmentSettings({
-              keyToUpdate: 'numberOfAttemptsAllowed',
+              keyToUpdate: "numberOfAttemptsAllowed",
               value,
-              description: 'Attempts Allowed',
+              description: "Attempts Allowed",
               valueDescription,
             });
           }}
@@ -465,18 +477,20 @@ export const AttemptLimit = ({ courseId, doenetId }) => {
           disabled={!isEnabled}
           value={numberOfAttemptsAllowed}
           dataTest="Attempt Limit"
-          width='180px'
+          width="180px"
           min={1}
-          onBlur={attempts => {
-            if (isNaN(attempts) || attempts < 1) attempts = 1
-            setNumberOfAttemptsAllowed(parseInt(attempts))
+          onBlur={(attempts) => {
+            if (isNaN(attempts) || attempts < 1) attempts = 1;
+            setNumberOfAttemptsAllowed(parseInt(attempts));
             updateAssignmentSettings({
-              keyToUpdate: 'numberOfAttemptsAllowed',
+              keyToUpdate: "numberOfAttemptsAllowed",
               value: parseInt(attempts),
-              description: 'Attempts Allowed',
+              description: "Attempts Allowed",
             });
           }}
-          onChange={attempts => setNumberOfAttemptsAllowed(parseInt(attempts))}
+          onChange={(attempts) =>
+            setNumberOfAttemptsAllowed(parseInt(attempts))
+          }
         />
       </InputControl>
     </InputWrapper>
@@ -500,21 +514,21 @@ export const AttemptAggregation = ({ courseId, doenetId }) => {
         <DropdownMenu
           dataTest="Attempt Aggregation"
           width="menu"
-          valueIndex={attemptAggregation === 'm' ? 1 : 2}
+          valueIndex={attemptAggregation === "m" ? 1 : 2}
           items={[
-            ['m', 'Maximum'],
-            ['l', 'Last Attempt'],
+            ["m", "Maximum"],
+            ["l", "Last Attempt"],
           ]}
           onChange={({ value: val }) => {
-            let valueDescription = 'Maximum';
-            if (val === 'l') {
-              valueDescription = 'Last Attempt';
+            let valueDescription = "Maximum";
+            if (val === "l") {
+              valueDescription = "Last Attempt";
             }
             setAttemptAggregation(val);
             updateAssignmentSettings({
-              keyToUpdate: 'attemptAggregation',
+              keyToUpdate: "attemptAggregation",
               value: val,
-              description: 'Attempt Aggregation',
+              description: "Attempt Aggregation",
               valueDescription,
             });
           }}
@@ -542,16 +556,12 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
         <Increment
           value={totalPointsOrPercent}
           // value={totalPointsOrPercent || 0}
-          dataTest='Total Points Or Percent'
+          dataTest="Total Points Or Percent"
           min={0}
           onBlur={(newValue) => {
             if (newValue !== recoilValue) {
               let totalPointsOrPercentLocal = null;
-              if (
-                newValue < 0 ||
-                newValue === '' ||
-                isNaN(newValue)
-              ) {
+              if (newValue < 0 || newValue === "" || isNaN(newValue)) {
                 setTotalPointsOrPercent(0);
                 totalPointsOrPercentLocal = 0;
               } else {
@@ -560,9 +570,9 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
               }
 
               updateAssignmentSettings(doenetId, {
-                keyToUpdate: 'totalPointsOrPercent',
+                keyToUpdate: "totalPointsOrPercent",
                 value: totalPointsOrPercentLocal,
-                description: 'Total Points Or Percent',
+                description: "Total Points Or Percent",
               });
             }
           }}
@@ -594,20 +604,20 @@ export const GradeCategory = ({ courseId, doenetId }) => {
             gateway: 1,
             exams: 2,
             quizzes: 3,
-            'problem sets': 4,
+            "problem sets": 4,
             projects: 5,
             participation: 6,
-            'No Category': 7,
+            "No Category": 7,
           }[gradeCategory]
         }
         items={[
-          ['gateway', 'Gateway'],
-          ['exams', 'Exams'],
-          ['quizzes', 'Quizzes'],
-          ['problem sets', 'Problem Sets'],
-          ['projects', 'Projects'],
-          ['participation', 'Participation'],
-          ['NULL', 'No Category'],
+          ["gateway", "Gateway"],
+          ["exams", "Exams"],
+          ["quizzes", "Quizzes"],
+          ["problem sets", "Problem Sets"],
+          ["projects", "Projects"],
+          ["participation", "Participation"],
+          ["NULL", "No Category"],
         ]}
         dataTest="Grade Category"
         onChange={({ value: val }) => {
@@ -615,9 +625,9 @@ export const GradeCategory = ({ courseId, doenetId }) => {
             // aInfoRef.current.gradeCategory = val;
             setGradeCategory(val);
             updateAssignmentSettings({
-              keyToUpdate: 'gradeCategory',
+              keyToUpdate: "gradeCategory",
               value: val,
-              description: 'Grade Category',
+              description: "Grade Category",
             });
           }
         }}
@@ -634,7 +644,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
   const [textValue, setTextValue] = useState("");
 
   useEffect(() => {
-    setTextValue(recoilValue?.join(" "))
+    setTextValue(recoilValue?.join(" "));
   }, [recoilValue]);
 
   return (
@@ -649,15 +659,20 @@ export const ItemWeights = ({ courseId, doenetId }) => {
           setTextValue(e.target.value);
         }}
         onBlur={() => {
-          let parsedValue = textValue.split(" ").filter(x => x).map(Number).map(x => x >= 0 ? x : 0);
+          let parsedValue = textValue
+            .split(" ")
+            .filter((x) => x)
+            .map(Number)
+            .map((x) => (x >= 0 ? x : 0));
 
-          if (recoilValue.length !== parsedValue.length
-            || recoilValue.some((v, i) => v !== parsedValue[i])
+          if (
+            recoilValue.length !== parsedValue.length ||
+            recoilValue.some((v, i) => v !== parsedValue[i])
           ) {
             updateAssignmentSettings({
-              keyToUpdate: 'itemWeights',
+              keyToUpdate: "itemWeights",
               value: parsedValue,
-              description: 'Item Weights',
+              description: "Item Weights",
             });
           }
         }}
@@ -687,14 +702,14 @@ export const CheckedSetting = ({
   return (
     <InputWrapper flex>
       <Checkbox
-        style={{ marginRight: '5px' }}
+        style={{ marginRight: "5px" }}
         dataTest={dataTest}
         checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = invert ? 'True' : 'False';
+          let valueDescription = invert ? "True" : "False";
           let value = false;
           if (!localValue) {
-            valueDescription = invert ? 'False' : 'True';
+            valueDescription = invert ? "False" : "True";
             value = true;
           }
           setLocalValue(value);
@@ -732,14 +747,14 @@ export const CheckedFlag = ({
   return (
     <InputWrapper flex>
       <Checkbox
-        style={{ marginRight: '5px' }}
+        style={{ marginRight: "5px" }}
         dataTest={dataTest}
         checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = invert ? 'True' : 'False';
+          let valueDescription = invert ? "True" : "False";
           let value = false;
           if (!localValue) {
-            valueDescription = invert ? 'False' : 'True';
+            valueDescription = invert ? "False" : "True";
             value = true;
           }
           setLocalValue(value);
@@ -950,18 +965,18 @@ export const PinAssignment = ({ courseId, doenetId }) => {
       <LabelText>Pin Assignment</LabelText>
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
-          style={{ marginRight: '5px' }}
+          style={{ marginRight: "5px" }}
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={pinnedUntilDate !== null && pinnedUntilDate !== undefined}
           dataTest="Pin Assignment Checkbox"
           onClick={() => {
-            let valueDescription = 'None';
+            let valueDescription = "None";
             let value = null;
             let secondValue = null;
 
             if (pinnedUntilDate === null || pinnedUntilDate === undefined) {
-              valueDescription = 'Now to Next Year';
+              valueDescription = "Now to Next Year";
               let today = new Date();
               let nextYear = new Date();
               nextYear.setDate(nextYear.getDate() + 365);
@@ -972,31 +987,31 @@ export const PinAssignment = ({ courseId, doenetId }) => {
             setPinnedUntilDate(secondValue);
             updateAssignmentSettings(
               {
-                keyToUpdate: 'pinnedAfterDate',
+                keyToUpdate: "pinnedAfterDate",
                 value,
-                description: 'Pinned Dates ',
+                description: "Pinned Dates ",
                 valueDescription,
               },
               {
-                keyToUpdate: 'pinnedUntilDate',
+                keyToUpdate: "pinnedUntilDate",
                 value: secondValue,
               },
             );
           }}
         />
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <DateTime
-            width='176px'
+            width="176px"
             dataTest="Pinned After Date"
             disabled={pinnedAfterDate === null || pinnedAfterDate === undefined}
             disabledText="No Pinned After Date"
             disabledOnClick={() => {
-              let valueDescription = 'None';
+              let valueDescription = "None";
               let value = null;
               let secondValue = null;
 
               if (pinnedAfterDate === null || pinnedAfterDate === undefined) {
-                valueDescription = 'Now to Next Year';
+                valueDescription = "Now to Next Year";
                 let today = new Date();
                 let nextYear = new Date();
                 nextYear.setDate(nextYear.getDate() + 365);
@@ -1007,13 +1022,13 @@ export const PinAssignment = ({ courseId, doenetId }) => {
               setPinnedUntilDate(secondValue);
               updateAssignmentSettings(
                 {
-                  keyToUpdate: 'pinnedAfterDate',
+                  keyToUpdate: "pinnedAfterDate",
                   value,
-                  description: 'Pinned Dates ',
+                  description: "Pinned Dates ",
                   valueDescription,
                 },
                 {
-                  keyToUpdate: 'pinnedUntilDate',
+                  keyToUpdate: "pinnedUntilDate",
                   value: secondValue,
                 },
               );
@@ -1032,30 +1047,30 @@ export const PinAssignment = ({ courseId, doenetId }) => {
                 ) {
                   setPinnedAfterDate(DateToDateString(value));
                   updateAssignmentSettings({
-                    keyToUpdate: 'pinnedAfterDate',
+                    keyToUpdate: "pinnedAfterDate",
                     value: DateToDateString(value),
-                    description: 'Pinned After Date',
+                    description: "Pinned After Date",
                   });
                 }
               } else {
-                addToast('Invalid Pin After Date');
+                addToast("Invalid Pin After Date");
               }
             }}
           />
 
           <DateTime
-            width='176px'
+            width="176px"
             dataTest="Pinned Until Date"
-            style={{ marginTop: '5px' }}
+            style={{ marginTop: "5px" }}
             disabled={pinnedUntilDate === null || pinnedUntilDate === undefined}
             disabledText="No Pinned Until Date"
             disabledOnClick={() => {
-              let valueDescription = 'None';
+              let valueDescription = "None";
               let value = null;
               let secondValue = null;
 
               if (pinnedUntilDate === null || pinnedUntilDate === undefined) {
-                valueDescription = 'Now to Next Year';
+                valueDescription = "Now to Next Year";
                 let today = new Date();
                 let nextYear = new Date();
                 nextYear.setDate(nextYear.getDate() + 365);
@@ -1066,13 +1081,13 @@ export const PinAssignment = ({ courseId, doenetId }) => {
               setPinnedUntilDate(secondValue);
               updateAssignmentSettings(
                 {
-                  keyToUpdate: 'pinnedAfterDate',
+                  keyToUpdate: "pinnedAfterDate",
                   value,
-                  description: 'Pinned Dates ',
+                  description: "Pinned Dates ",
                   valueDescription,
                 },
                 {
-                  keyToUpdate: 'pinnedUntilDate',
+                  keyToUpdate: "pinnedUntilDate",
                   value: secondValue,
                 },
               );
@@ -1092,13 +1107,13 @@ export const PinAssignment = ({ courseId, doenetId }) => {
                   setPinnedUntilDate(DateToDateString(value));
 
                   updateAssignmentSettings({
-                    keyToUpdate: 'pinnedUntilDate',
+                    keyToUpdate: "pinnedUntilDate",
                     value: DateToDateString(value),
-                    description: 'Pinned Until Date',
+                    description: "Pinned Until Date",
                   });
                 }
               } else {
-                addToast('Invalid Pin Until Date');
+                addToast("Invalid Pin Until Date");
               }
             }}
           />
@@ -1121,7 +1136,7 @@ export function AssignTo({ courseId, doenetId }) {
   const [restrictedTo, setRestrictedTo] = useState([]);
 
   async function getAndSetRestrictedTo({ courseId, doenetId }) {
-    let resp = await axios.get('/api/getRestrictedTo.php', {
+    let resp = await axios.get("/api/getRestrictedTo.php", {
       params: { courseId, doenetId },
     });
     // console.log("resp",resp.data)
@@ -1129,7 +1144,7 @@ export function AssignTo({ courseId, doenetId }) {
   }
 
   async function updateRestrictedTo({ courseId, doenetId, emailAddresses }) {
-    let resp = await axios.post('/api/updateRestrictedTo.php', {
+    let resp = await axios.post("/api/updateRestrictedTo.php", {
       courseId,
       doenetId,
       emailAddresses,
@@ -1147,7 +1162,7 @@ export function AssignTo({ courseId, doenetId }) {
 
   //Only those enrolled who didn't withdraw
   let enrolledJSX = enrolledStudents.reduce((allrows, row) => {
-    if (row.withdrew == '0') {
+    if (row.withdrew == "0") {
       if (!isGloballyAssigned && restrictedTo.includes(row.email)) {
         return [
           ...allrows,

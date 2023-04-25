@@ -1,7 +1,9 @@
-import InlineComponent from '../abstract/InlineComponent';
-import me from 'math-expressions';
-import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../../utils/style';
-
+import InlineComponent from "../abstract/InlineComponent";
+import me from "math-expressions";
+import {
+  returnSelectedStyleStateVariableDefinition,
+  returnTextStyleDescriptionDefinitions,
+} from "../../utils/style";
 
 export default class Atom extends InlineComponent {
   static componentType = "atom";
@@ -23,9 +25,7 @@ export default class Atom extends InlineComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
@@ -33,7 +33,6 @@ export default class Atom extends InlineComponent {
 
     let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
     Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
-
 
     // atomicNumberShadow will be null unless atom was created
     // via an adapter or copy prop or from serialized state with coords value
@@ -48,47 +47,48 @@ export default class Atom extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          atomicNumberShadow: true
-        }
+          atomicNumberShadow: true,
+        },
       }),
       inverseDefinition: async function ({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "atomicNumberShadow",
-            value: desiredStateVariableValues.atomicNumberShadow
-          }]
+          instructions: [
+            {
+              setEssentialValue: "atomicNumberShadow",
+              value: desiredStateVariableValues.atomicNumberShadow,
+            },
+          ],
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.dataForAtom = {
       returnDependencies: () => ({
         fileContents: {
           dependencyType: "file",
           cid: "bafkreibilal4glrbpo7p7oodtwtnzkfhiylfoqa2td4ij6h6iqva57kzcy",
-          fileType: "csv"
+          fileType: "csv",
         },
         symbolAttr: {
           dependencyType: "attributeComponent",
           attributeName: "symbol",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         atomicNumberAttr: {
           dependencyType: "attributeComponent",
           attributeName: "atomicNumber",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         atomicNumberShadow: {
           dependencyType: "stateVariable",
-          variableName: "atomicNumberShadow"
+          variableName: "atomicNumberShadow",
         },
       }),
 
-
       definition: function ({ dependencyValues }) {
-
-        let symbol = null, atomicNumber = null;
+        let symbol = null,
+          atomicNumber = null;
         if (dependencyValues.symbolAttr) {
           symbol = dependencyValues.symbolAttr.stateValues.value.toLowerCase();
         } else if (dependencyValues.atomicNumberAttr) {
@@ -96,7 +96,7 @@ export default class Atom extends InlineComponent {
         } else if (dependencyValues.atomicNumberShadow) {
           atomicNumber = dependencyValues.atomicNumberShadow;
         } else {
-          return { setValue: { dataForAtom: null } }
+          return { setValue: { dataForAtom: null } };
         }
 
         let allRowData = dependencyValues.fileContents.trim().split("\n");
@@ -106,27 +106,173 @@ export default class Atom extends InlineComponent {
         if (atomicNumber !== null) {
           rowInd = atomicNumber - 1;
         } else {
-          rowInd = ["h", "he", "li", "be", "b", "c", "n", "o", "f", "ne", "na", "mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr", "mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr", "rb", "sr", "y", "zr", "nb", "mo", "tc", "ru", "rh", "pd", "ag", "cd", "in", "sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "pm", "sm", "eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w", "re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi", "po", "at", "rn", "fr", "ra", "ac", "th", "pa", "u", "np", "pu", "am", "cm", "bk", "cf", "es", "fm", "md", "no", "lr", "rf", "db", "sg", "bh", "hs", "mt", "ds", "rg", "cn", "nh", "fl", "mc", "lv", "ts", "og"].indexOf(symbol?.toLowerCase());
+          rowInd = [
+            "h",
+            "he",
+            "li",
+            "be",
+            "b",
+            "c",
+            "n",
+            "o",
+            "f",
+            "ne",
+            "na",
+            "mg",
+            "al",
+            "si",
+            "p",
+            "s",
+            "cl",
+            "ar",
+            "k",
+            "ca",
+            "sc",
+            "ti",
+            "v",
+            "cr",
+            "mn",
+            "fe",
+            "co",
+            "ni",
+            "cu",
+            "zn",
+            "ga",
+            "ge",
+            "as",
+            "se",
+            "br",
+            "kr",
+            "rb",
+            "sr",
+            "y",
+            "zr",
+            "nb",
+            "mo",
+            "tc",
+            "ru",
+            "rh",
+            "pd",
+            "ag",
+            "cd",
+            "in",
+            "sn",
+            "sb",
+            "te",
+            "i",
+            "xe",
+            "cs",
+            "ba",
+            "la",
+            "ce",
+            "pr",
+            "nd",
+            "pm",
+            "sm",
+            "eu",
+            "gd",
+            "tb",
+            "dy",
+            "ho",
+            "er",
+            "tm",
+            "yb",
+            "lu",
+            "hf",
+            "ta",
+            "w",
+            "re",
+            "os",
+            "ir",
+            "pt",
+            "au",
+            "hg",
+            "tl",
+            "pb",
+            "bi",
+            "po",
+            "at",
+            "rn",
+            "fr",
+            "ra",
+            "ac",
+            "th",
+            "pa",
+            "u",
+            "np",
+            "pu",
+            "am",
+            "cm",
+            "bk",
+            "cf",
+            "es",
+            "fm",
+            "md",
+            "no",
+            "lr",
+            "rf",
+            "db",
+            "sg",
+            "bh",
+            "hs",
+            "mt",
+            "ds",
+            "rg",
+            "cn",
+            "nh",
+            "fl",
+            "mc",
+            "lv",
+            "ts",
+            "og",
+          ].indexOf(symbol?.toLowerCase());
         }
 
         let rowData = allRowData.slice(1)[rowInd];
         if (!rowData) {
-          return { setValue: { dataForAtom: null } }
+          return { setValue: { dataForAtom: null } };
         }
 
-        rowData = rowData.trim().split(",").map(y => y.trim())
+        rowData = rowData
+          .trim()
+          .split(",")
+          .map((y) => y.trim());
 
-        let columnNames = allRowData[0].trim().split(",").map(y => y.trim()).map(value => {
-          if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
-            value = value.substring(1, value.length - 1).trim();
-          }
-          return value;
-        });
+        let columnNames = allRowData[0]
+          .trim()
+          .split(",")
+          .map((y) => y.trim())
+          .map((value) => {
+            if (
+              [`"`, `'`].includes(value[0]) &&
+              value[value.length - 1] === value[0]
+            ) {
+              value = value.substring(1, value.length - 1).trim();
+            }
+            return value;
+          });
 
         let numColumns = columnNames.length;
 
-        let columnTypes = ["number", "string", "string", "number", "number", "string", "number", "string", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
-
+        let columnTypes = [
+          "number",
+          "string",
+          "string",
+          "number",
+          "number",
+          "string",
+          "number",
+          "string",
+          "string",
+          "number",
+          "number",
+          "number",
+          "number",
+          "number",
+          "number",
+          "number",
+          "string",
+        ];
 
         let dataForAtom = {};
         for (let colInd = 0; colInd < numColumns; colInd++) {
@@ -142,7 +288,10 @@ export default class Atom extends InlineComponent {
             }
           } else {
             value = rowData[colInd];
-            if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+            if (
+              [`"`, `'`].includes(value[0]) &&
+              value[value.length - 1] === value[0]
+            ) {
               value = value.substring(1, value.length - 1);
             }
           }
@@ -154,10 +303,8 @@ export default class Atom extends InlineComponent {
         }
 
         return { setValue: { dataForAtom } };
-
       },
-
-    }
+    };
 
     stateVariableDefinitions.atomicNumber = {
       public: true,
@@ -179,10 +326,9 @@ export default class Atom extends InlineComponent {
           atomicNumber = null;
         }
 
-        return { setValue: { atomicNumber } }
-
-      }
-    }
+        return { setValue: { atomicNumber } };
+      },
+    };
 
     stateVariableDefinitions.symbol = {
       public: true,
@@ -204,10 +350,9 @@ export default class Atom extends InlineComponent {
           symbol = null;
         }
 
-        return { setValue: { symbol } }
-
-      }
-    }
+        return { setValue: { symbol } };
+      },
+    };
 
     stateVariableDefinitions.name = {
       public: true,
@@ -229,10 +374,9 @@ export default class Atom extends InlineComponent {
           name = null;
         }
 
-        return { setValue: { name } }
-
-      }
-    }
+        return { setValue: { name } };
+      },
+    };
 
     stateVariableDefinitions.group = {
       public: true,
@@ -254,10 +398,9 @@ export default class Atom extends InlineComponent {
           group = null;
         }
 
-        return { setValue: { group } }
-
-      }
-    }
+        return { setValue: { group } };
+      },
+    };
 
     stateVariableDefinitions.atomicMass = {
       public: true,
@@ -279,10 +422,9 @@ export default class Atom extends InlineComponent {
           atomicMass = null;
         }
 
-        return { setValue: { atomicMass } }
-
-      }
-    }
+        return { setValue: { atomicMass } };
+      },
+    };
 
     stateVariableDefinitions.phaseAtSTP = {
       public: true,
@@ -304,10 +446,9 @@ export default class Atom extends InlineComponent {
           phaseAtSTP = null;
         }
 
-        return { setValue: { phaseAtSTP } }
-
-      }
-    }
+        return { setValue: { phaseAtSTP } };
+      },
+    };
 
     stateVariableDefinitions.chargeOfCommonIon = {
       public: true,
@@ -324,15 +465,15 @@ export default class Atom extends InlineComponent {
         let chargeOfCommonIon;
 
         if (dependencyValues.dataForAtom) {
-          chargeOfCommonIon = dependencyValues.dataForAtom["Charge of Common Ion"];
+          chargeOfCommonIon =
+            dependencyValues.dataForAtom["Charge of Common Ion"];
         } else {
           chargeOfCommonIon = null;
         }
 
-        return { setValue: { chargeOfCommonIon } }
-
-      }
-    }
+        return { setValue: { chargeOfCommonIon } };
+      },
+    };
 
     stateVariableDefinitions.metalCategory = {
       public: true,
@@ -349,15 +490,15 @@ export default class Atom extends InlineComponent {
         let metalCategory;
 
         if (dependencyValues.dataForAtom) {
-          metalCategory = dependencyValues.dataForAtom["Metal/Nonmetal/Metalloid"];
+          metalCategory =
+            dependencyValues.dataForAtom["Metal/Nonmetal/Metalloid"];
         } else {
           metalCategory = null;
         }
 
-        return { setValue: { metalCategory } }
-
-      }
-    }
+        return { setValue: { metalCategory } };
+      },
+    };
 
     stateVariableDefinitions.groupName = {
       public: true,
@@ -379,10 +520,9 @@ export default class Atom extends InlineComponent {
           groupName = null;
         }
 
-        return { setValue: { groupName } }
-
-      }
-    }
+        return { setValue: { groupName } };
+      },
+    };
 
     stateVariableDefinitions.period = {
       public: true,
@@ -404,10 +544,9 @@ export default class Atom extends InlineComponent {
           period = null;
         }
 
-        return { setValue: { period } }
-
-      }
-    }
+        return { setValue: { period } };
+      },
+    };
 
     stateVariableDefinitions.ionizationEnergy = {
       public: true,
@@ -429,10 +568,9 @@ export default class Atom extends InlineComponent {
           ionizationEnergy = null;
         }
 
-        return { setValue: { ionizationEnergy } }
-
-      }
-    }
+        return { setValue: { ionizationEnergy } };
+      },
+    };
 
     stateVariableDefinitions.meltingPoint = {
       public: true,
@@ -454,10 +592,9 @@ export default class Atom extends InlineComponent {
           meltingPoint = null;
         }
 
-        return { setValue: { meltingPoint } }
-
-      }
-    }
+        return { setValue: { meltingPoint } };
+      },
+    };
 
     stateVariableDefinitions.boilingPoint = {
       public: true,
@@ -479,10 +616,9 @@ export default class Atom extends InlineComponent {
           boilingPoint = null;
         }
 
-        return { setValue: { boilingPoint } }
-
-      }
-    }
+        return { setValue: { boilingPoint } };
+      },
+    };
 
     stateVariableDefinitions.atomicRadius = {
       public: true,
@@ -504,10 +640,9 @@ export default class Atom extends InlineComponent {
           atomicRadius = null;
         }
 
-        return { setValue: { atomicRadius } }
-
-      }
-    }
+        return { setValue: { atomicRadius } };
+      },
+    };
 
     stateVariableDefinitions.density = {
       public: true,
@@ -529,10 +664,9 @@ export default class Atom extends InlineComponent {
           density = null;
         }
 
-        return { setValue: { density } }
-
-      }
-    }
+        return { setValue: { density } };
+      },
+    };
 
     stateVariableDefinitions.electronegativity = {
       public: true,
@@ -554,10 +688,9 @@ export default class Atom extends InlineComponent {
           electronegativity = null;
         }
 
-        return { setValue: { electronegativity } }
-
-      }
-    }
+        return { setValue: { electronegativity } };
+      },
+    };
 
     stateVariableDefinitions.electronConfiguration = {
       public: true,
@@ -574,15 +707,15 @@ export default class Atom extends InlineComponent {
         let electronConfiguration;
 
         if (dependencyValues.dataForAtom) {
-          electronConfiguration = dependencyValues.dataForAtom["Electron Configuration"];
+          electronConfiguration =
+            dependencyValues.dataForAtom["Electron Configuration"];
         } else {
           electronConfiguration = null;
         }
 
-        return { setValue: { electronConfiguration } }
-
-      }
-    }
+        return { setValue: { electronConfiguration } };
+      },
+    };
 
     stateVariableDefinitions.orbitalDiagram = {
       public: true,
@@ -598,21 +731,22 @@ export default class Atom extends InlineComponent {
       definition({ dependencyValues }) {
         let orbitalDiagram;
         if (dependencyValues.electronConfiguration) {
-          orbitalDiagram = electronConfigurationToOrbitalDiagram(dependencyValues.electronConfiguration)
+          orbitalDiagram = electronConfigurationToOrbitalDiagram(
+            dependencyValues.electronConfiguration,
+          );
         } else {
           orbitalDiagram = null;
         }
         return {
-          setValue: { orbitalDiagram }
-        }
-      }
-    }
-
+          setValue: { orbitalDiagram },
+        };
+      },
+    };
 
     stateVariableDefinitions.math = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "math"
+        createComponentOfType: "math",
       },
       returnDependencies: () => ({
         symbol: {
@@ -621,30 +755,31 @@ export default class Atom extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-
         let tree;
 
         if (dependencyValues.symbol) {
           tree = ["^", dependencyValues.symbol];
         } else {
-          tree = "\uff3f"
+          tree = "\uff3f";
         }
         let math = me.fromAst(tree);
         return {
-          setValue: { math }
-        }
-      }
-    }
+          setValue: { math },
+        };
+      },
+    };
 
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "latex"
+        createComponentOfType: "latex",
       },
-      additionalStateVariablesDefined: [{
-        variableName: "latexWithInputChildren",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "latexWithInputChildren",
+          forRenderer: true,
+        },
+      ],
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -654,16 +789,15 @@ export default class Atom extends InlineComponent {
       definition({ dependencyValues }) {
         let latex;
         if (dependencyValues.symbol) {
-          latex = `\\text{${dependencyValues.symbol}}`
+          latex = `\\text{${dependencyValues.symbol}}`;
         } else {
           latex = "[\\text{Invalid Chemical Symbol}]";
         }
         return {
-          setValue: { latex, latexWithInputChildren: [latex] }
-        }
-      }
-    }
-
+          setValue: { latex, latexWithInputChildren: [latex] },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
@@ -673,15 +807,12 @@ export default class Atom extends InlineComponent {
     "name",
     {
       stateVariable: "atomicNumber",
-      componentType: "ion"
+      componentType: "ion",
     },
   ];
-
 }
 
-
 function electronConfigurationToOrbitalDiagram(electronConfiguration) {
-
   let electronConfig = electronConfiguration.tree;
 
   if (!(Array.isArray(electronConfig) && electronConfig[0] === "*")) {
@@ -711,7 +842,13 @@ function electronConfigurationToOrbitalDiagram(electronConfiguration) {
     let shellType = infoObj[1];
     let nElectrons = infoObj[2];
 
-    if (!(["s", "p", "d", "f"].includes(shellType) && Number.isInteger(nElectrons) && nElectrons > 0)) {
+    if (
+      !(
+        ["s", "p", "d", "f"].includes(shellType) &&
+        Number.isInteger(nElectrons) &&
+        nElectrons > 0
+      )
+    ) {
       return null;
     }
 
@@ -730,7 +867,11 @@ function electronConfigurationToOrbitalDiagram(electronConfiguration) {
 
     let boxes = Array(nBoxes).fill("");
 
-    for (let electronInd = 0; electronInd < Math.min(nBoxes, nElectrons); electronInd++) {
+    for (
+      let electronInd = 0;
+      electronInd < Math.min(nBoxes, nElectrons);
+      electronInd++
+    ) {
       if (nElectrons <= electronInd + nBoxes) {
         boxes[electronInd] = "U";
       } else {
@@ -738,7 +879,7 @@ function electronConfigurationToOrbitalDiagram(electronConfiguration) {
       }
     }
 
-    orbitalDiagram.push({ orbitalText, boxes })
+    orbitalDiagram.push({ orbitalText, boxes });
   }
 
   return orbitalDiagram;

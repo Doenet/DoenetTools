@@ -1,10 +1,9 @@
-import * as ComponentTypes from '../ComponentTypes'
-
+import * as ComponentTypes from "../ComponentTypes";
 
 export default function createComponentInfoObjects() {
-
   let allComponentClasses = ComponentTypes.allComponentClasses();
-  let componentTypesCreatingVariants = ComponentTypes.componentTypesCreatingVariants();
+  let componentTypesCreatingVariants =
+    ComponentTypes.componentTypesCreatingVariants();
 
   let componentTypeLowerCaseMapping = {};
   for (let componentType in allComponentClasses) {
@@ -17,10 +16,10 @@ export default function createComponentInfoObjects() {
       get: function () {
         let info = allComponentClasses[componentType].returnStateVariableInfo();
         delete stateVariableInfo[componentType];
-        return stateVariableInfo[componentType] = info;
+        return (stateVariableInfo[componentType] = info);
       }.bind(this),
-      configurable: true
-    })
+      configurable: true,
+    });
   }
 
   let publicStateVariableInfo = {};
@@ -28,17 +27,19 @@ export default function createComponentInfoObjects() {
     Object.defineProperty(publicStateVariableInfo, componentType, {
       get: function () {
         let info = allComponentClasses[componentType].returnStateVariableInfo({
-          onlyPublic: true
+          onlyPublic: true,
         });
         delete publicStateVariableInfo[componentType];
-        return publicStateVariableInfo[componentType] = info;
+        return (publicStateVariableInfo[componentType] = info);
       }.bind(this),
-      configurable: true
-    })
+      configurable: true,
+    });
   }
 
-
-  function isInheritedComponentType({ inheritedComponentType, baseComponentType }) {
+  function isInheritedComponentType({
+    inheritedComponentType,
+    baseComponentType,
+  }) {
     if (inheritedComponentType === baseComponentType) {
       return true;
     }
@@ -52,11 +53,8 @@ export default function createComponentInfoObjects() {
     if (!baseClass) {
       return false;
     }
-    return baseClass.isPrototypeOf(
-      allComponentClasses[inheritedComponentType]
-    );
+    return baseClass.isPrototypeOf(allComponentClasses[inheritedComponentType]);
   }
-
 
   function isCompositeComponent({ componentType, includeNonStandard = true }) {
     let componentClass = allComponentClasses[componentType];
@@ -66,21 +64,28 @@ export default function createComponentInfoObjects() {
 
     let isComposite = isInheritedComponentType({
       inheritedComponentType: componentType,
-      baseComponentType: "_composite"
-    })
+      baseComponentType: "_composite",
+    });
 
-    return isComposite &&
-      (includeNonStandard || !componentClass.treatAsComponentForRecursiveReplacements)
+    return (
+      isComposite &&
+      (includeNonStandard ||
+        !componentClass.treatAsComponentForRecursiveReplacements)
+    );
   }
 
-  let componentTypeIsSpecifiedType = (cType, specifiedCType) => isInheritedComponentType({
-    inheritedComponentType: cType,
-    baseComponentType: specifiedCType
-  });
+  let componentTypeIsSpecifiedType = (cType, specifiedCType) =>
+    isInheritedComponentType({
+      inheritedComponentType: cType,
+      baseComponentType: specifiedCType,
+    });
 
   let componentIsSpecifiedType = (comp, specifiedCType) =>
-    componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-    || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
+    componentTypeIsSpecifiedType(comp.componentType, specifiedCType) ||
+    componentTypeIsSpecifiedType(
+      comp.attributes?.createComponentOfType?.primitive,
+      specifiedCType,
+    );
 
   return {
     allComponentClasses,
@@ -92,7 +97,4 @@ export default function createComponentInfoObjects() {
     publicStateVariableInfo,
     componentIsSpecifiedType,
   };
-
-
 }
-

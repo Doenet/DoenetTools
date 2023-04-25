@@ -1,4 +1,4 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export default class Embed extends BlockComponent {
   constructor(args) {
@@ -7,7 +7,6 @@ export default class Embed extends BlockComponent {
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
   static componentType = "embed";
 
@@ -18,35 +17,35 @@ export default class Embed extends BlockComponent {
       createStateVariable: "width",
       defaultValue: { size: 500, isAbsolute: true },
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
       defaultValue: { size: 500, isAbsolute: true },
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.geogebra = {
       createComponentOfType: "text",
       createStateVariable: "geogebra",
       defaultValue: null,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.encodedGeogebraContent = {
       createComponentOfType: "text",
       createStateVariable: "encodedGeogebraContent",
       defaultValue: null,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.fromMathInsight = {
       createComponentOfType: "text",
       createStateVariable: "fromMathInsight",
       defaultValue: null,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     return attributes;
@@ -59,9 +58,8 @@ export default class Embed extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
 }

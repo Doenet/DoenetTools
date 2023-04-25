@@ -1,20 +1,20 @@
-import React from 'react';
-import { atomFamily, selectorFamily, useRecoilValue } from 'recoil';
-import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import React from "react";
+import { atomFamily, selectorFamily, useRecoilValue } from "recoil";
+import { searchParamAtomFamily } from "../../Tools/_framework/NewToolRoot";
 import {
   coursePermissionsAndSettingsByCourseId,
   courseRolePermissionsByCourseIdRoleId,
   courseRolesByCourseId,
-} from '../Course/CourseActions';
-import DropdownMenu from './DropdownMenu';
+} from "../Course/CourseActions";
+import DropdownMenu from "./DropdownMenu";
 
 export const effectiveRoleIdByCourseId = atomFamily({
-  key: 'effectiveRoleId',
+  key: "effectiveRoleId",
   default: null,
 });
 
 export const effectivePermissionsByCourseId = selectorFamily({
-  key: 'effectivePermissions',
+  key: "effectivePermissions",
   get:
     (courseId) =>
     ({ get }) => {
@@ -28,15 +28,15 @@ export const effectivePermissionsByCourseId = selectorFamily({
 
 export function RoleDropdown({
   label,
-  width = 'menu',
-  maxMenuHeight = '200px',
+  width = "menu",
+  maxMenuHeight = "200px",
   defaultRoleId,
   valueRoleId,
   onChange = () => {},
   vertical,
   disabled,
 }) {
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId')) ?? '';
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId")) ?? "";
   const roles = useRecoilValue(courseRolesByCourseId(courseId));
   const valueIndex = valueRoleId
     ? roles.findIndex(({ roleId }) => roleId === valueRoleId)

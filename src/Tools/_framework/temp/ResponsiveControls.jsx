@@ -20,7 +20,7 @@ export default function ControlGroup(props) {
     if (ctrlGrpRef.current) {
       if (props.fromMaximize === undefined && props.getControlGroupsWidth) {
         props.getControlGroupsWidth(
-          ctrlGrpRef.current.getBoundingClientRect().width
+          ctrlGrpRef.current.getBoundingClientRect().width,
         );
       }
     }

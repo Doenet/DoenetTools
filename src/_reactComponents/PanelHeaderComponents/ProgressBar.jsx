@@ -140,5 +140,4 @@ export default function ProgressBar(props) {
       </BarWrapper>
     </Container>
   );
-};
-  
+}

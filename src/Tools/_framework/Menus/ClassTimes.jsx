@@ -1,60 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   // useRecoilState,
   useRecoilCallback,
   useRecoilValue,
-} from 'recoil';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { classTimesAtom } from '../Widgets/Next7Days';
-import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
-import axios from 'axios';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
-
+} from "recoil";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { classTimesAtom } from "../Widgets/Next7Days";
+import DropdownMenu from "../../../_reactComponents/PanelHeaderComponents/DropdownMenu";
+import DateTime from "../../../_reactComponents/PanelHeaderComponents/DateTime";
+import axios from "axios";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default function ClassTimes() {
   const timesObj = useRecoilValue(classTimesAtom);
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
 
-  const addClassTime = useRecoilCallback(({ set, snapshot }) => async (courseId) => {
-    let prevTimesArr = await snapshot.getPromise(classTimesAtom); 
-    let nextArr = [...prevTimesArr]; 
-    // Default new classTime
-    nextArr.push({
-      dotwIndex: 1, // monday 9 to 10 am
-      startTime: '09:00',
-      endTime: '10:00',
-    }); 
-    set(classTimesAtom, nextArr); 
+  const addClassTime = useRecoilCallback(
+    ({ set, snapshot }) =>
+      async (courseId) => {
+        let prevTimesArr = await snapshot.getPromise(classTimesAtom);
+        let nextArr = [...prevTimesArr];
+        // Default new classTime
+        nextArr.push({
+          dotwIndex: 1, // monday 9 to 10 am
+          startTime: "09:00",
+          endTime: "10:00",
+        });
+        set(classTimesAtom, nextArr);
 
-    let dotwIndexes = []; // create arrays
-    let startTimes = [];
-    let endTimes = [];
-    for (let classTime of nextArr) {
-      // fill arrays
-      dotwIndexes.push(classTime.dotwIndex);
-      startTimes.push(classTime.startTime);
-      endTimes.push(classTime.endTime);
-    }
+        let dotwIndexes = []; // create arrays
+        let startTimes = [];
+        let endTimes = [];
+        for (let classTime of nextArr) {
+          // fill arrays
+          dotwIndexes.push(classTime.dotwIndex);
+          startTimes.push(classTime.startTime);
+          endTimes.push(classTime.endTime);
+        }
 
-    // php updates classTimes table
-    let resp = await axios.post('/api/updateClassTimes.php', {
-      courseId,
-      dotwIndexes,
-      startTimes,
-      endTimes,
-    });
-    let { data } = resp;
-  });
+        // php updates classTimes table
+        let resp = await axios.post("/api/updateClassTimes.php", {
+          courseId,
+          dotwIndexes,
+          startTimes,
+          endTimes,
+        });
+        let { data } = resp;
+      },
+  );
 
   const updateClassTime = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ index, nextClassTime, courseId }) => {
         let was = await snapshot.getPromise(classTimesAtom);
         let nextArr = [...was];
-        nextArr[index] = { ...nextClassTime }; 
+        nextArr[index] = { ...nextClassTime };
 
         set(classTimesAtom, nextArr);
 
@@ -67,13 +69,12 @@ export default function ClassTimes() {
           endTimes.push(classTime.endTime);
         }
 
-        let resp = await axios.post('/api/updateClassTimes.php', {
+        let resp = await axios.post("/api/updateClassTimes.php", {
           courseId,
           dotwIndexes,
           startTimes,
           endTimes,
         });
-
       },
   );
 
@@ -94,7 +95,7 @@ export default function ClassTimes() {
           endTimes.push(classTime.endTime);
         }
 
-        let resp = await axios.post('/api/updateClassTimes.php', {
+        let resp = await axios.post("/api/updateClassTimes.php", {
           courseId,
           dotwIndexes,
           startTimes,
@@ -104,20 +105,16 @@ export default function ClassTimes() {
       },
   );
 
-
-
-
   //TODO!!!!: FIX DAYS OF THE WEEK!!! WASN'T SHOWING SUNDAY
 
-
   const dotwItems = [
-    [1, 'Monday'],
-    [2, 'Tuesday'],
-    [3, 'Wednesday'],
-    [4, 'Thursday'],
-    [5, 'Friday'],
-    [6, 'Saturday'],
-    [0, 'Sunday'],
+    [1, "Monday"],
+    [2, "Tuesday"],
+    [3, "Wednesday"],
+    [4, "Thursday"],
+    [5, "Friday"],
+    [6, "Saturday"],
+    [0, "Sunday"],
   ];
 
   let timesJSX = [];
@@ -129,11 +126,13 @@ export default function ClassTimes() {
     endTimeWholeDate.setHours(timeObj.endTime.split(":")[0]);
     endTimeWholeDate.setMinutes(timeObj.endTime.split(":")[1]);
     let dropDownDOTWIndex = timeObj.dotwIndex;
-    if (timeObj.dotwIndex == 0){dropDownDOTWIndex = 7 }
+    if (timeObj.dotwIndex == 0) {
+      dropDownDOTWIndex = 7;
+    }
     timesJSX.push(
       <>
         <tr>
-          <td style={{ width: '190px' }}>
+          <td style={{ width: "190px" }}>
             <DropdownMenu
               dataTest={`DOTW Dropdown ${index}`}
               width="180px"
@@ -142,7 +141,7 @@ export default function ClassTimes() {
               onChange={({ value }) => {
                 let nextClassTime = { ...timeObj };
                 nextClassTime.dotwIndex = value;
-                updateClassTime({courseId, index, nextClassTime });
+                updateClassTime({ courseId, index, nextClassTime });
               }}
             />
           </td>
@@ -155,7 +154,7 @@ export default function ClassTimes() {
             }}
           />
         </tr>
-        <tr style={{ width: '190px', display: 'flex', alignItems: 'center' }}>
+        <tr style={{ width: "190px", display: "flex", alignItems: "center" }}>
           <td>
             <DateTime
               dataTest={`Classtime start time ${index}`}
@@ -164,14 +163,16 @@ export default function ClassTimes() {
               value={startTimeWholeDate}
               onBlur={(value, valid) => {
                 // if (valid) {
-                  let nextClassTime = { ...timeObj };
-                  nextClassTime.startTime = new Date(value.value._d)
-                  .toLocaleString('en-US', { 
-                    hour12: false, 
-                    hour: '2-digit', 
-                    minute: '2-digit' })
+                let nextClassTime = { ...timeObj };
+                nextClassTime.startTime = new Date(
+                  value.value._d,
+                ).toLocaleString("en-US", {
+                  hour12: false,
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
 
-                updateClassTime({courseId, index, nextClassTime });
+                updateClassTime({ courseId, index, nextClassTime });
                 // updateClassTime({courseId, index, nextClassTime:new Date(value.value._d) });
                 // } else {
                 // console.log('not valid'); // TODO toast
@@ -179,8 +180,8 @@ export default function ClassTimes() {
               }}
             />
           </td>
-          <td style={{ marginLeft: '6px', marginRight: '6px' }}>-</td>
-          <td style={{ ['--menuPanelMargin']: '-62px' }}>
+          <td style={{ marginLeft: "6px", marginRight: "6px" }}>-</td>
+          <td style={{ ["--menuPanelMargin"]: "-62px" }}>
             <DateTime
               dataTest={`Classtime end time ${index}`}
               datePicker={false}
@@ -189,12 +190,15 @@ export default function ClassTimes() {
               onBlur={(value, valid) => {
                 // if (valid) {
                 let nextClassTime = { ...timeObj };
-                nextClassTime.endTime = new Date(value.value._d)
-                .toLocaleString('en-US', { 
-                  hour12: false, 
-                  hour: '2-digit', 
-                  minute: '2-digit' })
-                updateClassTime({courseId, index, nextClassTime });
+                nextClassTime.endTime = new Date(value.value._d).toLocaleString(
+                  "en-US",
+                  {
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  },
+                );
+                updateClassTime({ courseId, index, nextClassTime });
                 // } else {
                 // console.log('not valid'); // TODO toast
                 // }
@@ -202,7 +206,7 @@ export default function ClassTimes() {
             />
           </td>
         </tr>
-        <div style={{ margin: '10px' }}></div>
+        <div style={{ margin: "10px" }}></div>
       </>,
     );
   }
@@ -211,7 +215,7 @@ export default function ClassTimes() {
 
   if (timesJSX.length > 0) {
     classTimesTable = (
-      <table style={{ width: '230px', margins: '5px' }}>{timesJSX}</table>
+      <table style={{ width: "230px", margins: "5px" }}>{timesJSX}</table>
     );
   }
   return (
@@ -220,7 +224,7 @@ export default function ClassTimes() {
       <Button
         dataTest="Add Classtime"
         icon={<FontAwesomeIcon icon={faPlus} />}
-        style={{ margin: 'auto' }}
+        style={{ margin: "auto" }}
         onClick={() => addClassTime(courseId)}
       />
     </>

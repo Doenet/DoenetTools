@@ -1,16 +1,16 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { redirect, useLoaderData, useNavigate } from 'react-router';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { useCourse } from '../../../_reactComponents/Course/CourseActions';
-import { Form } from 'react-router-dom';
-import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
+import React from "react";
+import styled from "styled-components";
+import { useRecoilValue } from "recoil";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { redirect, useLoaderData, useNavigate } from "react-router";
+import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
+import { useCourse } from "../../../_reactComponents/Course/CourseActions";
+import { Form } from "react-router-dom";
+import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
-  const doenetId = url.searchParams.get('doenetId');
+  const doenetId = url.searchParams.get("doenetId");
   const response = await fetch(
     `/api/getPortfolioActivityData.php?doenetId=${doenetId}`,
   );
@@ -24,12 +24,12 @@ export async function loader({ request }) {
   let portfolioCourseId = null;
   if (signedIn) {
     //Check on portfolio courseId
-    const response = await fetch('/api/getPorfolioCourseId.php');
+    const response = await fetch("/api/getPorfolioCourseId.php");
 
     const data = await response.json();
     portfolioCourseId = data.portfolioCourseId;
-    if (data.portfolioCourseId == '') {
-      portfolioCourseId = 'not_created';
+    if (data.portfolioCourseId == "") {
+      portfolioCourseId = "not_created";
     }
   }
   return {
@@ -42,7 +42,7 @@ export async function loader({ request }) {
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  if (formObj._action == 'Remix') {
+  if (formObj._action == "Remix") {
     let response = await fetch(
       `/api/duplicatePortfolioActivity.php?doenetId=${formObj.doenetId}`,
     );
@@ -61,14 +61,14 @@ const SupportWrapper = styled.div`
   grid-area: supportPanel;
   background-color: var(--canvas);
   height: 100%;
-  display: ${({ $hide }) => ($hide ? 'none' : 'block')};
+  display: ${({ $hide }) => ($hide ? "none" : "block")};
 `;
 
 const ControlsWrapper = styled.div`
   overflow: auto;
   grid-area: supportControls;
   column-gap: 10px;
-  display: ${({ $hide }) => ($hide ? 'none' : 'flex')};
+  display: ${({ $hide }) => ($hide ? "none" : "flex")};
   justify-content: flex-end;
   background-color: var(--canvas);
 `;
@@ -77,7 +77,7 @@ export default function SupportPanel({ hide, children }) {
   /* console.log(">>>===SupportPanel") */
   const data = useLoaderData();
   const navigate = useNavigate();
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const recoilPageToolView = useRecoilValue(pageToolViewAtom);
   const { compileActivity, updateAssignItem } = useCourse(
     data?.activityData?.courseId,
@@ -85,8 +85,8 @@ export default function SupportPanel({ hide, children }) {
 
   let signInToRemix = false;
   if (
-    recoilPageToolView?.page == 'public' &&
-    data?.activityData?.userCanViewSource == '1' &&
+    recoilPageToolView?.page == "public" &&
+    data?.activityData?.userCanViewSource == "1" &&
     !data?.signedIn
   ) {
     signInToRemix = true;
@@ -95,8 +95,8 @@ export default function SupportPanel({ hide, children }) {
   let canRemix = false;
 
   if (
-    recoilPageToolView?.page == 'public' &&
-    data?.activityData?.userCanViewSource == '1' &&
+    recoilPageToolView?.page == "public" &&
+    data?.activityData?.userCanViewSource == "1" &&
     data?.signedIn
   ) {
     canRemix = true;
@@ -108,10 +108,10 @@ export default function SupportPanel({ hide, children }) {
         aria-label="complementary controls"
         data-test="Support Panel Controls"
       >
-        {recoilPageToolView?.page == 'portfolioeditor' &&
-        data?.activityData?.public == '1' ? (
+        {recoilPageToolView?.page == "portfolioeditor" &&
+        data?.activityData?.public == "1" ? (
           <Button
-            style={{ background: '#ff7b00' }}
+            style={{ background: "#ff7b00" }}
             value="Update Public Activity"
             onClick={() => {
               compileActivity({
@@ -138,20 +138,20 @@ export default function SupportPanel({ hide, children }) {
           <Button
             value="Sign In To Remix"
             onClick={() => {
-              navigate('/signin');
+              navigate("/signin");
             }}
           />
         ) : null}
 
         {canRemix ? (
           <Form method="post">
-            <Button style={{ marginTop: '8px' }} value="Remix" />
+            <Button style={{ marginTop: "8px" }} value="Remix" />
             <input type="hidden" name="_action" value="Remix" />
             <input type="hidden" name="doenetId" value={doenetId} />
           </Form>
         ) : null}
 
-        {recoilPageToolView?.page == 'portfolioeditor' ? (
+        {recoilPageToolView?.page == "portfolioeditor" ? (
           <Button
             value="Settings"
             onClick={() =>
@@ -164,7 +164,7 @@ export default function SupportPanel({ hide, children }) {
         <Button
           value="Documentation"
           onClick={() =>
-            window.open('/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q')
+            window.open("/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q")
           }
         />
       </ControlsWrapper>

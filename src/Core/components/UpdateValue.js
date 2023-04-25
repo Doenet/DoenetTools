@@ -1,9 +1,16 @@
-import { moveGraphicalObjectWithAnchorAction, returnAnchorAttributes, returnAnchorStateVariableDefinition } from '../utils/graphical';
-import { returnLabelStateVariableDefinitions } from '../utils/label';
-import { normalizeMathExpression } from '../utils/math';
-import { addStandardTriggeringStateVariableDefinitions, returnStandardTriggeringAttributes } from '../utils/triggering';
-import InlineComponent from './abstract/InlineComponent';
-import me from 'math-expressions';
+import {
+  moveGraphicalObjectWithAnchorAction,
+  returnAnchorAttributes,
+  returnAnchorStateVariableDefinition,
+} from "../utils/graphical";
+import { returnLabelStateVariableDefinitions } from "../utils/label";
+import { normalizeMathExpression } from "../utils/math";
+import {
+  addStandardTriggeringStateVariableDefinitions,
+  returnStandardTriggeringAttributes,
+} from "../utils/triggering";
+import InlineComponent from "./abstract/InlineComponent";
+import me from "math-expressions";
 
 export default class UpdateValue extends InlineComponent {
   constructor(args) {
@@ -11,10 +18,10 @@ export default class UpdateValue extends InlineComponent {
 
     Object.assign(this.actions, {
       updateValue: this.updateValue.bind(this),
-      updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this),
+      updateValueIfTriggerNewlyTrue:
+        this.updateValueIfTriggerNewlyTrue.bind(this),
       moveButton: this.moveButton.bind(this),
     });
-
   }
   static componentType = "updateValue";
   static rendererType = "button";
@@ -38,8 +45,8 @@ export default class UpdateValue extends InlineComponent {
       createStateVariable: "type",
       defaultPrimitiveValue: "math",
       toLowerCase: true,
-      validValues: ["math", "number", "boolean", "text"]
-    }
+      validValues: ["math", "number", "boolean", "text"],
+    };
 
     attributes.prop = {
       createPrimitiveOfType: "string",
@@ -47,7 +54,7 @@ export default class UpdateValue extends InlineComponent {
 
     attributes.newValue = {
       createComponentOfType: "_componentWithSelectableType",
-    }
+    };
 
     attributes.componentIndex = {
       createComponentOfType: "integer",
@@ -63,22 +70,21 @@ export default class UpdateValue extends InlineComponent {
       public: true,
     };
 
-
     attributes.draggable = {
       createComponentOfType: "boolean",
       createStateVariable: "draggable",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
-    Object.assign(attributes, returnAnchorAttributes())
+    Object.assign(attributes, returnAnchorAttributes());
 
-
-    let triggerAttributes = returnStandardTriggeringAttributes("updateValueIfTriggerNewlyTrue")
+    let triggerAttributes = returnStandardTriggeringAttributes(
+      "updateValueIfTriggerNewlyTrue",
+    );
 
     Object.assign(attributes, triggerAttributes);
-
 
     // for newValue with type==="math"
     // let simplify="" or simplify="true" be full simplify
@@ -88,29 +94,29 @@ export default class UpdateValue extends InlineComponent {
       defaultValue: "none",
       public: true,
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full", "false": "none" },
-      validValues: ["none", "full", "numbers", "numberspreserveorder"]
+      valueTransformations: { "": "full", true: "full", false: "none" },
+      validValues: ["none", "full", "numbers", "numberspreserveorder"],
     };
 
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "labels",
-      componentTypes: ["label"]
-    }]
-
+    return [
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    addStandardTriggeringStateVariableDefinitions(stateVariableDefinitions, "updateValue");
+    addStandardTriggeringStateVariableDefinitions(
+      stateVariableDefinitions,
+      "updateValue",
+    );
 
     let labelDefinitions = returnLabelStateVariableDefinitions();
     Object.assign(stateVariableDefinitions, labelDefinitions);
@@ -121,40 +127,38 @@ export default class UpdateValue extends InlineComponent {
     stateVariableDefinitions.clickAction = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { clickAction: "updateValue" } })
-    }
-
+      definition: () => ({ setValue: { clickAction: "updateValue" } }),
+    };
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({
         target: {
           dependencyType: "doenetAttribute",
-          attributeName: "target"
-        }
+          attributeName: "target",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { target: dependencyValues.target }
-      })
-    }
+        setValue: { target: dependencyValues.target },
+      }),
+    };
 
     stateVariableDefinitions.targetComponent = {
       returnDependencies() {
         return {
           targetComponent: {
             dependencyType: "targetComponent",
-          }
-        }
+          },
+        };
       },
       definition: function ({ dependencyValues }) {
-
         let targetComponent = null;
         if (dependencyValues.targetComponent) {
-          targetComponent = dependencyValues.targetComponent
+          targetComponent = dependencyValues.targetComponent;
         }
 
         return {
-          setValue: { targetComponent }
-        }
+          setValue: { targetComponent },
+        };
       },
     };
 
@@ -162,48 +166,49 @@ export default class UpdateValue extends InlineComponent {
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
-          attributeName: "prop"
+          attributeName: "prop",
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { propName: dependencyValues.propName } }
-      }
-    }
+        return { setValue: { propName: dependencyValues.propName } };
+      },
+    };
 
     stateVariableDefinitions.targetIdentities = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "componentIndex",
+        "targetComponent",
+        "componentIndex",
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
-
         let dependencies = {};
 
         if (stateValues.targetComponent !== null) {
-
-          if (componentInfoObjects.isCompositeComponent({
-            componentType: stateValues.targetComponent.componentType,
-            includeNonStandard: false
-          })) {
+          if (
+            componentInfoObjects.isCompositeComponent({
+              componentType: stateValues.targetComponent.componentType,
+              includeNonStandard: false,
+            })
+          ) {
             dependencies.targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
               recursive: true,
               componentIndex: stateValues.componentIndex,
-            }
-          } else if (stateValues.componentIndex === null || stateValues.componentIndex === 1) {
+            };
+          } else if (
+            stateValues.componentIndex === null ||
+            stateValues.componentIndex === 1
+          ) {
             // if we don't have a composite, componentIndex can only match if it is 1
             dependencies.targets = {
               dependencyType: "stateVariable",
-              variableName: "targetComponent"
-            }
+              variableName: "targetComponent",
+            };
           }
-
-
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-
         let targetIdentities = null;
         if (dependencyValues.targets) {
           targetIdentities = dependencyValues.targets;
@@ -213,25 +218,24 @@ export default class UpdateValue extends InlineComponent {
         }
         return { setValue: { targetIdentities } };
       },
-    }
+    };
 
     stateVariableDefinitions.targets = {
       stateVariablesDeterminingDependencies: [
-        "targetIdentities", "propName", "propIndex"
+        "targetIdentities",
+        "propName",
+        "propIndex",
       ],
       returnDependencies: function ({ stateValues }) {
-
         let dependencies = {
           targetIdentities: {
             dependencyType: "stateVariable",
-            variableName: "targetIdentities"
+            variableName: "targetIdentities",
           },
-        }
+        };
 
         if (stateValues.targetIdentities !== null) {
-
           for (let [ind, source] of stateValues.targetIdentities.entries()) {
-
             let thisTarget;
 
             if (stateValues.propName) {
@@ -240,7 +244,7 @@ export default class UpdateValue extends InlineComponent {
                 // make propIndex be a shallow copy
                 // so that can detect if it changed
                 // when update dependencies
-                propIndex = [...propIndex]
+                propIndex = [...propIndex];
               }
               thisTarget = {
                 dependencyType: "stateVariable",
@@ -252,18 +256,16 @@ export default class UpdateValue extends InlineComponent {
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,
-              }
-
+              };
             } else {
               thisTarget = {
                 dependencyType: "componentIdentity",
-                componentName: source.componentName
-              }
+                componentName: source.componentName,
+              };
             }
 
             dependencies["target" + ind] = thisTarget;
           }
-
         }
 
         return dependencies;
@@ -283,7 +285,7 @@ export default class UpdateValue extends InlineComponent {
 
         return { setValue: { targets } };
       },
-    }
+    };
 
     stateVariableDefinitions.newValue = {
       returnDependencies: () => ({
@@ -294,20 +296,20 @@ export default class UpdateValue extends InlineComponent {
         },
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         simplify: {
           dependencyType: "stateVariable",
-          variableName: "simplify"
-        }
+          variableName: "simplify",
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.newValueAttr === null) {
           return {
             setValue: {
               newValue: null,
-            }
-          }
+            },
+          };
         }
 
         let newValue = dependencyValues.newValueAttr.stateValues.value;
@@ -315,23 +317,24 @@ export default class UpdateValue extends InlineComponent {
         if (dependencyValues.type === "math") {
           newValue = normalizeMathExpression({
             value: newValue,
-            simplify: dependencyValues.simplify
-          })
+            simplify: dependencyValues.simplify,
+          });
         }
 
         return {
-          setValue: { newValue }
-        }
+          setValue: { newValue },
+        };
       },
     };
 
     return stateVariableDefinitions;
-
   }
 
-
-  async updateValue({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
-
+  async updateValue({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let targets = await this.stateValues.targets;
     let newValue = await this.stateValues.newValue;
     if (targets === null || newValue === null) {
@@ -345,7 +348,12 @@ export default class UpdateValue extends InlineComponent {
       if (target.stateValues) {
         stateVariable = Object.keys(target.stateValues)[0];
         if (stateVariable === undefined) {
-          console.warn(`Cannot update prop="${await this.stateValues.propName}" of ${await this.stateValues.target} as could not find prop ${await this.stateValues.propName} on a component of type ${target.componentType}`)
+          console.warn(
+            `Cannot update prop="${await this.stateValues
+              .propName}" of ${await this.stateValues
+              .target} as could not find prop ${await this.stateValues
+              .propName} on a component of type ${target.componentType}`,
+          );
           continue;
         }
       }
@@ -355,10 +363,8 @@ export default class UpdateValue extends InlineComponent {
         componentName: target.componentName,
         stateVariable,
         value: newValue,
-      })
-
+      });
     }
-
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
@@ -374,7 +380,7 @@ export default class UpdateValue extends InlineComponent {
         result: {
           response: newValue,
           responseText: newValue.toString(),
-        }
+        },
       },
     });
 
@@ -384,15 +390,19 @@ export default class UpdateValue extends InlineComponent {
       sourceInformation,
       skipRendererUpdate,
     });
-
-
   }
 
-  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
+  async updateValueIfTriggerNewlyTrue({
+    stateValues,
+    previousValues,
+    actionId,
+  }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
-    if (await stateValues.triggerWhen && previousValues.triggerWhen === false &&
-      !await this.stateValues.insideTriggerSet
+    if (
+      (await stateValues.triggerWhen) &&
+      previousValues.triggerWhen === false &&
+      !(await this.stateValues.insideTriggerSet)
     ) {
       return await this.updateValue({ actionId, skipRendererUpdate: true });
     } else {
@@ -400,20 +410,26 @@ export default class UpdateValue extends InlineComponent {
     }
   }
 
-
-  async moveButton({ x, y, z, transient, actionId,
-    sourceInformation = {}, skipRendererUpdate = false,
+  async moveButton({
+    x,
+    y,
+    z,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-
     return await moveGraphicalObjectWithAnchorAction({
-      x, y, z, transient, actionId,
-      sourceInformation, skipRendererUpdate,
+      x,
+      y,
+      z,
+      transient,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       componentName: this.componentName,
       componentType: this.componentType,
-      coreFunctions: this.coreFunctions
-    })
-
+      coreFunctions: this.coreFunctions,
+    });
   }
-
 }
-

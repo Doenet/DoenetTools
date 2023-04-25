@@ -1,6 +1,6 @@
-import { Box, Image } from '@chakra-ui/react';
-import React from 'react';
-import { useLoaderData } from 'react-router';
+import { Box, Image } from "@chakra-ui/react";
+import React from "react";
+import { useLoaderData } from "react-router";
 
 export async function loader({ params }) {
   const doenetId = params.doenetId;
@@ -14,7 +14,7 @@ export async function loader({ params }) {
 
 export default function PublicEditorInfoCap() {
   let { activityData } = useLoaderData();
-  let imagePath = '/activity_default.jpg';
+  let imagePath = "/activity_default.jpg";
   if (activityData?.imagePath != null) {
     imagePath = activityData?.imagePath;
   }
@@ -38,7 +38,7 @@ export default function PublicEditorInfoCap() {
           alt="Activity Image"
         />
       </Box>
-      <div style={{ marginBottom: '5px', padding: '1px 5px' }}>
+      <div style={{ marginBottom: "5px", padding: "1px 5px" }}>
         Public Activity Editor
       </div>
       {/* <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{data.label}</div> */}

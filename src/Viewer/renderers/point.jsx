@@ -1,13 +1,14 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import { BoardContext, POINT_LAYER_OFFSET } from './graph';
-import { MathJax } from 'better-react-mathjax';
-import { darkModeAtom } from '../../Tools/_framework/DarkmodeController';
-import { useRecoilValue } from 'recoil';
-import { textRendererStyle } from '../../Core/utils/style';
+import React, { useContext, useEffect, useState, useRef } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { BoardContext, POINT_LAYER_OFFSET } from "./graph";
+import { MathJax } from "better-react-mathjax";
+import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { useRecoilValue } from "recoil";
+import { textRendererStyle } from "../../Core/utils/style";
 
 export default React.memo(function Point(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } =
+    useDoenetRender(props);
 
   Point.ignoreActionsWithoutCore = () => true;
 
@@ -40,21 +41,20 @@ export default React.memo(function Point(props) {
 
   const darkMode = useRecoilValue(darkModeAtom);
 
-
-  const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
-
+  const useOpenSymbol =
+    SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
 
   useEffect(() => {
     //On unmount
     return () => {
       // if point is defined
       if (pointJXG.current !== null) {
-        shadowPointJXG.current.off('drag');
-        shadowPointJXG.current.off('down');
-        shadowPointJXG.current.off('hit');
-        shadowPointJXG.current.off('up');
-        shadowPointJXG.current.off('keyfocusout');
-        shadowPointJXG.current.off('keydown');
+        shadowPointJXG.current.off("drag");
+        shadowPointJXG.current.off("down");
+        shadowPointJXG.current.off("hit");
+        shadowPointJXG.current.off("up");
+        shadowPointJXG.current.off("keyfocusout");
+        shadowPointJXG.current.off("keydown");
         board.removeObject(pointJXG.current);
         board.removeObject(shadowPointJXG.current);
         pointJXG.current = null;
@@ -62,23 +62,22 @@ export default React.memo(function Point(props) {
       }
 
       if (board) {
-        board.off('move', boardMoveHandler);
+        board.off("move", boardMoveHandler);
       }
-
-    }
-  }, [])
-
+    };
+  }, []);
 
   useEffect(() => {
     if (board) {
-      board.on('move', boardMoveHandler)
+      board.on("move", boardMoveHandler);
     }
-  }, [board])
-
+  }, [board]);
 
   function createPointJXG() {
-
-    let markerColor = darkMode === "dark" ? SVs.selectedStyle.markerColorDarkMode : SVs.selectedStyle.markerColor;
+    let markerColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.markerColorDarkMode
+        : SVs.selectedStyle.markerColor;
     let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
     let strokeColor = useOpenSymbol ? markerColor : "none";
 
@@ -95,13 +94,19 @@ export default React.memo(function Point(props) {
       strokeColor,
       strokeOpacity: SVs.selectedStyle.markerOpacity,
       fillOpacity: SVs.selectedStyle.markerOpacity,
-      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
-      size: normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle),
+      highlightFillColor: getComputedStyle(
+        document.documentElement,
+      ).getPropertyValue("--mainGray"),
+      highlightStrokeColor: getComputedStyle(
+        document.documentElement,
+      ).getPropertyValue("--lightBlue"),
+      size: normalizeSize(
+        SVs.selectedStyle.markerSize,
+        SVs.selectedStyle.markerStyle,
+      ),
       face: normalizeStyle(SVs.selectedStyle.markerStyle),
-      highlight: !fixLocation.current
+      highlight: !fixLocation.current,
     };
-
 
     if (withlabel) {
       let anchorx, anchory, offset;
@@ -157,10 +162,10 @@ export default React.memo(function Point(props) {
       }
     } else {
       jsxPointAttributes.label = {
-        highlight: false
-      }
+        highlight: false,
+      };
       if (SVs.labelHasLatex) {
-        jsxPointAttributes.label.useMathJax = true
+        jsxPointAttributes.label.useMathJax = true;
       }
     }
 
@@ -174,13 +179,12 @@ export default React.memo(function Point(props) {
 
     if (!Number.isFinite(coords[0])) {
       coords[0] = 0;
-      jsxPointAttributes['visible'] = false;
+      jsxPointAttributes["visible"] = false;
     }
     if (!Number.isFinite(coords[1])) {
       coords[1] = 0;
-      jsxPointAttributes['visible'] = false;
+      jsxPointAttributes["visible"] = false;
     }
-
 
     let shadowPointAttributes = { ...jsxPointAttributes };
     shadowPointAttributes.fixed = fixed.current;
@@ -191,18 +195,23 @@ export default React.memo(function Point(props) {
     shadowPointAttributes.highlightFillOpacity = 0;
     shadowPointAttributes.highlightStrokeOpacity = 0;
 
-    let newShadowPointJXG = board.create('point', coords, shadowPointAttributes);
+    let newShadowPointJXG = board.create(
+      "point",
+      coords,
+      shadowPointAttributes,
+    );
     newShadowPointJXG.isDraggable = !fixLocation.current;
 
-    let newPointJXG = board.create('point', coords, jsxPointAttributes);
+    let newPointJXG = board.create("point", coords, jsxPointAttributes);
 
-
-    newShadowPointJXG.on('down', function (e) {
+    newShadowPointJXG.on("down", function (e) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newShadowPointJXG.coords.scrCoords];
       dragged.current = false;
-      shadowPointJXG.current.visProp.highlightfillopacity = pointJXG.current.visProp.fillopacity;
-      shadowPointJXG.current.visProp.highlightstrokeopacity = pointJXG.current.visProp.strokeopacity;
+      shadowPointJXG.current.visProp.highlightfillopacity =
+        pointJXG.current.visProp.fillopacity;
+      shadowPointJXG.current.visProp.highlightstrokeopacity =
+        pointJXG.current.visProp.strokeopacity;
 
       pointerIsDown.current = true;
       pointerMovedSinceDown.current = false;
@@ -210,42 +219,42 @@ export default React.memo(function Point(props) {
       if (!fixed.current) {
         callAction({
           action: actions.pointFocused,
-          args: { name }   // send name so get original name if adapted
+          args: { name }, // send name so get original name if adapted
         });
       }
     });
 
-    newShadowPointJXG.on('hit', function (e) {
+    newShadowPointJXG.on("hit", function (e) {
       dragged.current = false;
       callAction({
         action: actions.pointFocused,
-        args: { name }   // send name so get original name if adapted
+        args: { name }, // send name so get original name if adapted
       });
     });
 
-    newShadowPointJXG.on('up', function (e) {
+    newShadowPointJXG.on("up", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.movePoint,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
+          },
         });
         dragged.current = false;
       } else if (!pointerMovedSinceDown.current && !fixed.current) {
         if (switchable.current) {
           callAction({
-            action: actions.switchPoint
+            action: actions.switchPoint,
           });
           callAction({
             action: actions.pointClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         } else {
           callAction({
             action: actions.pointClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         }
       }
@@ -255,31 +264,31 @@ export default React.memo(function Point(props) {
       shadowPointJXG.current.visProp.highlightstrokeopacity = 0;
     });
 
-    newShadowPointJXG.on('hit', function (e) {
+    newShadowPointJXG.on("hit", function (e) {
       board.updateInfobox(pointJXG.current);
-    })
+    });
 
-    newShadowPointJXG.on('keyfocusout', function (e) {
+    newShadowPointJXG.on("keyfocusout", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.movePoint,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
+          },
         });
         dragged.current = false;
       }
-    })
+    });
 
-    newShadowPointJXG.on('drag', function (e) {
-
+    newShadowPointJXG.on("drag", function (e) {
       let viaPointer = e.type === "pointermove";
 
       //Protect against very small unintended drags
-      if (!viaPointer ||
-        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        !viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         dragged.current = true;
       }
@@ -297,11 +306,12 @@ export default React.memo(function Point(props) {
         // (as dragging uses the mouse location)
         // TODO: find an example where need this this additional complexity
         var o = board.origin.scrCoords;
-        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-          - o[1]) / board.unitX;
-        calculatedY.current = (o[2] -
-          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-          / board.unitY;
+        calculatedX.current =
+          (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) /
+          board.unitX;
+        calculatedY.current =
+          (o[2] - (pointAtDown.current[2] + e.y - pointerAtDown.current[1])) /
+          board.unitY;
       } else {
         calculatedX.current = newShadowPointJXG.X();
         calculatedY.current = newShadowPointJXG.Y();
@@ -317,52 +327,52 @@ export default React.memo(function Point(props) {
           y: calculatedY.current,
           transient: true,
           skippable: true,
-        }
+        },
       });
-
 
       let shadowX = Math.min(xmax, Math.max(xmin, newShadowPointJXG.X()));
       let shadowY = Math.min(ymax, Math.max(ymin, newShadowPointJXG.Y()));
-      newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [shadowX, shadowY]);
+      newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [
+        shadowX,
+        shadowY,
+      ]);
 
-      newPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
+      newPointJXG.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionFromCore.current,
+      );
       board.updateInfobox(newPointJXG);
-
-
     });
 
-
-    newShadowPointJXG.on('keydown', function (e) {
-
+    newShadowPointJXG.on("keydown", function (e) {
       if (e.key === "Enter") {
-
         if (dragged.current) {
           callAction({
             action: actions.movePoint,
             args: {
               x: calculatedX.current,
               y: calculatedY.current,
-            }
+            },
           });
           dragged.current = false;
         }
 
         if (switchable.current) {
           callAction({
-            action: actions.switchPoint
+            action: actions.switchPoint,
           });
           callAction({
             action: actions.pointClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         } else {
           callAction({
             action: actions.pointClicked,
-            args: { name }   // send name so get original name if adapted
+            args: { name }, // send name so get original name if adapted
           });
         }
       }
-    })
+    });
 
     pointJXG.current = newPointJXG;
     shadowPointJXG.current = newShadowPointJXG;
@@ -373,21 +383,24 @@ export default React.memo(function Point(props) {
   function boardMoveHandler(e) {
     if (pointerIsDown.current) {
       //Protect against very small unintended move
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         pointerMovedSinceDown.current = true;
       }
     }
   }
 
-
   if (board) {
     if (pointJXG.current === null) {
       createPointJXG();
     } else {
       //if values update
-      let markerColor = darkMode === "dark" ? SVs.selectedStyle.markerColorDarkMode : SVs.selectedStyle.markerColor;
+      let markerColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.markerColorDarkMode
+          : SVs.selectedStyle.markerColor;
       let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
       let strokeColor = useOpenSymbol ? markerColor : "none";
 
@@ -409,13 +422,17 @@ export default React.memo(function Point(props) {
 
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
       if (!dragged.current) {
-        shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+        shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [
+          x,
+          y,
+        ]);
       }
 
       let visible = !SVs.hidden;
 
       if (Number.isFinite(x) && Number.isFinite(y)) {
-        let actuallyChangedVisibility = pointJXG.current.visProp["visible"] !== visible;
+        let actuallyChangedVisibility =
+          pointJXG.current.visProp["visible"] !== visible;
         pointJXG.current.visProp["visible"] = visible;
         pointJXG.current.visPropCalc["visible"] = visible;
         shadowPointJXG.current.visProp["visible"] = visible;
@@ -424,8 +441,8 @@ export default React.memo(function Point(props) {
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          pointJXG.current.setAttribute({ visible: visible })
-          shadowPointJXG.current.setAttribute({ visible: visible })
+          pointJXG.current.setAttribute({ visible: visible });
+          shadowPointJXG.current.setAttribute({ visible: visible });
         }
       } else {
         pointJXG.current.visProp["visible"] = false;
@@ -454,8 +471,12 @@ export default React.memo(function Point(props) {
         pointJXG.current.visProp.fillColor = fillColor;
         shadowPointJXG.current.visProp.fillColor = fillColor;
       }
-      if (pointJXG.current.visProp.strokeopacity !== SVs.selectedStyle.markerOpacity) {
-        pointJXG.current.visProp.strokeopacity = SVs.selectedStyle.markerOpacity;
+      if (
+        pointJXG.current.visProp.strokeopacity !==
+        SVs.selectedStyle.markerOpacity
+      ) {
+        pointJXG.current.visProp.strokeopacity =
+          SVs.selectedStyle.markerOpacity;
         pointJXG.current.visProp.fillopacity = SVs.selectedStyle.markerOpacity;
       }
 
@@ -464,7 +485,10 @@ export default React.memo(function Point(props) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
       }
-      let newSize = normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle);
+      let newSize = normalizeSize(
+        SVs.selectedStyle.markerSize,
+        SVs.selectedStyle.markerStyle,
+      );
       if (pointJXG.current.visProp.size !== newSize) {
         pointJXG.current.setAttribute({ size: newSize });
         shadowPointJXG.current.setAttribute({ size: newSize });
@@ -541,7 +565,6 @@ export default React.memo(function Point(props) {
         }
       }
 
-
       pointJXG.current.needsUpdate = true;
       pointJXG.current.update();
       shadowPointJXG.current.needsUpdate = true;
@@ -549,7 +572,7 @@ export default React.memo(function Point(props) {
       board.updateRenderer();
     }
 
-    return <a name={id} />
+    return <a name={id} />;
   }
 
   // not in board
@@ -562,10 +585,17 @@ export default React.memo(function Point(props) {
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
   let style = textRendererStyle(darkMode, SVs.selectedStyle);
-  return <><a name={id} /><span id={id} style={style}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
-
-
-})
+  return (
+    <>
+      <a name={id} />
+      <span id={id} style={style}>
+        <MathJax hideUntilTypeset={"first"} inline dynamic>
+          {mathJaxify}
+        </MathJax>
+      </span>
+    </>
+  );
+});
 
 function normalizeSize(size, style) {
   if (style === "diamond") {

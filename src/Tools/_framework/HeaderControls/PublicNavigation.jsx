@@ -1,6 +1,6 @@
-import React, { Suspense } from 'react';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useNavigate, useLoaderData } from 'react-router';
+import React, { Suspense } from "react";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { useNavigate, useLoaderData } from "react-router";
 
 export default function PublicNavigation() {
   const navigate = useNavigate();
@@ -8,17 +8,17 @@ export default function PublicNavigation() {
   const { signedIn, portfolioCourseId } = useLoaderData();
   return (
     <Suspense fallback={<div>loading Breadcrumbs...</div>}>
-      <div style={{ display: 'flex', columnGap: '4px', marginRight: '16px' }}>
+      <div style={{ display: "flex", columnGap: "4px", marginRight: "16px" }}>
         <Button
           value="Home"
           onClick={() => {
-            navigate('/');
+            navigate("/");
           }}
         />
         <Button
           value="Community"
           onClick={() => {
-            navigate('/community');
+            navigate("/community");
           }}
         />
         {signedIn ? (

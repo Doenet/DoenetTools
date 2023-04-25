@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 // import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 // import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 // import axios from 'axios';
@@ -9,8 +9,8 @@ import {
   courseIdAtom,
   coursePermissionsAndSettingsByCourseId,
   useCourse,
-} from '../../../_reactComponents/Course/CourseActions';
-import { find_image_label, find_color_label } from './util';
+} from "../../../_reactComponents/Course/CourseActions";
+import { find_image_label, find_color_label } from "./util";
 
 export default function DraftActivityCap() {
   const courseId = useRecoilValue(courseIdAtom);
@@ -24,15 +24,15 @@ export default function DraftActivityCap() {
   let image = course.image;
   // let label = course.label;
 
-  let accessible_name = 'course';
+  let accessible_name = "course";
 
-  if (image != 'none') {
+  if (image != "none") {
     accessible_name = find_image_label(image);
-    image = './drive_pictures/' + image;
+    image = "./drive_pictures/" + image;
   }
-  if (color != 'none') {
+  if (color != "none") {
     accessible_name = find_color_label(color);
-    color = '#' + color;
+    color = "#" + color;
   }
   // let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   // let { page } = useRecoilValue(pageToolViewAtom);
@@ -76,20 +76,20 @@ export default function DraftActivityCap() {
     <div>
       <div
         style={{
-          position: 'relative',
-          width: '100%',
-          height: '165px',
-          overflow: 'hidden',
+          position: "relative",
+          width: "100%",
+          height: "165px",
+          overflow: "hidden",
         }}
       >
         <img
           aria-label={accessible_name}
           src={image}
           style={{
-            position: 'absolute',
-            width: '100%',
-            top: '50%',
-            transform: 'translateY(-50%)',
+            position: "absolute",
+            width: "100%",
+            top: "50%",
+            transform: "translateY(-50%)",
           }}
         />
       </div>

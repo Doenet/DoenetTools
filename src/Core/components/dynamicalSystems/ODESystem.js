@@ -1,7 +1,10 @@
-import InlineComponent from '../abstract/InlineComponent';
-import me from 'math-expressions';
-import { returnNVariables, roundForDisplay } from '../../utils/math';
-import { returnSelectedStyleStateVariableDefinition, returnTextStyleDescriptionDefinitions } from '../../utils/style';
+import InlineComponent from "../abstract/InlineComponent";
+import me from "math-expressions";
+import { returnNVariables, roundForDisplay } from "../../utils/math";
+import {
+  returnSelectedStyleStateVariableDefinition,
+  returnTextStyleDescriptionDefinitions,
+} from "../../utils/style";
 
 export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
@@ -13,7 +16,7 @@ export default class ODESystem extends InlineComponent {
     attributes.independentVariable = {
       createComponentOfType: "variable",
       createStateVariable: "independentVariable",
-      defaultValue: me.fromAst('t'),
+      defaultValue: me.fromAst("t"),
       public: true,
     };
 
@@ -39,7 +42,7 @@ export default class ODESystem extends InlineComponent {
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1E-14,
+      valueForTrue: 1e-14,
       valueForFalse: 0,
       defaultValue: 0,
       public: true,
@@ -89,7 +92,7 @@ export default class ODESystem extends InlineComponent {
 
     attributes.initialConditions = {
       createComponentOfType: "mathList",
-    }
+    };
 
     attributes.variables = {
       createComponentOfType: "variables",
@@ -106,16 +109,15 @@ export default class ODESystem extends InlineComponent {
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "rightHandSides",
-      componentTypes: ["rightHandSide"]
-    }]
-
+    return [
+      {
+        group: "rightHandSides",
+        componentTypes: ["rightHandSide"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
@@ -124,23 +126,23 @@ export default class ODESystem extends InlineComponent {
     let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
     Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
-
     stateVariableDefinitions.validIndependentVariable = {
       returnDependencies: () => ({
         independentVarAttr: {
           dependencyType: "attributeComponent",
           attributeName: "independentVariable",
-          variableNames: ["validVariable"]
-        }
+          variableNames: ["validVariable"],
+        },
       }),
       definition({ dependencyValues }) {
         let validVariable = true;
         if (dependencyValues.independentVarAttr) {
-          validVariable = dependencyValues.independentVarAttr.stateValues.validVariable;
+          validVariable =
+            dependencyValues.independentVarAttr.stateValues.validVariable;
         }
-        return { setValue: { validIndependentVariable: validVariable } }
-      }
-    }
+        return { setValue: { validIndependentVariable: validVariable } };
+      },
+    };
 
     stateVariableDefinitions.nDimensions = {
       returnDependencies: () => ({
@@ -148,20 +150,24 @@ export default class ODESystem extends InlineComponent {
           dependencyType: "child",
           childGroups: ["rightHandSides"],
           skipComponentNames: true,
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
         return {
           setValue: { nDimensions: dependencyValues.rhsChildren.length },
-          checkForActualChange: { nDimensions: true }
-        }
-      }
-    }
+          checkForActualChange: { nDimensions: true },
+        };
+      },
+    };
 
     stateVariableDefinitions.variables = {
-      additionalStateVariablesDefined: [{
-        variableName: "validVariables", isArray: true, entryPrefixes: ["validVar"]
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "validVariables",
+          isArray: true,
+          entryPrefixes: ["validVar"],
+        },
+      ],
       isArray: true,
       public: true,
       shadowingInstructions: {
@@ -190,37 +196,47 @@ export default class ODESystem extends InlineComponent {
           },
           independentVariable: {
             dependencyType: "stateVariable",
-            variableName: "independentVariable"
-          }
+            variableName: "independentVariable",
+          },
         };
 
-        return { globalDependencies }
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
         let variablesSpecified = [];
         let validVariables = [];
         let nDims = globalDependencyValues.nDimensions;
         if (globalDependencyValues.variables !== null) {
-          variablesSpecified = globalDependencyValues.variables.stateValues.variables;
-          validVariables = [...globalDependencyValues.variables.stateValues.validVariables].slice(0, nDims);
+          variablesSpecified =
+            globalDependencyValues.variables.stateValues.variables;
+          validVariables = [
+            ...globalDependencyValues.variables.stateValues.validVariables,
+          ].slice(0, nDims);
         }
 
-        let variables = returnNVariables(nDims, variablesSpecified)
+        let variables = returnNVariables(nDims, variablesSpecified);
 
-        if (variables.some(x => x.equals(globalDependencyValues.independentVariable))) {
-          console.warn("Variables of odesystem must be different than independent variable.");
+        if (
+          variables.some((x) =>
+            x.equals(globalDependencyValues.independentVariable),
+          )
+        ) {
+          console.warn(
+            "Variables of odesystem must be different than independent variable.",
+          );
         }
 
         if (validVariables.length < nDims) {
-          validVariables.push(...Array(nDims - validVariables.length).fill(true))
+          validVariables.push(
+            ...Array(nDims - validVariables.length).fill(true),
+          );
         }
 
         return {
-          setValue: { variables, validVariables }
-        }
-
-      }
-    }
+          setValue: { variables, validVariables },
+        };
+      },
+    };
 
     stateVariableDefinitions.rhss = {
       isArray: true,
@@ -239,7 +255,6 @@ export default class ODESystem extends InlineComponent {
         return [dependencyValues.nDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
-
         let dependenciesByKey = {};
 
         for (let arrayKey of arrayKeys) {
@@ -248,39 +263,38 @@ export default class ODESystem extends InlineComponent {
               dependencyType: "child",
               childGroups: ["rightHandSides"],
               variableNames: ["value"],
-              childIndices: [arrayKey]
-            }
-          }
+              childIndices: [arrayKey],
+            },
+          };
         }
 
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         let rhss = {};
 
         for (let arrayKey of arrayKeys) {
-          rhss[arrayKey] = dependencyValuesByKey[arrayKey].rhsChild[0].stateValues.value;
+          rhss[arrayKey] =
+            dependencyValuesByKey[arrayKey].rhsChild[0].stateValues.value;
         }
 
         return {
-          setValue: { rhss }
-        }
-
-      }
-    }
+          setValue: { rhss },
+        };
+      },
+    };
 
     stateVariableDefinitions.rhs = {
       isAlias: true,
-      targetVariableName: "rhs1"
+      targetVariableName: "rhs1",
     };
     stateVariableDefinitions.righthandside = {
       isAlias: true,
-      targetVariableName: "rhs1"
+      targetVariableName: "rhs1",
     };
     stateVariableDefinitions.righthandsides = {
       isAlias: true,
-      targetVariableName: "rhss"
+      targetVariableName: "rhss",
     };
 
     stateVariableDefinitions.initialConditions = {
@@ -301,7 +315,6 @@ export default class ODESystem extends InlineComponent {
         return [dependencyValues.nDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
-
         let dependenciesByKey = {};
 
         for (let arrayKey of arrayKeys) {
@@ -310,25 +323,26 @@ export default class ODESystem extends InlineComponent {
               dependencyType: "attributeComponent",
               attributeName: "initialConditions",
               variableNames: [`math${Number(arrayKey) + 1}`],
-            }
-          }
+            },
+          };
         }
 
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         let initialConditions = {};
         let defaultInitialConditions = {};
 
         for (let arrayKey of arrayKeys) {
           let foundValue = false;
           if (dependencyValuesByKey[arrayKey].initialConditionAttr) {
-            let ic = dependencyValuesByKey[arrayKey].initialConditionAttr.stateValues[`math${Number(arrayKey) + 1}`];
+            let ic =
+              dependencyValuesByKey[arrayKey].initialConditionAttr.stateValues[
+                `math${Number(arrayKey) + 1}`
+              ];
             if (ic !== undefined) {
               foundValue = true;
               initialConditions[arrayKey] = ic;
-
             }
           }
           if (!foundValue) {
@@ -339,20 +353,21 @@ export default class ODESystem extends InlineComponent {
         let result = {};
 
         if (Object.keys(initialConditions).length > 0) {
-          result.setValue = { initialConditions }
+          result.setValue = { initialConditions };
         }
         if (Object.keys(defaultInitialConditions).length > 0) {
-          result.useEssentialOrDefaultValue = { initialConditions: defaultInitialConditions }
+          result.useEssentialOrDefaultValue = {
+            initialConditions: defaultInitialConditions,
+          };
         }
 
         return result;
-
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.initialCondition = {
       isAlias: true,
-      targetVariableName: "initialCondition1"
+      targetVariableName: "initialCondition1",
     };
 
     stateVariableDefinitions.equationTag = {
@@ -368,24 +383,23 @@ export default class ODESystem extends InlineComponent {
           return {
             equationCounter: {
               dependencyType: "counter",
-              counterName: "equation"
-            }
-          }
+              counterName: "equation",
+            },
+          };
         } else {
-          return {}
+          return {};
         }
       },
       definition({ dependencyValues }) {
         if (dependencyValues.equationCounter !== undefined) {
           return {
-            setValue: { equationTag: String(dependencyValues.equationCounter) }
-          }
+            setValue: { equationTag: String(dependencyValues.equationCounter) },
+          };
         } else {
-          return { setValue: { equationTag: null } }
+          return { setValue: { equationTag: null } };
         }
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.latex = {
       public: true,
@@ -397,62 +411,59 @@ export default class ODESystem extends InlineComponent {
         return {
           nDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions"
+            variableName: "nDimensions",
           },
           variables: {
             dependencyType: "stateVariable",
-            variableName: "variables"
+            variableName: "variables",
           },
           initialConditions: {
             dependencyType: "stateVariable",
-            variableName: "initialConditions"
+            variableName: "initialConditions",
           },
           hideInitialCondition: {
             dependencyType: "stateVariable",
-            variableName: "hideInitialCondition"
+            variableName: "hideInitialCondition",
           },
           displayDigits: {
             dependencyType: "stateVariable",
-            variableName: "displayDigits"
+            variableName: "displayDigits",
           },
           displayDecimals: {
             dependencyType: "stateVariable",
-            variableName: "displayDecimals"
+            variableName: "displayDecimals",
           },
           displaySmallAsZero: {
             dependencyType: "stateVariable",
-            variableName: "displaySmallAsZero"
+            variableName: "displaySmallAsZero",
           },
           padZeros: {
             dependencyType: "stateVariable",
-            variableName: "padZeros"
+            variableName: "padZeros",
           },
           independentVariable: {
             dependencyType: "stateVariable",
-            variableName: "independentVariable"
+            variableName: "independentVariable",
           },
           initialIndependentVariableValue: {
             dependencyType: "stateVariable",
-            variableName: "initialIndependentVariableValue"
+            variableName: "initialIndependentVariableValue",
           },
           rhss: {
             dependencyType: "stateVariable",
-            variableName: "rhss"
+            variableName: "rhss",
           },
           number: {
             dependencyType: "stateVariable",
-            variableName: "number"
+            variableName: "number",
           },
           equationTag: {
             dependencyType: "stateVariable",
-            variableName: "equationTag"
+            variableName: "equationTag",
           },
-
-        }
-
+        };
       },
       definition({ dependencyValues, usedDefault }) {
-
         let params = {};
         if (dependencyValues.padZeros) {
           if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
@@ -471,14 +482,17 @@ export default class ODESystem extends InlineComponent {
 
           let rhs = roundForDisplay({
             value: dependencyValues.rhss[dim],
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
 
-          let thisLatex = `\\frac{d${variable}}{d${indVar}} &=  ${rhs.toLatex(params)}`
+          let thisLatex = `\\frac{d${variable}}{d${indVar}} &=  ${rhs.toLatex(
+            params,
+          )}`;
           if (dependencyValues.number && dim === 0) {
-            thisLatex += `\\tag{${dependencyValues.equationTag}}`
+            thisLatex += `\\tag{${dependencyValues.equationTag}}`;
           } else {
-            thisLatex += "\\notag"
+            thisLatex += "\\notag";
           }
           systemDisplay.push(thisLatex);
         }
@@ -490,85 +504,102 @@ export default class ODESystem extends InlineComponent {
             let variable = dependencyValues.variables[dim].toLatex();
             let ic = roundForDisplay({
               value: dependencyValues.initialConditions[dim],
-              dependencyValues, usedDefault
+              dependencyValues,
+              usedDefault,
             });
 
-            systemDisplay.push(`${variable}(${indVarVal0}) &= ${ic.toLatex(params)}\\notag`)
+            systemDisplay.push(
+              `${variable}(${indVarVal0}) &= ${ic.toLatex(params)}\\notag`,
+            );
           }
         }
-        let latex = systemDisplay.join('\\\\');
+        let latex = systemDisplay.join("\\\\");
 
-        return { setValue: { latex } }
-      }
-    }
+        return { setValue: { latex } };
+      },
+    };
 
     stateVariableDefinitions.latexWithInputChildren = {
       forRenderer: true,
       returnDependencies: () => ({
         latex: {
           dependencyType: "stateVariable",
-          variableName: "latex"
+          variableName: "latex",
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { latexWithInputChildren: [dependencyValues.latex] } };
-      }
-    }
+        return {
+          setValue: { latexWithInputChildren: [dependencyValues.latex] },
+        };
+      },
+    };
 
     stateVariableDefinitions.numericalRHSf = {
       additionalStateVariablesDefined: ["numericalRHSfDefinitions"],
       returnDependencies: () => ({
         validIndependentVariable: {
           dependencyType: "stateVariable",
-          variableName: "validIndependentVariable"
+          variableName: "validIndependentVariable",
         },
         independentVariable: {
           dependencyType: "stateVariable",
-          variableName: "independentVariable"
+          variableName: "independentVariable",
         },
         validVariables: {
           dependencyType: "stateVariable",
-          variableName: `validVariables`
+          variableName: `validVariables`,
         },
         variables: {
           dependencyType: "stateVariable",
-          variableName: `variables`
+          variableName: `variables`,
         },
         rhss: {
           dependencyType: "stateVariable",
-          variableName: `rhss`
+          variableName: `rhss`,
         },
       }),
       definition({ dependencyValues }) {
-
         let valid = true;
         if (!dependencyValues.validIndependentVariable) {
-          console.warn("Can't define ODE RHS functions with invalid independent variable.");
+          console.warn(
+            "Can't define ODE RHS functions with invalid independent variable.",
+          );
           valid = false;
         }
-        if (!dependencyValues.validVariables.every(x => x)) {
-          console.warn("Can't define ODE RHS functions with an invalid variable.");
+        if (!dependencyValues.validVariables.every((x) => x)) {
+          console.warn(
+            "Can't define ODE RHS functions with an invalid variable.",
+          );
           valid = false;
         }
 
-        let indVarName = dependencyValues.independentVariable.subscripts_to_strings().tree;
-        let varNames = dependencyValues.variables.map(x => x.subscripts_to_strings().tree);
+        let indVarName =
+          dependencyValues.independentVariable.subscripts_to_strings().tree;
+        let varNames = dependencyValues.variables.map(
+          (x) => x.subscripts_to_strings().tree,
+        );
 
         if (varNames.includes(indVarName)) {
-          console.warn("Can't define ODE RHS functions when independent variable is a dependent variable");
+          console.warn(
+            "Can't define ODE RHS functions when independent variable is a dependent variable",
+          );
           valid = false;
         }
 
         if ([...new Set(varNames)].length !== varNames.length) {
-          console.warn("Can't define ODE RHS functions with duplicate dependent variable names");
+          console.warn(
+            "Can't define ODE RHS functions with duplicate dependent variable names",
+          );
           valid = false;
         }
 
         let fs;
         try {
-          fs = dependencyValues.rhss.map(x => x.subscripts_to_strings().f());
+          fs = dependencyValues.rhss.map((x) => x.subscripts_to_strings().f());
         } catch (e) {
-          console.warn("Cannot define ODE RHS function.  Error creating mathjs function");
+          console.warn(
+            "Cannot define ODE RHS function.  Error creating mathjs function",
+          );
           valid = false;
         }
 
@@ -577,9 +608,9 @@ export default class ODESystem extends InlineComponent {
           return {
             setValue: {
               numericalRHSf: () => NaN,
-              numericalRHSfDefinitions: Array(n).fill({})
-            }
-          }
+              numericalRHSfDefinitions: Array(n).fill({}),
+            },
+          };
         }
 
         return {
@@ -587,61 +618,54 @@ export default class ODESystem extends InlineComponent {
             numericalRHSf: function (t, x) {
               let fargs = { [indVarName]: t };
               if (Array.isArray(x)) {
-                x.forEach((v, i) => fargs[varNames[i]] = v);
+                x.forEach((v, i) => (fargs[varNames[i]] = v));
               } else {
                 fargs[varNames[0]] = x;
               }
               try {
-                return fs.map(f => f(fargs));
+                return fs.map((f) => f(fargs));
               } catch (e) {
                 return NaN;
               }
             },
-            numericalRHSfDefinitions: dependencyValues.rhss.map(x => ({
+            numericalRHSfDefinitions: dependencyValues.rhss.map((x) => ({
               functionType: "formula",
               formula: x,
               nInputs: varNames.length + 1,
               variables: [indVarName, ...varNames],
-
-            }))
-
-
-          }
-        }
-
-      }
-
-
-    }
-
+            })),
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.haveNumericalInitialConditions = {
       additionalStateVariablesDefined: ["t0", "x0s"],
       returnDependencies: () => ({
         initialIndependentVariableValue: {
           dependencyType: "stateVariable",
-          variableName: "initialIndependentVariableValue"
+          variableName: "initialIndependentVariableValue",
         },
         initialConditions: {
           dependencyType: "stateVariable",
-          variableName: "initialConditions"
-        }
+          variableName: "initialConditions",
+        },
       }),
       definition({ dependencyValues }) {
+        let t0 =
+          dependencyValues.initialIndependentVariableValue.evaluate_to_constant();
+        let x0s = dependencyValues.initialConditions.map((x) =>
+          x.evaluate_to_constant(),
+        );
 
-        let t0 = dependencyValues.initialIndependentVariableValue.evaluate_to_constant();
-        let x0s = dependencyValues.initialConditions.map(x => x.evaluate_to_constant());
-
-        let haveNumericalInitialConditions = Number.isFinite(t0) && x0s.every(x => Number.isFinite(x));
+        let haveNumericalInitialConditions =
+          Number.isFinite(t0) && x0s.every((x) => Number.isFinite(x));
 
         return {
-          setValue: { t0, x0s, haveNumericalInitialConditions }
-        }
-      }
-
-    }
-
-
+          setValue: { t0, x0s, haveNumericalInitialConditions },
+        };
+      },
+    };
 
     stateVariableDefinitions.numericalSolutions = {
       isArray: true,
@@ -652,7 +676,7 @@ export default class ODESystem extends InlineComponent {
         addStateVariablesShadowingStateVariables: {
           fDefinitions: {
             stateVariableToShadow: "numericalSolutionFDefinitions",
-          }
+          },
         },
       },
       createWorkspace: true,
@@ -669,59 +693,61 @@ export default class ODESystem extends InlineComponent {
         let globalDependencies = {
           nDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions"
+            variableName: "nDimensions",
           },
           validIndependentVariable: {
             dependencyType: "stateVariable",
-            variableName: "validIndependentVariable"
+            variableName: "validIndependentVariable",
           },
           independentVariable: {
             dependencyType: "stateVariable",
-            variableName: "independentVariable"
+            variableName: "independentVariable",
           },
           validVariables: {
             dependencyType: "stateVariable",
-            variableName: `validVariables`
+            variableName: `validVariables`,
           },
           variables: {
             dependencyType: "stateVariable",
-            variableName: `variables`
+            variableName: `variables`,
           },
           chunkSize: {
             dependencyType: "stateVariable",
-            variableName: `chunkSize`
+            variableName: `chunkSize`,
           },
           tolerance: {
             dependencyType: "stateVariable",
-            variableName: `tolerance`
+            variableName: `tolerance`,
           },
           maxIterations: {
             dependencyType: "stateVariable",
-            variableName: `maxIterations`
+            variableName: `maxIterations`,
           },
           haveNumericalInitialConditions: {
             dependencyType: "stateVariable",
-            variableName: `haveNumericalInitialConditions`
+            variableName: `haveNumericalInitialConditions`,
           },
           t0: {
             dependencyType: "stateVariable",
-            variableName: `t0`
+            variableName: `t0`,
           },
           x0s: {
             dependencyType: "stateVariable",
-            variableName: `x0s`
+            variableName: `x0s`,
           },
           numericalRHSf: {
             dependencyType: "stateVariable",
-            variableName: `numericalRHSf`
+            variableName: `numericalRHSf`,
           },
-        }
+        };
 
-
-        return { globalDependencies }
+        return { globalDependencies };
       },
-      arrayDefinitionByKey({ globalDependencyValues, workspace, componentName }) {
-
+      arrayDefinitionByKey({
+        globalDependencyValues,
+        workspace,
+        componentName,
+      }) {
         let numericalSolutions = {};
 
         workspace.calculatedNumericSolutions = [];
@@ -730,9 +756,9 @@ export default class ODESystem extends InlineComponent {
 
         if (!globalDependencyValues.haveNumericalInitialConditions) {
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
-            numericalSolutions[ind] = _ => NaN;
+            numericalSolutions[ind] = (_) => NaN;
           }
-          return { setValue: { numericalSolutions } }
+          return { setValue: { numericalSolutions } };
         }
 
         let t0 = globalDependencyValues.t0;
@@ -743,7 +769,6 @@ export default class ODESystem extends InlineComponent {
         let maxIterations = globalDependencyValues.maxIterations;
 
         for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
-
           numericalSolutions[ind] = function f(t) {
             if (!Number.isFinite(t)) {
               return NaN;
@@ -758,7 +783,10 @@ export default class ODESystem extends InlineComponent {
               // console.log("Haven't yet implemented integrating ODE backward")
               return NaN;
             }
-            if (workspace.maxPossibleTime === undefined && chunk >= nChunksCalculated) {
+            if (
+              workspace.maxPossibleTime === undefined &&
+              chunk >= nChunksCalculated
+            ) {
               for (let tind = nChunksCalculated; tind <= chunk; tind++) {
                 let x0 = workspace.endingNumericalValues[tind - 1];
                 if (x0 === undefined) {
@@ -772,23 +800,33 @@ export default class ODESystem extends InlineComponent {
                   numericalRHSf,
                   tolerance,
                   maxIterations,
-                )
-                workspace.endingNumericalValues.push(result.y[result.y.length - 1]);
-                workspace.calculatedNumericSolutions.push(result.at.bind(result));
+                );
+                workspace.endingNumericalValues.push(
+                  result.y[result.y.length - 1],
+                );
+                workspace.calculatedNumericSolutions.push(
+                  result.at.bind(result),
+                );
 
                 let endingTime = result.x[result.x.length - 1];
                 if (endingTime < (t0shifted + chunkSize) * (1 - 1e-6)) {
                   workspace.maxPossibleTime = endingTime;
-                  let message = "For chunksize " + chunkSize
-                    + " and tolerance " + tolerance
-                    + ", odesystem"
+                  let message =
+                    "For chunksize " +
+                    chunkSize +
+                    " and tolerance " +
+                    tolerance +
+                    ", odesystem";
                   if (componentName !== undefined) {
-                    message += " (" + componentName + ")"
+                    message += " (" + componentName + ")";
                   }
-                  message += " hit maxiterations (" + maxIterations
-                    + ") at t = " + workspace.maxPossibleTime
-                    + ". Will not calculate solution beyond that time."
-                    + " Decrease chunksize, increase maxiterations, or increase tolerance to calculate further.";
+                  message +=
+                    " hit maxiterations (" +
+                    maxIterations +
+                    ") at t = " +
+                    workspace.maxPossibleTime +
+                    ". Will not calculate solution beyond that time." +
+                    " Decrease chunksize, increase maxiterations, or increase tolerance to calculate further.";
                   // console.warn(message);
                   break;
                 }
@@ -802,21 +840,17 @@ export default class ODESystem extends InlineComponent {
             let value = workspace.calculatedNumericSolutions[chunk](t)[ind];
 
             return value;
-
-          }
-
+          };
         }
 
-        return { setValue: { numericalSolutions } }
-      }
-    }
-
+        return { setValue: { numericalSolutions } };
+      },
+    };
 
     stateVariableDefinitions.numericalSolution = {
       isAlias: true,
-      targetVariableName: "numericalSolution1"
+      targetVariableName: "numericalSolution1",
     };
-
 
     stateVariableDefinitions.numericalSolutionFDefinitions = {
       forRenderer: true,
@@ -835,87 +869,87 @@ export default class ODESystem extends InlineComponent {
         let globalDependencies = {
           nDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions"
+            variableName: "nDimensions",
           },
           validIndependentVariable: {
             dependencyType: "stateVariable",
-            variableName: "validIndependentVariable"
+            variableName: "validIndependentVariable",
           },
           independentVariable: {
             dependencyType: "stateVariable",
-            variableName: "independentVariable"
+            variableName: "independentVariable",
           },
           validVariables: {
             dependencyType: "stateVariable",
-            variableName: `validVariables`
+            variableName: `validVariables`,
           },
           variables: {
             dependencyType: "stateVariable",
-            variableName: `variables`
+            variableName: `variables`,
           },
           chunkSize: {
             dependencyType: "stateVariable",
-            variableName: `chunkSize`
+            variableName: `chunkSize`,
           },
           tolerance: {
             dependencyType: "stateVariable",
-            variableName: `tolerance`
+            variableName: `tolerance`,
           },
           maxIterations: {
             dependencyType: "stateVariable",
-            variableName: `maxIterations`
+            variableName: `maxIterations`,
           },
           haveNumericalInitialConditions: {
             dependencyType: "stateVariable",
-            variableName: `haveNumericalInitialConditions`
+            variableName: `haveNumericalInitialConditions`,
           },
           t0: {
             dependencyType: "stateVariable",
-            variableName: `t0`
+            variableName: `t0`,
           },
           x0s: {
             dependencyType: "stateVariable",
-            variableName: `x0s`
+            variableName: `x0s`,
           },
           numericalRHSfDefinitions: {
             dependencyType: "stateVariable",
-            variableName: `numericalRHSfDefinitions`
-          }
-        }
-        return { globalDependencies }
+            variableName: `numericalRHSfDefinitions`,
+          },
+        };
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
         if (!globalDependencyValues.haveNumericalInitialConditions) {
           return {
             setValue: {
-              numericalSolutionFDefinitions: Array(globalDependencyValues.nDimensions).fill({})
-            }
-          }
+              numericalSolutionFDefinitions: Array(
+                globalDependencyValues.nDimensions,
+              ).fill({}),
+            },
+          };
         }
 
         return {
           setValue: {
-            numericalSolutionFDefinitions: [...Array(globalDependencyValues.nDimensions).keys()].map(ind => ({
+            numericalSolutionFDefinitions: [
+              ...Array(globalDependencyValues.nDimensions).keys(),
+            ].map((ind) => ({
               functionType: "ODESolution",
               nDimensions: globalDependencyValues.nDimensions,
               t0: globalDependencyValues.t0,
               x0s: globalDependencyValues.x0s,
               chunkSize: globalDependencyValues.chunkSize,
               tolerance: globalDependencyValues.tolerance,
-              numericalRHSfDefinitions: globalDependencyValues.numericalRHSfDefinitions,
+              numericalRHSfDefinitions:
+                globalDependencyValues.numericalRHSfDefinitions,
               maxIterations: globalDependencyValues.maxIterations,
-              component: ind
-            }))
-
-          }
-        }
-
-      }
-    }
+              component: ind,
+            })),
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
 }

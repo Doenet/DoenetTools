@@ -1,8 +1,8 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
-import styled from 'styled-components';
-import { panelsInfoAtom } from '../../Tools/_framework/Panels/NewContentPanel';
-import { useRecoilValue } from 'recoil';
-import { supportPanelHandleLeft } from '../../Tools/_framework/Panels/NewContentPanel';
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
+import styled from "styled-components";
+import { panelsInfoAtom } from "../../Tools/_framework/Panels/NewContentPanel";
+import { useRecoilValue } from "recoil";
+import { supportPanelHandleLeft } from "../../Tools/_framework/Panels/NewContentPanel";
 
 const BreadCrumbContainer = styled.ul`
   list-style: none;
@@ -36,7 +36,7 @@ const CrumbMenuItem = styled.div`
   color: var(--canvastext);
   background: var(--canvas);
   border: 2px solid var(--canvastext);
-  border-radius: ${props => props.radius};
+  border-radius: ${(props) => props.radius};
   margin: -2px 0px -2px 0px;
   border-left: 0px;
   border-right: 0px;
@@ -50,13 +50,13 @@ const CrumbMenuItem = styled.div`
   height: 21.6px;
   &:hover {
     background-color: var(--lightBlue);
-    color:black;
+    color: black;
   }
   &:focus {
     background-color: var(--lightBlue);
-    color:black;
+    color: black;
   }
-`
+`;
 
 const BreadcrumbSpan = styled.span`
   padding: 0px 0px 0px 45px;
@@ -67,7 +67,7 @@ const BreadcrumbSpan = styled.span`
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
   &::after {
-    content: ' ';
+    content: " ";
     width: 0;
     height: 0;
     border-top: 50px solid transparent;
@@ -80,7 +80,7 @@ const BreadcrumbSpan = styled.span`
     z-index: 2;
   }
   &::before {
-    content: ' ';
+    content: " ";
     width: 0;
     height: 0;
     border-top: 50px solid transparent;
@@ -99,272 +99,318 @@ const BreadcrumbSpan = styled.span`
 `;
 
 const CrumbTextDiv = styled.div`
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-max-width: 175px;
-`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 175px;
+`;
 
-function Crumb({setRef,i,label=null,onClick}){
+function Crumb({ setRef, i, label = null, onClick }) {
   let crumbRef = useRef(null);
-  
-  useEffect(()=>{
-    setRef((was)=>{
+
+  useEffect(() => {
+    setRef((was) => {
       let newObj = [...was];
       newObj[i] = crumbRef;
       return newObj;
-    })
-  },[i,crumbRef,setRef])
+    });
+  }, [i, crumbRef, setRef]);
 
-  if (!label){
-    label = '_'
+  if (!label) {
+    label = "_";
   }
 
-
-  return (<BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`}>
-  <BreadcrumbSpan 
-    aria-label={label}
-    tabIndex="0" 
-    onClick={onClick}     
-    onKeyDown={(e) => { if(e.key === "Enter"){onClick()}}}
-  ><CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
-  </BreadcrumbItem>)
-
+  return (
+    <BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`}>
+      <BreadcrumbSpan
+        aria-label={label}
+        tabIndex="0"
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onClick();
+          }
+        }}
+      >
+        <CrumbTextDiv>{label}</CrumbTextDiv>
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+  );
 }
-//crumb 
+//crumb
 //label: the label which shows in the span
 //onClick: the function called when crumb is clicked
-export function BreadCrumb({crumbs=[],offset=0}){
+export function BreadCrumb({ crumbs = [], offset = 0 }) {
   // console.log(">>>>----BREADCRUMB")
-  let [crumbRefs,setCrumbRefs] = useState([])
-  let [windowWidth,setWindowWidth] = useState(window.innerWidth);
-  let [crumbBreaks,setCrumbBreaks] = useState(null);
-  let [menuVisible,setMenuVisible] = useState(false);
+  let [crumbRefs, setCrumbRefs] = useState([]);
+  let [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  let [crumbBreaks, setCrumbBreaks] = useState(null);
+  let [menuVisible, setMenuVisible] = useState(false);
   let supportPanelHandleLeftValue = useRecoilValue(supportPanelHandleLeft);
   let prevWidths = useRef([]);
   let elipseItemRef = useRef(null);
   const prevRightFirstCrumb = useRef(0);
   const containerRef = useRef(null);
 
-  function onWindowResize(){
+  function onWindowResize() {
     setWindowWidth(window.innerWidth);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     window.onresize = onWindowResize;
-    return ()=>{
+    return () => {
       window.onresize = null;
-    }
-  },[])
+    };
+  }, []);
 
   let numHidden = 0;
 
   //Update numHidden
   //Protect against too few crumbs
   //And wait until we have the sizes defined
-  if (crumbBreaks !== null &&
-      crumbs.length > 2){
-
+  if (crumbBreaks !== null && crumbs.length > 2) {
     let effectiveWidth = windowWidth;
-    if (supportPanelHandleLeftValue){
+    if (supportPanelHandleLeftValue) {
       effectiveWidth = supportPanelHandleLeftValue;
     }
-      effectiveWidth -= offset;
+    effectiveWidth -= offset;
 
-
-  //Use breaks info to set numHidden
-    for (let crumbBreak of crumbBreaks){
-      if (effectiveWidth < crumbBreak.end &&
+    //Use breaks info to set numHidden
+    for (let crumbBreak of crumbBreaks) {
+      if (
+        effectiveWidth < crumbBreak.end &&
         effectiveWidth >= crumbBreak.start
-        ){
-          numHidden = crumbBreak.numHidden;
-          // break;
-        }
-
+      ) {
+        numHidden = crumbBreak.numHidden;
+        // break;
+      }
     }
-
   }
 
   //focus on first menu item when breadcrumb menu opens
   useLayoutEffect(() => {
     if (menuVisible) {
-      document.getElementById('breadcrumbitem1').focus();
+      document.getElementById("breadcrumbitem1").focus();
     }
-  }, [menuVisible])
+  }, [menuVisible]);
 
   //Only update if the crumb widths change
   //Or the menu panel collapses
-  useLayoutEffect(()=>{
-
+  useLayoutEffect(() => {
     //We need to delete some crumbRefs
-    if (crumbs.length < crumbRefs.length){
-      setCrumbRefs(crumbRefs.slice(0,crumbs.length))
+    if (crumbs.length < crumbRefs.length) {
+      setCrumbRefs(crumbRefs.slice(0, crumbs.length));
     }
 
     //Wait for crumbRefs to be built
-    if (crumbs.length === crumbRefs.length){
-    let widths = []
-        let rights = []
-        let newWidths = false;
+    if (crumbs.length === crumbRefs.length) {
+      let widths = [];
+      let rights = [];
+      let newWidths = false;
 
-        for (let [i,crumbRef] of Object.entries(crumbRefs)){
-          let boundingClientRect = crumbRef.current?.getBoundingClientRect();
+      for (let [i, crumbRef] of Object.entries(crumbRefs)) {
+        let boundingClientRect = crumbRef.current?.getBoundingClientRect();
 
-          if (boundingClientRect === undefined){
-            boundingClientRect = {width:0,right:0}
+        if (boundingClientRect === undefined) {
+          boundingClientRect = { width: 0, right: 0 };
+        }
+        let { width, right } = boundingClientRect;
+        //Try to recover width information
+        if (width === 0) {
+          if (prevWidths.current?.[i]) {
+            width = prevWidths.current?.[i];
           }
-          let { width, right } = boundingClientRect
-          //Try to recover width information
-          if (width === 0){
-            if (prevWidths.current?.[i]){
-              width = prevWidths.current?.[i];
-            }
+        }
+        widths.push(width);
+        rights.push(right);
+        if (prevWidths.current?.[i] !== width && width !== 0) {
+          newWidths = true;
+        }
+      }
+
+      //Handle length change
+      if (prevWidths.current.length > widths.length) {
+        newWidths = true;
+      }
+
+      //Handle menu panel open/close
+      if (
+        prevRightFirstCrumb.current !== 0 &&
+        prevRightFirstCrumb.current !== rights[0]
+      ) {
+        newWidths = true;
+      }
+
+      prevWidths.current = widths;
+      prevRightFirstCrumb.current = rights[0];
+      //prevent infinite loop
+      if (newWidths) {
+        let newCrumbBreaks = [];
+
+        let elipseWidth = 52;
+        let rightPadding = 5;
+        //Set to the first break
+        let crumbBreak =
+          rights[0] +
+          elipseWidth +
+          widths[widths.length - 2] +
+          widths[widths.length - 1] +
+          rightPadding;
+
+        newCrumbBreaks.push({
+          start: 0,
+          end: crumbBreak,
+          numHidden: crumbs.length - 2,
+        });
+
+        for (let i = 3; i < crumbs.length; i++) {
+          let start = crumbBreak;
+          crumbBreak = crumbBreak + widths[widths.length - i];
+
+          if (i === crumbs.length - 1) {
+            //Handle case where we aren't colapsing crumbs
+            crumbBreak = start + widths[1] - elipseWidth;
           }
-          widths.push(width);
-          rights.push(right);
-          if (prevWidths.current?.[i] !== width &&
-            width !== 0
-            ){
-              newWidths = true 
-            }
+          newCrumbBreaks.push({
+            start,
+            end: crumbBreak,
+            numHidden: crumbs.length - i,
+          });
         }
 
-        //Handle length change
-        if (prevWidths.current.length > widths.length){
-          newWidths = true 
+        //Special case when width narrower than elipses
+        if (widths.length > 2 && elipseWidth > widths[1]) {
+          newCrumbBreaks.pop();
         }
 
-        //Handle menu panel open/close
-        if (prevRightFirstCrumb.current !== 0 &&
-          prevRightFirstCrumb.current !== rights[0]
-          ){
-            newWidths = true 
-          }
-
-        prevWidths.current = widths;
-        prevRightFirstCrumb.current = rights[0];
-        //prevent infinite loop
-        if (newWidths){
-
-          let newCrumbBreaks = [];
-
-        
-            let elipseWidth = 52;
-            let rightPadding = 5;
-            //Set to the first break
-            let crumbBreak = rights[0] + elipseWidth + widths[widths.length - 2] + widths[widths.length - 1] + rightPadding;
-    
-            newCrumbBreaks.push({start:0,end:crumbBreak,numHidden:crumbs.length - 2})
-  
-            for (let i = 3; i < crumbs.length; i++ ){
-              let start = crumbBreak;
-              crumbBreak = crumbBreak + widths[widths.length - i];
-  
-              if (i === crumbs.length - 1){
-                //Handle case where we aren't colapsing crumbs
-                crumbBreak = start + widths[1] - elipseWidth;
-              }
-              newCrumbBreaks.push({start,end:crumbBreak,numHidden:crumbs.length - i})
-            }
-
-            //Special case when width narrower than elipses
-            if (widths.length > 2 && elipseWidth > widths[1]){
-              newCrumbBreaks.pop();
-            }
-       
-          setCrumbBreaks(newCrumbBreaks);
-        }
-        
-        
+        setCrumbBreaks(newCrumbBreaks);
+      }
     }
-    
-  },[crumbs,crumbRefs,setCrumbBreaks,crumbBreaks,numHidden])
-
+  }, [crumbs, crumbRefs, setCrumbBreaks, crumbBreaks, numHidden]);
 
   let crumbsJSX = [];
 
-
-  for (let [i,{label,onClick}] of Object.entries(crumbs) ){
-    
-    if (i < numHidden && i != 0){ continue; }
-    crumbsJSX.push(<Crumb 
-      key={`breadcrumbitem${i}`} 
-      label={label} 
-      onClick={onClick}
-      onKeyDown={(e) => {if(e.key === "Enter"){onClick()}}}
-      i={i} 
-      setRef={setCrumbRefs} />)
+  for (let [i, { label, onClick }] of Object.entries(crumbs)) {
+    if (i < numHidden && i != 0) {
+      continue;
+    }
+    crumbsJSX.push(
+      <Crumb
+        key={`breadcrumbitem${i}`}
+        label={label}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onClick();
+          }
+        }}
+        i={i}
+        setRef={setCrumbRefs}
+      />,
+    );
   }
 
-  if (numHidden > 0){crumbsJSX[1] = <BreadcrumbItem ref={elipseItemRef} key={`breadcrumbitem1`}>
-  <BreadcrumbSpan 
-    data-test="Crumb Menu" 
-    aria-label="..."
-    tabIndex="0" 
-    onClick={()=>{setMenuVisible((was)=>!was)}}
-    onKeyDown={(e) => {if(e.key === "Enter"){setMenuVisible((was)=>!was);}}}
-  >...</BreadcrumbSpan>
-  </BreadcrumbItem>}
+  if (numHidden > 0) {
+    crumbsJSX[1] = (
+      <BreadcrumbItem ref={elipseItemRef} key={`breadcrumbitem1`}>
+        <BreadcrumbSpan
+          data-test="Crumb Menu"
+          aria-label="..."
+          tabIndex="0"
+          onClick={() => {
+            setMenuVisible((was) => !was);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setMenuVisible((was) => !was);
+            }
+          }}
+        >
+          ...
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    );
+  }
 
   let breadcrumbMenu = null;
-  if (numHidden > 0 && menuVisible){
-    let crumMenuItemsJSX = []
-    for (let [i,{label,onClick}] of Object.entries(crumbs) ){
-      if (i == 0){continue;}
-      if (i > numHidden){break;}
-      
-      crumMenuItemsJSX.push(<CrumbMenuItem 
-        tabIndex="0"
-        key={`breadcrumbitem${i}`} 
-        id={`breadcrumbitem${i}`} 
-        data-test={`Crumb Menu Item ${i}`}
-        radius={'0px'}
-        onClick={onClick}
-        onKeyDown={(e) => {if(e.key === "Enter"){onClick();}}}
-        >{label}</CrumbMenuItem>)
+  if (numHidden > 0 && menuVisible) {
+    let crumMenuItemsJSX = [];
+    for (let [i, { label, onClick }] of Object.entries(crumbs)) {
+      if (i == 0) {
+        continue;
+      }
+      if (i > numHidden) {
+        break;
+      }
+
+      crumMenuItemsJSX.push(
+        <CrumbMenuItem
+          tabIndex="0"
+          key={`breadcrumbitem${i}`}
+          id={`breadcrumbitem${i}`}
+          data-test={`Crumb Menu Item ${i}`}
+          radius={"0px"}
+          onClick={onClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onClick();
+            }
+          }}
+        >
+          {label}
+        </CrumbMenuItem>,
+      );
     }
 
     if (crumMenuItemsJSX.length > 1) {
-    crumMenuItemsJSX = [React.cloneElement(crumMenuItemsJSX[0], {radius: '5px 5px 0px 0px'})]
-      .concat(crumMenuItemsJSX.slice(1,-1))
-      .concat(React.cloneElement(crumMenuItemsJSX[crumMenuItemsJSX.length - 1], {radius: '0px 0px 5px 5px'}));
+      crumMenuItemsJSX = [
+        React.cloneElement(crumMenuItemsJSX[0], { radius: "5px 5px 0px 0px" }),
+      ]
+        .concat(crumMenuItemsJSX.slice(1, -1))
+        .concat(
+          React.cloneElement(crumMenuItemsJSX[crumMenuItemsJSX.length - 1], {
+            radius: "0px 0px 5px 5px",
+          }),
+        );
     } else if (crumMenuItemsJSX.length == 1) {
-      crumMenuItemsJSX = [React.cloneElement(crumMenuItemsJSX[0], {radius: '5px'})]
+      crumMenuItemsJSX = [
+        React.cloneElement(crumMenuItemsJSX[0], { radius: "5px" }),
+      ];
     }
 
-    const breadcrumbMenuLeft = elipseItemRef.current?.getBoundingClientRect()?.left + 25
-    if (!isNaN(breadcrumbMenuLeft)){
-      breadcrumbMenu = <div 
-      style={{
-        left:breadcrumbMenuLeft,
-        zIndex:"20",
-        top:"31px",
-        position:"absolute",
-        backgroundColor: 'var(--canvas)',
-        border: '2px solid var(--canvastext)',
-        borderRadius: '5px',
-        // maxHeight: "86.4px",
-        maxHeight: "121px",
-        overflowY: "scroll"
-        
-      }}>
-        {crumMenuItemsJSX}
-      </div>
-    }else{
+    const breadcrumbMenuLeft =
+      elipseItemRef.current?.getBoundingClientRect()?.left + 25;
+    if (!isNaN(breadcrumbMenuLeft)) {
+      breadcrumbMenu = (
+        <div
+          style={{
+            left: breadcrumbMenuLeft,
+            zIndex: "20",
+            top: "31px",
+            position: "absolute",
+            backgroundColor: "var(--canvas)",
+            border: "2px solid var(--canvastext)",
+            borderRadius: "5px",
+            // maxHeight: "86.4px",
+            maxHeight: "121px",
+            overflowY: "scroll",
+          }}
+        >
+          {crumMenuItemsJSX}
+        </div>
+      );
+    } else {
       //Handle open and close menu panel
-      setMenuVisible(false)
+      setMenuVisible(false);
     }
-    
   }
-  
-  return <>
-  <BreadCrumbContainer ref={containerRef} > 
-  {crumbsJSX}
-  {breadcrumbMenu}
-   </BreadCrumbContainer>
-  
-  </>
 
-
+  return (
+    <>
+      <BreadCrumbContainer ref={containerRef}>
+        {crumbsJSX}
+        {breadcrumbMenu}
+      </BreadCrumbContainer>
+    </>
+  );
 }
-

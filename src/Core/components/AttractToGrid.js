@@ -1,9 +1,8 @@
-import ConstraintComponent from './abstract/ConstraintComponent';
-import { findFiniteNumericalValue } from '../utils/math';
+import ConstraintComponent from "./abstract/ConstraintComponent";
+import { findFiniteNumericalValue } from "../utils/math";
 
 export default class AttractToGrid extends ConstraintComponent {
   static componentType = "attractToGrid";
-
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -76,28 +75,25 @@ export default class AttractToGrid extends ConstraintComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({
         includeGridlines: {
           dependencyType: "stateVariable",
-          variableName: "includeGridlines"
-        }
+          variableName: "includeGridlines",
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          independentComponentConstraints: dependencyValues.includeGridlines
-        }
-      })
-    }
-
+          independentComponentConstraints: dependencyValues.includeGridlines,
+        },
+      }),
+    };
 
     // Since state variable independentComponentConstraints may be true,
-    // expect function applyComponentConstraint to be called with 
+    // expect function applyComponentConstraint to be called with
     // a single component value as the object, for example,  {x1: 13}
 
     // use the convention of x1, x2, and x3 for variable names
@@ -107,66 +103,68 @@ export default class AttractToGrid extends ConstraintComponent {
       returnDependencies: () => ({
         dx: {
           dependencyType: "stateVariable",
-          variableName: "dx"
+          variableName: "dx",
         },
         dy: {
           dependencyType: "stateVariable",
-          variableName: "dy"
+          variableName: "dy",
         },
         dz: {
           dependencyType: "stateVariable",
-          variableName: "dz"
+          variableName: "dz",
         },
         xoffset: {
           dependencyType: "stateVariable",
-          variableName: "xoffset"
+          variableName: "xoffset",
         },
         yoffset: {
           dependencyType: "stateVariable",
-          variableName: "yoffset"
+          variableName: "yoffset",
         },
         zoffset: {
           dependencyType: "stateVariable",
-          variableName: "zoffset"
+          variableName: "zoffset",
         },
         xthreshold: {
           dependencyType: "stateVariable",
-          variableName: "xthreshold"
+          variableName: "xthreshold",
         },
         ythreshold: {
           dependencyType: "stateVariable",
-          variableName: "ythreshold"
+          variableName: "ythreshold",
         },
         zthreshold: {
           dependencyType: "stateVariable",
-          variableName: "zthreshold"
+          variableName: "zthreshold",
         },
         constraintAncestor: {
           dependencyType: "ancestor",
           componentType: "constraints",
-          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"]
+          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"],
         },
         graphAncestor: {
           dependencyType: "ancestor",
           componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+          variableNames: ["xmin", "xmax", "ymin", "ymax"],
         },
         ignoreGraphBounds: {
           dependencyType: "stateVariable",
-          variableName: "ignoreGraphBounds"
+          variableName: "ignoreGraphBounds",
         },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
-
-
             let ancestor;
-            if (dependencyValues.constraintAncestor !== null &&
-              dependencyValues.constraintAncestor.stateValues.graphXmin !== null) {
+            if (
+              dependencyValues.constraintAncestor !== null &&
+              dependencyValues.constraintAncestor.stateValues.graphXmin !== null
+            ) {
               ancestor = "constraints";
-            } else if (dependencyValues.graphAncestor !== null &&
-              dependencyValues.graphAncestor.stateValues.xmin !== null) {
+            } else if (
+              dependencyValues.graphAncestor !== null &&
+              dependencyValues.graphAncestor.stateValues.xmin !== null
+            ) {
               ancestor = "graph";
             }
 
@@ -191,8 +189,10 @@ export default class AttractToGrid extends ConstraintComponent {
                 // if in a graph, exclude grid points outside graph bounds
                 let xmin, xmax;
                 if (ancestor === "constraints") {
-                  xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
-                  xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
+                  xmin =
+                    dependencyValues.constraintAncestor.stateValues.graphXmin;
+                  xmax =
+                    dependencyValues.constraintAncestor.stateValues.graphXmax;
                 } else if (ancestor === "graph") {
                   xmin = dependencyValues.graphAncestor.stateValues.xmin;
                   xmax = dependencyValues.graphAncestor.stateValues.xmax;
@@ -209,13 +209,12 @@ export default class AttractToGrid extends ConstraintComponent {
               if (Math.abs(x1 - x1grid) < dependencyValues.xthreshold) {
                 return {
                   constrained: true,
-                  variables: { x1: x1grid }
-                }
+                  variables: { x1: x1grid },
+                };
               } else {
                 return {};
               }
             }
-
 
             // if given the value of x2, apply to constraint to x2
             // and ignore any other arguments (which shouldn't be given)
@@ -237,8 +236,10 @@ export default class AttractToGrid extends ConstraintComponent {
                 // if in a graph, exclude grid points outside graph bounds
                 let ymin, ymax;
                 if (ancestor === "constraints") {
-                  ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
-                  ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
+                  ymin =
+                    dependencyValues.constraintAncestor.stateValues.graphYmin;
+                  ymax =
+                    dependencyValues.constraintAncestor.stateValues.graphYmax;
                 } else if (ancestor === "graph") {
                   ymin = dependencyValues.graphAncestor.stateValues.ymin;
                   ymax = dependencyValues.graphAncestor.stateValues.ymax;
@@ -255,14 +256,12 @@ export default class AttractToGrid extends ConstraintComponent {
               if (Math.abs(x2 - x2grid) < dependencyValues.ythreshold) {
                 return {
                   constrained: true,
-                  variables: { x2: x2grid }
-                }
+                  variables: { x2: x2grid },
+                };
               } else {
                 return {};
               }
             }
-
-
 
             // if given the value of x3, apply to constraint to x3
             // and ignore any other arguments (which shouldn't be given)
@@ -276,13 +275,14 @@ export default class AttractToGrid extends ConstraintComponent {
               let dz = dependencyValues.dz;
               let zoffset = dependencyValues.zoffset;
               let x3grid = Math.round((x3 - zoffset) / dz) * dz + zoffset;
-              if (Number.isFinite(x3grid) &&
+              if (
+                Number.isFinite(x3grid) &&
                 Math.abs(x3 - x3grid) < dependencyValues.zthreshold
               ) {
                 return {
                   constrained: true,
-                  variables: { x3: x3grid }
-                }
+                  variables: { x3: x3grid },
+                };
               } else {
                 return {};
               }
@@ -290,75 +290,72 @@ export default class AttractToGrid extends ConstraintComponent {
 
             // if didn't get x1, x2, or x3 as argument, don't constrain anything
             return {};
-
-          }
-        }
-      })
-    }
-
+          },
+        },
+      }),
+    };
 
     stateVariableDefinitions.applyConstraint = {
       returnDependencies: () => ({
         dx: {
           dependencyType: "stateVariable",
-          variableName: "dx"
+          variableName: "dx",
         },
         dy: {
           dependencyType: "stateVariable",
-          variableName: "dy"
+          variableName: "dy",
         },
         dz: {
           dependencyType: "stateVariable",
-          variableName: "dz"
+          variableName: "dz",
         },
         xoffset: {
           dependencyType: "stateVariable",
-          variableName: "xoffset"
+          variableName: "xoffset",
         },
         yoffset: {
           dependencyType: "stateVariable",
-          variableName: "yoffset"
+          variableName: "yoffset",
         },
         zoffset: {
           dependencyType: "stateVariable",
-          variableName: "zoffset"
+          variableName: "zoffset",
         },
         xthreshold: {
           dependencyType: "stateVariable",
-          variableName: "xthreshold"
+          variableName: "xthreshold",
         },
         ythreshold: {
           dependencyType: "stateVariable",
-          variableName: "ythreshold"
+          variableName: "ythreshold",
         },
         zthreshold: {
           dependencyType: "stateVariable",
-          variableName: "zthreshold"
+          variableName: "zthreshold",
         },
         includeGridlines: {
           dependencyType: "stateVariable",
-          variableName: "includeGridlines"
+          variableName: "includeGridlines",
         },
         applyComponentConstraint: {
           dependencyType: "stateVariable",
-          variableName: "applyComponentConstraint"
-        }
+          variableName: "applyComponentConstraint",
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           applyConstraint: function ({ variables, scales }) {
-
             let newVariables = {};
             let constrained = false;
 
             for (let varName in variables) {
               let result = dependencyValues.applyComponentConstraint({
                 variables: { [varName]: variables[varName] },
-                scales
-              })
+                scales,
+              });
               if (result.constrained) {
                 constrained = true;
-                newVariables[varName] = result.variables[varName]
+                newVariables[varName] = result.variables[varName];
               }
             }
 
@@ -382,15 +379,13 @@ export default class AttractToGrid extends ConstraintComponent {
 
             return {
               constrained,
-              variables: newVariables
-            }
-          }
-        }
-      })
-    }
-
+              variables: newVariables,
+            };
+          },
+        },
+      }),
+    };
 
     return stateVariableDefinitions;
   }
-
 }

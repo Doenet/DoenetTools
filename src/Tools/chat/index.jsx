@@ -1,13 +1,13 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { RecoilRoot } from 'recoil';
-import ToolRoot from '@ToolRoot';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { RecoilRoot } from "recoil";
+import ToolRoot from "@ToolRoot";
 
-import Chat from './Chat';
-import { MathJaxContext } from 'better-react-mathjax';
-import { mathjaxConfig } from '../../Core/utils/math';
+import Chat from "./Chat";
+import { MathJaxContext } from "better-react-mathjax";
+import { mathjaxConfig } from "../../Core/utils/math";
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
     <MathJaxContext
@@ -15,7 +15,7 @@ root.render(
       config={mathjaxConfig}
       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
     >
-      <ToolRoot tool={<Chat key={'BaseTool'} />} />
+      <ToolRoot tool={<Chat key={"BaseTool"} />} />
     </MathJaxContext>
-  </RecoilRoot>
+  </RecoilRoot>,
 );

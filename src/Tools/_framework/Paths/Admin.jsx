@@ -1,10 +1,10 @@
 // import axios from 'axios';
-import { Box, Text, Wrap } from '@chakra-ui/react';
-import React from 'react';
-import { useLoaderData } from 'react-router-dom';
-import styled from 'styled-components';
-import ActivityCard from '../../../_reactComponents/PanelHeaderComponents/ActivityCard';
-import { MoveToGroupMenuItem } from './Community';
+import { Box, Text, Wrap } from "@chakra-ui/react";
+import React from "react";
+import { useLoaderData } from "react-router-dom";
+import styled from "styled-components";
+import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
   const response = await fetch(`/api/getAllRecentPublicActivites.php`);

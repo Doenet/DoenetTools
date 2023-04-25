@@ -1,7 +1,11 @@
-export function renameStateVariable({ stateVariableDefinitions, oldName, newName }) {
-
+export function renameStateVariable({
+  stateVariableDefinitions,
+  oldName,
+  newName,
+}) {
   // first rename object in stateVariableDefinitions
-  let stateVarDef = stateVariableDefinitions[newName] = stateVariableDefinitions[oldName];
+  let stateVarDef = (stateVariableDefinitions[newName] =
+    stateVariableDefinitions[oldName]);
   delete stateVariableDefinitions[oldName];
 
   // second, check if name is in additionalStateVariablesDefined
@@ -22,8 +26,12 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
 
   let originalDefinition = stateVarDef.definition;
 
-  let keysInObjects = ['setValue', 'useEssentialOrDefaultValue', 'setEssentialValue'];
-  let entriesInArrays = ['noChanges']
+  let keysInObjects = [
+    "setValue",
+    "useEssentialOrDefaultValue",
+    "setEssentialValue",
+  ];
+  let entriesInArrays = ["noChanges"];
 
   stateVarDef.definition = function (args) {
     let result = originalDefinition(args);
@@ -38,15 +46,15 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
       if (result[key]) {
         let ind = result[key].indexOf(oldName);
         if (ind !== -1) {
-          result[key][ind] = newName
+          result[key][ind] = newName;
         }
       }
     }
 
     return result;
-  }
+  };
 
-  // fourth, wrap inverse definition to change 
+  // fourth, wrap inverse definition to change
   // desiredStateVariableValues and setStateVarible
   // from new name to old name
 
@@ -63,16 +71,14 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
       if (results.success) {
         for (let instruction of results.instructions) {
           if (instruction.setEssentialValue === oldName) {
-            instruction.setEssentialValue = newName
+            instruction.setEssentialValue = newName;
           }
         }
       }
 
       return results;
-
-    }
+    };
   }
-
 }
 
 export function returnDefaultGetArrayKeysFromVarName(nDim) {
@@ -81,14 +87,12 @@ export function returnDefaultGetArrayKeysFromVarName(nDim) {
   // A component class's function could use arrayEntryPrefix
 
   if (nDim > 1) {
-    return function ({
-      arrayEntryPrefix, varEnding, arraySize, nDimensions,
-    }) {
-      let indices = varEnding.split('_').map(x => Number(x) - 1)
-      if (indices.length === nDimensions && indices.every(
-        (x, i) => Number.isInteger(x) && x >= 0
-      )) {
-
+    return function ({ arrayEntryPrefix, varEnding, arraySize, nDimensions }) {
+      let indices = varEnding.split("_").map((x) => Number(x) - 1);
+      if (
+        indices.length === nDimensions &&
+        indices.every((x, i) => Number.isInteger(x) && x >= 0)
+      ) {
         if (arraySize) {
           if (indices.every((x, i) => x < arraySize[i])) {
             return [String(indices)];
@@ -104,11 +108,9 @@ export function returnDefaultGetArrayKeysFromVarName(nDim) {
       } else {
         return [];
       }
-    }
+    };
   } else {
-    return function ({
-      arrayEntryPrefix, varEnding, arraySize
-    }) {
+    return function ({ arrayEntryPrefix, varEnding, arraySize }) {
       let index = Number(varEnding) - 1;
       if (Number.isInteger(index) && index >= 0) {
         if (arraySize) {

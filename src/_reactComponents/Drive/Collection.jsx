@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from "react";
 import {
   useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
-} from 'recoil';
+} from "recoil";
 import {
   faChevronDown,
   faChevronRight,
   faCode,
   faLayerGroup,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Draggable from '../Draggable';
-import { DropTargetsContext, WithDropTarget } from '../DropTarget';
-import useSockets, { itemType } from '../Sockets';
-import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Draggable from "../Draggable";
+import { DropTargetsContext, WithDropTarget } from "../DropTarget";
+import useSockets, { itemType } from "../Sockets";
+import { useDragShadowCallbacks, useSortFolder } from "./DriveActions";
 import {
   ColumnJSX,
   DoenetML,
@@ -31,8 +31,8 @@ import {
   selectedDriveItemsAtom,
   sortOptions,
   useDnDCallbacks,
-} from './NewDrive';
-import { useState } from 'react';
+} from "./NewDrive";
+import { useState } from "react";
 
 function Collection(props) {
   const itemId = props?.item.itemId;
@@ -80,7 +80,7 @@ function Collection(props) {
       itemId,
     }),
   );
-  const { deleteItem } = useSockets('drive');
+  const { deleteItem } = useSockets("drive");
   const deleteItemCallback = (itemId) => {
     deleteItem({
       driveIdFolderId: { driveId: props.driveId, folderId: itemId },
@@ -122,14 +122,14 @@ function Collection(props) {
   }, [props.pathItemId, setInstanceParentId]);
 
   const indentPx = 25;
-  let bgcolor = 'var(--canvas)';
-  let borderSide = '0px';
-  let marginSize = '0';
+  let bgcolor = "var(--canvas)";
+  let borderSide = "0px";
+  let marginSize = "0";
   if (isSelected) {
-    bgcolor = 'var(--lightBlue)';
+    bgcolor = "var(--lightBlue)";
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = 'var(--mainGray)';
+    bgcolor = "var(--mainGray)";
   }
   let woIndent = 250 - props.indentLevel * indentPx;
   let columns = `${woIndent}px repeat(4,1fr)`; //5 columns
@@ -140,7 +140,7 @@ function Collection(props) {
   } else if (props.numColumns === 2) {
     columns = `${woIndent}px 1fr`;
   } else if (props.numColumns === 1) {
-    columns = '100%';
+    columns = "100%";
   }
 
   let column2 = ColumnJSX(props.columnTypes[0], props.item);
@@ -152,11 +152,11 @@ function Collection(props) {
     dropState.activeDropTargetId === itemId &&
     !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
-    bgcolor = 'var(--mainGray)';
+    bgcolor = "var(--mainGray)";
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) {
-    bgcolor = 'var(--lightBlue)';
+    bgcolor = "var(--lightBlue)";
   }
 
   // Update refs for variables used in DnD callbacks to eliminate re-registration
@@ -179,11 +179,17 @@ function Collection(props) {
 
   let openCloseText = isOpen ? (
     <span data-test="folderToggleCloseIcon">
-      <FontAwesomeIcon icon={faChevronDown} style={{ color: "var(--canvastext)" }} />
+      <FontAwesomeIcon
+        icon={faChevronDown}
+        style={{ color: "var(--canvastext)" }}
+      />
     </span>
   ) : (
     <span data-test="folderToggleOpenIcon">
-      <FontAwesomeIcon icon={faChevronRight} style={{ color: "var(--canvastext)" }} />
+      <FontAwesomeIcon
+        icon={faChevronRight}
+        style={{ color: "var(--canvastext)" }}
+      />
     </span>
   );
 
@@ -192,9 +198,9 @@ function Collection(props) {
     openCloseButton = (
       <button
         style={{
-          border: 'none',
+          border: "none",
           backgroundColor: bgcolor,
-          borderRadius: '5px',
+          borderRadius: "5px",
         }}
         data-doenet-driveinstanceid={props.driveInstanceId}
         onClick={(e) => {
@@ -206,7 +212,7 @@ function Collection(props) {
             itemId,
             driveInstanceId: props.driveInstanceId,
             type: itemType.COLLECTION,
-            instructionType: 'one item',
+            instructionType: "one item",
             parentFolderId: itemId,
           });
         }}
@@ -263,7 +269,7 @@ function Collection(props) {
             driveId: props.driveId,
             folderId: props.item.parentFolderId,
           },
-          position: 'beforeCurrent',
+          position: "beforeCurrent",
           itemId,
           parentId: props.item?.parentFolderId,
         });
@@ -271,7 +277,7 @@ function Collection(props) {
         // insert shadow to bottom of current dropTarget
         insertDragShadow({
           driveIdFolderId: { driveId: props.driveId, folderId: itemId },
-          position: 'afterCurrent',
+          position: "afterCurrent",
           itemId,
           parentId: props.item?.parentFolderId,
         });
@@ -292,7 +298,7 @@ function Collection(props) {
     insertDragShadow({
       driveIdFolderId: { driveId: props.driveId, folderId: itemId },
       parentId: itemId,
-      position: 'intoCurrent',
+      position: "intoCurrent",
     });
   };
 
@@ -328,11 +334,11 @@ function Collection(props) {
         tabIndex={0}
         className="noselect nooutline"
         style={{
-          cursor: 'pointer',
+          cursor: "pointer",
           // width: "300px",
-          padding: '8px',
-          border: '0px',
-          borderBottom: '2px solid var(--canvastext)',
+          padding: "8px",
+          border: "0px",
+          borderBottom: "2px solid var(--canvastext)",
           backgroundColor: bgcolor,
           // width: widthSize,
           // boxShadow: borderSide,
@@ -342,7 +348,7 @@ function Collection(props) {
         onKeyDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             props?.doubleClickCallback?.({
               driveId: props.driveId,
               parentFolderId: props.item.parentFolderId,
@@ -360,7 +366,7 @@ function Collection(props) {
               itemId,
               driveInstanceId: props.driveInstanceId,
               type: itemType.COLLECTION,
-              instructionType: 'one item',
+              instructionType: "one item",
               parentFolderId: itemId,
             });
           } else if (e.shiftKey && !e.metaKey) {
@@ -369,7 +375,7 @@ function Collection(props) {
               driveInstanceId: props.driveInstanceId,
               itemId,
               type: itemType.COLLECTION,
-              instructionType: 'range to item',
+              instructionType: "range to item",
               parentFolderId: itemId,
             });
           } else if (!e.shiftKey && e.metaKey) {
@@ -378,7 +384,7 @@ function Collection(props) {
               driveInstanceId: props.driveInstanceId,
               itemId,
               type: itemType.COLLECTION,
-              instructionType: 'add item',
+              instructionType: "add item",
               parentFolderId: itemId,
             });
           }
@@ -411,13 +417,13 @@ function Collection(props) {
           className="noselect"
           style={{
             marginLeft: `${props.indentLevel * indentPx}px`,
-            display: 'grid',
+            display: "grid",
             gridTemplateColumns: columns,
-            gridTemplateRows: '1fr',
-            alignContent: 'center',
+            gridTemplateRows: "1fr",
+            alignContent: "center",
           }}
         >
-          <p style={{ display: 'inline', margin: '0px' }}>
+          <p style={{ display: "inline", margin: "0px" }}>
             {openCloseButton}
             <span data-test="folderIcon">
               <FontAwesomeIcon
@@ -436,12 +442,12 @@ function Collection(props) {
   }
 
   // make folder draggable and droppable
-  let draggableClassName = '';
+  let draggableClassName = "";
   if (!props.isViewOnly) {
     const onDragStartCallback = () => {
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
-          instructionType: 'clear all',
+          instructionType: "clear all",
           type: itemType.COLLECTION,
         });
         props?.clickCallback?.({
@@ -449,7 +455,7 @@ function Collection(props) {
           parentFolderId: itemId,
           itemId,
           driveInstanceId: props.driveInstanceId,
-          instructionType: 'one item',
+          instructionType: "one item",
           type: itemType.COLLECTION,
         });
       }
@@ -519,13 +525,13 @@ function Collection(props) {
       let item = dictionary[itemId];
       if (!item) continue;
       // console.log(">>>item",item)
-      if (props.hideUnpublished && item.isPublished === '0') {
+      if (props.hideUnpublished && item.isPublished === "0") {
         //hide item
-        if (item.assignment_isPublished != '1') continue;
+        if (item.assignment_isPublished != "1") continue;
         // TODO : update
       }
       switch (item.itemType) {
-        case 'DoenetML':
+        case "DoenetML":
           items.push(
             <DoenetML
               key={`item${itemId}${props.driveInstanceId}`}
@@ -543,7 +549,7 @@ function Collection(props) {
             />,
           );
           break;
-        case 'DragShadow':
+        case "DragShadow":
           console.log(`dragShadow${itemId}${props.driveInstanceId}`);
           items.push(
             <DragShadow

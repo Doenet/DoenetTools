@@ -1,6 +1,6 @@
-import MathList from './MathList';
-import me from 'math-expressions';
-import { isValidVariable } from '../utils/math';
+import MathList from "./MathList";
+import me from "math-expressions";
+import { isValidVariable } from "../utils/math";
 
 export default class Variables extends MathList {
   static componentType = "variables";
@@ -9,9 +9,7 @@ export default class Variables extends MathList {
   // use the maths state variable to populate that attribute
   static stateVariableForAttributeValue = "variables";
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.variables = {
@@ -32,7 +30,7 @@ export default class Variables extends MathList {
       },
 
       returnArrayDependenciesByKey({ arrayKeys }) {
-        let dependenciesByKey = {}
+        let dependenciesByKey = {};
 
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
@@ -40,9 +38,9 @@ export default class Variables extends MathList {
               dependencyType: "stateVariable",
               variableName: "math" + (Number(arrayKey) + 1),
             },
-          }
+          };
         }
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
         let variables = {};
@@ -50,10 +48,10 @@ export default class Variables extends MathList {
           variables[arrayKey] = dependencyValuesByKey[arrayKey].math;
         }
         return {
-          setValue: { variables }
-        }
-      }
-    }
+          setValue: { variables },
+        };
+      },
+    };
 
     let thisComponentType = this.componentType;
 
@@ -61,29 +59,25 @@ export default class Variables extends MathList {
       returnDependencies: () => ({
         variables: {
           dependencyType: "stateVariable",
-          variableName: "variables"
+          variableName: "variables",
         },
       }),
       definition: function ({ dependencyValues }) {
         let validVariables = [];
 
         for (let variable of dependencyValues.variables) {
-
           let validVariable = isValidVariable(variable);
           if (!validVariable) {
             console.warn("Invalid value for " + thisComponentType);
             validVariable = false;
           }
           validVariables.push(validVariable);
-
         }
 
-        return { setValue: { validVariables } }
-      }
-
-    }
+        return { setValue: { validVariables } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
 }

@@ -1,43 +1,45 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
-import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
-import axios from 'axios';
-import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
+import React, { useEffect, useState, useRef } from "react";
+import { useRecoilValue } from "recoil";
+import { searchParamAtomFamily } from "../NewToolRoot";
+import { loadAssignmentSelector } from "../../../_reactComponents/Drive/NewDrive";
+import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
+import axios from "axios";
+import { UTCDateStringToDate } from "../../../_utils/dateUtilityFunction";
 
 export default function TimerMenu() {
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const userAttemptNumber = useRecoilValue(currentAttemptNumber);
 
   const { timeLimit } = useRecoilValue(loadAssignmentSelector(doenetId));
-  let [timeDisplay, setTimeDisplay] = useState("Unlimited")
+  let [timeDisplay, setTimeDisplay] = useState("Unlimited");
   const [endTime, setEndTime] = useState(null);
-  const [refresh, setRefresh] = useState(new Date())
+  const [refresh, setRefresh] = useState(new Date());
 
   let timer = useRef(null);
 
-  //Need fresh data on began time each time 
+  //Need fresh data on began time each time
   //in case they opened another tab or hit refresh
   useEffect(() => {
     let startDT = new Date();
 
-    axios.get('/api/loadAttemptStartTime.php', {
-      params: { doenetId, attemptNumber: userAttemptNumber },
-    }).then(({ data }) => {
+    axios
+      .get("/api/loadAttemptStartTime.php", {
+        params: { doenetId, attemptNumber: userAttemptNumber },
+      })
+      .then(({ data }) => {
+        if (data.attemptStart !== null) {
+          //This attempt was started in the past so update startDT
+          //AND Convert UTC to local time
+          startDT = UTCDateStringToDate(data.attemptStart);
+        }
 
-      if (data.attemptStart !== null) {
-        //This attempt was started in the past so update startDT
-        //AND Convert UTC to local time
-        startDT = UTCDateStringToDate(data.attemptStart);
-      }
-
-      let endDT = new Date(startDT.getTime() + timeLimit * 60000 * data.timeLimitMultiplier);
-      setEndTime(endDT);
-
-    }).catch(console.error)
-
-  }, [userAttemptNumber, timeLimit, doenetId, setEndTime])
+        let endDT = new Date(
+          startDT.getTime() + timeLimit * 60000 * data.timeLimitMultiplier,
+        );
+        setEndTime(endDT);
+      })
+      .catch(console.error);
+  }, [userAttemptNumber, timeLimit, doenetId, setEndTime]);
 
   useEffect(() => {
     //Clear timer to prevent multiple timers
@@ -59,17 +61,14 @@ export default function TimerMenu() {
         }
         timer.current = setTimeout(() => {
           if (mins_raw >= 0) {
-            setRefresh(new Date())
+            setRefresh(new Date());
           }
-        }, 10000)
+        }, 10000);
       }
-
     }
+  }, [refresh, endTime]);
 
-  }, [refresh, endTime])
-
-
-  return <div style={{ fontSize: "40px", textAlign: "center" }}>
-    {timeDisplay}
-  </div>
+  return (
+    <div style={{ fontSize: "40px", textAlign: "center" }}>{timeDisplay}</div>
+  );
 }

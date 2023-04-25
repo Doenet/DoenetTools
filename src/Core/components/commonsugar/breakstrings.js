@@ -1,8 +1,6 @@
-
 export function breakStringsAndOthersIntoComponentsByStringCommas(e) {
   return null;
 }
-
 
 // function: returnBreakStringsSugarFunction
 //
@@ -28,7 +26,7 @@ export function breakStringsAndOthersIntoComponentsByStringCommas(e) {
 
 export function returnBreakStringsSugarFunction({
   childrenToComponentFunction,
-  mustStripOffOuterParentheses = false
+  mustStripOffOuterParentheses = false,
 }) {
   return function ({ matchedChildren }) {
     let Nparens = 0;
@@ -40,10 +38,12 @@ export function returnBreakStringsSugarFunction({
 
     if (mustStripOffOuterParentheses) {
       let firstComponent = matchedChildren[0];
-      if (typeof firstComponent !== "string" || firstComponent.trimLeft()[0] !== "(") {
+      if (
+        typeof firstComponent !== "string" ||
+        firstComponent.trimLeft()[0] !== "("
+      ) {
         return { success: false };
       }
-
     }
 
     for (let [compInd, component] of matchedChildren.entries()) {
@@ -79,7 +79,11 @@ export function returnBreakStringsSugarFunction({
             // parens didn't match
 
             // check if stripped off initial paren and we're at the end
-            if (strippedParens && compInd === nChildren - 1 && ind === s.length - 1) {
+            if (
+              strippedParens &&
+              compInd === nChildren - 1 &&
+              ind === s.length - 1
+            ) {
               // strip off last parens
               s = s.substring(0, s.length - 1);
               break;
@@ -87,7 +91,7 @@ export function returnBreakStringsSugarFunction({
             // return failure due to non-matching parens
             return { success: false };
           }
-          Nparens--
+          Nparens--;
         }
         if (char === "," && Nparens === 0) {
           if (ind > beginInd) {
@@ -102,7 +106,6 @@ export function returnBreakStringsSugarFunction({
       if (s.length > beginInd) {
         currentPiece.push(s.substring(beginInd, s.length));
       }
-
     }
 
     // parens didn't match, so return failure
@@ -116,11 +119,10 @@ export function returnBreakStringsSugarFunction({
 
     return {
       success: true,
-      newChildren: newChildren
+      newChildren: newChildren,
     };
-  }
+  };
 }
-
 
 // function: breakEmbeddedStringByCommas
 //
@@ -139,9 +141,7 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
   let currentPiece = [];
 
   for (let component of childrenList) {
-
     if (typeof component !== "string") {
-
       currentPiece.push(component);
       continue;
     }
@@ -159,11 +159,11 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
           // parens didn't match, so return failure
           return { success: false };
         }
-        Nparens--
+        Nparens--;
       }
       if (char === "," && Nparens === 0) {
         if (ind > beginInd) {
-          let newString = s.substring(beginInd, ind).trim()
+          let newString = s.substring(beginInd, ind).trim();
           currentPiece.push(newString);
         }
 
@@ -177,7 +177,6 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
       let newString = s.substring(beginInd, s.length).trim();
       currentPiece.push(newString);
     }
-
   }
 
   // parens didn't match, so return failure
@@ -190,20 +189,22 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
   return {
     success: true,
     pieces: pieces,
-  }
+  };
 }
 
-export function breakEmbeddedStringsIntoParensPieces({ componentList, removeParens = false }) {
+export function breakEmbeddedStringsIntoParensPieces({
+  componentList,
+  removeParens = false,
+}) {
   let Nparens = 0;
   let pieces = [];
   let currentPiece = [];
 
   for (let component of componentList) {
-
     if (typeof component !== "string") {
       if (Nparens === 0) {
         // if not in a parenthesis, just add as a separate piece
-        pieces.push([component])
+        pieces.push([component]);
       } else {
         currentPiece.push(component);
       }
@@ -231,7 +232,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
           // found end of piece in parens
           if (ind + 1 > beginInd) {
             let lastInd = removeParens ? ind : ind + 1;
-            let newString = s.substring(beginInd, lastInd).trim()
+            let newString = s.substring(beginInd, lastInd).trim();
             if (newString.length > 0) {
               currentPiece.push(newString);
             }
@@ -240,13 +241,12 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
           pieces.push(currentPiece);
           currentPiece = [];
           beginInd = ind + 1;
-
         }
-        Nparens--
+        Nparens--;
       } else if (Nparens === 0 && !char.match(/\s/)) {
         // starting a new piece
         // each piece must begin with parens
-        return { success: false }
+        return { success: false };
       }
     }
 
@@ -254,7 +254,6 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
       let newString = s.substring(beginInd, s.length).trim();
       currentPiece.push(newString);
     }
-
   }
 
   // parens didn't match, so return failure
@@ -269,9 +268,8 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
   return {
     success: true,
     pieces: pieces,
-  }
+  };
 }
-
 
 // function: breakIntoVectorComponents
 //
@@ -315,12 +313,12 @@ export function breakIntoVectorComponents(compList) {
   if (compList.length === 1) {
     let snew = sFirst.trim().slice(1, -1).trim();
     if (snew.length > 0) {
-      newCompList.push(snew)
+      newCompList.push(snew);
     }
   } else {
     let snew = sFirst.trim().slice(1).trim();
     if (snew.length > 0) {
-      newCompList.push(snew)
+      newCompList.push(snew);
     }
 
     newCompList.push(...compList.slice(1, -1));
@@ -329,14 +327,12 @@ export function breakIntoVectorComponents(compList) {
     if (snew.length > 0) {
       newCompList.push(snew);
     }
-
   }
   let Nparens = 0;
   let pieces = [];
   let currentPiece = [];
 
   for (let comp of newCompList) {
-
     if (typeof comp !== "string") {
       currentPiece.push(comp);
       continue;
@@ -357,7 +353,7 @@ export function breakIntoVectorComponents(compList) {
           // parens didn't match, so it wasn't a vector
           return { foundVector: false };
         }
-        Nparens--
+        Nparens--;
       }
 
       if (char === "," && Nparens === 0) {
@@ -371,7 +367,6 @@ export function breakIntoVectorComponents(compList) {
         beginInd = ind + 1;
         brokeString = true;
       }
-
     }
 
     if (brokeString) {
@@ -394,9 +389,8 @@ export function breakIntoVectorComponents(compList) {
   return {
     foundVector: true,
     vectorComponents: pieces,
-  }
+  };
 }
-
 
 // function: breakPiecesByEquals
 //
@@ -426,12 +420,8 @@ export function breakIntoVectorComponents(compList) {
 // Note 2: we assume pieces have already been processed by breakEmbeddedStringByCommas
 // so that strings can be idenified by the _string property
 
-
-
-
 // TODO: this no longer works, as we don't add _string property,
 // but this code isn't currently being called anywhere
-
 
 // export function breakPiecesByEquals(pieces, parseVectorEquality = false) {
 

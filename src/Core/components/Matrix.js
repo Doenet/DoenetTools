@@ -1,23 +1,25 @@
-import MathComponent from './Math';
-import me from 'math-expressions';
+import MathComponent from "./Math";
+import me from "math-expressions";
 
 export default class Matrix extends MathComponent {
   static componentType = "matrix";
   static rendererType = "math";
 
   static returnChildGroups() {
-
-    return [{
-      group: "rows",
-      componentTypes: ["matrixRow"]
-    }, {
-      group: "columns",
-      componentTypes: ["matrixColumn"]
-    }, {
-      group: "maths",
-      componentTypes: ["math"]
-    }]
-
+    return [
+      {
+        group: "rows",
+        componentTypes: ["matrixRow"],
+      },
+      {
+        group: "columns",
+        componentTypes: ["matrixColumn"],
+      },
+      {
+        group: "maths",
+        componentTypes: ["math"],
+      },
+    ];
   }
 
   static createAttributesObject() {
@@ -35,7 +37,7 @@ export default class Matrix extends MathComponent {
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1E-14,
+      valueForTrue: 1e-14,
       valueForFalse: 0,
       defaultValue: 0,
       public: true,
@@ -50,14 +52,14 @@ export default class Matrix extends MathComponent {
     attributes.defaultEntry = {
       createComponentOfType: "math",
       createStateVariable: "defaultEntry",
-      defaultValue: me.fromAst(0)
-    }
+      defaultValue: me.fromAst(0),
+    };
     attributes.nRows = {
       createComponentOfType: "integer",
-    }
+    };
     attributes.nColumns = {
       createComponentOfType: "integer",
-    }
+    };
 
     return attributes;
   }
@@ -66,7 +68,6 @@ export default class Matrix extends MathComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let replaceRowAndColumnChildren = function ({ matchedChildren }) {
-
       let newChildren = [];
 
       for (let child of matchedChildren) {
@@ -75,39 +76,38 @@ export default class Matrix extends MathComponent {
         }
         if (child.componentType === "column") {
           child.doenetAttributes.createNameFromComponentType = "column";
-          child.componentType = "matrixColumn"
+          child.componentType = "matrixColumn";
         } else if (child.componentType === "row") {
           child.doenetAttributes.createNameFromComponentType = "row";
           child.componentType = "matrixRow";
         }
         if (child.attributes?.createComponentOfType?.primitive === "column") {
           child.doenetAttributes.createNameFromComponentType = "column";
-          child.attributes.createComponentOfType.primitive = "matrixColumn"
-        } else if (child.attributes?.createComponentOfType?.primitive === "row") {
+          child.attributes.createComponentOfType.primitive = "matrixColumn";
+        } else if (
+          child.attributes?.createComponentOfType?.primitive === "row"
+        ) {
           child.doenetAttributes.createNameFromComponentType = "row";
-          child.attributes.createComponentOfType.primitive = "matrixRow"
+          child.attributes.createComponentOfType.primitive = "matrixRow";
         }
 
         newChildren.push(child);
-
       }
 
       return {
         success: true,
         newChildren,
-      }
-    }
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: replaceRowAndColumnChildren
+      replacementFunction: replaceRowAndColumnChildren,
     });
 
     return sugarInstructions;
-
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     delete stateVariableDefinitions.displayDecimals;
@@ -132,26 +132,30 @@ export default class Matrix extends MathComponent {
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.displayDigitsAttr !== null) {
-
           let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault =
+            dependencyValues.displayDecimalsAttr === null ||
+            usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          if (
+            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
+          ) {
             // if both display digits and display decimals did not use default
             // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+            let shadowDepthDisplayDigits =
+              dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals =
+              dependencyValues.displayDecimalsAttr.shadowDepth;
 
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
@@ -162,23 +166,24 @@ export default class Matrix extends MathComponent {
             return {
               useEssentialOrDefaultValue: {
                 displayDigits: {
-                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.displayDigitsAttr.stateValues.value,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
-              }
-            }
+                displayDigits:
+                  dependencyValues.displayDigitsAttr.stateValues.value,
+              },
+            };
           }
         }
 
-        return { useEssentialOrDefaultValue: { displayDigits: true } }
-
-      }
-    }
+        return { useEssentialOrDefaultValue: { displayDigits: true } };
+      },
+    };
 
     stateVariableDefinitions.unordered = {
       public: true,
@@ -188,10 +193,10 @@ export default class Matrix extends MathComponent {
       returnDependencies: () => ({}),
       definition() {
         return {
-          setValue: { unordered: false }
-        }
-      }
-    }
+          setValue: { unordered: false },
+        };
+      },
+    };
 
     stateVariableDefinitions.matrixSizePre = {
       returnDependencies: () => ({
@@ -213,17 +218,17 @@ export default class Matrix extends MathComponent {
         nRowsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "nRows",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         nColumnsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "nColumns",
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition({ dependencyValues }) {
-
-        let nRows = null, nColumns = null;
+        let nRows = null,
+          nColumns = null;
 
         if (dependencyValues.nRowsAttr) {
           nRows = dependencyValues.nRowsAttr.stateValues.value;
@@ -243,22 +248,32 @@ export default class Matrix extends MathComponent {
             nRows = dependencyValues.rowChildren.length;
           }
           if (nColumns === null) {
-            nColumns = Math.max(1, ...dependencyValues.rowChildren.map(x => x.stateValues.nComponents))
+            nColumns = Math.max(
+              1,
+              ...dependencyValues.rowChildren.map(
+                (x) => x.stateValues.nComponents,
+              ),
+            );
           }
         } else if (dependencyValues.colChildren.length > 0) {
           if (nColumns === null) {
             nColumns = dependencyValues.colChildren.length;
           }
           if (nRows === null) {
-            nRows = Math.max(1, ...dependencyValues.colChildren.map(x => x.stateValues.nComponents))
+            nRows = Math.max(
+              1,
+              ...dependencyValues.colChildren.map(
+                (x) => x.stateValues.nComponents,
+              ),
+            );
           }
-
         } else if (dependencyValues.mathChildren.length === 1) {
           if (nRows === null) {
             nRows = dependencyValues.mathChildren[0].stateValues.matrixSize[0];
           }
           if (nColumns === null) {
-            nColumns = dependencyValues.mathChildren[0].stateValues.matrixSize[1];
+            nColumns =
+              dependencyValues.mathChildren[0].stateValues.matrixSize[1];
           }
         } else {
           // if nRows or nColumns is not specified, set to 1,
@@ -273,13 +288,11 @@ export default class Matrix extends MathComponent {
           } else if (nColumns === null) {
             nColumns = 1;
           }
-
         }
 
-        return { setValue: { matrixSizePre: [nRows, nColumns] } }
-
-      }
-    }
+        return { setValue: { matrixSizePre: [nRows, nColumns] } };
+      },
+    };
 
     stateVariableDefinitions.matrixPre = {
       isArray: true,
@@ -298,16 +311,16 @@ export default class Matrix extends MathComponent {
         let globalDependencies = {
           defaultEntry: {
             dependencyType: "stateVariable",
-            variableName: "defaultEntry"
+            variableName: "defaultEntry",
           },
           rowChildIdentities: {
             dependencyType: "child",
-            childGroups: ["rows"]
+            childGroups: ["rows"],
           },
           colChildIdentities: {
             dependencyType: "child",
-            childGroups: ["columns"]
-          }
+            childGroups: ["columns"],
+          },
         };
         let dependenciesByKey = {};
 
@@ -330,17 +343,24 @@ export default class Matrix extends MathComponent {
               dependencyType: "child",
               childGroups: ["maths"],
               childIndices: [0],
-              variableNames: ["matrixEntry" + (Number(rowInd) + 1) + "_" + (Number(colInd) + 1)]
-            }
-          }
-
+              variableNames: [
+                "matrixEntry" +
+                  (Number(rowInd) + 1) +
+                  "_" +
+                  (Number(colInd) + 1),
+              ],
+            },
+          };
         }
 
         return { globalDependencies, dependenciesByKey };
       },
       arrayDefinitionByKey({
-        globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize }) {
-
+        globalDependencyValues,
+        dependencyValuesByKey,
+        arrayKeys,
+        arraySize,
+      }) {
         let matrix = {};
         let essentialMatrix = {};
         let useRows = globalDependencyValues.rowChildIdentities.length > 0;
@@ -351,32 +371,45 @@ export default class Matrix extends MathComponent {
 
           let entry;
           if (useRows) {
-            entry = dependencyValuesByKey[arrayKey].rowChild[0]?.stateValues["math" + (Number(colInd) + 1)];
+            entry =
+              dependencyValuesByKey[arrayKey].rowChild[0]?.stateValues[
+                "math" + (Number(colInd) + 1)
+              ];
           } else if (useColumns) {
-            entry = dependencyValuesByKey[arrayKey].colChild[0]?.stateValues["math" + (Number(rowInd) + 1)];
+            entry =
+              dependencyValuesByKey[arrayKey].colChild[0]?.stateValues[
+                "math" + (Number(rowInd) + 1)
+              ];
           } else {
-            entry = dependencyValuesByKey[arrayKey].mathChild[0]?.stateValues["matrixEntry" + (Number(rowInd) + 1) + "_" + (Number(colInd) + 1)]
+            entry =
+              dependencyValuesByKey[arrayKey].mathChild[0]?.stateValues[
+                "matrixEntry" +
+                  (Number(rowInd) + 1) +
+                  "_" +
+                  (Number(colInd) + 1)
+              ];
           }
 
           if (entry === undefined) {
-            essentialMatrix[arrayKey] = { defaultValue: globalDependencyValues.defaultEntry }
+            essentialMatrix[arrayKey] = {
+              defaultValue: globalDependencyValues.defaultEntry,
+            };
           } else {
             matrix[arrayKey] = entry;
           }
-
         }
 
         return {
           setValue: { matrixPre: matrix },
-          useEssentialOrDefaultValue: { matrixPre: essentialMatrix }
-        }
+          useEssentialOrDefaultValue: { matrixPre: essentialMatrix },
+        };
       },
       async inverseArrayDefinitionByKey({
-        desiredStateVariableValues, globalDependencyValues, dependencyValuesByKey,
-        dependencyNamesByKey
+        desiredStateVariableValues,
+        globalDependencyValues,
+        dependencyValuesByKey,
+        dependencyNamesByKey,
       }) {
-
-
         let instructions = [];
         let newMatrixValues = {};
         let useRows = globalDependencyValues.rowChildIdentities.length > 0;
@@ -386,111 +419,136 @@ export default class Matrix extends MathComponent {
           let [rowInd, colInd] = arrayKey.split(",");
 
           if (useRows) {
-            let entry = dependencyValuesByKey[arrayKey].rowChild[0]?.stateValues["math" + (Number(colInd) + 1)];
+            let entry =
+              dependencyValuesByKey[arrayKey].rowChild[0]?.stateValues[
+                "math" + (Number(colInd) + 1)
+              ];
             if (entry === undefined) {
-              newMatrixValues[arrayKey] = desiredStateVariableValues.matrixPre[arrayKey]
+              newMatrixValues[arrayKey] =
+                desiredStateVariableValues.matrixPre[arrayKey];
             } else {
               instructions.push({
                 setDependency: dependencyNamesByKey[arrayKey].rowChild,
                 desiredValue: desiredStateVariableValues.matrixPre[arrayKey],
                 childIndex: 0,
-                variableIndex: 0
-              })
+                variableIndex: 0,
+              });
             }
           } else if (useColumns) {
-            let entry = dependencyValuesByKey[arrayKey].colChild[0]?.stateValues["math" + (Number(rowInd) + 1)];
+            let entry =
+              dependencyValuesByKey[arrayKey].colChild[0]?.stateValues[
+                "math" + (Number(rowInd) + 1)
+              ];
             if (entry === undefined) {
-              newMatrixValues[arrayKey] = desiredStateVariableValues.matrixPre[arrayKey]
+              newMatrixValues[arrayKey] =
+                desiredStateVariableValues.matrixPre[arrayKey];
             } else {
               instructions.push({
                 setDependency: dependencyNamesByKey[arrayKey].colChild,
                 desiredValue: desiredStateVariableValues.matrixPre[arrayKey],
                 childIndex: 0,
-                variableIndex: 0
-              })
+                variableIndex: 0,
+              });
             }
           } else {
-            let entry = dependencyValuesByKey[arrayKey].mathChild[0]?.stateValues["matrixEntry" + (Number(rowInd) + 1) + "_" + (Number(colInd) + 1)]
+            let entry =
+              dependencyValuesByKey[arrayKey].mathChild[0]?.stateValues[
+                "matrixEntry" +
+                  (Number(rowInd) + 1) +
+                  "_" +
+                  (Number(colInd) + 1)
+              ];
             if (entry === undefined) {
-              newMatrixValues[arrayKey] = desiredStateVariableValues.matrixPre[arrayKey]
+              newMatrixValues[arrayKey] =
+                desiredStateVariableValues.matrixPre[arrayKey];
             } else {
               instructions.push({
                 setDependency: dependencyNamesByKey[arrayKey].mathChild,
                 desiredValue: desiredStateVariableValues.matrixPre[arrayKey],
                 childIndex: 0,
-                variableIndex: 0
-              })
+                variableIndex: 0,
+              });
             }
           }
-
         }
 
         if (Object.keys(newMatrixValues).length > 0) {
           instructions.push({
             setEssentialValue: "matrixPre",
-            value: newMatrixValues
-          })
+            value: newMatrixValues,
+          });
         }
 
         return {
           success: true,
-          instructions
-        }
-
-
-      }
-    }
+          instructions,
+        };
+      },
+    };
 
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
         matrixPre: {
           dependencyType: "stateVariable",
-          variableName: "matrixPre"
+          variableName: "matrixPre",
         },
         matrixSizePre: {
           dependencyType: "stateVariable",
-          variableName: "matrixSizePre"
+          variableName: "matrixSizePre",
         },
       }),
       definition({ dependencyValues }) {
-
         let matrixValues = ["tuple"];
         for (let i = 0; i < dependencyValues.matrixSizePre[0]; i++) {
-          matrixValues.push(["tuple", ...dependencyValues.matrixPre[i].map(x => x.tree)])
+          matrixValues.push([
+            "tuple",
+            ...dependencyValues.matrixPre[i].map((x) => x.tree),
+          ]);
         }
 
-        let unnormalizedValue = me.fromAst(["matrix", ["tuple", ...dependencyValues.matrixSizePre], matrixValues])
+        let unnormalizedValue = me.fromAst([
+          "matrix",
+          ["tuple", ...dependencyValues.matrixSizePre],
+          matrixValues,
+        ]);
 
-        return { setValue: { unnormalizedValue } }
+        return { setValue: { unnormalizedValue } };
       },
       inverseDefinition({ dependencyValues, desiredStateVariableValues }) {
         let desiredTree = desiredStateVariableValues.unnormalizedValue.tree;
 
-        if (!(Array.isArray(desiredTree) && desiredTree[0] === "matrix" &&
-          desiredTree[1]?.[1] === dependencyValues.matrixSizePre[0] &&
-          desiredTree[1]?.[2] === dependencyValues.matrixSizePre[1]
-        )) {
-          return { success: false }
+        if (
+          !(
+            Array.isArray(desiredTree) &&
+            desiredTree[0] === "matrix" &&
+            desiredTree[1]?.[1] === dependencyValues.matrixSizePre[0] &&
+            desiredTree[1]?.[2] === dependencyValues.matrixSizePre[1]
+          )
+        ) {
+          return { success: false };
         }
 
         let desiredMatrix = {};
 
         for (let i = 0; i < dependencyValues.matrixSizePre[0]; i++) {
           for (let j = 0; j < dependencyValues.matrixSizePre[1]; j++) {
-            desiredMatrix[`${i},${j}`] = me.fromAst(desiredTree[2][i + 1][j + 1])
+            desiredMatrix[`${i},${j}`] = me.fromAst(
+              desiredTree[2][i + 1][j + 1],
+            );
           }
         }
 
         return {
           success: true,
-          instructions: [{
-            setDependency: "matrixPre",
-            desiredValue: desiredMatrix,
-          }]
-        }
-
-      }
-    }
+          instructions: [
+            {
+              setDependency: "matrixPre",
+              desiredValue: desiredMatrix,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({
@@ -505,13 +563,14 @@ export default class Matrix extends MathComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { canBeModified: dependencyValues.modifyIndirectly && !dependencyValues.fixed }
-        }
-      }
-    }
+          setValue: {
+            canBeModified:
+              dependencyValues.modifyIndirectly && !dependencyValues.fixed,
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

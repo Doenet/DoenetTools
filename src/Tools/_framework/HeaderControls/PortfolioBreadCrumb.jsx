@@ -1,6 +1,6 @@
-import React, { Suspense } from 'react';
-import { useLoaderData, useNavigate } from 'react-router';
-import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
+import React, { Suspense } from "react";
+import { useLoaderData, useNavigate } from "react-router";
+import { BreadCrumb } from "../../../_reactComponents/PanelHeaderComponents/BreadCrumb";
 
 export default function PortfolioBreadCrumb() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function PortfolioBreadCrumb() {
       <BreadCrumb
         crumbs={[
           {
-            label: 'Portfolio',
+            label: "Portfolio",
             onClick: () => {
               navigate(`/portfolio/${courseId}`);
             },
@@ -21,7 +21,7 @@ export default function PortfolioBreadCrumb() {
           {
             label,
             onClick: () => {
-              console.log('Rename?');
+              console.log("Rename?");
             },
           },
         ]}

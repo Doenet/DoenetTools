@@ -1,15 +1,21 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
-import { sizeToCSS } from './utils/css';
-import { rendererState } from '../useDoenetRenderer';
-import { useSetRecoilState } from 'recoil';
-import styled from 'styled-components';
-import { MathJax } from 'better-react-mathjax';
-import { BoardContext } from './graph';
-import me from 'math-expressions';
-import { getPositionFromAnchorByCoordinate } from '../../Core/utils/graphical';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheck,
+  faLevelDownAlt,
+  faTimes,
+  faCloud,
+  faPercentage,
+} from "@fortawesome/free-solid-svg-icons";
+import { sizeToCSS } from "./utils/css";
+import { rendererState } from "../useDoenetRenderer";
+import { useSetRecoilState } from "recoil";
+import styled from "styled-components";
+import { MathJax } from "better-react-mathjax";
+import { BoardContext } from "./graph";
+import me from "math-expressions";
+import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
 
 // Moved most of checkWorkStyle styling into Button
 const Button = styled.button`
@@ -28,15 +34,17 @@ const Button = styled.button`
   &:hover {
     background-color: var(--lightBlue);
     color: black;
-  };
+  }
 `;
 
 const TextArea = styled.textarea`
-  width: ${props => props.width};
-  height: ${props => props.height}; // Same height as the checkWorkButton, accounting for the borders
+  width: ${(props) => props.width};
+  height: ${(props) =>
+    props.height}; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${props => props.disabled ? '2px solid var(--mainGray)' : 'var(--mainBorder)'};
-  cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+  border: ${(props) =>
+    props.disabled ? "2px solid var(--mainGray)" : "var(--mainBorder)"};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "auto")};
 
   &:focus {
     outline: var(--mainBorder);
@@ -45,11 +53,12 @@ const TextArea = styled.textarea`
 `;
 
 const Input = styled.input`
-  width: ${props => props.width};
+  width: ${(props) => props.width};
   height: 20px; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${props => props.disabled ? '2px solid var(--mainGray)' : 'var(--mainBorder)'};
-  cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+  border: ${(props) =>
+    props.disabled ? "2px solid var(--mainGray)" : "var(--mainBorder)"};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "auto")};
 
   &:focus {
     outline: var(--mainBorder);
@@ -58,13 +67,23 @@ const Input = styled.input`
 `;
 
 export default function TextInput(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  let {
+    name,
+    id,
+    SVs,
+    actions,
+    sourceOfUpdate,
+    ignoreUpdate,
+    rendererName,
+    callAction,
+  } = useDoenetRender(props);
 
   let width = sizeToCSS(SVs.width);
   let height = sizeToCSS(SVs.height); // only for TextArea
 
   TextInput.baseStateVariable = "immediateValue";
-  TextInput.ignoreActionsWithoutCore = actionName => actionName === "moveInput";
+  TextInput.ignoreActionsWithoutCore = (actionName) =>
+    actionName === "moveInput";
 
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
 
@@ -101,19 +120,19 @@ export default function TextInput(props) {
   fixed.current = SVs.fixed;
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
 
-
   useEffect(() => {
     //On unmount
     return () => {
       if (inputJXG.current !== null) {
         deleteInputJXG();
       }
+    };
+  }, []);
 
-    }
-  }, [])
-
-
-  if (!ignoreUpdate && immediateValueWhenSetState.current !== SVs.immediateValue) {
+  if (
+    !ignoreUpdate &&
+    immediateValueWhenSetState.current !== SVs.immediateValue
+  ) {
     // console.log(`setting value to ${SVs.immediateValue}`)
     setRendererValue(SVs.immediateValue);
     immediateValueWhenSetState.current = SVs.immediateValue;
@@ -122,17 +141,16 @@ export default function TextInput(props) {
     immediateValueWhenSetState.current = null;
   }
 
-  let validationState = 'unvalidated';
+  let validationState = "unvalidated";
   if (SVs.valueHasBeenValidated) {
     if (SVs.creditAchieved === 1) {
-      validationState = 'correct';
+      validationState = "correct";
     } else if (SVs.creditAchieved === 0) {
-      validationState = 'incorrect';
+      validationState = "incorrect";
     } else {
-      validationState = 'partialcorrect';
+      validationState = "partialcorrect";
     }
   }
-
 
   function handleKeyPress(e) {
     if (e.key === "Enter") {
@@ -143,10 +161,15 @@ export default function TextInput(props) {
         baseVariableValue: rendererValueRef.current,
       });
 
-      if (SVs.includeCheckWork && !SVs.suppressCheckwork && !SVs.expanded && validationState === "unvalidated") {
+      if (
+        SVs.includeCheckWork &&
+        !SVs.suppressCheckwork &&
+        !SVs.expanded &&
+        validationState === "unvalidated"
+      ) {
         callAction({
           action: actions.submitAnswer,
-        })
+        });
       }
     }
   }
@@ -156,7 +179,6 @@ export default function TextInput(props) {
       let oldValue = valueToRevertTo.current;
 
       if (oldValue !== rendererValueRef.current) {
-
         setRendererValue(oldValue);
         immediateValueWhenSetState.current = SVs.immediateValue;
 
@@ -166,7 +188,7 @@ export default function TextInput(props) {
             text: oldValue,
           },
           baseVariableValue: oldValue,
-        })
+        });
       }
     }
   }
@@ -187,20 +209,18 @@ export default function TextInput(props) {
   }
 
   function onChangeHandler(e) {
-
     let newValue = e.target.value;
 
     // console.log(`on change handler for ${id}, desired value: ${newValue}`)
 
     if (newValue !== rendererValueRef.current) {
-
       setRendererValue(newValue);
 
       setRendererState((was) => {
         let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
-      })
+      });
       immediateValueWhenSetState.current = SVs.immediateValue;
 
       callAction({
@@ -209,13 +229,11 @@ export default function TextInput(props) {
           text: newValue,
         },
         baseVariableValue: newValue,
-      })
+      });
     }
   }
 
-
   function createInputJXG() {
-
     let jsxInputAttributes = {
       visible: !SVs.hidden,
       fixed: fixed.current,
@@ -227,42 +245,47 @@ export default function TextInput(props) {
       parse: false,
     };
 
-
     let newAnchorPointJXG;
 
     try {
       let anchor = me.fromAst(SVs.anchor);
       let anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
 
       if (!Number.isFinite(anchorCoords[0])) {
         anchorCoords[0] = 0;
-        jsxInputAttributes['visible'] = false;
+        jsxInputAttributes["visible"] = false;
       }
       if (!Number.isFinite(anchorCoords[1])) {
         anchorCoords[1] = 0;
-        jsxInputAttributes['visible'] = false;
+        jsxInputAttributes["visible"] = false;
       }
 
-      newAnchorPointJXG = board.create('point', anchorCoords, { visible: false });
-
+      newAnchorPointJXG = board.create("point", anchorCoords, {
+        visible: false,
+      });
     } catch (e) {
-      jsxInputAttributes['visible'] = false;
-      newAnchorPointJXG = board.create('point', [0, 0], { visible: false });
+      jsxInputAttributes["visible"] = false;
+      newAnchorPointJXG = board.create("point", [0, 0], { visible: false });
       return;
     }
 
     jsxInputAttributes.anchor = newAnchorPointJXG;
 
-    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+    let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+      SVs.positionFromAnchor,
+    );
     jsxInputAttributes.anchorx = anchorx;
     jsxInputAttributes.anchory = anchory;
     anchorRel.current = [anchorx, anchory];
 
-
-    let newInputJXG = board.create('input', [0, 0, rendererValue, SVs.label], jsxInputAttributes);
+    let newInputJXG = board.create(
+      "input",
+      [0, 0, rendererValue, SVs.label],
+      jsxInputAttributes,
+    );
     newInputJXG.isDraggable = !fixLocation.current;
 
     newInputJXG.rendNodeInput.addEventListener("input", onChangeHandler);
@@ -278,52 +301,50 @@ export default function TextInput(props) {
 
     newInputJXG.rendNodeLabel.style.marginRight = "2px";
 
-    newInputJXG.on('down', function (e) {
+    newInputJXG.on("down", function (e) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newAnchorPointJXG.coords.scrCoords];
       dragged.current = false;
-
     });
 
-    newInputJXG.on('hit', function (e) {
+    newInputJXG.on("hit", function (e) {
       dragged.current = false;
     });
 
-    newInputJXG.on('up', function (e) {
+    newInputJXG.on("up", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveInput,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
+          },
         });
         dragged.current = false;
       }
-
     });
 
-    newInputJXG.on('keyfocusout', function (e) {
+    newInputJXG.on("keyfocusout", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.moveInput,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
-        })
+          },
+        });
         dragged.current = false;
       }
-    })
+    });
 
-    newInputJXG.on('drag', function (e) {
-
+    newInputJXG.on("drag", function (e) {
       let viaPointer = e.type === "pointermove";
 
       //Protect against very small unintended drags
-      if (!viaPointer ||
-        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1
+      if (
+        !viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
       ) {
         dragged.current = true;
       }
@@ -337,13 +358,13 @@ export default function TextInput(props) {
 
       let offsetx = 0;
       if (anchorx === "middle") {
-        offsetx = -width / 2
+        offsetx = -width / 2;
       } else if (anchorx === "right") {
         offsetx = -width;
       }
       let offsety = 0;
       if (anchory === "middle") {
-        offsety = -height / 2
+        offsety = -height / 2;
       } else if (anchory === "top") {
         offsety = -height;
       }
@@ -365,21 +386,28 @@ export default function TextInput(props) {
         // TODO: find an example where need this this additional complexity
         var o = board.origin.scrCoords;
 
-        calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-          - o[1]) / board.unitX;
+        calculatedX.current =
+          (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) /
+          board.unitX;
 
-        calculatedY.current = (o[2] -
-          (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-          / board.unitY;
+        calculatedY.current =
+          (o[2] - (pointAtDown.current[2] + e.y - pointerAtDown.current[1])) /
+          board.unitY;
       } else {
-
-        calculatedX.current = newAnchorPointJXG.X() + newInputJXG.relativeCoords.usrCoords[1];
-        calculatedY.current = newAnchorPointJXG.Y() + newInputJXG.relativeCoords.usrCoords[2];
-
+        calculatedX.current =
+          newAnchorPointJXG.X() + newInputJXG.relativeCoords.usrCoords[1];
+        calculatedY.current =
+          newAnchorPointJXG.Y() + newInputJXG.relativeCoords.usrCoords[2];
       }
 
-      calculatedX.current = Math.min(xmaxAdjusted, Math.max(xminAdjusted, calculatedX.current));
-      calculatedY.current = Math.min(ymaxAdjusted, Math.max(yminAdjusted, calculatedY.current));
+      calculatedX.current = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, calculatedX.current),
+      );
+      calculatedY.current = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, calculatedY.current),
+      );
 
       callAction({
         action: actions.moveInput,
@@ -388,16 +416,17 @@ export default function TextInput(props) {
           y: calculatedY.current,
           transient: true,
           skippable: true,
-        }
+        },
       });
 
       newInputJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      newAnchorPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
-
+      newAnchorPointJXG.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionFromCore.current,
+      );
     });
 
-    newInputJXG.on('keydown', function (e) {
-
+    newInputJXG.on("keydown", function (e) {
       if (e.key === "Enter") {
         if (dragged.current) {
           callAction({
@@ -405,13 +434,12 @@ export default function TextInput(props) {
             args: {
               x: calculatedX.current,
               y: calculatedY.current,
-            }
-          })
+            },
+          });
           dragged.current = false;
         }
       }
-    })
-
+    });
 
     inputJXG.current = newInputJXG;
     anchorPointJXG.current = newAnchorPointJXG;
@@ -422,31 +450,38 @@ export default function TextInput(props) {
     // TODO: can we trigger this on MathJax being finished rather than wait 1 second?
     if (SVs.labelHasLatex) {
       setTimeout(() => {
-
         if (inputJXG.current) {
           inputJXG.current.needsUpdate = true;
-          inputJXG.current.setText(SVs.label)
+          inputJXG.current.setText(SVs.label);
           inputJXG.current.update();
           board?.updateRenderer();
         }
-
-      }, 1000)
+      }, 1000);
     }
   }
 
   function deleteInputJXG() {
-    inputJXG.current.rendNodeInput.removeEventListener("input", onChangeHandler);
-    inputJXG.current.rendNodeInput.removeEventListener("keypress", handleKeyPress);
-    inputJXG.current.rendNodeInput.removeEventListener("keydown", handleKeyDown);
+    inputJXG.current.rendNodeInput.removeEventListener(
+      "input",
+      onChangeHandler,
+    );
+    inputJXG.current.rendNodeInput.removeEventListener(
+      "keypress",
+      handleKeyPress,
+    );
+    inputJXG.current.rendNodeInput.removeEventListener(
+      "keydown",
+      handleKeyDown,
+    );
     inputJXG.current.rendNodeInput.removeEventListener("blur", handleBlur);
     inputJXG.current.rendNodeInput.removeEventListener("focus", handleFocus);
 
-    inputJXG.current.off('drag');
-    inputJXG.current.off('down');
-    inputJXG.current.off('hit');
-    inputJXG.current.off('up');
-    inputJXG.current.off('keyfocusout');
-    inputJXG.current.off('keydown');
+    inputJXG.current.off("drag");
+    inputJXG.current.off("down");
+    inputJXG.current.off("hit");
+    inputJXG.current.off("up");
+    inputJXG.current.off("keyfocusout");
+    inputJXG.current.off("keydown");
     board.removeObject(inputJXG.current);
     inputJXG.current = null;
   }
@@ -457,42 +492,49 @@ export default function TextInput(props) {
       let anchor = me.fromAst(SVs.anchor);
       anchorCoords = [
         anchor.get_component(0).evaluate_to_constant(),
-        anchor.get_component(1).evaluate_to_constant()
-      ]
+        anchor.get_component(1).evaluate_to_constant(),
+      ];
     } catch (e) {
       anchorCoords = [NaN, NaN];
     }
 
     lastPositionFromCore.current = anchorCoords;
 
-
     if (inputJXG.current === null) {
       createInputJXG();
     } else {
-
       if (inputJXG.current.Value() !== rendererValue) {
-        inputJXG.current.set(rendererValue)
+        inputJXG.current.set(rendererValue);
       }
 
-      inputJXG.current.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
-      anchorPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, anchorCoords);
+      inputJXG.current.relativeCoords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        [0, 0],
+      );
+      anchorPointJXG.current.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        anchorCoords,
+      );
 
-      inputJXG.current.setText(SVs.label)
+      inputJXG.current.setText(SVs.label);
 
       inputJXG.current.rendNodeInput.style.width = width;
 
-
       let visible = !SVs.hidden;
 
-      if (Number.isFinite(anchorCoords[0]) && Number.isFinite(anchorCoords[1])) {
-        let actuallyChangedVisibility = inputJXG.current.visProp["visible"] !== visible;
+      if (
+        Number.isFinite(anchorCoords[0]) &&
+        Number.isFinite(anchorCoords[1])
+      ) {
+        let actuallyChangedVisibility =
+          inputJXG.current.visProp["visible"] !== visible;
         inputJXG.current.visProp["visible"] = visible;
         inputJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          inputJXG.current.setAttribute({ visible })
+          inputJXG.current.setAttribute({ visible });
         }
       } else {
         inputJXG.current.visProp["visible"] = false;
@@ -501,7 +543,7 @@ export default function TextInput(props) {
 
       if (inputJXG.current.visProp.disabled !== SVs.disabled) {
         inputJXG.current.visProp.disabled = SVs.disabled;
-        inputJXG.current.setAttribute({ disabled: SVs.disabled })
+        inputJXG.current.setAttribute({ disabled: SVs.disabled });
       }
 
       inputJXG.current.visProp.highlight = !fixLocation.current;
@@ -511,7 +553,9 @@ export default function TextInput(props) {
       inputJXG.current.needsUpdate = true;
 
       if (SVs.positionFromAnchor !== previousPositionFromAnchor.current) {
-        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(SVs.positionFromAnchor);
+        let { anchorx, anchory } = getPositionFromAnchorByCoordinate(
+          SVs.positionFromAnchor,
+        );
         inputJXG.current.visProp.anchorx = anchorx;
         inputJXG.current.visProp.anchory = anchory;
         anchorRel.current = [anchorx, anchory];
@@ -526,13 +570,10 @@ export default function TextInput(props) {
       board.updateRenderer();
     }
 
-    return <a name={id} />
-
+    return <a name={id} />;
   }
 
   // not in board
-
-
 
   if (SVs.hidden) {
     return null;
@@ -540,164 +581,194 @@ export default function TextInput(props) {
 
   let disabled = SVs.disabled;
 
-  const inputKey = id + '_input';
+  const inputKey = id + "_input";
 
   let checkWorkStyle = {
-    cursor: 'pointer',
-    padding: '1px 6px 1px 6px',
-  }
+    cursor: "pointer",
+    padding: "1px 6px 1px 6px",
+  };
 
   if (disabled) {
-    checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-    checkWorkStyle.cursor = 'not-allowed';
-    checkWorkStyle.color = 'black';
+    checkWorkStyle.backgroundColor = getComputedStyle(
+      document.documentElement,
+    ).getPropertyValue("--mainGray");
+    checkWorkStyle.cursor = "not-allowed";
+    checkWorkStyle.color = "black";
   }
 
   // Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
     if (validationState === "unvalidated") {
-      checkWorkButton =
+      checkWorkButton = (
         <Button
-          id={id + '_submit'}
+          id={id + "_submit"}
           tabIndex="0"
           disabled={disabled}
           style={checkWorkStyle}
-          onClick={() => callAction({
-            action: actions.submitAnswer,
-          })}
+          onClick={() =>
+            callAction({
+              action: actions.submitAnswer,
+            })
+          }
           onKeyPress={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               callAction({
                 action: actions.submitAnswer,
               });
             }
           }}
         >
-          <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+          <FontAwesomeIcon
+            style={
+              {
+                /*marginRight: "4px", paddingLeft: "2px"*/
+              }
+            }
+            icon={faLevelDownAlt}
+            transform={{ rotate: 90 }}
+          />
         </Button>
+      );
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
-          checkWorkButton =
-            <Button
-              id={id + '_correct'}
-              style={checkWorkStyle}
-            >
+          checkWorkStyle.backgroundColor = getComputedStyle(
+            document.documentElement,
+          ).getPropertyValue("--mainGreen");
+          checkWorkButton = (
+            <Button id={id + "_correct"} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faCheck} />
             </Button>
+          );
         } else if (validationState === "partialcorrect") {
           //partial credit
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = '44px';
+          checkWorkStyle.width = "44px";
 
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton =
-            <Button
-              id={id + '_partial'}
-              style={checkWorkStyle}
-            >
+          checkWorkButton = (
+            <Button id={id + "_partial"} style={checkWorkStyle}>
               {partialCreditContents}
             </Button>
+          );
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
-          checkWorkButton =
-            <Button
-              id={id + '_incorrect'}
-              style={checkWorkStyle}
-            >
+          checkWorkStyle.backgroundColor = getComputedStyle(
+            document.documentElement,
+          ).getPropertyValue("--mainRed");
+          checkWorkButton = (
+            <Button id={id + "_incorrect"} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faTimes} />
             </Button>
+          );
         }
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
-        checkWorkButton =
-          <Button
-            id={id + '_saved'}
-            style={checkWorkStyle}
-          >
+        checkWorkButton = (
+          <Button id={id + "_saved"} style={checkWorkStyle}>
             <FontAwesomeIcon icon={faCloud} />
           </Button>
+        );
       }
     }
 
     if (SVs.numberOfAttemptsLeft < 0) {
-      checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (no attempts remaining)
-        </span>
-      </>
+      checkWorkButton = (
+        <>
+          {checkWorkButton}
+          <span>(no attempts remaining)</span>
+        </>
+      );
     } else if (SVs.numberOfAttemptsLeft == 1) {
-      checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (1 attempt remaining)
-        </span>
-      </>
+      checkWorkButton = (
+        <>
+          {checkWorkButton}
+          <span>(1 attempt remaining)</span>
+        </>
+      );
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-      checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
-        </span>
-      </>
+      checkWorkButton = (
+        <>
+          {checkWorkButton}
+          <span>(attempts remaining: {SVs.numberOfAttemptsLeft})</span>
+        </>
+      );
     }
   }
 
   let input;
   let label = SVs.label;
   if (SVs.labelHasLatex) {
-    label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    label = (
+      <MathJax hideUntilTypeset={"first"} inline dynamic>
+        {label}
+      </MathJax>
+    );
   }
   if (SVs.expanded) {
-    input = <label style={{ display: "inline-flex", maxWidth: "100%" }}>
-      {label}
-      <TextArea
-        key={inputKey}
-        id={inputKey}
-        value={rendererValue}
-        disabled={disabled}
-        onChange={onChangeHandler}
-        onKeyPress={handleKeyPress}
-        onKeyDown={handleKeyDown}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        width={width}
-        height={height}
-        style={{ margin: "0px 4px 4px 4px", color: "var(--canvastext)", background: "var(--canvas)" }}
-      />
-    </label>
+    input = (
+      <label style={{ display: "inline-flex", maxWidth: "100%" }}>
+        {label}
+        <TextArea
+          key={inputKey}
+          id={inputKey}
+          value={rendererValue}
+          disabled={disabled}
+          onChange={onChangeHandler}
+          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          width={width}
+          height={height}
+          style={{
+            margin: "0px 4px 4px 4px",
+            color: "var(--canvastext)",
+            background: "var(--canvas)",
+          }}
+        />
+      </label>
+    );
   } else {
-    input = <label style={{ display: "inline-flex", maxWidth: "100%" }}>
-      {label}
-      <Input
-        key={inputKey}
-        id={inputKey}
-        value={rendererValue}
-        disabled={disabled}
-        onChange={onChangeHandler}
-        onKeyPress={handleKeyPress}
-        onKeyDown={handleKeyDown}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        width={width}
-        style={{ margin: "0px 4px 4px 4px", color: "var(--canvastext)", background: "var(--canvas)" }}
-      />
-    </label>
+    input = (
+      <label style={{ display: "inline-flex", maxWidth: "100%" }}>
+        {label}
+        <Input
+          key={inputKey}
+          id={inputKey}
+          value={rendererValue}
+          disabled={disabled}
+          onChange={onChangeHandler}
+          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          width={width}
+          style={{
+            margin: "0px 4px 4px 4px",
+            color: "var(--canvastext)",
+            background: "var(--canvas)",
+          }}
+        />
+      </label>
+    );
   }
 
-  return <React.Fragment>
-    <a name={id} />
-    <span className="textInputSurroundingBox" id={id} style={{ display: "inline-flex", maxWidth: "100%" }}>
-      {input}
-      {checkWorkButton}
-    </span>
-
-  </React.Fragment>
+  return (
+    <React.Fragment>
+      <a name={id} />
+      <span
+        className="textInputSurroundingBox"
+        id={id}
+        style={{ display: "inline-flex", maxWidth: "100%" }}
+      >
+        {input}
+        {checkWorkButton}
+      </span>
+    </React.Fragment>
+  );
 }

@@ -1,16 +1,16 @@
-import { atom } from 'recoil';
+import { atom } from "recoil";
 
 export const pageVariantInfoAtom = atom({
-  key: 'pageVariantInfoAtom',
+  key: "pageVariantInfoAtom",
   default: { index: 1 },
 });
 
 export const pageVariantPanelAtom = atom({
-  key: 'pageVariantPanelAtom',
+  key: "pageVariantPanelAtom",
   default: { index: 1, allPossibleVariants: [] },
 });
 
 export const activityVariantPanelAtom = atom({
-  key: 'activityVariantPanelAtom',
+  key: "activityVariantPanelAtom",
   default: { index: 1, numberOfVariants: 0 },
 });

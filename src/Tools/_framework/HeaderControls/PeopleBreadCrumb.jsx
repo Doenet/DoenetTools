@@ -1,15 +1,15 @@
-import React, { Suspense } from 'react';
-import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
-import { searchParamAtomFamily } from '../NewToolRoot';
+import React, { Suspense } from "react";
+import { useRecoilValue } from "recoil";
+import { BreadCrumb } from "../../../_reactComponents/PanelHeaderComponents/BreadCrumb";
+import { searchParamAtomFamily } from "../NewToolRoot";
 import {
   useCourseChooserCrumb,
   useDashboardCrumb,
   usePeopleCrumb,
-} from '../../../_utils/breadcrumbUtil';
+} from "../../../_utils/breadcrumbUtil";
 
 export default function PeopleBreadCrumb() {
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const courseChooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
   const peopleCrumb = usePeopleCrumb(courseId);

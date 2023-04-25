@@ -1,12 +1,11 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import DoenetTest from './DoenetTest.jsx';
-import { RecoilRoot } from 'recoil';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DarkmodeController from '../_framework/DarkmodeController.jsx';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import DoenetTest from "./DoenetTest.jsx";
+import { RecoilRoot } from "recoil";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import DarkmodeController from "../_framework/DarkmodeController.jsx";
 
-
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
     <Router>
@@ -17,8 +16,9 @@ root.render(
             <DarkmodeController>
               <DoenetTest />
             </DarkmodeController>
-          } />
+          }
+        />
       </Routes>
     </Router>
-  </RecoilRoot>
+  </RecoilRoot>,
 );
