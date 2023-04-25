@@ -1,7 +1,11 @@
-import BaseComponent from './abstract/BaseComponent';
-import { returnSequenceValues, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions } from '../utils/sequence';
-import me from 'math-expressions';
-import { nanoid } from 'nanoid';
+import BaseComponent from "./abstract/BaseComponent";
+import {
+  returnSequenceValues,
+  returnStandardSequenceAttributes,
+  returnStandardSequenceStateVariableDefinitions,
+} from "../utils/sequence";
+import me from "math-expressions";
+import { nanoid } from "nanoid";
 
 export default class AnimateFromSequence extends BaseComponent {
   constructor(args) {
@@ -14,7 +18,6 @@ export default class AnimateFromSequence extends BaseComponent {
       stopAnimation: this.stopAnimation.bind(this),
       toggleAnimation: this.toggleAnimation.bind(this),
     });
-
   }
 
   static componentType = "animateFromSequence";
@@ -51,14 +54,20 @@ export default class AnimateFromSequence extends BaseComponent {
       createStateVariable: "animationOn",
       defaultValue: false,
       public: true,
-      triggerActionOnChange: "changedAnimationOn"
+      triggerActionOnChange: "changedAnimationOn",
     };
 
     attributes.animationMode = {
       createComponentOfType: "text",
       createStateVariable: "animationMode",
       defaultValue: "increase",
-      validValues: ["increase", "decrease", "increase once", "decrease once", "oscillate"],
+      validValues: [
+        "increase",
+        "decrease",
+        "increase once",
+        "decrease once",
+        "oscillate",
+      ],
       toLowerCase: true,
       public: true,
     };
@@ -73,9 +82,7 @@ export default class AnimateFromSequence extends BaseComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let sequenceDefs = returnStandardSequenceStateVariableDefinitions();
@@ -86,43 +93,40 @@ export default class AnimateFromSequence extends BaseComponent {
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         length: {
           dependencyType: "stateVariable",
-          variableName: "length"
+          variableName: "length",
         },
         from: {
           dependencyType: "stateVariable",
-          variableName: "from"
+          variableName: "from",
         },
         step: {
           dependencyType: "stateVariable",
-          variableName: "step"
+          variableName: "step",
         },
         exclude: {
           dependencyType: "stateVariable",
-          variableName: "exclude"
+          variableName: "exclude",
         },
         lowercase: {
           dependencyType: "stateVariable",
-          variableName: "lowercase"
+          variableName: "lowercase",
         },
-
       }),
       definition({ dependencyValues }) {
-
         let possibleValues = returnSequenceValues(dependencyValues);
 
         return {
           setValue: {
             possibleValues,
-            numberValues: possibleValues.length
-          }
-        }
-
-      }
-    }
+            numberValues: possibleValues.length,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.selectedIndex = {
       public: true,
@@ -135,20 +139,26 @@ export default class AnimateFromSequence extends BaseComponent {
       definition() {
         return {
           useEssentialOrDefaultValue: {
-            selectedIndex: true
-          }
-        }
+            selectedIndex: true,
+          },
+        };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "selectedIndex",
-            value: me.math.mod(desiredStateVariableValues.selectedIndex - 1, await stateValues.numberValues) + 1
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "selectedIndex",
+              value:
+                me.math.mod(
+                  desiredStateVariableValues.selectedIndex - 1,
+                  await stateValues.numberValues,
+                ) + 1,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.value = {
       public: true,
@@ -158,11 +168,11 @@ export default class AnimateFromSequence extends BaseComponent {
       returnDependencies: () => ({
         possibleValues: {
           dependencyType: "stateVariable",
-          variableName: "possibleValues"
+          variableName: "possibleValues",
         },
         selectedIndex: {
           dependencyType: "stateVariable",
-          variableName: "selectedIndex"
+          variableName: "selectedIndex",
         },
         type: {
           dependencyType: "stateVariable",
@@ -171,11 +181,20 @@ export default class AnimateFromSequence extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { value: dependencyValues.possibleValues[dependencyValues.selectedIndex - 1] },
+          setValue: {
+            value:
+              dependencyValues.possibleValues[
+                dependencyValues.selectedIndex - 1
+              ],
+          },
           setCreateComponentOfType: { value: dependencyValues.type },
-        }
+        };
       },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      async inverseDefinition({
+        desiredStateVariableValues,
+        dependencyValues,
+        stateValues,
+      }) {
         // if number, can find closest value
         if (dependencyValues.type === "number") {
           let desiredValue = desiredStateVariableValues.value;
@@ -183,16 +202,21 @@ export default class AnimateFromSequence extends BaseComponent {
             desiredValue = desiredValue.evaluate_to_constant();
           }
           if (!Number.isFinite(desiredValue)) {
-            return { success: false }
+            return { success: false };
           }
 
           // use binary search
-          // find largest index where possibleValue is 
+          // find largest index where possibleValue is
           // larger (or smaller if step is negative) than desiredValue
-          let start = -1, end = dependencyValues.possibleValues.length - 1;
+          let start = -1,
+            end = dependencyValues.possibleValues.length - 1;
           while (start < end - 1) {
             let mid = Math.floor((start + end) / 2); // mid point
-            if (await stateValues.step * (dependencyValues.possibleValues[mid] - desiredValue) > 0) {
+            if (
+              (await stateValues.step) *
+                (dependencyValues.possibleValues[mid] - desiredValue) >
+              0
+            ) {
               end = mid;
             } else {
               start = mid;
@@ -200,18 +224,22 @@ export default class AnimateFromSequence extends BaseComponent {
           }
           let closestInd = end;
           if (start !== -1) {
-            if (Math.abs(desiredValue - dependencyValues.possibleValues[start])
-              < Math.abs(desiredValue - dependencyValues.possibleValues[end])) {
+            if (
+              Math.abs(desiredValue - dependencyValues.possibleValues[start]) <
+              Math.abs(desiredValue - dependencyValues.possibleValues[end])
+            ) {
               closestInd = start;
             }
           }
           return {
             success: true,
-            instructions: [{
-              setDependency: "selectedIndex",
-              desiredValue: closestInd + 1,
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "selectedIndex",
+                desiredValue: closestInd + 1,
+              },
+            ],
+          };
         } else {
           // if not number, just try to find in sequence
           let desiredValue = desiredStateVariableValues.value;
@@ -221,15 +249,17 @@ export default class AnimateFromSequence extends BaseComponent {
           } else {
             return {
               success: true,
-              instructions: [{
-                setDependency: "selectedIndex",
-                desiredValue: index + 1,
-              }]
-            }
+              instructions: [
+                {
+                  setDependency: "selectedIndex",
+                  desiredValue: index + 1,
+                },
+              ],
+            };
           }
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.currentAnimationDirection = {
       public: true,
@@ -240,70 +270,73 @@ export default class AnimateFromSequence extends BaseComponent {
       returnDependencies: () => ({
         animationMode: {
           dependencyType: "stateVariable",
-          variableName: "animationMode"
-        }
+          variableName: "animationMode",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           useEssentialOrDefaultValue: {
             currentAnimationDirection: {
               get defaultValue() {
-                if (dependencyValues.animationMode.substring(0, 8) === "decrease") {
-                  return "decrease"
+                if (
+                  dependencyValues.animationMode.substring(0, 8) === "decrease"
+                ) {
+                  return "decrease";
                 } else {
-                  return "increase"
+                  return "increase";
                 }
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        };
       },
       inverseDefinition({ desiredStateVariableValues }) {
-        let newDirection = desiredStateVariableValues.currentAnimationDirection.toLowerCase();
+        let newDirection =
+          desiredStateVariableValues.currentAnimationDirection.toLowerCase();
         if (!["increase", "decrease"].includes(newDirection)) {
-          newDirection = "increase"
+          newDirection = "increase";
         }
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "currentAnimationDirection",
-            value: newDirection
-          }]
-        }
-      }
-    }
-
+          instructions: [
+            {
+              setEssentialValue: "currentAnimationDirection",
+              value: newDirection,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({
         target: {
           dependencyType: "doenetAttribute",
-          attributeName: "target"
-        }
+          attributeName: "target",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { target: dependencyValues.target }
-      })
-    }
+        setValue: { target: dependencyValues.target },
+      }),
+    };
 
     stateVariableDefinitions.targetComponent = {
       returnDependencies() {
         return {
           targetComponent: {
             dependencyType: "targetComponent",
-          }
-        }
+          },
+        };
       },
       definition: function ({ dependencyValues }) {
-
         let targetComponent = null;
         if (dependencyValues.targetComponent) {
-          targetComponent = dependencyValues.targetComponent
+          targetComponent = dependencyValues.targetComponent;
         }
 
         return {
-          setValue: { targetComponent }
-        }
+          setValue: { targetComponent },
+        };
       },
     };
 
@@ -311,49 +344,49 @@ export default class AnimateFromSequence extends BaseComponent {
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
-          attributeName: "prop"
+          attributeName: "prop",
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { propName: dependencyValues.propName } }
-      }
-    }
-
+        return { setValue: { propName: dependencyValues.propName } };
+      },
+    };
 
     stateVariableDefinitions.targetIdentities = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "componentIndex",
+        "targetComponent",
+        "componentIndex",
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
-
         let dependencies = {};
 
         if (stateValues.targetComponent !== null) {
-
-          if (componentInfoObjects.isCompositeComponent({
-            componentType: stateValues.targetComponent.componentType,
-            includeNonStandard: false
-          })) {
+          if (
+            componentInfoObjects.isCompositeComponent({
+              componentType: stateValues.targetComponent.componentType,
+              includeNonStandard: false,
+            })
+          ) {
             dependencies.targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
               recursive: true,
               componentIndex: stateValues.componentIndex,
-            }
-          } else if (stateValues.componentIndex === null || stateValues.componentIndex === 1) {
+            };
+          } else if (
+            stateValues.componentIndex === null ||
+            stateValues.componentIndex === 1
+          ) {
             // if we don't have a composite, componentIndex can only match if it is 1
             dependencies.targets = {
               dependencyType: "stateVariable",
-              variableName: "targetComponent"
-            }
+              variableName: "targetComponent",
+            };
           }
-
-
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-
         let targetIdentities = null;
         if (dependencyValues.targets) {
           targetIdentities = dependencyValues.targets;
@@ -363,25 +396,24 @@ export default class AnimateFromSequence extends BaseComponent {
         }
         return { setValue: { targetIdentities } };
       },
-    }
+    };
 
     stateVariableDefinitions.targets = {
       stateVariablesDeterminingDependencies: [
-        "targetIdentities", "propName", "propIndex"
+        "targetIdentities",
+        "propName",
+        "propIndex",
       ],
       returnDependencies: function ({ stateValues }) {
-
         let dependencies = {
           targetIdentities: {
             dependencyType: "stateVariable",
-            variableName: "targetIdentities"
+            variableName: "targetIdentities",
           },
-        }
+        };
 
         if (stateValues.targetIdentities !== null) {
-
           for (let [ind, source] of stateValues.targetIdentities.entries()) {
-
             let thisTarget;
 
             if (stateValues.propName) {
@@ -390,7 +422,7 @@ export default class AnimateFromSequence extends BaseComponent {
                 // make propIndex be a shallow copy
                 // so that can detect if it changed
                 // when update dependencies
-                propIndex = [...propIndex]
+                propIndex = [...propIndex];
               }
               thisTarget = {
                 dependencyType: "stateVariable",
@@ -402,8 +434,7 @@ export default class AnimateFromSequence extends BaseComponent {
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,
-              }
-
+              };
             } else {
               thisTarget = {
                 dependencyType: "stateVariable",
@@ -411,12 +442,11 @@ export default class AnimateFromSequence extends BaseComponent {
                 variableName: "value",
                 returnAsComponentObject: true,
                 variablesOptional: true,
-              }
+              };
             }
 
             dependencies["target" + ind] = thisTarget;
           }
-
         }
 
         return dependencies;
@@ -436,32 +466,34 @@ export default class AnimateFromSequence extends BaseComponent {
 
         return { setValue: { targets } };
       },
-    }
+    };
 
     stateVariableDefinitions.valueToIndex = {
       returnDependencies: () => ({
         possibleValues: {
           dependencyType: "stateVariable",
-          variableName: "possibleValues"
-        }
+          variableName: "possibleValues",
+        },
       }),
       definition: function ({ dependencyValues }) {
         let valueToIndex = {};
         for (let [ind, item] of dependencyValues.possibleValues.entries()) {
           valueToIndex[item] = ind;
         }
-        return { setValue: { valueToIndex } }
-      }
-    }
-
+        return { setValue: { valueToIndex } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
-  async changedAnimationOn({ stateValues, previousValues, actionId,
-    sourceInformation = {}, skipRendererUpdate = false
+  async changedAnimationOn({
+    stateValues,
+    previousValues,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-
     let updateInstructions = [];
 
     if (stateValues.animationOn) {
@@ -489,7 +521,7 @@ export default class AnimateFromSequence extends BaseComponent {
                 componentName: this.componentName,
                 stateVariable: "currentAnimationDirection",
                 value: newDirection,
-              })
+              });
             }
           }
         } else if (newDirection === "decrease") {
@@ -508,11 +540,10 @@ export default class AnimateFromSequence extends BaseComponent {
                 componentName: this.componentName,
                 stateVariable: "currentAnimationDirection",
                 value: newDirection,
-              })
+              });
             }
           }
         }
-
 
         if (startIndex !== selectedIndex) {
           updateInstructions.push({
@@ -520,12 +551,15 @@ export default class AnimateFromSequence extends BaseComponent {
             componentName: this.componentName,
             stateVariable: "selectedIndex",
             value: startIndex,
-          })
+          });
         }
 
-        let additionalInstructions = await this.getUpdateInstructionsToSetTargetsToValue(
-          (await this.stateValues.possibleValues)[me.math.mod(startIndex - 1, numberValues)]
-        )
+        let additionalInstructions =
+          await this.getUpdateInstructionsToSetTargetsToValue(
+            (
+              await this.stateValues.possibleValues
+            )[me.math.mod(startIndex - 1, numberValues)],
+          );
         updateInstructions.push(...additionalInstructions);
 
         await this.coreFunctions.performUpdate({
@@ -542,10 +576,10 @@ export default class AnimateFromSequence extends BaseComponent {
             context: {
               startIndex,
               animationDirection: newDirection,
-              animationMode
-            }
-          }
-        })
+              animationMode,
+            },
+          },
+        });
 
         await this.coreFunctions.triggerChainedActions({
           componentName: this.componentName,
@@ -562,9 +596,8 @@ export default class AnimateFromSequence extends BaseComponent {
           },
           delay: await this.stateValues.animationInterval,
           animationId: this.animationId,
-          actionArgs: { previousAnimationId: this.animationId }
-        })
-
+          actionArgs: { previousAnimationId: this.animationId },
+        });
       } else {
         this.coreFunctions.resolveAction({ actionId });
       }
@@ -578,7 +611,7 @@ export default class AnimateFromSequence extends BaseComponent {
           actionId,
           sourceInformation,
           skipRendererUpdate,
-        })
+        });
 
         this.coreFunctions.requestRecordEvent({
           verb: "paused",
@@ -588,17 +621,15 @@ export default class AnimateFromSequence extends BaseComponent {
           },
           context: {
             endIndex: await this.stateValues.selectedIndex,
-          }
-        })
+          },
+        });
       } else {
         this.coreFunctions.resolveAction({ actionId });
       }
     }
-
   }
 
   async findIndexFromTarget() {
-
     let targets = await this.stateValues.targets;
     let selectedIndex = await this.stateValues.selectedIndex;
     if (targets === null) {
@@ -625,9 +656,8 @@ export default class AnimateFromSequence extends BaseComponent {
       value = value.evaluate_to_constant();
 
       if (!Number.isFinite(value)) {
-        return selectedIndex
+        return selectedIndex;
       }
-
     }
 
     // first check if value is actually a known value
@@ -639,25 +669,26 @@ export default class AnimateFromSequence extends BaseComponent {
 
     // we find the closest value only for numbers
     if (type !== "number") {
-      return selectedIndex
+      return selectedIndex;
     }
 
     let items = await this.stateValues.possibleValues;
 
-    let findNextLargerIndex = function (minIndex = 0, maxIndex = items.length - 1) {
+    let findNextLargerIndex = function (
+      minIndex = 0,
+      maxIndex = items.length - 1,
+    ) {
       if (maxIndex <= minIndex + 1) {
         if (value > items[minIndex]) {
           return maxIndex;
-        }
-        else {
+        } else {
           return minIndex;
         }
       }
       let midIndex = Math.round((maxIndex + minIndex) / 2);
       if (value > items[midIndex]) {
         return findNextLargerIndex(midIndex, maxIndex);
-      }
-      else {
+      } else {
         return findNextLargerIndex(minIndex, midIndex);
       }
     };
@@ -673,13 +704,14 @@ export default class AnimateFromSequence extends BaseComponent {
       }
     }
     return closeIndex + 1;
-
   }
 
-  async advanceAnimation({ previousAnimationId, actionId,
-    sourceInformation = {}, skipRendererUpdate = false
+  async advanceAnimation({
+    previousAnimationId,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
   }) {
-
     let animationOn = await this.stateValues.animationOn;
 
     // especially given delays in posting messages,
@@ -700,7 +732,7 @@ export default class AnimateFromSequence extends BaseComponent {
     // (e.g., by user interaction)
     let previousIndex = await this.findIndexFromTarget();
 
-    if (await this.stateValues.currentAnimationDirection === "decrease") {
+    if ((await this.stateValues.currentAnimationDirection) === "decrease") {
       newSelectedIndex = previousIndex - 1;
       if (newSelectedIndex <= 1) {
         if (animationMode === "decrease once") {
@@ -711,7 +743,7 @@ export default class AnimateFromSequence extends BaseComponent {
       }
     } else {
       newSelectedIndex = previousIndex + 1;
-      if (newSelectedIndex >= await this.stateValues.numberValues) {
+      if (newSelectedIndex >= (await this.stateValues.numberValues)) {
         if (animationMode === "increase once") {
           continueAnimation = false;
         } else if (animationMode === "oscillate") {
@@ -720,16 +752,23 @@ export default class AnimateFromSequence extends BaseComponent {
       }
     }
 
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "selectedIndex",
-      value: newSelectedIndex,
-    }]
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "selectedIndex",
+        value: newSelectedIndex,
+      },
+    ];
 
-    let additionalInstructions = await this.getUpdateInstructionsToSetTargetsToValue(
-      (await this.stateValues.possibleValues)[me.math.mod(newSelectedIndex - 1, await this.stateValues.numberValues)]
-    )
+    let additionalInstructions =
+      await this.getUpdateInstructionsToSetTargetsToValue(
+        (
+          await this.stateValues.possibleValues
+        )[
+          me.math.mod(newSelectedIndex - 1, await this.stateValues.numberValues)
+        ],
+      );
     updateInstructions.push(...additionalInstructions);
 
     if (!continueAnimation) {
@@ -738,7 +777,7 @@ export default class AnimateFromSequence extends BaseComponent {
         componentName: this.componentName,
         stateVariable: "animationOn",
         value: false,
-      })
+      });
     }
     if (newDirection) {
       updateInstructions.push({
@@ -746,14 +785,14 @@ export default class AnimateFromSequence extends BaseComponent {
         componentName: this.componentName,
         stateVariable: "currentAnimationDirection",
         value: newDirection,
-      })
+      });
     }
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
       sourceInformation,
-      skipRendererUpdate
+      skipRendererUpdate,
     });
 
     if (continueAnimation) {
@@ -765,56 +804,72 @@ export default class AnimateFromSequence extends BaseComponent {
         },
         delay: await this.stateValues.animationInterval,
         animationId: this.animationId,
-        actionArgs: { previousAnimationId: this.animationId }
-      })
+        actionArgs: { previousAnimationId: this.animationId },
+      });
     }
   }
 
-  startAnimation({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  startAnimation({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "animationOn",
-        value: true,
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "animationOn",
+          value: true,
+        },
+      ],
       actionId,
       sourceInformation,
       skipRendererUpdate,
-    })
+    });
   }
 
-  stopAnimation({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  stopAnimation({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "animationOn",
-        value: false,
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "animationOn",
+          value: false,
+        },
+      ],
       actionId,
       sourceInformation,
       skipRendererUpdate,
-    })
+    });
   }
 
-  async toggleAnimation({ actionId, sourceInformation = {}, skipRendererUpdate = false }) {
+  async toggleAnimation({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "animationOn",
-        value: !(await this.stateValues.animationOn),
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "animationOn",
+          value: !(await this.stateValues.animationOn),
+        },
+      ],
       actionId,
       sourceInformation,
       skipRendererUpdate,
-    })
+    });
   }
-
 
   async getUpdateInstructionsToSetTargetsToValue(value) {
-
     let targets = await this.stateValues.targets;
     if (targets == null) {
       return [];
@@ -826,9 +881,19 @@ export default class AnimateFromSequence extends BaseComponent {
       let stateVariable = Object.keys(target.stateValues)[0];
       if (stateVariable === undefined) {
         if (await this.stateValues.propName) {
-          console.warn(`Cannot animate prop="${await this.stateValues.propName}" of ${await this.stateValues.target} as could not find prop ${await this.stateValues.propName} on a component of type ${target.componentType}`)
+          console.warn(
+            `Cannot animate prop="${await this.stateValues
+              .propName}" of ${await this.stateValues
+              .target} as could not find prop ${await this.stateValues
+              .propName} on a component of type ${target.componentType}`,
+          );
         } else {
-          console.warn(`Cannot animate ${await this.stateValues.target} as could not find a value state variable on a component of type ${target.componentType}`)
+          console.warn(
+            `Cannot animate ${await this.stateValues
+              .target} as could not find a value state variable on a component of type ${
+              target.componentType
+            }`,
+          );
         }
         continue;
       }
@@ -838,12 +903,9 @@ export default class AnimateFromSequence extends BaseComponent {
         componentName: target.componentName,
         stateVariable,
         value,
-      })
-
+      });
     }
 
     return updateInstructions;
-
   }
-
 }

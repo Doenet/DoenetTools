@@ -1,14 +1,19 @@
-import React, { useRef, useState } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
-import { rendererState } from '../useDoenetRenderer';
-import { useSetRecoilState } from 'recoil';
-import styled from 'styled-components';
-import './choiceInput.css';
+import React, { useRef, useState } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheck,
+  faLevelDownAlt,
+  faTimes,
+  faCloud,
+} from "@fortawesome/free-solid-svg-icons";
+import { rendererState } from "../useDoenetRenderer";
+import { useSetRecoilState } from "recoil";
+import styled from "styled-components";
+import "./choiceInput.css";
 
 // Moved most of checkWorkStyle styling into Button
-const Button = styled.button `
+const Button = styled.button`
   position: relative;
   /* width: 24px; */
   height: 24px;
@@ -26,28 +31,42 @@ const Button = styled.button `
   &:hover {
     background-color: var(--lightBlue);
     color: black;
-  };
+  }
 `;
 
 export default React.memo(function ChoiceInput(props) {
-  let { name, id, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  let {
+    name,
+    id,
+    SVs,
+    actions,
+    children,
+    sourceOfUpdate,
+    ignoreUpdate,
+    rendererName,
+    callAction,
+  } = useDoenetRender(props);
 
   ChoiceInput.baseStateVariable = "selectedIndices";
 
-  const [rendererSelectedIndices, setRendererSelectedIndices] = useState(SVs.selectedIndices);
+  const [rendererSelectedIndices, setRendererSelectedIndices] = useState(
+    SVs.selectedIndices,
+  );
 
   const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let selectedIndicesWhenSetState = useRef(null);
 
-  if (!ignoreUpdate && selectedIndicesWhenSetState.current !== SVs.selectedIndices) {
+  if (
+    !ignoreUpdate &&
+    selectedIndicesWhenSetState.current !== SVs.selectedIndices
+  ) {
     // console.log(`setting value to ${SVs.immediateValue}`)
     setRendererSelectedIndices(SVs.selectedIndices);
     selectedIndicesWhenSetState.current = SVs.selectedIndices;
   } else {
     selectedIndicesWhenSetState.current = null;
   }
-
 
   let validationState = "unvalidated";
   if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
@@ -61,12 +80,13 @@ export default React.memo(function ChoiceInput(props) {
   }
 
   function onChangeHandler(e) {
-
     let newSelectedIndices = [];
 
     if (SVs.inline) {
       if (e.target.value) {
-        newSelectedIndices = Array.from(e.target.selectedOptions, option => Number(option.value))
+        newSelectedIndices = Array.from(e.target.selectedOptions, (option) =>
+          Number(option.value),
+        );
       }
     } else {
       if (SVs.selectMultiple) {
@@ -82,18 +102,16 @@ export default React.memo(function ChoiceInput(props) {
           if (i !== -1) {
             newSelectedIndices.splice(i, 1);
           }
-
         }
       } else {
         newSelectedIndices = [Number(e.target.value)];
       }
     }
 
-    if (rendererSelectedIndices.length !== newSelectedIndices.length ||
+    if (
+      rendererSelectedIndices.length !== newSelectedIndices.length ||
       rendererSelectedIndices.some((v, i) => v != newSelectedIndices[i])
     ) {
-
-
       setRendererSelectedIndices(newSelectedIndices);
       selectedIndicesWhenSetState.current = SVs.selectedIndices;
 
@@ -101,7 +119,7 @@ export default React.memo(function ChoiceInput(props) {
         let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
-      })
+      });
 
       callAction({
         action: actions.updateSelectedIndices,
@@ -109,118 +127,131 @@ export default React.memo(function ChoiceInput(props) {
           selectedIndices: newSelectedIndices,
         },
         baseVariableValue: newSelectedIndices,
-      })
+      });
     }
   }
-
 
   if (SVs.hidden) {
     return null;
   }
 
-
   let disabled = SVs.disabled;
 
   if (SVs.inline) {
-
     let checkWorkStyle = {
-      cursor: 'pointer',
+      cursor: "pointer",
       padding: "1px 6px 1px 6px",
-      width: "24px"
-    }
+      width: "24px",
+    };
 
     //Assume we don't have a check work button
     let checkWorkButton = null;
     if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-
       if (validationState === "unvalidated") {
         if (disabled) {
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+          checkWorkStyle.backgroundColor = getComputedStyle(
+            document.documentElement,
+          ).getPropertyValue("--mainGray");
         }
-        checkWorkButton = <Button
-          id={id + '_submit'}
-          disabled={disabled}
-          tabIndex="0"
-          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          style={checkWorkStyle}
-          onClick={() => callAction({
-            action: actions.submitAnswer,
-          })}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
+        checkWorkButton = (
+          <Button
+            id={id + "_submit"}
+            disabled={disabled}
+            tabIndex="0"
+            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+            style={checkWorkStyle}
+            onClick={() =>
               callAction({
                 action: actions.submitAnswer,
-              });
+              })
             }
-          }}
-        >
-          <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-        </Button>
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                callAction({
+                  action: actions.submitAnswer,
+                });
+              }
+            }}
+          >
+            <FontAwesomeIcon
+              style={
+                {
+                  /*marginRight: "4px", paddingLeft: "2px"*/
+                }
+              }
+              icon={faLevelDownAlt}
+              transform={{ rotate: 90 }}
+            />
+          </Button>
+        );
       } else {
         if (SVs.showCorrectness) {
           if (validationState === "correct") {
-            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
-            checkWorkButton = <Button
-              id={id + '_correct'}
-              style={checkWorkStyle}
-            >
-              <FontAwesomeIcon icon={faCheck} />
-            </Button>
+            checkWorkStyle.backgroundColor = getComputedStyle(
+              document.documentElement,
+            ).getPropertyValue("--mainGreen");
+            checkWorkButton = (
+              <Button id={id + "_correct"} style={checkWorkStyle}>
+                <FontAwesomeIcon icon={faCheck} />
+              </Button>
+            );
           } else if (validationState === "partialcorrect") {
             //partial credit
 
             let percent = Math.round(SVs.creditAchieved * 100);
             let partialCreditContents = `${percent} %`;
-            checkWorkStyle.width = '44px';
+            checkWorkStyle.width = "44px";
 
             checkWorkStyle.backgroundColor = "#efab34";
-            checkWorkButton = <Button
-              id={id + '_partial'}
-              style={checkWorkStyle}
-            >{partialCreditContents}</Button>
+            checkWorkButton = (
+              <Button id={id + "_partial"} style={checkWorkStyle}>
+                {partialCreditContents}
+              </Button>
+            );
           } else {
             //incorrect
-            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
-            checkWorkButton = <Button
-              id={id + '_incorrect'}
-              style={checkWorkStyle}
-            ><FontAwesomeIcon icon={faTimes} /></Button>
-
+            checkWorkStyle.backgroundColor = getComputedStyle(
+              document.documentElement,
+            ).getPropertyValue("--mainRed");
+            checkWorkButton = (
+              <Button id={id + "_incorrect"} style={checkWorkStyle}>
+                <FontAwesomeIcon icon={faTimes} />
+              </Button>
+            );
           }
         } else {
           // showCorrectness is false
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
-          checkWorkButton = <Button
-            id={id + '_saved'}
-            style={checkWorkStyle}
-          ><FontAwesomeIcon icon={faCloud} /></Button>
-
+          checkWorkButton = (
+            <Button id={id + "_saved"} style={checkWorkStyle}>
+              <FontAwesomeIcon icon={faCloud} />
+            </Button>
+          );
         }
       }
 
       if (SVs.numberOfAttemptsLeft < 0) {
-        checkWorkButton = <>
-          {checkWorkButton}
-          <span>
-            (no attempts remaining)
-          </span>
-        </>
+        checkWorkButton = (
+          <>
+            {checkWorkButton}
+            <span>(no attempts remaining)</span>
+          </>
+        );
       } else if (SVs.numberOfAttemptsLeft == 1) {
-        checkWorkButton = <>
-          {checkWorkButton}
-          <span>
-            (1 attempt remaining)
-          </span>
-        </>
-      }
-      else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-        checkWorkButton = <>
-          {checkWorkButton}
-          <span>
-            ({SVs.numberOfAttemptsLeft} attempts remaining)
-          </span>
-        </>
+        checkWorkButton = (
+          <>
+            {checkWorkButton}
+            <span>(1 attempt remaining)</span>
+          </>
+        );
+      } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+        checkWorkButton = (
+          <>
+            {checkWorkButton}
+            <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
+          </>
+        );
       }
     }
 
@@ -229,9 +260,12 @@ export default React.memo(function ChoiceInput(props) {
       if (svData.choicesHidden[i]) {
         return null;
       }
-      return <option key={i + 1} value={i + 1} disabled={svData.choicesDisabled[i]} >{s}</option>
+      return (
+        <option key={i + 1} value={i + 1} disabled={svData.choicesDisabled[i]}>
+          {s}
+        </option>
+      );
     });
-
 
     let value = rendererSelectedIndices;
     if (value === undefined) {
@@ -244,197 +278,241 @@ export default React.memo(function ChoiceInput(props) {
     }
 
     // inline="true"
-    return <React.Fragment>
-      <a name={id} />
-        <select className="custom-select"
+    return (
+      <React.Fragment>
+        <a name={id} />
+        <select
+          className="custom-select"
           id={id}
           onChange={onChangeHandler}
           value={value}
           disabled={disabled}
           multiple={SVs.selectMultiple}
         >
-          <option hidden={true} value="">{SVs.placeHolder}</option>
+          <option hidden={true} value="">
+            {SVs.placeHolder}
+          </option>
           {optionsList}
         </select>
-      {checkWorkButton}
-    </React.Fragment>
+        {checkWorkButton}
+      </React.Fragment>
+    );
   } else {
-
-
     let checkWorkStyle = {
       height: "24px",
       display: "inline-block",
       padding: "1px 6px 1px 6px",
-      cursor: 'pointer',
+      cursor: "pointer",
       // fontWeight: "bold",
-    }
+    };
 
     let checkworkComponent = null;
 
     if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-
       if (validationState === "unvalidated") {
-
         let checkWorkText = SVs.submitLabel;
         if (!SVs.showCorrectness) {
           checkWorkText = SVs.submitLabelNoCorrectness;
         }
         if (disabled) {
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+          checkWorkStyle.backgroundColor = getComputedStyle(
+            document.documentElement,
+          ).getPropertyValue("--mainGray");
         }
         checkworkComponent = (
-          <Button id={id + "_submit"}
+          <Button
+            id={id + "_submit"}
             tabIndex="0"
             disabled={disabled}
             style={checkWorkStyle}
-            onClick={() => callAction({
-              action: actions.submitAnswer,
-            })}
+            onClick={() =>
+              callAction({
+                action: actions.submitAnswer,
+              })
+            }
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 callAction({
                   action: actions.submitAnswer,
                 });
               }
             }}
           >
-            <FontAwesomeIcon style={{ /*marginRight: "4px", paddingLeft: "2px"*/ }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+            <FontAwesomeIcon
+              style={
+                {
+                  /*marginRight: "4px", paddingLeft: "2px"*/
+                }
+              }
+              icon={faLevelDownAlt}
+              transform={{ rotate: 90 }}
+            />
             &nbsp;
             {checkWorkText}
-          </Button>);
-
+          </Button>
+        );
       } else {
         if (SVs.showCorrectness) {
           if (validationState === "correct") {
-            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+            checkWorkStyle.backgroundColor = getComputedStyle(
+              document.documentElement,
+            ).getPropertyValue("--mainGreen");
             checkworkComponent = (
-              <Button id={id + "_correct"}
-                style={checkWorkStyle}
-              >
+              <Button id={id + "_correct"} style={checkWorkStyle}>
                 <FontAwesomeIcon icon={faCheck} />
-                &nbsp;
-                Correct
-              </Button>);
+                &nbsp; Correct
+              </Button>
+            );
           } else if (validationState === "incorrect") {
-            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+            checkWorkStyle.backgroundColor = getComputedStyle(
+              document.documentElement,
+            ).getPropertyValue("--mainRed");
             checkworkComponent = (
-              <Button id={id + "_incorrect"}
-                style={checkWorkStyle}
-              >
+              <Button id={id + "_incorrect"} style={checkWorkStyle}>
                 <FontAwesomeIcon icon={faTimes} />
-                &nbsp;
-                Incorrect
-              </Button>);
+                &nbsp; Incorrect
+              </Button>
+            );
           } else if (validationState === "partialcorrect") {
             checkWorkStyle.backgroundColor = "#efab34";
             let percent = Math.round(SVs.creditAchieved * 100);
             let partialCreditContents = `${percent}% Correct`;
 
             checkworkComponent = (
-              <Button id={id + "_partial"}
-                style={checkWorkStyle}
-              >
+              <Button id={id + "_partial"} style={checkWorkStyle}>
                 {partialCreditContents}
-              </Button>);
+              </Button>
+            );
           }
         } else {
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkworkComponent = (
-            <Button id={id + "_saved"}
-              style={checkWorkStyle}
-            >
+            <Button id={id + "_saved"} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faCloud} />
-              &nbsp;
-              Response Saved
-            </Button>);
+              &nbsp; Response Saved
+            </Button>
+          );
         }
       }
     }
 
     if (SVs.numberOfAttemptsLeft < 0) {
-      checkworkComponent = <>
-        {checkworkComponent}
-        <span>
-          (no attempts remaining)
-        </span>
-      </>
+      checkworkComponent = (
+        <>
+          {checkworkComponent}
+          <span>(no attempts remaining)</span>
+        </>
+      );
     } else if (SVs.numberOfAttemptsLeft == 1) {
-      checkworkComponent = <>
-        {checkworkComponent}
-        <span>
-          (1 attempt remaining)
-        </span>
-      </>
-    }
-    else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-      checkworkComponent = <>
-        {checkworkComponent}
-        <span>
-          ({SVs.numberOfAttemptsLeft} attempts remaining)
-        </span>
-      </>
+      checkworkComponent = (
+        <>
+          {checkworkComponent}
+          <span>(1 attempt remaining)</span>
+        </>
+      );
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+      checkworkComponent = (
+        <>
+          {checkworkComponent}
+          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
+        </>
+      );
     }
 
     let inputKey = id;
     let listStyle = {
-      listStyleType: "none"
-    }
+      listStyleType: "none",
+    };
 
-    let keyBeginning = inputKey + '_choice';
-    let inputType = 'radio';
+    let keyBeginning = inputKey + "_choice";
+    let inputType = "radio";
     if (SVs.selectMultiple) {
-      inputType = 'checkbox';
+      inputType = "checkbox";
     }
 
     let svData = SVs;
 
     let choiceDoenetTags = SVs.choiceOrder
-      .map(v => children[v - 1])
+      .map((v) => children[v - 1])
       .map(function (child, i) {
         if (svData.choicesHidden[i]) {
           return null;
         }
-        if (inputType == 'radio') { // selectMultiple="false"
-          return <label className="radio-container" key={inputKey + '_choice' + (i + 1)}>
-          <input
-            type="radio"
-            id={keyBeginning + (i + 1) + "_input"}
-            name={inputKey}
-            value={i + 1}
-            checked={rendererSelectedIndices.includes(i + 1)}
-            onChange={onChangeHandler}
-            disabled={disabled || svData.choicesDisabled[i]}
-          />
-          <span className="radio-checkmark" />
-          <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{marginLeft: "2px"}}>
-            {child}
-          </label>
-        </label>
-
-        } else if (inputType == 'checkbox') { // selectMultiple="true"
-          return <label className="checkbox-container" key={inputKey + '_choice' + (i + 1)}>
-          <input
-            type="checkbox"
-            id={keyBeginning + (i + 1) + "_input"}
-            name={inputKey}
-            value={i + 1}
-            checked={rendererSelectedIndices.includes(i + 1)}
-            onChange={onChangeHandler}
-            disabled={disabled || svData.choicesDisabled[i]}
-          />
-          <span className="checkbox-checkmark" />
-          <label htmlFor={keyBeginning + (i + 1) + "_input"} style={{marginLeft: "2px"}}>
-            {child}
-          </label>
-        </label>
+        if (inputType == "radio") {
+          // selectMultiple="false"
+          let radioDisabled = disabled || svData.choicesDisabled[i];
+          let containerClassName = "radio-container";
+          let radioClassName = "radio-checkmark";
+          if (radioDisabled) {
+            containerClassName += " radio-container-disabled";
+            radioClassName += " radio-checkmark-disabled";
+          }
+          return (
+            <label
+              className={containerClassName}
+              key={inputKey + "_choice" + (i + 1)}
+            >
+              <input
+                type="radio"
+                id={keyBeginning + (i + 1) + "_input"}
+                name={inputKey}
+                value={i + 1}
+                checked={rendererSelectedIndices.includes(i + 1)}
+                onChange={onChangeHandler}
+                disabled={radioDisabled}
+              />
+              <span className={radioClassName} />
+              <label
+                htmlFor={keyBeginning + (i + 1) + "_input"}
+                style={{ marginLeft: "2px" }}
+              >
+                {child}
+              </label>
+            </label>
+          );
+        } else if (inputType == "checkbox") {
+          // selectMultiple="true"
+          let checkboxDisabled = disabled || svData.choicesDisabled[i];
+          let containerClassName = "checkbox-container";
+          let checkboxClassName = "checkbox-checkmark";
+          if (checkboxDisabled) {
+            containerClassName += " checkbox-container-disabled";
+            checkboxClassName += " checkbox-checkmark-disabled";
+          }
+          return (
+            <label
+              className={containerClassName}
+              key={inputKey + "_choice" + (i + 1)}
+            >
+              <input
+                type="checkbox"
+                id={keyBeginning + (i + 1) + "_input"}
+                name={inputKey}
+                value={i + 1}
+                checked={rendererSelectedIndices.includes(i + 1)}
+                onChange={onChangeHandler}
+                disabled={disabled || svData.choicesDisabled[i]}
+              />
+              <span className={checkboxClassName} />
+              <label
+                htmlFor={keyBeginning + (i + 1) + "_input"}
+                style={{ marginLeft: "2px" }}
+              >
+                {child}
+              </label>
+            </label>
+          );
         }
       });
 
-    return <React.Fragment>
-      <ol id={inputKey} style={listStyle}><a name={id} />{choiceDoenetTags}</ol>
-      {checkworkComponent}
-    </React.Fragment>
-
+    return (
+      <React.Fragment>
+        <ol id={inputKey} style={listStyle}>
+          <a name={id} />
+          {choiceDoenetTags}
+        </ol>
+        {checkworkComponent}
+      </React.Fragment>
+    );
   }
-
-})
+});

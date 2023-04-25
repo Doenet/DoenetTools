@@ -3,13 +3,11 @@ import { cidFromText } from "./cid";
 const textByCid = {};
 
 export function retrieveTextFileForCid(cid, ext = "doenet") {
-
   if (textByCid[cid] !== undefined) {
     return Promise.resolve(textByCid[cid]);
   }
 
   return new Promise((resolve, reject) => {
-
     // immediately start trying to retrieve from IPFS
     let resultIPFS = retrieveTextFileFromIPFS(cid);
 
@@ -24,7 +22,7 @@ export function retrieveTextFileForCid(cid, ext = "doenet") {
     let timeoutId;
 
     promiseIPFS
-      .then(res => {
+      .then((res) => {
         // if successfully retrieve from IPFS
         // then cancel timer (for either starting the server request or waiting 5 seconds at end)
         // and abort the server request if it is in progress
@@ -35,7 +33,7 @@ export function retrieveTextFileForCid(cid, ext = "doenet") {
         textByCid[cid] = res;
         resolve(res);
       })
-      .catch(e => {
+      .catch((e) => {
         rejectedIPFS = true;
         if (rejectedServer) {
           // rejected from both server and IPFS
@@ -43,11 +41,9 @@ export function retrieveTextFileForCid(cid, ext = "doenet") {
           clearTimeout(timeoutId);
           reject(e);
         }
-      })
-
+      });
 
     timeoutId = setTimeout(() => {
-
       // if the timer wasn't cleared then IPFS has not yet retrieved
       // so start retrieving from the server
       let resultServer = retrieveTextFileFromServer(cid, ext);
@@ -56,14 +52,14 @@ export function retrieveTextFileForCid(cid, ext = "doenet") {
       controllerServer = resultServer.controller;
 
       promiseServer
-        .then(res => {
+        .then((res) => {
           if (!rejectedIPFS) {
             controllerIPFS.abort();
           }
           textByCid[cid] = res;
           resolve(res);
         })
-        .catch(e => {
+        .catch((e) => {
           rejectedServer = true;
 
           if (rejectedIPFS) {
@@ -72,24 +68,15 @@ export function retrieveTextFileForCid(cid, ext = "doenet") {
             // give IPFS server 5 more seconds to retrieve
             timeoutId = setTimeout(() => {
               controllerIPFS.abort();
-              reject(e)
-            }, 5000)
-
+              reject(e);
+            }, 5000);
           }
-
-        })
-
-
+        });
     }, 100);
-
-
-  })
-
+  });
 }
 
-
 function retrieveTextFileFromIPFS(cid) {
-
   let controller = new AbortController();
   let signal = controller.signal;
 
@@ -110,27 +97,19 @@ function retrieveTextFileFromIPFS(cid) {
       } else {
         return Promise.reject(new Error(`cid not found: ${cid}`));
       }
-    }
-    catch (e) {
+    } catch (e) {
       return Promise.reject(new Error(`cid not found: ${cid}`));
     }
-  }
-
+  };
 
   let promise = retrieveFromIPFS();
 
   return { promise, controller };
-
-
 }
 
-
 function retrieveTextFileFromServer(cid, ext) {
-
-
   let controller = new AbortController();
   let signal = controller.signal;
-
 
   let retrieveFromServer = async function () {
     try {
@@ -144,21 +123,18 @@ function retrieveTextFileFromServer(cid, ext) {
         if (CidRetrieved === cid) {
           return doenetML;
         } else {
-          console.warn(`cid mismatch, ${cid}, ${CidRetrieved}`)
+          console.warn(`cid mismatch, ${cid}, ${CidRetrieved}`);
           return Promise.reject(new Error("cid mismatch"));
         }
       } else {
         return Promise.reject(new Error(`cid not found: ${cid}`));
       }
-    }
-    catch (e) {
+    } catch (e) {
       return Promise.reject(new Error(`cid not found: ${cid}`));
     }
-  }
-
+  };
 
   let promise = retrieveFromServer();
 
   return { promise, controller };
-
 }

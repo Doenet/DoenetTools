@@ -16,4 +16,4 @@
 //   // `config` is the resolved Cypress config
 // }
 
-module.exports = require('./main')
+module.exports = require("./main");

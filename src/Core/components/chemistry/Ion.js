@@ -1,6 +1,9 @@
-import InlineComponent from '../abstract/InlineComponent';
-import me from 'math-expressions';
-
+import InlineComponent from "../abstract/InlineComponent";
+import me from "math-expressions";
+import {
+  returnSelectedStyleStateVariableDefinition,
+  returnTextStyleDescriptionDefinitions,
+} from "../../utils/style";
 
 export default class Ion extends InlineComponent {
   static componentType = "ion";
@@ -21,23 +24,29 @@ export default class Ion extends InlineComponent {
 
     attributes.charge = {
       createComponentOfType: "integer",
-    }
+    };
 
     return attributes;
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "atoms",
-      componentTypes: ["atom"]
-    }]
-
+    return [
+      {
+        group: "atoms",
+        componentTypes: ["atom"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
+
     // atomicNumberShadow will be null unless atom was created
     // via an adapter or copy prop or from serialized state with coords value
     // In case of adapter or copy prop,
@@ -51,52 +60,53 @@ export default class Ion extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          atomicNumberShadow: true
-        }
+          atomicNumberShadow: true,
+        },
       }),
       inverseDefinition: async function ({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "atomicNumberShadow",
-            value: desiredStateVariableValues.atomicNumberShadow
-          }]
+          instructions: [
+            {
+              setEssentialValue: "atomicNumberShadow",
+              value: desiredStateVariableValues.atomicNumberShadow,
+            },
+          ],
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.dataForAtom = {
       returnDependencies: () => ({
         fileContents: {
           dependencyType: "file",
           cid: "bafkreibilal4glrbpo7p7oodtwtnzkfhiylfoqa2td4ij6h6iqva57kzcy",
-          fileType: "csv"
+          fileType: "csv",
         },
         symbolAttr: {
           dependencyType: "attributeComponent",
           attributeName: "symbol",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         atomicNumberAttr: {
           dependencyType: "attributeComponent",
           attributeName: "atomicNumber",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         atomChild: {
           dependencyType: "child",
           childGroups: ["atoms"],
-          variableNames: ["atomicNumber"]
+          variableNames: ["atomicNumber"],
         },
         atomicNumberShadow: {
           dependencyType: "stateVariable",
-          variableName: "atomicNumberShadow"
+          variableName: "atomicNumberShadow",
         },
       }),
 
-
       definition: function ({ dependencyValues }) {
-
-        let symbol = null, atomicNumber = null;
+        let symbol = null,
+          atomicNumber = null;
         if (dependencyValues.atomChild.length > 0) {
           atomicNumber = dependencyValues.atomChild[0].stateValues.atomicNumber;
         } else if (dependencyValues.symbolAttr) {
@@ -106,7 +116,7 @@ export default class Ion extends InlineComponent {
         } else if (dependencyValues.atomicNumberShadow) {
           atomicNumber = dependencyValues.atomicNumberShadow;
         } else {
-          return { setValue: { dataForAtom: null } }
+          return { setValue: { dataForAtom: null } };
         }
 
         let allRowData = dependencyValues.fileContents.trim().split("\n");
@@ -116,27 +126,173 @@ export default class Ion extends InlineComponent {
         if (atomicNumber !== null) {
           rowInd = atomicNumber - 1;
         } else {
-          rowInd = ["h", "he", "li", "be", "b", "c", "n", "o", "f", "ne", "na", "mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr", "mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr", "rb", "sr", "y", "zr", "nb", "mo", "tc", "ru", "rh", "pd", "ag", "cd", "in", "sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "pm", "sm", "eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w", "re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi", "po", "at", "rn", "fr", "ra", "ac", "th", "pa", "u", "np", "pu", "am", "cm", "bk", "cf", "es", "fm", "md", "no", "lr", "rf", "db", "sg", "bh", "hs", "mt", "ds", "rg", "cn", "nh", "fl", "mc", "lv", "ts", "og"].indexOf(symbol?.toLowerCase());
+          rowInd = [
+            "h",
+            "he",
+            "li",
+            "be",
+            "b",
+            "c",
+            "n",
+            "o",
+            "f",
+            "ne",
+            "na",
+            "mg",
+            "al",
+            "si",
+            "p",
+            "s",
+            "cl",
+            "ar",
+            "k",
+            "ca",
+            "sc",
+            "ti",
+            "v",
+            "cr",
+            "mn",
+            "fe",
+            "co",
+            "ni",
+            "cu",
+            "zn",
+            "ga",
+            "ge",
+            "as",
+            "se",
+            "br",
+            "kr",
+            "rb",
+            "sr",
+            "y",
+            "zr",
+            "nb",
+            "mo",
+            "tc",
+            "ru",
+            "rh",
+            "pd",
+            "ag",
+            "cd",
+            "in",
+            "sn",
+            "sb",
+            "te",
+            "i",
+            "xe",
+            "cs",
+            "ba",
+            "la",
+            "ce",
+            "pr",
+            "nd",
+            "pm",
+            "sm",
+            "eu",
+            "gd",
+            "tb",
+            "dy",
+            "ho",
+            "er",
+            "tm",
+            "yb",
+            "lu",
+            "hf",
+            "ta",
+            "w",
+            "re",
+            "os",
+            "ir",
+            "pt",
+            "au",
+            "hg",
+            "tl",
+            "pb",
+            "bi",
+            "po",
+            "at",
+            "rn",
+            "fr",
+            "ra",
+            "ac",
+            "th",
+            "pa",
+            "u",
+            "np",
+            "pu",
+            "am",
+            "cm",
+            "bk",
+            "cf",
+            "es",
+            "fm",
+            "md",
+            "no",
+            "lr",
+            "rf",
+            "db",
+            "sg",
+            "bh",
+            "hs",
+            "mt",
+            "ds",
+            "rg",
+            "cn",
+            "nh",
+            "fl",
+            "mc",
+            "lv",
+            "ts",
+            "og",
+          ].indexOf(symbol?.toLowerCase());
         }
 
         let rowData = allRowData.slice(1)[rowInd];
         if (!rowData) {
-          return { setValue: { dataForAtom: null } }
+          return { setValue: { dataForAtom: null } };
         }
 
-        rowData = rowData.trim().split(",").map(y => y.trim())
+        rowData = rowData
+          .trim()
+          .split(",")
+          .map((y) => y.trim());
 
-        let columnNames = allRowData[0].trim().split(",").map(y => y.trim()).map(value => {
-          if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
-            value = value.substring(1, value.length - 1).trim();
-          }
-          return value;
-        });
+        let columnNames = allRowData[0]
+          .trim()
+          .split(",")
+          .map((y) => y.trim())
+          .map((value) => {
+            if (
+              [`"`, `'`].includes(value[0]) &&
+              value[value.length - 1] === value[0]
+            ) {
+              value = value.substring(1, value.length - 1).trim();
+            }
+            return value;
+          });
 
         let numColumns = columnNames.length;
 
-        let columnTypes = ["number", "string", "string", "number", "number", "string", "number", "string", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
-
+        let columnTypes = [
+          "number",
+          "string",
+          "string",
+          "number",
+          "number",
+          "string",
+          "number",
+          "string",
+          "string",
+          "number",
+          "number",
+          "number",
+          "number",
+          "number",
+          "number",
+          "number",
+          "string",
+        ];
 
         let dataForAtom = {};
         for (let colInd = 0; colInd < numColumns; colInd++) {
@@ -152,7 +308,10 @@ export default class Ion extends InlineComponent {
             }
           } else {
             value = rowData[colInd];
-            if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+            if (
+              [`"`, `'`].includes(value[0]) &&
+              value[value.length - 1] === value[0]
+            ) {
               value = value.substring(1, value.length - 1);
             }
           }
@@ -164,10 +323,8 @@ export default class Ion extends InlineComponent {
         }
 
         return { setValue: { dataForAtom } };
-
       },
-
-    }
+    };
 
     stateVariableDefinitions.atomicNumber = {
       public: true,
@@ -189,10 +346,9 @@ export default class Ion extends InlineComponent {
           atomicNumber = null;
         }
 
-        return { setValue: { atomicNumber } }
-
-      }
-    }
+        return { setValue: { atomicNumber } };
+      },
+    };
 
     stateVariableDefinitions.symbol = {
       public: true,
@@ -214,10 +370,9 @@ export default class Ion extends InlineComponent {
           symbol = null;
         }
 
-        return { setValue: { symbol } }
-
-      }
-    }
+        return { setValue: { symbol } };
+      },
+    };
 
     stateVariableDefinitions.charge = {
       public: true,
@@ -232,8 +387,8 @@ export default class Ion extends InlineComponent {
         chargeAttr: {
           dependencyType: "attributeComponent",
           attributeName: "charge",
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       definition({ dependencyValues }) {
         let charge;
@@ -249,10 +404,9 @@ export default class Ion extends InlineComponent {
           charge = 0;
         }
 
-        return { setValue: { charge } }
-
-      }
-    }
+        return { setValue: { charge } };
+      },
+    };
 
     stateVariableDefinitions.name = {
       public: true,
@@ -289,23 +443,23 @@ export default class Ion extends InlineComponent {
               Sulfur: "Sulfide",
               Nitrogen: "Nitride",
               Phosphorus: "Phosphide",
-              Carbon: "Carbide"
-            }
+              Carbon: "Carbide",
+            };
             let len = name.length;
             if (name.substring(len - 3, len) === "ine") {
               name = name.substring(0, len - 3) + "ide";
             } else if (name in mapping) {
               name = mapping[name];
             }
-          } else if (dependencyValues.charge > 0
-            && (
-              (dependencyValues.group >= 3 && dependencyValues.group <= 12)
-              || dependencyValues.group === 101
-              || dependencyValues.group === 102
-              || [13, 31, 49, 50, 81, 82, 83, 84].includes(dependencyValues.atomicNumber)
-            )
+          } else if (
+            dependencyValues.charge > 0 &&
+            ((dependencyValues.group >= 3 && dependencyValues.group <= 12) ||
+              dependencyValues.group === 101 ||
+              dependencyValues.group === 102 ||
+              [13, 31, 49, 50, 81, 82, 83, 84].includes(
+                dependencyValues.atomicNumber,
+              ))
           ) {
-
             let suffix = "";
             switch (dependencyValues.charge) {
               case 1:
@@ -339,10 +493,9 @@ export default class Ion extends InlineComponent {
           name = null;
         }
 
-        return { setValue: { name } }
-
-      }
-    }
+        return { setValue: { name } };
+      },
+    };
 
     stateVariableDefinitions.group = {
       public: true,
@@ -364,10 +517,9 @@ export default class Ion extends InlineComponent {
           group = null;
         }
 
-        return { setValue: { group } }
-
-      }
-    }
+        return { setValue: { group } };
+      },
+    };
 
     stateVariableDefinitions.metalCategory = {
       public: true,
@@ -384,15 +536,15 @@ export default class Ion extends InlineComponent {
         let metalCategory;
 
         if (dependencyValues.dataForAtom) {
-          metalCategory = dependencyValues.dataForAtom["Metal/Nonmetal/Metalloid"];
+          metalCategory =
+            dependencyValues.dataForAtom["Metal/Nonmetal/Metalloid"];
         } else {
           metalCategory = null;
         }
 
-        return { setValue: { metalCategory } }
-
-      }
-    }
+        return { setValue: { metalCategory } };
+      },
+    };
 
     stateVariableDefinitions.groupName = {
       public: true,
@@ -414,10 +566,9 @@ export default class Ion extends InlineComponent {
           groupName = null;
         }
 
-        return { setValue: { groupName } }
-
-      }
-    }
+        return { setValue: { groupName } };
+      },
+    };
 
     stateVariableDefinitions.period = {
       public: true,
@@ -439,15 +590,14 @@ export default class Ion extends InlineComponent {
           period = null;
         }
 
-        return { setValue: { period } }
-
-      }
-    }
+        return { setValue: { period } };
+      },
+    };
 
     stateVariableDefinitions.math = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "math"
+        createComponentOfType: "math",
       },
       returnDependencies: () => ({
         symbol: {
@@ -460,7 +610,6 @@ export default class Ion extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-
         let tree;
 
         if (dependencyValues.symbol) {
@@ -476,20 +625,26 @@ export default class Ion extends InlineComponent {
             tree.push(Math.abs(dependencyValues.charge) + "+");
           }
         } else {
-          tree = "\uff3f"
+          tree = "\uff3f";
         }
         let math = me.fromAst(tree);
         return {
-          setValue: { math }
-        }
-      }
-    }
+          setValue: { math },
+        };
+      },
+    };
 
     stateVariableDefinitions.latex = {
-      additionalStateVariablesDefined: [{
-        variableName: "latexWithInputChildren",
-        forRenderer: true,
-      }],
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "latex",
+      },
+      additionalStateVariablesDefined: [
+        {
+          variableName: "latexWithInputChildren",
+          forRenderer: true,
+        },
+      ],
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -503,31 +658,27 @@ export default class Ion extends InlineComponent {
       definition({ dependencyValues }) {
         let latex;
         if (dependencyValues.symbol) {
-          latex = `\\text{${dependencyValues.symbol}}`
+          latex = `\\text{${dependencyValues.symbol}}`;
           if (dependencyValues.charge === -1) {
-            latex = latex + `^-`
+            latex = latex + `^-`;
           } else if (dependencyValues.charge === 1) {
-            latex = latex + `^+`
+            latex = latex + `^+`;
           } else if (dependencyValues.charge < 0) {
-            latex = latex + `^{${Math.abs(dependencyValues.charge)}-}`
+            latex = latex + `^{${Math.abs(dependencyValues.charge)}-}`;
           } else if (dependencyValues.charge > 0) {
-            latex = latex + `^{${Math.abs(dependencyValues.charge)}+}`
+            latex = latex + `^{${Math.abs(dependencyValues.charge)}+}`;
           }
         } else {
           latex = "[\\text{Invalid Chemical Symbol}]";
         }
         return {
-          setValue: { latex, latexWithInputChildren: [latex] }
-        }
-      }
-    }
-
+          setValue: { latex, latexWithInputChildren: [latex] },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
   static adapters = ["math", "name"];
-
 }
-
-

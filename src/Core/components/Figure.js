@@ -1,4 +1,4 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export default class Figure extends BlockComponent {
   constructor(args) {
@@ -7,7 +7,6 @@ export default class Figure extends BlockComponent {
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
   static componentType = "figure";
   static renderChildren = true;
@@ -20,31 +19,31 @@ export default class Figure extends BlockComponent {
       createStateVariable: "suppressFigureNameInCaption",
       defaultValue: false,
       forRenderer: true,
-    }
+    };
     attributes.number = {
       createComponentOfType: "boolean",
       createStateVariable: "number",
       defaultValue: true,
       forRenderer: true,
-    }
+    };
 
     return attributes;
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "captions",
-      componentTypes: ["caption"]
-    }, {
-      group: "inlinesBlocks",
-      componentTypes: ["_inline", "_block"]
-    }]
-
+    return [
+      {
+        group: "captions",
+        componentTypes: ["caption"],
+      },
+      {
+        group: "inlinesBlocks",
+        componentTypes: ["_inline", "_block"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.figureEnumeration = {
@@ -54,37 +53,41 @@ export default class Figure extends BlockComponent {
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["number"],
-      additionalStateVariablesDefined: [{
-        variableName: "figureName",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "text",
+      additionalStateVariablesDefined: [
+        {
+          variableName: "figureName",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "text",
+          },
+          forRenderer: true,
         },
-        forRenderer: true,
-      }],
+      ],
+      mustEvaluate: true, // must evaluate to make sure all counters are accounted for
       returnDependencies({ stateValues }) {
         let dependencies = {};
 
         if (stateValues.number) {
           dependencies.figureCounter = {
             dependencyType: "counter",
-            counterName: "figure"
-          }
+            counterName: "sectioning",
+          };
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
         if (dependencyValues.figureCounter === undefined) {
-          return { setValue: { figureEnumeration: null, figureName: "Figure" } };
+          return {
+            setValue: { figureEnumeration: null, figureName: "Figure" },
+          };
         }
         let figureEnumeration = String(dependencyValues.figureCounter);
         let figureName = "Figure " + figureEnumeration;
         return {
-
-          setValue: { figureEnumeration, figureName }
-        }
-      }
-    }
+          setValue: { figureEnumeration, figureName },
+        };
+      },
+    };
 
     stateVariableDefinitions.captionChildName = {
       forRenderer: true,
@@ -97,14 +100,13 @@ export default class Figure extends BlockComponent {
       definition({ dependencyValues }) {
         let captionChildName = null;
         if (dependencyValues.captionChild.length > 0) {
-          captionChildName = dependencyValues.captionChild[0].componentName
+          captionChildName = dependencyValues.captionChild[0].componentName;
         }
         return {
-          setValue: { captionChildName }
-        }
-      }
-    }
-
+          setValue: { captionChildName },
+        };
+      },
+    };
 
     stateVariableDefinitions.caption = {
       public: true,
@@ -120,16 +122,14 @@ export default class Figure extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
-
         let caption = null;
 
         if (dependencyValues.captionChild.length > 0) {
           caption = dependencyValues.captionChild[0].stateValues.text;
         }
-        return { setValue: { caption } }
-      }
-    }
-
+        return { setValue: { caption } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
@@ -141,9 +141,8 @@ export default class Figure extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
 }

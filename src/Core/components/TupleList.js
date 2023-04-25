@@ -1,5 +1,5 @@
-import MathList from './MathList';
-import { breakEmbeddedStringsIntoParensPieces } from './commonsugar/breakstrings';
+import MathList from "./MathList";
+import { breakEmbeddedStringsIntoParensPieces } from "./commonsugar/breakstrings";
 
 export default class TupleList extends MathList {
   static componentType = "tupleList";
@@ -11,13 +11,12 @@ export default class TupleList extends MathList {
     let sugarInstructions = [];
 
     let createTupleList = function ({ matchedChildren }) {
-
       let results = breakEmbeddedStringsIntoParensPieces({
         componentList: matchedChildren,
       });
 
       if (results.success !== true) {
-        return { success: false }
+        return { success: false };
       }
 
       return {
@@ -26,23 +25,19 @@ export default class TupleList extends MathList {
           if (piece.length > 1 || typeof piece[0] === "string") {
             return {
               componentType: "math",
-              children: piece
-            }
+              children: piece,
+            };
           } else {
-            return piece[0]
+            return piece[0];
           }
-        })
-      }
-    }
+        }),
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: createTupleList
+      replacementFunction: createTupleList,
     });
 
-
     return sugarInstructions;
-
   }
-
-
 }

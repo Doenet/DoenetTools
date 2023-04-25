@@ -1,54 +1,51 @@
 import axios from "axios";
-import { clear as idb_clear, keys as idb_keys } from 'idb-keyval';
+import { clear as idb_clear, keys as idb_keys } from "idb-keyval";
 
-
-
-export async function clearUsersInformationFromTheBrowser(){
+export async function clearUsersInformationFromTheBrowser() {
   localStorage.clear(); //Clear out the profile of the last exam taker
-  await axios.get('/api/signOut.php')
+  await axios.get("/api/signOut.php");
   await idb_clear();
   return true;
 }
 
-
-export async function checkIfUserClearedOut(){
+export async function checkIfUserClearedOut() {
   let messageArray = [];
 
   //Check for indexedDB
-  let indexedDBKeysArray = await idb_keys()
+  let indexedDBKeysArray = await idb_keys();
   let indexedDBRemoved = indexedDBKeysArray.length == 0;
-  if (!indexedDBRemoved){
+  if (!indexedDBRemoved) {
     messageArray.push("IndexedDB not removed");
   }
   //Check for local storage
   //TODO: find something is stored in localStorage and test if this clears it
   let localStorageRemoved = localStorage.length == 0;
-  if(!localStorageRemoved){
+  if (!localStorageRemoved) {
     messageArray.push("local storage not removed");
   }
 
   //Check for cookie
   //Ask the server without hitting the database
-  const { data }  = await axios.get('/api/getQuickCheckSignedIn.php')
+  const { data } = await axios.get("/api/getQuickCheckSignedIn.php");
   const secureCookieRemoved = !data?.signedIn;
 
-  const vanillaCookies = document.cookie.split(';');
-  const vanillaCookieRemoved = vanillaCookies.length === 1 && vanillaCookies[0] === '';
+  const vanillaCookies = document.cookie.split(";");
+  const vanillaCookieRemoved =
+    vanillaCookies.length === 1 && vanillaCookies[0] === "";
 
-  let cookieRemoved =  vanillaCookieRemoved && secureCookieRemoved
+  let cookieRemoved = vanillaCookieRemoved && secureCookieRemoved;
 
-  if(!vanillaCookieRemoved){
+  if (!vanillaCookieRemoved) {
     messageArray.push("cookie not removed");
   }
 
-  if(!secureCookieRemoved){
+  if (!secureCookieRemoved) {
     messageArray.push("secure cookie not removed");
   }
 
   let userInformationIsCompletelyRemoved = false;
-  if (indexedDBRemoved && localStorageRemoved && cookieRemoved){
+  if (indexedDBRemoved && localStorageRemoved && cookieRemoved) {
     userInformationIsCompletelyRemoved = true;
   }
-  return {userInformationIsCompletelyRemoved,messageArray,cookieRemoved};
+  return { userInformationIsCompletelyRemoved, messageArray, cookieRemoved };
 }
-

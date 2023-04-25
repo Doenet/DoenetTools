@@ -1,23 +1,23 @@
 /**
  * External dependencies
  */
-import React, { Suspense, useLayoutEffect } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
-import styled, { keyframes } from 'styled-components';
+import React, { Suspense, useLayoutEffect } from "react";
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from "recoil";
+import styled, { keyframes } from "styled-components";
 /**
  * Internal dependencies
  */
-import { useToast, toastType } from '../Toast';
-import { suppressMenusAtom } from '../NewToolRoot';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { useToast, toastType } from "../Toast";
+import { suppressMenusAtom } from "../NewToolRoot";
+import { selectedMenuPanelAtom } from "../Panels/NewMenuPanel";
+import { searchParamAtomFamily, pageToolViewAtom } from "../NewToolRoot";
+import CourseNavigator from "../../../_reactComponents/Course/CourseNavigator";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
   coursePermissionsAndSettingsByCourseId,
-} from '../../../_reactComponents/Course/CourseActions';
+} from "../../../_reactComponents/Course/CourseActions";
 
 const movingGradient = keyframes`
   0% { background-position: -250px 0; }
@@ -73,7 +73,7 @@ const Td3Span = styled.span`
 
 export default function NavigationPanel() {
   //TODO: switch to effectivePermissions
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const { canEditContent } = useRecoilValue(
     effectivePermissionsByCourseId(courseId),
   );
@@ -82,32 +82,31 @@ export default function NavigationPanel() {
 
   useLayoutEffect(() => {
     setSuppressMenus(
-      canEditContent == '1' ? [] : ['AddDriveItems', 'CutCopyPasteMenu'],
+      canEditContent == "1" ? [] : ["AddDriveItems", "CutCopyPasteMenu"],
     );
   }, [canEditContent, setSuppressMenus]);
 
   const updateSelectMenu = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ singleItem }) => {
-
-        console.log(`singleItem doenetId:${singleItem?.doenetId}`,singleItem)
+        console.log(`singleItem doenetId:${singleItem?.doenetId}`, singleItem);
         if (singleItem !== null) {
-          if (singleItem.type == "activity"){
-            set(selectedMenuPanelAtom,"SelectedActivity");
-          }else if (singleItem.type == "order"){
-            set(selectedMenuPanelAtom,"SelectedOrder");
-          }else if (singleItem.type == "page"){
-            set(selectedMenuPanelAtom,"SelectedPage");
-          }else if (singleItem.type == "section"){
-            set(selectedMenuPanelAtom,"SelectedSection");
-          }else if (singleItem.type == "bank"){
-            set(selectedMenuPanelAtom,"SelectedBank");
-          }else if (singleItem.type == "collectionLink"){
-            set(selectedMenuPanelAtom,"SelectedCollectionLink");
-          }else if (singleItem.type == "pageLink"){
-            set(selectedMenuPanelAtom,"SelectedPageLink");
-          }else{
-            set(selectedMenuPanelAtom,null);
+          if (singleItem.type == "activity") {
+            set(selectedMenuPanelAtom, "SelectedActivity");
+          } else if (singleItem.type == "order") {
+            set(selectedMenuPanelAtom, "SelectedOrder");
+          } else if (singleItem.type == "page") {
+            set(selectedMenuPanelAtom, "SelectedPage");
+          } else if (singleItem.type == "section") {
+            set(selectedMenuPanelAtom, "SelectedSection");
+          } else if (singleItem.type == "bank") {
+            set(selectedMenuPanelAtom, "SelectedBank");
+          } else if (singleItem.type == "collectionLink") {
+            set(selectedMenuPanelAtom, "SelectedCollectionLink");
+          } else if (singleItem.type == "pageLink") {
+            set(selectedMenuPanelAtom, "SelectedPageLink");
+          } else {
+            set(selectedMenuPanelAtom, null);
           }
         } else {
           set(selectedMenuPanelAtom, null);
@@ -123,11 +122,11 @@ export default function NavigationPanel() {
         let { canEditContent } = await snapshot.getPromise(
           effectivePermissionsByCourseId(courseId),
         );
-        if (clickedItem.type == 'page') {
+        if (clickedItem.type == "page") {
           set(pageToolViewAtom, (prev) => {
             return {
-              page: 'course',
-              tool: 'editor',
+              page: "course",
+              tool: "editor",
               view: prev.view,
               params: {
                 pageId: doenetId,
@@ -135,20 +134,19 @@ export default function NavigationPanel() {
               },
             };
           });
-        } else if (clickedItem.type == 'pageLink') {
+        } else if (clickedItem.type == "pageLink") {
           set(pageToolViewAtom, (prev) => {
             return {
-              page: 'course',
-              tool: 'editor',
+              page: "course",
+              tool: "editor",
               view: prev.view,
               params: {
                 linkPageId: doenetId,
               },
             };
           });
-        
-        } else if (clickedItem.type == 'activity') {
-          if (canEditContent == '1') {
+        } else if (clickedItem.type == "activity") {
+          if (canEditContent == "1") {
             //Find first page
             let pageDoenetId = findFirstPageOfActivity(clickedItem.content);
             if (pageDoenetId == null) {
@@ -156,8 +154,8 @@ export default function NavigationPanel() {
             } else {
               set(pageToolViewAtom, (prev) => {
                 return {
-                  page: 'course',
-                  tool: 'editor',
+                  page: "course",
+                  tool: "editor",
                   view: prev.view,
                   params: { doenetId, pageId: pageDoenetId },
                 };
@@ -165,19 +163,19 @@ export default function NavigationPanel() {
             }
           } else {
             set(pageToolViewAtom, {
-              page: 'course',
-              tool: 'assignment',
-              view: '',
+              page: "course",
+              tool: "assignment",
+              view: "",
               params: {
                 doenetId,
               },
             });
           }
-        } else if (clickedItem.type == 'section') {
+        } else if (clickedItem.type == "section") {
           set(pageToolViewAtom, (prev) => {
             return {
-              page: 'course',
-              tool: 'navigation',
+              page: "course",
+              tool: "navigation",
               view: prev.view,
               params: { sectionId: clickedItem.doenetId, courseId },
             };
@@ -188,8 +186,8 @@ export default function NavigationPanel() {
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0'){
-    return <h1>No Access to view this page.</h1>
+  if (course?.canViewCourse == "0") {
+    return <h1>No Access to view this page.</h1>;
   }
 
   return (
@@ -239,8 +237,8 @@ function Container(props) {
   return (
     <div
       style={{
-        maxWidth: '850px',
-        margin: '10px 20px',
+        maxWidth: "850px",
+        margin: "10px 20px",
         // border: "1px red solid",
       }}
     >

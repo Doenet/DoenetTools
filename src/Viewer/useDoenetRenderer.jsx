@@ -1,46 +1,65 @@
-import React, { useEffect, useState } from 'react';
-import { atomFamily, useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { useEffect, useState } from "react";
+import { atomFamily, useRecoilValue, useSetRecoilState } from "recoil";
 // import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
-import { renderersloadComponent } from './PageViewer';
+import { renderersloadComponent } from "./PageViewer";
+import { cesc } from "../_utils/url";
 
 export const rendererState = atomFamily({
-  key: 'rendererState',
-  default: { stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: [], prefixForIds: '' },
+  key: "rendererState",
+  default: {
+    stateValues: {},
+    sourceOfUpdate: {},
+    ignoreUpdate: false,
+    childrenInstructions: [],
+    prefixForIds: "",
+  },
   // dangerouslyAllowMutability: true,
-})
+});
 
 // TODO: potentially remove initializeChildrenOnConstruction
-export default function useDoenetRenderer(props, initializeChildrenOnConstruction = true) {
+export default function useDoenetRenderer(
+  props,
+  initializeChildrenOnConstruction = true,
+) {
   let actions = props.componentInstructions.actions;
   let componentName = props.componentInstructions.componentName;
   let effectiveName = props.componentInstructions.effectiveName;
   let rendererName = props.coreId + componentName;
-  let [renderersToLoad, setRenderersToLoad] = useState({})
+  let [renderersToLoad, setRenderersToLoad] = useState({});
 
-  let { stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions, prefixForIds } = useRecoilValue(rendererState(rendererName));
-
+  let {
+    stateValues,
+    sourceOfUpdate = {},
+    ignoreUpdate,
+    childrenInstructions,
+    prefixForIds,
+  } = useRecoilValue(rendererState(rendererName));
 
   //TODO: Fix this for graph
   // if (initializeChildrenOnConstruction
   let children = [];
   const loadMoreRenderers = Object.keys(renderersToLoad).length === 0;
   for (let childInstructions of childrenInstructions) {
-    let child = createChildFromInstructions(childInstructions, loadMoreRenderers);
+    let child = createChildFromInstructions(
+      childInstructions,
+      loadMoreRenderers,
+    );
     children.push(child);
   }
 
   useEffect(() => {
     if (Object.keys(renderersToLoad).length > 0) {
-      renderersloadComponent(Object.values(renderersToLoad), Object.keys(renderersToLoad)).then((newRendererClasses) => {
-        Object.assign(props.rendererClasses, newRendererClasses)
-        setRenderersToLoad({})
-      })
+      renderersloadComponent(
+        Object.values(renderersToLoad),
+        Object.keys(renderersToLoad),
+      ).then((newRendererClasses) => {
+        Object.assign(props.rendererClasses, newRendererClasses);
+        setRenderersToLoad({});
+      });
     }
-  }, [renderersToLoad, props.rendererClasses])
-
+  }, [renderersToLoad, props.rendererClasses]);
 
   function createChildFromInstructions(childInstructions, loadMoreRenderers) {
-
     if (typeof childInstructions === "string") {
       return childInstructions;
     }
@@ -62,14 +81,15 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
         setRenderersToLoad((old) => {
           let rendererPromises = { ...old };
           if (!(childInstructions.rendererType in rendererPromises)) {
-            rendererPromises[childInstructions.rendererType] = import(`./renderers/${childInstructions.rendererType}.jsx`);
+            rendererPromises[childInstructions.rendererType] = import(
+              `./renderers/${childInstructions.rendererType}.jsx`
+            );
           }
           return rendererPromises;
-        })
+        });
       }
 
-      return null;  //skip the child for now
-
+      return null; //skip the child for now
     }
 
     let child = React.createElement(rendererClass, propsForChild);
@@ -77,7 +97,7 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
   }
 
   let rendererType = props.componentInstructions.rendererType;
-  const callAction = argObj => {
+  const callAction = (argObj) => {
     if (!argObj.componentName) {
       argObj = { ...argObj };
       argObj.componentName = componentName;
@@ -87,11 +107,18 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
       argObj.rendererType = rendererType;
     }
     return props.callAction(argObj);
-  }
+  };
 
   return {
-    name: effectiveName, id: prefixForIds + effectiveName, SVs: stateValues, actions, children,
-    sourceOfUpdate, ignoreUpdate, rendererName,
-    initializeChildren: () => { }, callAction
+    name: effectiveName,
+    id: prefixForIds + cesc(effectiveName),
+    SVs: stateValues,
+    actions,
+    children,
+    sourceOfUpdate,
+    ignoreUpdate,
+    rendererName,
+    initializeChildren: () => {},
+    callAction,
   };
 }

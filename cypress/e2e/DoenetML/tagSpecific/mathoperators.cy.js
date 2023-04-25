@@ -1,27 +1,19 @@
-import me from 'math-expressions';
-import cssesc from 'cssesc';
-import { isStrictMode } from 'react-is';
-import { isStyledComponent } from 'styled-components';
+import me from "math-expressions";
+import { isStrictMode } from "react-is";
+import { isStyledComponent } from "styled-components";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
-
-describe('Math Operator Tag Tests', function () {
-
+describe("Math Operator Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
-  })
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
-  it('sum', () => {
+  it("sum", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <sum name="numbers"><number>3</number><number>17</number><number>5-4</number></sum>
       <sum name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></sum>
@@ -38,116 +30,284 @@ describe('Math Operator Tag Tests', function () {
       <sum name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></sum>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3+17+1')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3+17+1')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('62+17+1')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/withNumberSum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+x+y+x+y+z')
-      });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x+2y+z')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+x+y+x+y+z')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3+17+1");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3+17+1");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("62+17+1");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/withNumberSum"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x+x+y+x+y+z");
+        });
+      cy.get(cesc("#\\/varsSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x+2y+z");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x+x+y+x+y+z");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(21);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['+', 3, 17, 1]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['+', 3, 17, 1]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['+', ['/', 6, 2], 17, 1]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberSum'].stateValues.value).eq(21);
-        expect(stateVariables['/withNumberSum'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberSum'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['+', 'x', 'x', 'y', 'x', 'y', 'z']);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z']);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbers"].stateValues.value).eq(21);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "+",
+          3,
+          17,
+          1,
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          21,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["+", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["+", ["/", 6, 2], 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberSum"].stateValues.value).eq(21);
+        expect(
+          stateVariables["/withNumberSum"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberSum"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "+",
+          "x",
+          "x",
+          "y",
+          "x",
+          "y",
+          "z",
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.value).eqls([
+          "+",
+          ["*", 3, "x"],
+          ["*", 2, "y"],
+          "z",
+        ]);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(21);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['+', 'x', 'x', 'y', 'x', 'y', 'z']);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "+",
+          "x",
+          "x",
+          "y",
+          "x",
+          "y",
+          "z",
+        ]);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('sum with sugar', () => {
+  it("sum with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">3</number>
       <number name="b">17</number>
@@ -175,149 +335,386 @@ describe('Math Operator Tag Tests', function () {
       <sum name="varsAsString">x x+y x+y+z</sum>
       <sum name="varsAsStringSimplify" simplify>x x+y x+y+z</sum>
       <sum name="varsAsStringForceNumeric" forceNumeric>x x+y x+y+z</sum>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3+17+1')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('62+17+5−4')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3+17+1')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3+17+1')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('62+17+1')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+x+y+x+y+z')
-    });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+x+y+x+y+z')
-    });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3x+2y+z')
-    });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
-    });
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3+17+1");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("62+17+5−4");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3+17+1");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3+17+1");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("62+17+1");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/vars"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x+x+y+x+y+z");
+      });
+    cy.get(cesc("#\\/varsAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x+x+y+x+y+z");
+      });
+    cy.get(cesc("#\\/varsAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3x+2y+z");
+      });
+    cy.get(cesc("#\\/varsAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("NaN");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(21);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eqls(['+', 3, 17, 1]);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['+', ['/', 6, 2], 17, 5, -4]);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(21);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eqls(['+', 3, 17, 1]);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(21);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eqls(['+', 3, 17, 1]);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.value).eqls(['+', ['/', 6, 2], 17, 1]);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(21);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['+', 'x', 'x', 'y', 'x', 'y', 'z']);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.value).eqls(['+', 'x', 'x', 'y', 'x', 'y', 'z']);
-        expect(stateVariables['/varsAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.value).eqls(['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z']);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+        expect(stateVariables["/numbers"].stateValues.value).eq(21);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(21);
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.value,
+        ).eqls(["+", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.value).eqls([
+          "+",
+          ["/", 6, 2],
+          17,
+          5,
+          -4,
+        ]);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          21,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(21);
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.value,
+        ).eqls(["+", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(21);
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(21);
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues.value,
+        ).eqls(["+", 3, 17, 1]);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.value).eqls([
+          "+",
+          ["/", 6, 2],
+          17,
+          1,
+        ]);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "+",
+          "x",
+          "x",
+          "y",
+          "x",
+          "y",
+          "z",
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.value).eqls([
+          "+",
+          "x",
+          "x",
+          "y",
+          "x",
+          "y",
+          "z",
+        ]);
+        expect(
+          stateVariables["/varsAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.value).eqls([
+          "+",
+          ["*", 3, "x"],
+          ["*", 2, "y"],
+          "z",
+        ]);
+        expect(
+          stateVariables["/varsAsStringSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.value,
+        ).eqls(NaN);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(false);
+      });
+    });
+  });
 
-  it('sum as math expression', () => {
+  it("sum as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">3</number>
@@ -379,137 +776,304 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupPlus3Simplify" simplify>
         sum($a, $b, $nums, $c)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3⋅17⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('251')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3⋅17⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3⋅17⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,1)')
-    });
-    cy.get('#\\/groupPlusGroup').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,1)+sum(3,17,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('42')
-    });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('42')
-    });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sum(3,17,3,17,1,1)')
-    });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('42')
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3⋅17⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("251");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlusGroup"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,1)+sum(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("21");
+      });
+    cy.get(cesc("#\\/groupPlus"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlusSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("42");
+      });
+    cy.get(cesc("#\\/groupPlus2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlus2Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("42");
+      });
+    cy.get(cesc("#\\/groupPlus3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("sum(3,17,3,17,1,1)");
+      });
+    cy.get(cesc("#\\/groupPlus3Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("42");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'sum', ["+", ["*", 3, 17, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["tuple", 3, 17, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(
+          21,
+        );
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["+", ["*", 3, 17, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(251);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, 1]]);
-        expect(await await stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'sum', ["*", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "sum", ["tuple", 3, 17, 1]]);
+        expect(
+          await await stateVariables["/numberComponentsCommas"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "sum", ["*", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'sum', ["*", 3, 17, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(
+          21,
+        );
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["*", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusGroup'].stateValues.value).eqls(["+", ['apply', 'sum', ["tuple", 3, 17, 1]], ['apply', 'sum', ["tuple", 3, 17, 1]]]);
-        expect(stateVariables['/groupPlusGroup'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusGroup"].stateValues.value).eqls([
+          "+",
+          ["apply", "sum", ["tuple", 3, 17, 1]],
+          ["apply", "sum", ["tuple", 3, 17, 1]],
+        ]);
+        expect(stateVariables["/groupPlusGroup"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(21);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(42);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.value).eq(42);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(42);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus2"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus2"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.value).eq(42);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, 3, 17, 1, 1]]);
-        expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(42);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus3"].stateValues.value).eqls([
+          "apply",
+          "sum",
+          ["tuple", 3, 17, 3, 17, 1, 1],
+        ]);
+        expect(stateVariables["/groupPlus3"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.value).eq(42);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.isNumber).eq(
+          true,
+        );
+      });
+    });
+  });
 
-
-      })
-    })
-  })
-
-  it('sum with lists', () => {
+  it("sum with lists", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <sum name="numbers"><numberList>3 17 5-4</numberList></sum>
       <sum name="numbersForceSymbolic" forceSymbolic><numberList>3 17 5-4</numberList></sum>
@@ -526,116 +1090,284 @@ describe('Math Operator Tag Tests', function () {
       <sum name="varsForcedNumeric" forceNumeric><mathList>x x+y x+y+z</mathList></sum>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3+17+1')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3+17+1')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('62+17+1')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/withNumberSum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+x+y+x+y+z')
-      });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x+2y+z')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+x+y+x+y+z')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3+17+1");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3+17+1");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("62+17+1");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/withNumberSum"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x+x+y+x+y+z");
+        });
+      cy.get(cesc("#\\/varsSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x+2y+z");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("21");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x+x+y+x+y+z");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(21);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['+', 3, 17, 1]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['+', 3, 17, 1]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['+', ['/', 6, 2], 17, 1]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(21);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberSum'].stateValues.value).eq(21);
-        expect(stateVariables['/withNumberSum'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberSum'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['+', 'x', 'x', 'y', 'x', 'y', 'z']);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z']);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbers"].stateValues.value).eq(21);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "+",
+          3,
+          17,
+          1,
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          21,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["+", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["+", ["/", 6, 2], 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(21);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberSum"].stateValues.value).eq(21);
+        expect(
+          stateVariables["/withNumberSum"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberSum"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "+",
+          "x",
+          "x",
+          "y",
+          "x",
+          "y",
+          "z",
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.value).eqls([
+          "+",
+          ["*", 3, "x"],
+          ["*", 2, "y"],
+          "z",
+        ]);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(21);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['+', 'x', 'x', 'y', 'x', 'y', 'z']);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "+",
+          "x",
+          "x",
+          "y",
+          "x",
+          "y",
+          "z",
+        ]);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('product', () => {
+  it("product", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <product name="numbers"><number>3</number><number>17</number><number>5-4</number></product>
       <product name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></product>
@@ -652,119 +1384,283 @@ describe('Math Operator Tag Tests', function () {
       <product name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></product>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3⋅17⋅1')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3⋅17⋅1')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(62)⋅17⋅1')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/withNumberProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x(x+y)(x+y+z)')
-      });
-      cy.get('#\\/varsExpand').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x3+2yx2+zx2+xy2+xyz')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x(x+y)(x+y+z)')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3⋅17⋅1");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3⋅17⋅1");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("(62)⋅17⋅1");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/withNumberProduct"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x(x+y)(x+y+z)");
+        });
+      cy.get(cesc("#\\/varsExpand"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x3+2yx2+zx2+xy2+xyz");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x(x+y)(x+y+z)");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(51);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['*', 3, 17, 1]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['*', 3, 17, 1]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['*', ['/', 6, 2], 17, 1]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberProduct'].stateValues.value).eq(51);
-        expect(stateVariables['/withNumberProduct'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberProduct'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsExpand'].stateValues.value).eqls(['+', ['^', 'x', 3], ['*', 2, 'y', ['^', 'x', 2]], ['*', 'z', ['^', 'x', 2]], ['*', 'x', ['^', 'y', 2]], ['*', 'x', 'y', 'z']]);
-        expect(stateVariables['/varsExpand'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsExpand'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbers"].stateValues.value).eq(51);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "*",
+          3,
+          17,
+          1,
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["*", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["*", ["/", 6, 2], 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberProduct"].stateValues.value).eq(51);
+        expect(
+          stateVariables["/withNumberProduct"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberProduct"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "*",
+          "x",
+          ["+", "x", "y"],
+          ["+", "x", "y", "z"],
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsExpand"].stateValues.value).eqls([
+          "+",
+          ["^", "x", 3],
+          ["*", 2, "y", ["^", "x", 2]],
+          ["*", "z", ["^", "x", 2]],
+          ["*", "x", ["^", "y", 2]],
+          ["*", "x", "y", "z"],
+        ]);
+        expect(stateVariables["/varsExpand"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsExpand"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(51);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "*",
+          "x",
+          ["+", "x", "y"],
+          ["+", "x", "y", "z"],
+        ]);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
+      });
+    });
+  });
 
-  })
-
-  it('product with sugar', () => {
+  it("product with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">3</number>
       <number name="b">17</number>
@@ -792,149 +1688,381 @@ describe('Math Operator Tag Tests', function () {
       <product name="varsAsString">x x+y x+y+z</product>
       <product name="varsAsStringExpand" expand>x x+y x+y+z</product>
       <product name="varsAsStringForceNumeric" forceNumeric>x x+y x+y+z</product>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3⋅17⋅1')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(62)⋅17(5−4)')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3⋅17⋅1')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3⋅17⋅1')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(62)⋅17⋅1')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x(x+y)(x+y+z)')
-    });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x(x+y)(x+y+z)')
-    });
-    cy.get('#\\/varsAsStringExpand').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x3+2yx2+zx2+xy2+xyz')
-    });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
-    });
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3⋅17⋅1");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("(62)⋅17(5−4)");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3⋅17⋅1");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3⋅17⋅1");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("(62)⋅17⋅1");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/vars"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x(x+y)(x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x(x+y)(x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsStringExpand"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x3+2yx2+zx2+xy2+xyz");
+      });
+    cy.get(cesc("#\\/varsAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("NaN");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(51);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eqls(['*', 3, 17, 1]);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['*', ['/', 6, 2], 17, ["+", 5, -4]]);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(51);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eqls(['*', 3, 17, 1]);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(51);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eqls(['*', 3, 17, 1]);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.value).eqls(['*', ['/', 6, 2], 17, 1]);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(51);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.value).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
-        expect(stateVariables['/varsAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringExpand'].stateValues.value).eqls(['+', ['^', 'x', 3], ['*', 2, 'y', ['^', 'x', 2]], ['*', 'z', ['^', 'x', 2]], ['*', 'x', ['^', 'y', 2]], ['*', 'x', 'y', 'z']]);
-        expect(stateVariables['/varsAsStringExpand'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsStringExpand'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+        expect(stateVariables["/numbers"].stateValues.value).eq(51);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(51);
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.value,
+        ).eqls(["*", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.value).eqls([
+          "*",
+          ["/", 6, 2],
+          17,
+          ["+", 5, -4],
+        ]);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(51);
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.value,
+        ).eqls(["*", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(51);
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(51);
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues.value,
+        ).eqls(["*", 3, 17, 1]);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.value).eqls([
+          "*",
+          ["/", 6, 2],
+          17,
+          1,
+        ]);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "*",
+          "x",
+          ["+", "x", "y"],
+          ["+", "x", "y", "z"],
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.value).eqls([
+          "*",
+          "x",
+          ["+", "x", "y"],
+          ["+", "x", "y", "z"],
+        ]);
+        expect(
+          stateVariables["/varsAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsStringExpand"].stateValues.value).eqls([
+          "+",
+          ["^", "x", 3],
+          ["*", 2, "y", ["^", "x", 2]],
+          ["*", "z", ["^", "x", 2]],
+          ["*", "x", ["^", "y", 2]],
+          ["*", "x", "y", "z"],
+        ]);
+        expect(
+          stateVariables["/varsAsStringExpand"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsStringExpand"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.value,
+        ).eqls(NaN);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(false);
+      });
+    });
+  });
 
-  it('prod as math expression', () => {
+  it("prod as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">3</number>
@@ -993,132 +2121,292 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupPlus3Simplify" simplify>
         prod($a, $b, $nums, $c)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3,17,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3⋅17⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('251')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3,17,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3⋅17⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3,17,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3⋅17⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3,17,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2601')
-    });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2601')
-    });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('prod(3,17,3,17,1,1)')
-    });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2601')
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3,17,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3⋅17⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("251");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3,17,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3,17,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/groupPlus"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlusSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2601");
+      });
+    cy.get(cesc("#\\/groupPlus2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlus2Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2601");
+      });
+    cy.get(cesc("#\\/groupPlus3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("prod(3,17,3,17,1,1)");
+      });
+    cy.get(cesc("#\\/groupPlus3Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2601");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'prod', ["+", ["*", 3, 17, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["tuple", 3, 17, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["+", ["*", 3, 17, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(251);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'prod', ["*", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "prod", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "prod", ["*", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'prod', ["*", 3, 17, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["*", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(51);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(2601);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.value).eq(2601);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(2601);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus2"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus2"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.value).eq(
+          2601,
+        );
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, 3, 17, 1, 1]]);
-        expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(2601);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus3"].stateValues.value).eqls([
+          "apply",
+          "prod",
+          ["tuple", 3, 17, 3, 17, 1, 1],
+        ]);
+        expect(stateVariables["/groupPlus3"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.value).eq(
+          2601,
+        );
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.isNumber).eq(
+          true,
+        );
+      });
+    });
+  });
 
-
-      })
-    })
-  })
-
-  it('product with lists', () => {
+  it("product with lists", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <product name="numbers"><numberList>3 17 5-4</numberList></product>
       <product name="numbersForceSymbolic" forceSymbolic><numberList>3 17 5-4</numberList></product>
@@ -1135,119 +2423,283 @@ describe('Math Operator Tag Tests', function () {
       <product name="varsForcedNumeric" forceNumeric><mathList>x x+y x+y+z</mathList></product>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3⋅17⋅1')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3⋅17⋅1')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(62)⋅17⋅1')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/withNumberProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x(x+y)(x+y+z)')
-      });
-      cy.get('#\\/varsExpand').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x3+2yx2+zx2+xy2+xyz')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('51')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x(x+y)(x+y+z)')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3⋅17⋅1");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3⋅17⋅1");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("(62)⋅17⋅1");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/withNumberProduct"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x(x+y)(x+y+z)");
+        });
+      cy.get(cesc("#\\/varsExpand"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x3+2yx2+zx2+xy2+xyz");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("51");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x(x+y)(x+y+z)");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(51);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['*', 3, 17, 1]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['*', 3, 17, 1]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['*', ['/', 6, 2], 17, 1]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(51);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberProduct'].stateValues.value).eq(51);
-        expect(stateVariables['/withNumberProduct'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberProduct'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsExpand'].stateValues.value).eqls(['+', ['^', 'x', 3], ['*', 2, 'y', ['^', 'x', 2]], ['*', 'z', ['^', 'x', 2]], ['*', 'x', ['^', 'y', 2]], ['*', 'x', 'y', 'z']]);
-        expect(stateVariables['/varsExpand'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsExpand'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbers"].stateValues.value).eq(51);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "*",
+          3,
+          17,
+          1,
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["*", 3, 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["*", ["/", 6, 2], 17, 1]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(51);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberProduct"].stateValues.value).eq(51);
+        expect(
+          stateVariables["/withNumberProduct"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberProduct"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "*",
+          "x",
+          ["+", "x", "y"],
+          ["+", "x", "y", "z"],
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsExpand"].stateValues.value).eqls([
+          "+",
+          ["^", "x", 3],
+          ["*", 2, "y", ["^", "x", 2]],
+          ["*", "z", ["^", "x", 2]],
+          ["*", "x", ["^", "y", 2]],
+          ["*", "x", "y", "z"],
+        ]);
+        expect(stateVariables["/varsExpand"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsExpand"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(51);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "*",
+          "x",
+          ["+", "x", "y"],
+          ["+", "x", "y", "z"],
+        ]);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
+      });
+    });
+  });
 
-  })
-
-  it('clamp number', () => {
+  it("clamp number", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
 
       <clampNumber>55.3</clampNumber>
@@ -1276,142 +2728,260 @@ describe('Math Operator Tag Tests', function () {
       <copy target="_clampnumber9" />
       <copy target="_clampnumber14" />
 
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
-      let replacement3Name = stateVariables['/_copy3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
-      let replacement4Name = stateVariables['/_copy4'].replacements[0].componentName;
-      let replacement4Anchor = cesc('#' + replacement4Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
+      let replacement3Name =
+        stateVariables["/_copy3"].replacements[0].componentName;
+      let replacement3Anchor = cesc2("#" + replacement3Name);
+      let replacement4Name =
+        stateVariables["/_copy4"].replacements[0].componentName;
+      let replacement4Anchor = cesc2("#" + replacement4Name);
 
-      cy.get('#\\/_clampnumber1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/_clampnumber2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0')
-      });
-      cy.get('#\\/_clampnumber3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0.3')
-      });
-      cy.get('#\\/_clampnumber4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('40')
-      });
-      cy.get('#\\/_clampnumber5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('10')
-      });
-      cy.get('#\\/_clampnumber6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get('#\\/_clampnumber7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('40')
-      });
-      cy.get('#\\/_clampnumber8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('10')
-      });
-      cy.get('#\\/_clampnumber9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get('#\\/_clampnumber10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get('#\\/_clampnumber11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get('#\\/_clampnumber12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('40')
-      });
-      cy.get('#\\/_clampnumber13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('10')
-      });
-      cy.get('#\\/_clampnumber14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('10')
-      });
-      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get(replacement4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-
+      cy.get(cesc("#\\/_clampnumber1"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/_clampnumber2"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0");
+        });
+      cy.get(cesc("#\\/_clampnumber3"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0.3");
+        });
+      cy.get(cesc("#\\/_clampnumber4"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("40");
+        });
+      cy.get(cesc("#\\/_clampnumber5"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("10");
+        });
+      cy.get(cesc("#\\/_clampnumber6"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(cesc("#\\/_clampnumber7"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("40");
+        });
+      cy.get(cesc("#\\/_clampnumber8"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("10");
+        });
+      cy.get(cesc("#\\/_clampnumber9"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(cesc("#\\/_clampnumber10"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(cesc("#\\/_clampnumber11"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(cesc("#\\/_clampnumber12"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("40");
+        });
+      cy.get(cesc("#\\/_clampnumber13"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("10");
+        });
+      cy.get(cesc("#\\/_clampnumber14"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("10");
+        });
+      cy.get(replacement3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(replacement4Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/_clampnumber1'].stateValues.value).eq(1);
-        expect(stateVariables['/_clampnumber2'].stateValues.value).eq(0);
-        expect(stateVariables['/_clampnumber3'].stateValues.value).eq(0.3);
-        expect(stateVariables['/_clampnumber4'].stateValues.value).eq(40);
-        expect(stateVariables['/_clampnumber5'].stateValues.value).eq(10);
-        expect(stateVariables['/_clampnumber6'].stateValues.value).eq(12);
-        expect(stateVariables['/_clampnumber7'].stateValues.value).eq(40);
-        expect(stateVariables['/_clampnumber8'].stateValues.value).eq(10);
-        expect(stateVariables['/_clampnumber9'].stateValues.value).eq(12);
-        expect(stateVariables['/_clampnumber10'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/_clampnumber11'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/_clampnumber12'].stateValues.value).eq(40);
-        expect(stateVariables['/_clampnumber13'].stateValues.value).eq(10);
-        expect(stateVariables['/_clampnumber14'].stateValues.value).eq(12);
+        expect(stateVariables["/_clampnumber1"].stateValues.value).eq(1);
+        expect(stateVariables["/_clampnumber2"].stateValues.value).eq(0);
+        expect(stateVariables["/_clampnumber3"].stateValues.value).eq(0.3);
+        expect(stateVariables["/_clampnumber4"].stateValues.value).eq(40);
+        expect(stateVariables["/_clampnumber5"].stateValues.value).eq(10);
+        expect(stateVariables["/_clampnumber6"].stateValues.value).eq(12);
+        expect(stateVariables["/_clampnumber7"].stateValues.value).eq(40);
+        expect(stateVariables["/_clampnumber8"].stateValues.value).eq(10);
+        expect(stateVariables["/_clampnumber9"].stateValues.value).eq(12);
+        expect(stateVariables["/_clampnumber10"].stateValues.value).eqls(NaN);
+        expect(stateVariables["/_clampnumber11"].stateValues.value).eqls(NaN);
+        expect(stateVariables["/_clampnumber12"].stateValues.value).eq(40);
+        expect(stateVariables["/_clampnumber13"].stateValues.value).eq(10);
+        expect(stateVariables["/_clampnumber14"].stateValues.value).eq(12);
         expect(stateVariables[replacement1Name].stateValues.value).eq(1);
         expect(stateVariables[replacement2Name].stateValues.value).eq(10);
         expect(stateVariables[replacement3Name].stateValues.value).eq(12);
         expect(stateVariables[replacement4Name].stateValues.value).eq(12);
-        expect(stateVariables['/_clampnumber1'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber3'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber4'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber5'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber6'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber7'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber8'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber9'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber10'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber11'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber12'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber13'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber14'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement3Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement4Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_clampnumber1'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber3'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber4'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber5'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber6'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber7'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber8'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber9'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber10'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/_clampnumber11'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/_clampnumber12'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber13'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_clampnumber14'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/_clampnumber1"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber3"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber4"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber5"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber6"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber7"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber8"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber9"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber10"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber11"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber12"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber13"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_clampnumber14"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement3Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement4Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/_clampnumber1"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber2"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber3"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber4"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber5"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber6"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber7"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber8"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber9"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber10"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/_clampnumber11"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/_clampnumber12"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber13"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/_clampnumber14"].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement3Name].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement4Name].stateValues.isNumber).eq(true);
+      });
+    });
+  });
 
-      })
-    })
-  })
-
-  it('wrap number periodic', () => {
+  it("wrap number periodic", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
 
       <wrapnumberperiodic>55.3</wrapnumberperiodic>
@@ -1440,142 +3010,329 @@ describe('Math Operator Tag Tests', function () {
       <copy target="_wrapnumberperiodic9" />
       <copy target="_wrapnumberperiodic14" />
 
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
-      let replacement3Name = stateVariables['/_copy3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
-      let replacement4Name = stateVariables['/_copy4'].replacements[0].componentName;
-      let replacement4Anchor = cesc('#' + replacement4Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
+      let replacement3Name =
+        stateVariables["/_copy3"].replacements[0].componentName;
+      let replacement3Anchor = cesc2("#" + replacement3Name);
+      let replacement4Name =
+        stateVariables["/_copy4"].replacements[0].componentName;
+      let replacement4Anchor = cesc2("#" + replacement4Name);
 
-      cy.get('#\\/_wrapnumberperiodic1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0.3')
-      });
-      cy.get('#\\/_wrapnumberperiodic2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0.7')
-      });
-      cy.get('#\\/_wrapnumberperiodic3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0.3')
-      });
-      cy.get('#\\/_wrapnumberperiodic4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('25.3')
-      });
-      cy.get('#\\/_wrapnumberperiodic5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('34.7')
-      });
-      cy.get('#\\/_wrapnumberperiodic6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get('#\\/_wrapnumberperiodic7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('25.3')
-      });
-      cy.get('#\\/_wrapnumberperiodic8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('34.7')
-      });
-      cy.get('#\\/_wrapnumberperiodic9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get('#\\/_wrapnumberperiodic10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get('#\\/_wrapnumberperiodic11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get('#\\/_wrapnumberperiodic12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('18')
-      });
-      cy.get('#\\/_wrapnumberperiodic13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get('#\\/_wrapnumberperiodic14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0.3')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('34.7')
-      });
-      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
-      cy.get(replacement4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('12')
-      });
+      cy.get(cesc("#\\/_wrapnumberperiodic1"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0.3");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic2"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0.7");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic3"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0.3");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic4"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25.3");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic5"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("34.7");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic6"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic7"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25.3");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic8"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("34.7");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic9"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic10"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic11"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic12"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("18");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic13"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(cesc("#\\/_wrapnumberperiodic14"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0.3");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("34.7");
+        });
+      cy.get(replacement3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
+      cy.get(replacement4Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("12");
+        });
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/_wrapnumberperiodic1'].stateValues.value).closeTo(0.3, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic2'].stateValues.value).closeTo(0.7, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic3'].stateValues.value).closeTo(0.3, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic4'].stateValues.value).closeTo(25.3, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic5'].stateValues.value).closeTo(34.7, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic6'].stateValues.value).closeTo(12, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic7'].stateValues.value).closeTo(25.3, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic8'].stateValues.value).closeTo(34.7, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic9'].stateValues.value).closeTo(12, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic10'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/_wrapnumberperiodic11'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/_wrapnumberperiodic12'].stateValues.value).closeTo(18, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic13'].stateValues.value).closeTo(12, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic14'].stateValues.value).closeTo(12, 1E-12);
-        expect(stateVariables[replacement1Name].stateValues.value).closeTo(0.3, 1E-12);
-        expect(stateVariables[replacement2Name].stateValues.value).closeTo(34.7, 1E-12);
-        expect(stateVariables[replacement3Name].stateValues.value).closeTo(12, 1E-12);
-        expect(stateVariables[replacement4Name].stateValues.value).closeTo(12, 1E-12);
-        expect(stateVariables['/_wrapnumberperiodic1'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic3'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic4'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic5'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic6'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic7'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic8'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic9'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic10'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic11'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic12'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic13'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic14'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement3Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables[replacement4Name].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic1'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic3'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic4'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic5'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic6'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic7'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic8'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic9'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic10'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/_wrapnumberperiodic11'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/_wrapnumberperiodic12'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic13'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/_wrapnumberperiodic14'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic1"].stateValues.value,
+        ).closeTo(0.3, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic2"].stateValues.value,
+        ).closeTo(0.7, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic3"].stateValues.value,
+        ).closeTo(0.3, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic4"].stateValues.value,
+        ).closeTo(25.3, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic5"].stateValues.value,
+        ).closeTo(34.7, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic6"].stateValues.value,
+        ).closeTo(12, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic7"].stateValues.value,
+        ).closeTo(25.3, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic8"].stateValues.value,
+        ).closeTo(34.7, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic9"].stateValues.value,
+        ).closeTo(12, 1e-12);
+        expect(stateVariables["/_wrapnumberperiodic10"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(stateVariables["/_wrapnumberperiodic11"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/_wrapnumberperiodic12"].stateValues.value,
+        ).closeTo(18, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic13"].stateValues.value,
+        ).closeTo(12, 1e-12);
+        expect(
+          stateVariables["/_wrapnumberperiodic14"].stateValues.value,
+        ).closeTo(12, 1e-12);
+        expect(stateVariables[replacement1Name].stateValues.value).closeTo(
+          0.3,
+          1e-12,
+        );
+        expect(stateVariables[replacement2Name].stateValues.value).closeTo(
+          34.7,
+          1e-12,
+        );
+        expect(stateVariables[replacement3Name].stateValues.value).closeTo(
+          12,
+          1e-12,
+        );
+        expect(stateVariables[replacement4Name].stateValues.value).closeTo(
+          12,
+          1e-12,
+        );
+        expect(
+          stateVariables["/_wrapnumberperiodic1"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic3"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic4"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic5"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic6"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic7"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic8"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic9"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic10"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic11"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic12"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic13"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic14"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement3Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables[replacement4Name].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/_wrapnumberperiodic1"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic3"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic4"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic5"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic6"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic7"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic8"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/_wrapnumberperiodic9"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/_wrapnumberperiodic10"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/_wrapnumberperiodic11"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/_wrapnumberperiodic12"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic13"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/_wrapnumberperiodic14"].stateValues.isNumber,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement3Name].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement4Name].stateValues.isNumber).eq(true);
+      });
+    });
+  });
 
-      })
-    })
-  })
-
-  it('clamp and wrap number updatable', () => {
+  it("clamp and wrap number updatable", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <graph>
         <point layer="1">(6,7)</point>
@@ -1592,204 +3349,225 @@ describe('Math Operator Tag Tests', function () {
       </graph>
 
       <copy name="g2" target="_graph1" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    let clamp = x => Math.min(5, Math.max(-2, x));
-    let wrap = x => -2 + me.math.mod((x + 2), 7);
+    let clamp = (x) => Math.min(5, Math.max(-2, x));
+    let wrap = (x) => -2 + me.math.mod(x + 2, 7);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x = 6, y = 7;
-      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(clamp(x));
+      let x = 6,
+        y = 7;
+      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(x);
+      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(y);
+      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName])
+      let g2children = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => stateVariables[x.componentName]);
       expect((await g2children[0].stateValues.xs)[0]).eq(x);
       expect((await g2children[0].stateValues.xs)[1]).eq(y);
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[1].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[0]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[1]).eq(clamp(x));
-
-    })
+    });
 
     cy.log("move point 1");
     cy.window().then(async (win) => {
-      let x = -5, y = 0;
+      let x = -5,
+        y = 0;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
-        args: { x, y }
+        args: { x, y },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(x);
+      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(y);
+      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName])
+      let g2children = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => stateVariables[x.componentName]);
       expect((await g2children[0].stateValues.xs)[0]).eq(x);
       expect((await g2children[0].stateValues.xs)[1]).eq(y);
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[1].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[0]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[1]).eq(clamp(x));
-
-    })
-
+    });
 
     cy.log("move point 2");
     cy.window().then(async (win) => {
-      let x = 9, y = -3;
+      let x = 9,
+        y = -3;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
-        args: { x, y }
+        args: { x, y },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName])
+      let g2children = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => stateVariables[x.componentName]);
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[1].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[0]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[1]).eq(clamp(x));
-
-    })
+    });
 
     cy.log("move point 3");
     cy.window().then(async (win) => {
-      let x = -4, y = 8;
+      let x = -4,
+        y = 8;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
-        args: { x: y, y: x }
+        args: { x: y, y: x },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-
-      let g2children = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName])
+      let g2children = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => stateVariables[x.componentName]);
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[1].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[0]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[1]).eq(clamp(x));
-
-    })
-
+    });
 
     cy.log("move point 4");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x = 10, y = -10;
+      let x = 10,
+        y = -10;
 
       await win.callAction1({
         actionName: "movePoint",
-        componentName: stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren[0].componentName,
-        args: { x, y }
+        componentName:
+          stateVariables[stateVariables["/g2"].replacements[0].componentName]
+            .activeChildren[0].componentName,
+        args: { x, y },
       });
       stateVariables = await win.returnAllStateVariables1();
-      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(x);
+      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(y);
+      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName])
+      let g2children = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => stateVariables[x.componentName]);
       expect((await g2children[0].stateValues.xs)[0]).eq(x);
       expect((await g2children[0].stateValues.xs)[1]).eq(y);
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[1].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[0]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[1]).eq(clamp(x));
-
-    })
+    });
 
     cy.log("move point 5");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x = 11, y = -13;
+      let x = 11,
+        y = -13;
 
       await win.callAction1({
         actionName: "movePoint",
-        componentName: stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren[1].componentName,
-        args: { x, y }
+        componentName:
+          stateVariables[stateVariables["/g2"].replacements[0].componentName]
+            .activeChildren[1].componentName,
+        args: { x, y },
       });
       stateVariables = await win.returnAllStateVariables1();
-      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName])
+      let g2children = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => stateVariables[x.componentName]);
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[1].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[0]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[1]).eq(clamp(x));
-
-    })
+    });
 
     cy.log("move point 6");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x = -3, y = 12;
+      let x = -3,
+        y = 12;
 
       await win.callAction1({
         actionName: "movePoint",
-        componentName: stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren[2].componentName,
-        args: { x: y, y: x }
+        componentName:
+          stateVariables[stateVariables["/g2"].replacements[0].componentName]
+            .activeChildren[2].componentName,
+        args: { x: y, y: x },
       });
 
       stateVariables = await win.returnAllStateVariables1();
-      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(clamp(x));
-      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(wrap(y));
-      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(clamp(x));
+      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
+      expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName])
+      let g2children = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => stateVariables[x.componentName]);
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[1].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[0]).eq(wrap(y));
       expect((await g2children[2].stateValues.xs)[1]).eq(clamp(x));
-    })
-
+    });
   });
 
-  it('round', () => {
+  it("round", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <round>55.3252326</round>
       <round>log(31)</round>
@@ -1812,91 +3590,161 @@ describe('Math Operator Tag Tests', function () {
       <copy target="_round5" />
       <copy target="_round11" />
   
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
-      let replacement3Name = stateVariables['/_copy3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
+      let replacement3Name =
+        stateVariables["/_copy3"].replacements[0].componentName;
+      let replacement3Anchor = cesc2("#" + replacement3Name);
 
-      cy.get('#\\/_round1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('55')
-      });
-      cy.get('#\\/_round2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/_round3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/_round4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('55.3')
-      });
-      cy.get('#\\/_round5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3.43')
-      });
-      cy.get('#\\/_round6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0.556')
-      });
-      cy.get('#\\/_round7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('55.3')
-      });
-      cy.get('#\\/_round8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3.434')
-      });
-      cy.get('#\\/_round9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0.55556')
-      });
-      cy.get('#\\/_round10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('sin(55.3x)')
-      });
-      cy.get('#\\/_round11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('62.7')
-      });
-      cy.get('#\\/_round12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1524000000')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('55')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3.43')
-      });
-      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('62.7')
-      });
-
+      cy.get(cesc("#\\/_round1"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("55");
+        });
+      cy.get(cesc("#\\/_round2"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/_round3"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/_round4"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("55.3");
+        });
+      cy.get(cesc("#\\/_round5"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3.43");
+        });
+      cy.get(cesc("#\\/_round6"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0.556");
+        });
+      cy.get(cesc("#\\/_round7"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("55.3");
+        });
+      cy.get(cesc("#\\/_round8"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3.434");
+        });
+      cy.get(cesc("#\\/_round9"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("0.55556");
+        });
+      cy.get(cesc("#\\/_round10"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("sin(55.3x)");
+        });
+      cy.get(cesc("#\\/_round11"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("62.7");
+        });
+      cy.get(cesc("#\\/_round12"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1524000000");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("55");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3.43");
+        });
+      cy.get(replacement3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("62.7");
+        });
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/_round1'].stateValues.value).eq(55);
-        expect(stateVariables['/_round2'].stateValues.value).eq(3);
-        expect(stateVariables['/_round3'].stateValues.value).eq(1);
-        expect(stateVariables['/_round4'].stateValues.value).eq(55.3);
-        expect(stateVariables['/_round5'].stateValues.value).eq(3.43);
-        expect(stateVariables['/_round6'].stateValues.value).eq(0.556);
-        expect(stateVariables['/_round7'].stateValues.value).eq(55.3);
-        expect(stateVariables['/_round8'].stateValues.value).eq(3.434);
-        expect(stateVariables['/_round9'].stateValues.value).eq(0.55556);
-        expect(stateVariables['/_round10'].stateValues.value).eqls(['apply', 'sin', ['*', 55.3, 'x']]);
-        expect(stateVariables['/_round11'].stateValues.value).eq(62.7);
-        expect(stateVariables['/_round12'].stateValues.value).eq(1524000000);
+        expect(stateVariables["/_round1"].stateValues.value).eq(55);
+        expect(stateVariables["/_round2"].stateValues.value).eq(3);
+        expect(stateVariables["/_round3"].stateValues.value).eq(1);
+        expect(stateVariables["/_round4"].stateValues.value).eq(55.3);
+        expect(stateVariables["/_round5"].stateValues.value).eq(3.43);
+        expect(stateVariables["/_round6"].stateValues.value).eq(0.556);
+        expect(stateVariables["/_round7"].stateValues.value).eq(55.3);
+        expect(stateVariables["/_round8"].stateValues.value).eq(3.434);
+        expect(stateVariables["/_round9"].stateValues.value).eq(0.55556);
+        expect(stateVariables["/_round10"].stateValues.value).eqls([
+          "apply",
+          "sin",
+          ["*", 55.3, "x"],
+        ]);
+        expect(stateVariables["/_round11"].stateValues.value).eq(62.7);
+        expect(stateVariables["/_round12"].stateValues.value).eq(1524000000);
         expect(stateVariables[replacement1Name].stateValues.value).eq(55);
         expect(stateVariables[replacement2Name].stateValues.value).eq(3.43);
         expect(stateVariables[replacement3Name].stateValues.value).eq(62.7);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('convert set to list', () => {
+  it("convert set to list", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
 
       <p><text>a</text></p>
       <p><math>{1,2,3,2,1}</math></p>
@@ -1912,74 +3760,180 @@ describe('Math Operator Tag Tests', function () {
       <p><copy name="r3" target="_convertsettolist3" /></p>
 
 
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/r1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/r2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
-      let replacement3Name = stateVariables['/r3'].replacements[0].componentName;
-      let replacement3Anchor = cesc('#' + replacement3Name);
+      let replacement1Name =
+        stateVariables["/r1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/r2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
+      let replacement3Name =
+        stateVariables["/r3"].replacements[0].componentName;
+      let replacement3Anchor = cesc2("#" + replacement3Name);
 
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('{1,2,3,2,1}')
-      });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(1,2,3,2,1)')
-      });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1,2,3,2,1')
-      });
-      cy.get('#\\/_convertsettolist1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1,2,3')
-      });
-      cy.get('#\\/_convertsettolist2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(1,2,3,2,1)')
-      });
-      cy.get('#\\/_convertsettolist3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1,2,3,2,1')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1,2,3')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(1,2,3,2,1)')
-      });
-      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1,2,3,2,1')
-      });
-
+      cy.get(cesc("#\\/_math1"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("{1,2,3,2,1}");
+        });
+      cy.get(cesc("#\\/_math2"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("(1,2,3,2,1)");
+        });
+      cy.get(cesc("#\\/_math3"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1,2,3,2,1");
+        });
+      cy.get(cesc("#\\/_convertsettolist1"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1,2,3");
+        });
+      cy.get(cesc("#\\/_convertsettolist2"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("(1,2,3,2,1)");
+        });
+      cy.get(cesc("#\\/_convertsettolist3"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1,2,3,2,1");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1,2,3");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("(1,2,3,2,1)");
+        });
+      cy.get(replacement3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1,2,3,2,1");
+        });
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/_math1'].stateValues.value).eqls(['set', 1, 2, 3, 2, 1]);
-        expect(stateVariables['/_math2'].stateValues.value).eqls(['tuple', 1, 2, 3, 2, 1]);
-        expect(stateVariables['/_math3'].stateValues.value).eqls(['list', 1, 2, 3, 2, 1]);
-        expect(stateVariables['/_convertsettolist1'].stateValues.value).eqls(['list', 1, 2, 3]);
-        expect(stateVariables['/_convertsettolist2'].stateValues.value).eqls(['tuple', 1, 2, 3, 2, 1]);
-        expect(stateVariables['/_convertsettolist3'].stateValues.value).eqls(['list', 1, 2, 3, 2, 1]);
-        expect(stateVariables[replacement1Name].stateValues.value).eqls(['list', 1, 2, 3]);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['tuple', 1, 2, 3, 2, 1]);
-        expect(stateVariables[replacement3Name].stateValues.value).eqls(['list', 1, 2, 3, 2, 1]);
-        expect(stateVariables['/_convertsettolist1'].stateValues.unordered).eq(true);
-        expect(stateVariables['/_convertsettolist2'].stateValues.unordered).eq(true);
-        expect(stateVariables['/_convertsettolist3'].stateValues.unordered).eq(true);
+        expect(stateVariables["/_math1"].stateValues.value).eqls([
+          "set",
+          1,
+          2,
+          3,
+          2,
+          1,
+        ]);
+        expect(stateVariables["/_math2"].stateValues.value).eqls([
+          "tuple",
+          1,
+          2,
+          3,
+          2,
+          1,
+        ]);
+        expect(stateVariables["/_math3"].stateValues.value).eqls([
+          "list",
+          1,
+          2,
+          3,
+          2,
+          1,
+        ]);
+        expect(stateVariables["/_convertsettolist1"].stateValues.value).eqls([
+          "list",
+          1,
+          2,
+          3,
+        ]);
+        expect(stateVariables["/_convertsettolist2"].stateValues.value).eqls([
+          "tuple",
+          1,
+          2,
+          3,
+          2,
+          1,
+        ]);
+        expect(stateVariables["/_convertsettolist3"].stateValues.value).eqls([
+          "list",
+          1,
+          2,
+          3,
+          2,
+          1,
+        ]);
+        expect(stateVariables[replacement1Name].stateValues.value).eqls([
+          "list",
+          1,
+          2,
+          3,
+        ]);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "tuple",
+          1,
+          2,
+          3,
+          2,
+          1,
+        ]);
+        expect(stateVariables[replacement3Name].stateValues.value).eqls([
+          "list",
+          1,
+          2,
+          3,
+          2,
+          1,
+        ]);
+        expect(stateVariables["/_convertsettolist1"].stateValues.unordered).eq(
+          true,
+        );
+        expect(stateVariables["/_convertsettolist2"].stateValues.unordered).eq(
+          true,
+        );
+        expect(stateVariables["/_convertsettolist3"].stateValues.unordered).eq(
+          true,
+        );
         expect(stateVariables[replacement1Name].stateValues.unordered).eq(true);
         expect(stateVariables[replacement2Name].stateValues.unordered).eq(true);
         expect(stateVariables[replacement3Name].stateValues.unordered).eq(true);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('convert set to list, initially unresolved', () => {
+  it("convert set to list, initially unresolved", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
 
       <p><text>a</text></p>
 
@@ -1996,26 +3950,42 @@ describe('Math Operator Tag Tests', function () {
       <math name="num2" simplify><copy target="n3" />+<copy target="num3" /></math>
       <copy name="n3" target="num3" />
       <number name="num3">1</number></p>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let p = await stateVariables['/p'].stateValues.value;
-      expect((stateVariables['/_convertsettolist1'].stateValues.value)).eqls(['list', 7, 3, p]);
-      expect(stateVariables[stateVariables['/csl2'].replacements[0].componentName].stateValues.value).eqls(['list', 7, 3, p]);
-      expect(stateVariables['/_convertsettolist1'].stateValues.unordered).eq(true);
-      expect(stateVariables[stateVariables['/csl2'].replacements[0].componentName].stateValues.unordered).eq(true);
-    })
-  })
+      let p = await stateVariables["/p"].stateValues.value;
+      expect(stateVariables["/_convertsettolist1"].stateValues.value).eqls([
+        "list",
+        7,
+        3,
+        p,
+      ]);
+      expect(
+        stateVariables[stateVariables["/csl2"].replacements[0].componentName]
+          .stateValues.value,
+      ).eqls(["list", 7, 3, p]);
+      expect(stateVariables["/_convertsettolist1"].stateValues.unordered).eq(
+        true,
+      );
+      expect(
+        stateVariables[stateVariables["/csl2"].replacements[0].componentName]
+          .stateValues.unordered,
+      ).eq(true);
+    });
+  });
 
-  it('floor and ceil', () => {
+  it("floor and ceil", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <floor>55.3252326</floor>
       <ceil>log(31)</ceil>
@@ -2034,68 +4004,122 @@ describe('Math Operator Tag Tests', function () {
       <floor>2.1x</floor>
       <ceil>-3.2y</ceil>
   
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/f2a'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/c2a'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/f2a"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/c2a"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      cy.get('#\\/_floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('55')
-      });
-      cy.get('#\\/_ceil1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      });
-      cy.get('#\\/_floor2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('13')
-      });
-      cy.get('#\\/_ceil2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/_floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      });
-      cy.get('#\\/_ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−7000')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('13')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('⌊2.1x⌋')
-      });
-      cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('⌈−3.2y⌉')
-      });
+      cy.get(cesc("#\\/_floor1"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("55");
+        });
+      cy.get(cesc("#\\/_ceil1"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
+        });
+      cy.get(cesc("#\\/_floor2"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("13");
+        });
+      cy.get(cesc("#\\/_ceil2"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/_floor3"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
+        });
+      cy.get(cesc("#\\/_ceil3"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("−7000");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("13");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/_floor4"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("⌊2.1x⌋");
+        });
+      cy.get(cesc("#\\/_ceil4"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("⌈−3.2y⌉");
+        });
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/_floor1'].stateValues.value).eq(55);
-        expect(stateVariables['/_ceil1'].stateValues.value).eq(4);
-        expect(stateVariables['/_floor2'].stateValues.value).eq(13);
-        expect(stateVariables['/_ceil2'].stateValues.value).eq(1);
-        expect(stateVariables['/_floor3'].stateValues.value).eq(4);
-        expect(stateVariables['/_ceil3'].stateValues.value).eq(-7000);
+        expect(stateVariables["/_floor1"].stateValues.value).eq(55);
+        expect(stateVariables["/_ceil1"].stateValues.value).eq(4);
+        expect(stateVariables["/_floor2"].stateValues.value).eq(13);
+        expect(stateVariables["/_ceil2"].stateValues.value).eq(1);
+        expect(stateVariables["/_floor3"].stateValues.value).eq(4);
+        expect(stateVariables["/_ceil3"].stateValues.value).eq(-7000);
         expect(stateVariables[replacement1Name].stateValues.value).eq(13);
         expect(stateVariables[replacement2Name].stateValues.value).eq(1);
-        expect(stateVariables['/_floor4'].stateValues.value).eqls(["apply", "floor", ['*', 2.1, 'x']]);
-        expect(stateVariables['/_ceil4'].stateValues.value).eqls(["apply", "ceil", ['-', ['*', 3.2, 'y']]]);
-      })
-    })
-  })
+        expect(stateVariables["/_floor4"].stateValues.value).eqls([
+          "apply",
+          "floor",
+          ["*", 2.1, "x"],
+        ]);
+        expect(stateVariables["/_ceil4"].stateValues.value).eqls([
+          "apply",
+          "ceil",
+          ["-", ["*", 3.2, "y"]],
+        ]);
+      });
+    });
+  });
 
-  it('floor and ceil as math expression', () => {
+  it("floor and ceil as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <math name="floor1" format="latex">\\lfloor 55.3252326 \\rfloor</math>
       <math name="floor2">floor(55.3252326)</math>
@@ -2118,232 +4142,409 @@ describe('Math Operator Tag Tests', function () {
       <math name="ceil6" simplify>ceil -6999.999999999999</math>
       </p>
 
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('⌊55.3252326⌋')
-    });
-    cy.get('#\\/floor2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('⌊55.3252326⌋')
-    });
-    cy.get('#\\/floor1simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('55')
-    });
-    cy.get('#\\/floor2simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('55')
-    });
-    cy.get('#\\/ceil1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('⌈log(31.1)⌉')
-    });
-    cy.get('#\\/ceil2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('⌈log(31.1)⌉')
-    });
-    cy.get('#\\/ceil1simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    });
-    cy.get('#\\/ceil2simp').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    });
-    cy.get('#\\/floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('13')
-    });
-    cy.get('#\\/floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('13')
-    });
-    cy.get('#\\/ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/floor5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    });
-    cy.get('#\\/floor6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    });
-    cy.get('#\\/ceil5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7000')
-    });
-    cy.get('#\\/ceil6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7000')
-    });
+    cy.get(cesc("#\\/floor1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("⌊55.3252326⌋");
+      });
+    cy.get(cesc("#\\/floor2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("⌊55.3252326⌋");
+      });
+    cy.get(cesc("#\\/floor1simp"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("55");
+      });
+    cy.get(cesc("#\\/floor2simp"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("55");
+      });
+    cy.get(cesc("#\\/ceil1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("⌈log(31.1)⌉");
+      });
+    cy.get(cesc("#\\/ceil2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("⌈log(31.1)⌉");
+      });
+    cy.get(cesc("#\\/ceil1simp"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("4");
+      });
+    cy.get(cesc("#\\/ceil2simp"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("4");
+      });
+    cy.get(cesc("#\\/floor3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("13");
+      });
+    cy.get(cesc("#\\/floor4"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("13");
+      });
+    cy.get(cesc("#\\/ceil3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/ceil4"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/floor5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("4");
+      });
+    cy.get(cesc("#\\/floor6"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("4");
+      });
+    cy.get(cesc("#\\/ceil5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("−7000");
+      });
+    cy.get(cesc("#\\/ceil6"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("−7000");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/floor1'].stateValues.value).eqls(["apply", "floor", 55.3252326]);
-      expect(stateVariables['/floor2'].stateValues.value).eqls(["apply", "floor", 55.3252326]);
-      expect(stateVariables['/floor1simp'].stateValues.value).eq(55);
-      expect(stateVariables['/floor2simp'].stateValues.value).eq(55);
-      expect(stateVariables['/ceil1'].stateValues.value).eqls(["apply", "ceil", ["apply", "log", 31.1]]);
-      expect(stateVariables['/ceil2'].stateValues.value).eqls(["apply", "ceil", ["apply", "log", 31.1]]);
-      expect(stateVariables['/ceil1simp'].stateValues.value).eq(4);
-      expect(stateVariables['/ceil2simp'].stateValues.value).eq(4);
-      expect(stateVariables['/floor3'].stateValues.value).eq(13);
-      expect(stateVariables['/floor4'].stateValues.value).eq(13);
-      expect(stateVariables['/ceil3'].stateValues.value).eq(1);
-      expect(stateVariables['/ceil4'].stateValues.value).eq(1);
-      expect(stateVariables['/floor5'].stateValues.value).eq(4);
-      expect(stateVariables['/floor6'].stateValues.value).eq(4);
-      expect(stateVariables['/ceil5'].stateValues.value).eq(-7000);
-      expect(stateVariables['/ceil6'].stateValues.value).eq(-7000);
+      expect(stateVariables["/floor1"].stateValues.value).eqls([
+        "apply",
+        "floor",
+        55.3252326,
+      ]);
+      expect(stateVariables["/floor2"].stateValues.value).eqls([
+        "apply",
+        "floor",
+        55.3252326,
+      ]);
+      expect(stateVariables["/floor1simp"].stateValues.value).eq(55);
+      expect(stateVariables["/floor2simp"].stateValues.value).eq(55);
+      expect(stateVariables["/ceil1"].stateValues.value).eqls([
+        "apply",
+        "ceil",
+        ["apply", "log", 31.1],
+      ]);
+      expect(stateVariables["/ceil2"].stateValues.value).eqls([
+        "apply",
+        "ceil",
+        ["apply", "log", 31.1],
+      ]);
+      expect(stateVariables["/ceil1simp"].stateValues.value).eq(4);
+      expect(stateVariables["/ceil2simp"].stateValues.value).eq(4);
+      expect(stateVariables["/floor3"].stateValues.value).eq(13);
+      expect(stateVariables["/floor4"].stateValues.value).eq(13);
+      expect(stateVariables["/ceil3"].stateValues.value).eq(1);
+      expect(stateVariables["/ceil4"].stateValues.value).eq(1);
+      expect(stateVariables["/floor5"].stateValues.value).eq(4);
+      expect(stateVariables["/floor6"].stateValues.value).eq(4);
+      expect(stateVariables["/ceil5"].stateValues.value).eq(-7000);
+      expect(stateVariables["/ceil6"].stateValues.value).eq(-7000);
+    });
+  });
 
-    })
-
-  })
-
-  it('abs', () => {
+  it("abs", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <abs>-5.3</abs>
       <abs>-x</abs>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.get('#\\/_abs1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('5.3')
-    });
-    cy.get('#\\/_abs2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('|−x|')
-    });
+    cy.get(cesc("#\\/_abs1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("5.3");
+      });
+    cy.get(cesc("#\\/_abs2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("|−x|");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_abs1'].stateValues.value).eq(5.3);
-      expect(stateVariables['/_abs2'].stateValues.value).eqls(['apply', 'abs', ['-', 'x']]);
-    })
-  })
+      expect(stateVariables["/_abs1"].stateValues.value).eq(5.3);
+      expect(stateVariables["/_abs2"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        ["-", "x"],
+      ]);
+    });
+  });
 
-
-  it('invert abs', () => {
+  it("invert abs", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <abs name="a1">-9</abs>
       <mathinput bindValueTo="$a1" name="a2" />
       <copy prop="value" target="a2" assignNames="a3" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('9')
-    });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
-    })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('9')
-    });
+    cy.get(cesc("#\\/a1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("9");
+      });
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("9");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("9");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a1'].stateValues.value).eq(9);
-      expect(stateVariables['/a2'].stateValues.value).eq(9);
-      expect(stateVariables['/a3'].stateValues.value).eq(9);
-    })
-
-    cy.get("#\\/a2 textarea").type("{end}{backspace}-3{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '0');
-
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
+      expect(stateVariables["/a1"].stateValues.value).eq(9);
+      expect(stateVariables["/a2"].stateValues.value).eq(9);
+      expect(stateVariables["/a3"].stateValues.value).eq(9);
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
-    })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
+
+    cy.get(cesc("#\\/a2") + " textarea").type("{end}{backspace}-3{enter}", {
+      force: true,
     });
+    cy.get(cesc("#\\/a3")).should("contain.text", "0");
+
+    cy.get(cesc("#\\/a1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a1'].stateValues.value).eq(0);
-      expect(stateVariables['/a2'].stateValues.value).eq(0);
-      expect(stateVariables['/a3'].stateValues.value).eq(0);
-    })
-
-
-    cy.get("#\\/a2 textarea").type("{end}{backspace}7{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '7');
-
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
+      expect(stateVariables["/a1"].stateValues.value).eq(0);
+      expect(stateVariables["/a2"].stateValues.value).eq(0);
+      expect(stateVariables["/a3"].stateValues.value).eq(0);
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7')
-    })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
+
+    cy.get(cesc("#\\/a2") + " textarea").type("{end}{backspace}7{enter}", {
+      force: true,
     });
+    cy.get(cesc("#\\/a3")).should("contain.text", "7");
+
+    cy.get(cesc("#\\/a1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("7");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a1'].stateValues.value).eq(7);
-      expect(stateVariables['/a2'].stateValues.value).eq(7);
-      expect(stateVariables['/a3'].stateValues.value).eq(7);
-    })
-
-
-    cy.get("#\\/a2 textarea").type("{end}{backspace}x{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '|x|');
-
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('|x|')
+      expect(stateVariables["/a1"].stateValues.value).eq(7);
+      expect(stateVariables["/a2"].stateValues.value).eq(7);
+      expect(stateVariables["/a3"].stateValues.value).eq(7);
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|x|')
-    })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('|x|')
+
+    cy.get(cesc("#\\/a2") + " textarea").type("{end}{backspace}x{enter}", {
+      force: true,
     });
+    cy.get(cesc("#\\/a3")).should("contain.text", "|x|");
+
+    cy.get(cesc("#\\/a1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("|x|");
+      });
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("|x|");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("|x|");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a1'].stateValues.value).eqls(["apply", "abs", "x"]);
-      expect(stateVariables['/a2'].stateValues.value).eqls(["apply", "abs", "x"]);
-      expect(stateVariables['/a3'].stateValues.value).eqls(["apply", "abs", "x"]);
-    })
-
-
-    cy.get("#\\/a2 textarea").type("{end}{leftArrow}{backspace}y{enter}", { force: true })
-    cy.get('#\\/a3').should('contain.text', '|y|');
-
-    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('|y|')
+      expect(stateVariables["/a1"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        "x",
+      ]);
+      expect(stateVariables["/a2"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        "x",
+      ]);
+      expect(stateVariables["/a3"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        "x",
+      ]);
     });
-    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|y|')
-    })
-    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('|y|')
-    });
+
+    cy.get(cesc("#\\/a2") + " textarea").type(
+      "{end}{leftArrow}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/a3")).should("contain.text", "|y|");
+
+    cy.get(cesc("#\\/a1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("|y|");
+      });
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("|y|");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("|y|");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a1'].stateValues.value).eqls(["apply", "abs", "y"]);
-      expect(stateVariables['/a2'].stateValues.value).eqls(["apply", "abs", "y"]);
-      expect(stateVariables['/a3'].stateValues.value).eqls(["apply", "abs", "y"]);
-    })
+      expect(stateVariables["/a1"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        "y",
+      ]);
+      expect(stateVariables["/a2"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        "y",
+      ]);
+      expect(stateVariables["/a3"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        "y",
+      ]);
+    });
+  });
 
-
-  })
-
-  it('floor, ceil, round and abs updatable', () => {
+  it("floor, ceil, round and abs updatable", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <graph>
         <point layer="1">(6.1,7.6)</point>
@@ -2361,212 +4562,245 @@ describe('Math Operator Tag Tests', function () {
       </graph>
 
       <copy name="g2" target="_graph1" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     let g2ChildrenNames;
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      g2ChildrenNames = stateVariables[stateVariables['/g2'].replacements[0].componentName].activeChildren.map(x => x.componentName);
-    })
+      g2ChildrenNames = stateVariables[
+        stateVariables["/g2"].replacements[0].componentName
+      ].activeChildren.map((x) => x.componentName);
+    });
 
     let checkPoints = async function (x, y) {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(Math.floor(x));
-        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(Math.ceil(y));
-        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(Math.abs(Math.ceil(y)));
-        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(Math.round(x));
+        expect(stateVariables["/_point1"].stateValues.xs[0]).eq(x);
+        expect(stateVariables["/_point1"].stateValues.xs[1]).eq(y);
+        expect(stateVariables["/_point2"].stateValues.xs[0]).eq(Math.floor(x));
+        expect(stateVariables["/_point2"].stateValues.xs[1]).eq(Math.ceil(y));
+        expect(stateVariables["/_point3"].stateValues.xs[0]).eq(
+          Math.abs(Math.ceil(y)),
+        );
+        expect(stateVariables["/_point3"].stateValues.xs[1]).eq(Math.round(x));
 
-        let g2Children = g2ChildrenNames.map(x => stateVariables[x]);
+        let g2Children = g2ChildrenNames.map((x) => stateVariables[x]);
         expect((await g2Children[0].stateValues.xs)[0]).eq(x);
         expect((await g2Children[0].stateValues.xs)[1]).eq(y);
         expect((await g2Children[1].stateValues.xs)[0]).eq(Math.floor(x));
         expect((await g2Children[1].stateValues.xs)[1]).eq(Math.ceil(y));
-        expect((await g2Children[2].stateValues.xs)[0]).eq(Math.abs(Math.ceil(y)));
+        expect((await g2Children[2].stateValues.xs)[0]).eq(
+          Math.abs(Math.ceil(y)),
+        );
         expect((await g2Children[2].stateValues.xs)[1]).eq(Math.round(x));
-      })
-    }
+      });
+    };
 
     checkPoints(6.1, 7.6);
 
     cy.log("move point 1, positive y");
     cy.window().then(async (win) => {
-      let x = -5.1, y = 0.3;
+      let x = -5.1,
+        y = 0.3;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 1, negative y");
     cy.window().then(async (win) => {
-      let x = -7.9, y = -5.8;
+      let x = -7.9,
+        y = -5.8;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 2, positive y");
     cy.window().then(async (win) => {
-      let x = 3.4, y = 8.6;
+      let x = 3.4,
+        y = 8.6;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 2, negative y");
     cy.window().then(async (win) => {
-      let x = 7.7, y = -4.4;
+      let x = 7.7,
+        y = -4.4;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 3, positive x");
     cy.window().then(async (win) => {
-      let x = 9.4, y = -1.3;
+      let x = 9.4,
+        y = -1.3;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(y, x);
-    })
+    });
 
     cy.log("move point 3, negative x");
     cy.window().then(async (win) => {
-      let x = -8.9, y = -4.6;
+      let x = -8.9,
+        y = -4.6;
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(y, 0);
-    })
+    });
 
     cy.log("move point 4, positive y");
     cy.window().then(async (win) => {
-      let x = 6.8, y = 3.7;
+      let x = 6.8,
+        y = 3.7;
 
       await win.callAction1({
         actionName: "movePoint",
         componentName: g2ChildrenNames[0],
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 4, negative y");
     cy.window().then(async (win) => {
-      let x = 1.2, y = -1.4;
+      let x = 1.2,
+        y = -1.4;
       await win.callAction1({
         actionName: "movePoint",
         componentName: g2ChildrenNames[0],
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 5, positive y");
     cy.window().then(async (win) => {
-      let x = -6.6, y = 3.2;
+      let x = -6.6,
+        y = 3.2;
       await win.callAction1({
         actionName: "movePoint",
         componentName: g2ChildrenNames[1],
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 5, negative y");
     cy.window().then(async (win) => {
-      let x = -4.3, y = -8.9;
+      let x = -4.3,
+        y = -8.9;
       await win.callAction1({
         actionName: "movePoint",
         componentName: g2ChildrenNames[1],
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(x, y);
-    })
+    });
 
     cy.log("move point 6, positive x");
     cy.window().then(async (win) => {
-      let x = 6.4, y = 2.3;
+      let x = 6.4,
+        y = 2.3;
       await win.callAction1({
         actionName: "movePoint",
         componentName: g2ChildrenNames[2],
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(y, x);
-    })
+    });
 
     cy.log("move point 6, negative x");
     cy.window().then(async (win) => {
-      let x = -5.6, y = 7.8;
+      let x = -5.6,
+        y = 7.8;
       await win.callAction1({
         actionName: "movePoint",
         componentName: g2ChildrenNames[2],
-        args: { x, y }
+        args: { x, y },
       });
       checkPoints(y, 0);
-    })
-
-
-
+    });
   });
 
-  it('sign', () => {
+  it("sign", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <sign>-5.3</sign>
       <sign>63</sign>
       <sign>0</sign>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.get('#\\/_sign1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−1')
-    });
-    cy.get('#\\/_sign2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/_sign3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
+    cy.get(cesc("#\\/_sign1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("−1");
+      });
+    cy.get(cesc("#\\/_sign2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/_sign3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_sign1'].stateValues.value).eq(-1);
-      expect(stateVariables['/_sign2'].stateValues.value).eq(1);
-      expect(stateVariables['/_sign3'].stateValues.value).eq(0);
-    })
-  })
+      expect(stateVariables["/_sign1"].stateValues.value).eq(-1);
+      expect(stateVariables["/_sign2"].stateValues.value).eq(1);
+      expect(stateVariables["/_sign3"].stateValues.value).eq(0);
+    });
+  });
 
-  it('mean', () => {
+  it("mean", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <mean name="numbers"><number>3</number><number>17</number><number>5-4</number></mean>
       <mean name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></mean>
@@ -2583,116 +4817,274 @@ describe('Math Operator Tag Tests', function () {
       <mean name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></mean>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3+17+13')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3+17+13')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('62+17+13')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      });
-      cy.get('#\\/withNumberMean').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+x+y+x+y+z3')
-      });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x+2y+z3')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+x+y+x+y+z3')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("7");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3+17+13");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("7");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("7");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3+17+13");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("7");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("62+17+13");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("7");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("7");
+        });
+      cy.get(cesc("#\\/withNumberMean"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("6");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x+x+y+x+y+z3");
+        });
+      cy.get(cesc("#\\/varsSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3x+2y+z3");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("7");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x+x+y+x+y+z3");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(7);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMean'].stateValues.value).eq(6);
-        expect(stateVariables['/withNumberMean'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMean'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['/', ['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z'], 3]);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbers"].stateValues.value).eq(7);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "/",
+          ["+", 3, 17, 1],
+          3,
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          7,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["/", ["+", 3, 17, 1], 3]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["/", ["+", ["/", 6, 2], 17, 1], 3]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(7);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberMean"].stateValues.value).eq(6);
+        expect(
+          stateVariables["/withNumberMean"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMean"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "/",
+          ["+", "x", "x", "y", "x", "y", "z"],
+          3,
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.value).eqls([
+          "/",
+          ["+", ["*", 3, "x"], ["*", 2, "y"], "z"],
+          3,
+        ]);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(7);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "/",
+          ["+", "x", "x", "y", "x", "y", "z"],
+          3,
+        ]);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('mean with sugar', () => {
+  it("mean with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">3</number>
       <number name="b">17</number>
@@ -2720,149 +5112,374 @@ describe('Math Operator Tag Tests', function () {
       <mean name="varsAsString">x x+y x+y+z</mean>
       <mean name="varsAsStringSimplify" simplify>x x+y x+y+z</mean>
       <mean name="varsAsStringForceNumeric" forceNumeric>x x+y x+y+z</mean>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3+17+13')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('62+17+5−43')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3+17+13')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3+17+13')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('62+17+13')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+x+y+x+y+z3')
-    });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+x+y+x+y+z3')
-    });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3x+2y+z3')
-    });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
-    });
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3+17+13");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("62+17+5−43");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3+17+13");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3+17+13");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("62+17+13");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/vars"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x+x+y+x+y+z3");
+      });
+    cy.get(cesc("#\\/varsAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x+x+y+x+y+z3");
+      });
+    cy.get(cesc("#\\/varsAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3x+2y+z3");
+      });
+    cy.get(cesc("#\\/varsAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("NaN");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(7);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 5, -4], 3]);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(7);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(7);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(7);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 1], 3]);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(7);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/varsAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.value).eqls(['/', ['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z'], 3]);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+        expect(stateVariables["/numbers"].stateValues.value).eq(7);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(7);
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.value,
+        ).eqls(["/", ["+", 3, 17, 1], 3]);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(7);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.value).eqls([
+          "/",
+          ["+", ["/", 6, 2], 17, 5, -4],
+          3,
+        ]);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          7,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(7);
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.value,
+        ).eqls(["/", ["+", 3, 17, 1], 3]);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(7);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(7);
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(7);
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues.value,
+        ).eqls(["/", ["+", 3, 17, 1], 3]);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.value).eqls([
+          "/",
+          ["+", ["/", 6, 2], 17, 1],
+          3,
+        ]);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "/",
+          ["+", "x", "x", "y", "x", "y", "z"],
+          3,
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.value).eqls([
+          "/",
+          ["+", "x", "x", "y", "x", "y", "z"],
+          3,
+        ]);
+        expect(
+          stateVariables["/varsAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.isNumber).eq(false);
+        expect(
+          stateVariables["/varsAsStringSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.value).eqls([
+          "/",
+          ["+", ["*", 3, "x"], ["*", 2, "y"], "z"],
+          3,
+        ]);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.value,
+        ).eqls(NaN);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(false);
+      });
+    });
+  });
 
-  it('mean as math expression', () => {
+  it("mean as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">3</number>
@@ -2921,132 +5538,284 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupPlus3Simplify" simplify>
         mean($a, $b, $nums, $c)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3,17,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3⋅17⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('251')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3,17,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3⋅17⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3,17,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3⋅17⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3,17,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mean(3,17,3,17,1,1)')
-    });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3,17,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3⋅17⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("251");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3,17,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3,17,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/groupPlus"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlusSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/groupPlus2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlus2Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
+    cy.get(cesc("#\\/groupPlus3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mean(3,17,3,17,1,1)");
+      });
+    cy.get(cesc("#\\/groupPlus3Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("7");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'mean', ["+", ["*", 3, 17, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["tuple", 3, 17, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(7);
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["+", ["*", 3, 17, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(251);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'mean', ["*", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "mean", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(7);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "mean", ["*", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'mean', ["*", 3, 17, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(7);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["*", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(7);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(7);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.value).eq(7);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(7);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus2"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus2"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.value).eq(7);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, 3, 17, 1, 1]]);
-        expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(7);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus3"].stateValues.value).eqls([
+          "apply",
+          "mean",
+          ["tuple", 3, 17, 3, 17, 1, 1],
+        ]);
+        expect(stateVariables["/groupPlus3"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.value).eq(7);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.isNumber).eq(
+          true,
+        );
+      });
+    });
+  });
 
-
-      })
-    })
-  })
-
-  it('mean additional cases', () => {
+  it("mean additional cases", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p name="pPrime">Mean of first primes: <mean name="meanPrime">2 3 5 7</mean></p>
     <p>Copying that mean: <copy target="meanPrime" /></p>
@@ -3055,56 +5824,112 @@ describe('Math Operator Tag Tests', function () {
     <p name="p100">Mean of numbers from 1 to 100: <mean name="mean100"><sequence to="100" /></mean></p>
     <p>Copying that mean: <copy target="mean100" /></p>
     <copy target="p100" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mean2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let mean3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let mean5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let mean6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let mean2Anchor = cesc2(
+        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      );
+      let mean3Anchor = cesc2(
+        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      );
+      let mean5Anchor = cesc2(
+        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      );
+      let mean6Anchor = cesc2(
+        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      );
 
-      cy.log('Test value displayed in browser')
+      cy.log("Test value displayed in browser");
 
-      cy.get('#\\/meanPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4.25')
-      });
-      cy.get(mean2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4.25')
-      });
-      cy.get(mean3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4.25')
-      });
-      cy.get('#\\/mean100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('50.5')
-      });
-      cy.get(mean5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('50.5')
-      });
-      cy.get(mean6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('50.5')
-      });
+      cy.get(cesc("#\\/meanPrime"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4.25");
+        });
+      cy.get(mean2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4.25");
+        });
+      cy.get(mean3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4.25");
+        });
+      cy.get(cesc("#\\/mean100"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("50.5");
+        });
+      cy.get(mean5Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("50.5");
+        });
+      cy.get(mean6Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("50.5");
+        });
 
-      cy.log('Test internal values are set to the correct values')
+      cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
-        expect(stateVariables['/meanPrime'].stateValues.value).eq(4.25);
-        expect(stateVariables[stateVariables['/_copy1'].replacements[0].componentName].stateValues.value).eq(4.25);
-        expect(stateVariables[stateVariables[stateVariables['/_copy2'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).eq(4.25);
-        expect(stateVariables['/mean100'].stateValues.value).eq(50.5);
-        expect(stateVariables[stateVariables['/_copy3'].replacements[0].componentName].stateValues.value).eq(50.5);
-        expect(stateVariables[stateVariables[stateVariables['/_copy4'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).eq(50.5);
-      })
-    })
-  })
+        expect(stateVariables["/meanPrime"].stateValues.value).eq(4.25);
+        expect(
+          stateVariables[
+            stateVariables["/_copy1"].replacements[0].componentName
+          ].stateValues.value,
+        ).eq(4.25);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy2"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).eq(4.25);
+        expect(stateVariables["/mean100"].stateValues.value).eq(50.5);
+        expect(
+          stateVariables[
+            stateVariables["/_copy3"].replacements[0].componentName
+          ].stateValues.value,
+        ).eq(50.5);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy4"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).eq(50.5);
+      });
+    });
+  });
 
   // TODO: skipping most checks of ugly expressions for now
-  it('variance', () => {
+  it("variance", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <variance name="numbers"><number>3</number><number>17</number><number>5-4</number></variance>
       <variance name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></variance>
@@ -3121,119 +5946,260 @@ describe('Math Operator Tag Tests', function () {
       <variance name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></variance>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       let theVariance = me.math.variance([3, 17, 1]);
       let theVarianceString = theVariance.toString();
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('32+172+12−(3+17+1)232')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('32+172+12−(3+17+1)232')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(62)2+172+12−(62+17+1)232')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/withNumberVariance').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(me.math.variance([3, me.math.variance([17, 1])]).toString())
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
-      });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("32+172+12−(3+17+1)232");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("32+172+12−(3+17+1)232");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("(62)2+172+12−(62+17+1)232");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/withNumberVariance"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(
+            me.math.variance([3, me.math.variance([17, 1])]).toString(),
+          );
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232");
+        });
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
-      });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbers"].stateValues.value).eq(theVariance);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
         // expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberVariance'].stateValues.value).eq(me.math.variance([3, me.math.variance([17, 1])]));
-        expect(stateVariables['/withNumberVariance'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberVariance'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberVariance"].stateValues.value).eq(
+          me.math.variance([3, me.math.variance([17, 1])]),
+        );
+        expect(
+          stateVariables["/withNumberVariance"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberVariance"].stateValues.isNumber).eq(
+          true,
+        );
         // expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
         // expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['/', ['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z'], 3]);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
-        expect(stateVariables[replacement1Name].stateValues.value).eq(theVariance);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables[replacement1Name].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
         // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('variance with sugar', () => {
+  it("variance with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">3</number>
       <number name="b">17</number>
@@ -3261,152 +6227,355 @@ describe('Math Operator Tag Tests', function () {
       <variance name="varsAsString">x x+y x+y+z</variance>
       <variance name="varsAsStringSimplify" simplify>x x+y x+y+z</variance>
       <variance name="varsAsStringForceNumeric" forceNumeric>x x+y x+y+z</variance>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
     let theVariance = me.math.variance([3, 17, 1]);
     let theVarianceString = theVariance.toString();
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('32+172+12−(3+17+1)232')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(62)2+172+(5−4)2−(62+17+5−4)232')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('32+172+12−(3+17+1)232')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('32+172+12−(3+17+1)232')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(62)2+172+12−(62+17+1)232')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
-    });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
-    });
-    // cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("32+172+12−(3+17+1)232");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("(62)2+172+(5−4)2−(62+17+5−4)232");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("32+172+12−(3+17+1)232");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("32+172+12−(3+17+1)232");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("(62)2+172+12−(62+17+1)232");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/vars"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232");
+      });
+    cy.get(cesc("#\\/varsAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232");
+      });
+    // cy.get(cesc('#\\/varsAsStringSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
     //   expect(text.trim()).equal('3x+2y+z3')
     // });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
-    });
+    cy.get(cesc("#\\/varsAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("NaN");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbers"].stateValues.value).eq(theVariance);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
         // expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
         // expect(stateVariables['/numericAsString'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 5, -4], 3]);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
         // expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
         // expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/withNumericMathMacro'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 1], 3]);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
         // expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
         // expect(stateVariables['/varsAsString'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/varsAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumericOperator).eq(false);
+        expect(
+          stateVariables["/varsAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.isNumber).eq(false);
+        expect(
+          stateVariables["/varsAsStringSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
         // expect(stateVariables['/varsAsStringSimplify'].stateValues.value).eqls(['/', ['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z'], 3]);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.value,
+        ).eqls(NaN);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(false);
+      });
+    });
+  });
 
-  it('variance as math expression', () => {
+  it("variance as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">3</number>
@@ -3465,136 +6634,301 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupPlus3Simplify" simplify>
         variance($a, $b, $nums, 13)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     let theVariance = me.math.variance([3, 17, 1]);
     let theVarianceString = theVariance.toString();
     let theVariance2 = me.math.variance([3, 17, 1, 3, 17, 13]);
     let theVariance2String = theVariance2.toString();
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3,17,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3⋅17⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3,17,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3⋅17⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3,17,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3⋅17⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3,17,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVarianceString)
-    });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3,17,1,3,17,13)')
-    });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVariance2String)
-    });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3,17,13,3,17,1)')
-    });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVariance2String)
-    });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('variance(3,17,3,17,1,13)')
-    });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theVariance2String)
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3,17,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3⋅17⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3,17,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3,17,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVarianceString);
+      });
+    cy.get(cesc("#\\/groupPlus"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3,17,1,3,17,13)");
+      });
+    cy.get(cesc("#\\/groupPlusSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVariance2String);
+      });
+    cy.get(cesc("#\\/groupPlus2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3,17,13,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlus2Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVariance2String);
+      });
+    cy.get(cesc("#\\/groupPlus3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("variance(3,17,3,17,1,13)");
+      });
+    cy.get(cesc("#\\/groupPlus3Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theVariance2String);
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'variance', ["+", ["*", 3, 17, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(0);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["tuple", 3, 17, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["+", ["*", 3, 17, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(0);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'variance', ["*", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(0);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "variance", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "variance", ["*", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(0);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'variance', ["*", 3, 17, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(0);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["*", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          0,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1, 3, 17, 13]]);
-        expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(theVariance2);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["tuple", 3, 17, 1, 3, 17, 13],
+        ]);
+        expect(stateVariables["/groupPlus"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.value).eq(
+          theVariance2,
+        );
+        expect(stateVariables["/groupPlusSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 13, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(theVariance2);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus2"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["tuple", 3, 17, 13, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus2"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.value).eq(
+          theVariance2,
+        );
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 3, 17, 1, 13]]);
-        expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(theVariance2);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus3"].stateValues.value).eqls([
+          "apply",
+          "variance",
+          ["tuple", 3, 17, 3, 17, 1, 13],
+        ]);
+        expect(stateVariables["/groupPlus3"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.value).eq(
+          theVariance2,
+        );
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.isNumber).eq(
+          true,
+        );
+      });
+    });
+  });
 
-      })
-    })
-  })
-
-  it('variance additional cases', () => {
+  it("variance additional cases", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p name="pPrime">Variance of first primes: <variance name="variancePrime">2 3 5 7</variance></p>
     <p>Copying that variance: <copy target="variancePrime" /></p>
@@ -3603,60 +6937,124 @@ describe('Math Operator Tag Tests', function () {
     <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100"><sequence to="100" /></variance></p>
     <p>Copying that variance: <copy target="variance100" /></p>
     <copy target="p100" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let variance2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let variance3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let variance5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let variance6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let variance2Anchor = cesc2(
+        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      );
+      let variance3Anchor = cesc2(
+        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      );
+      let variance5Anchor = cesc2(
+        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      );
+      let variance6Anchor = cesc2(
+        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      );
 
       let variancePrimes = me.math.variance(2, 3, 5, 7);
-      let variance100 = me.math.variance(Array.from({ length: 100 }, (_, i) => i + 1))
+      let variance100 = me.math.variance(
+        Array.from({ length: 100 }, (_, i) => i + 1),
+      );
 
-      cy.log('Test value displayed in browser')
+      cy.log("Test value displayed in browser");
 
-      cy.get('#\\/variancePrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variancePrimes, 1E-6);
-      });
-      cy.get(variance2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variancePrimes, 1E-6);
-      });
-      cy.get(variance3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variancePrimes, 1E-6);
-      });
-      cy.get('#\\/variance100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variance100, 1E-6);
-      });
-      cy.get(variance5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variance100, 1E-6);
-      });
-      cy.get(variance6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variance100, 1E-6);
-      });
+      cy.get(cesc("#\\/variancePrime"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variancePrimes, 1e-6);
+        });
+      cy.get(variance2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variancePrimes, 1e-6);
+        });
+      cy.get(variance3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variancePrimes, 1e-6);
+        });
+      cy.get(cesc("#\\/variance100"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variance100, 1e-6);
+        });
+      cy.get(variance5Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variance100, 1e-6);
+        });
+      cy.get(variance6Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variance100, 1e-6);
+        });
 
-      cy.log('Test internal values are set to the correct values')
+      cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/variancePrime'].stateValues.value).closeTo(variancePrimes, 1E-12);
-        expect(stateVariables[stateVariables['/_copy1'].replacements[0].componentName].stateValues.value).closeTo(variancePrimes, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy2'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(variancePrimes, 1E-12);
-        expect(stateVariables['/variance100'].stateValues.value).closeTo(variance100, 1E-12);
-        expect(stateVariables[stateVariables['/_copy3'].replacements[0].componentName].stateValues.value).closeTo(variance100, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy4'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(variance100, 1E-12);
-      })
-    })
-  })
+        expect(stateVariables["/variancePrime"].stateValues.value).closeTo(
+          variancePrimes,
+          1e-12,
+        );
+        expect(
+          stateVariables[
+            stateVariables["/_copy1"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(variancePrimes, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy2"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(variancePrimes, 1e-12);
+        expect(stateVariables["/variance100"].stateValues.value).closeTo(
+          variance100,
+          1e-12,
+        );
+        expect(
+          stateVariables[
+            stateVariables["/_copy3"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(variance100, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy4"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(variance100, 1e-12);
+      });
+    });
+  });
 
   // TODO: skipping most checks of ugly expressions for now
-  it('population variance', () => {
+  it("population variance", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
         <text>a</text>
         <variance population name="numbers"><number>4</number><number>16</number><number>5-4</number></variance>
         <variance population name="numbersForceSymbolic" forceSymbolic><number>4</number><number>16</number><number>5-4</number></variance>
@@ -3673,119 +7071,268 @@ describe('Math Operator Tag Tests', function () {
         <variance population name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></variance>
         <copy target="numbers" />
         <copy target="vars" />
-        `}, "*");
+        `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      let theVariance = me.math.variance([4, 16, 1], 'uncorrected');
+      let theVariance = me.math.variance([4, 16, 1], "uncorrected");
       let theVarianceString = theVariance.toString();
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('42+162+12−(4+16+1)233')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('42+162+12−(4+16+1)233')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(82)2+162+12−(82+16+1)233')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get('#\\/withNumberVariance').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(me.math.variance([4, me.math.variance([17, 1], 'uncorrected')], 'uncorrected').toString())
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233')
-      });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("42+162+12−(4+16+1)233");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("42+162+12−(4+16+1)233");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("(82)2+162+12−(82+16+1)233");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(cesc("#\\/withNumberVariance"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(
+            me.math
+              .variance(
+                [4, me.math.variance([17, 1], "uncorrected")],
+                "uncorrected",
+              )
+              .toString(),
+          );
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233");
+        });
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(theVarianceString)
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233')
-      });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal(theVarianceString);
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbers"].stateValues.value).eq(theVariance);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
         // expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(theVariance);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberVariance'].stateValues.value).eq(me.math.variance([4, me.math.variance([17, 1], 'uncorrected')], 'uncorrected'));
-        expect(stateVariables['/withNumberVariance'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberVariance'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(theVariance);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberVariance"].stateValues.value).eq(
+          me.math.variance(
+            [4, me.math.variance([17, 1], "uncorrected")],
+            "uncorrected",
+          ),
+        );
+        expect(
+          stateVariables["/withNumberVariance"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberVariance"].stateValues.isNumber).eq(
+          true,
+        );
         // expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
         // expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['/', ['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z'], 3]);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
-        expect(stateVariables[replacement1Name].stateValues.value).eq(theVariance);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables[replacement1Name].stateValues.value).eq(
+          theVariance,
+        );
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
         // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('population variance additional cases', () => {
+  it("population variance additional cases", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p name="pPrime">Variance of first primes: <variance population name="variancePrime">2 3 5 7</variance></p>
     <p>Copying that variance: <copy target="variancePrime" /></p>
@@ -3794,60 +7341,125 @@ describe('Math Operator Tag Tests', function () {
     <p name="p100">Variance of numbers from 1 to 100: <variance population name="variance100"><sequence to="100" /></variance></p>
     <p>Copying that variance: <copy target="variance100" /></p>
     <copy target="p100" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let variance2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let variance3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let variance5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let variance6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let variance2Anchor = cesc2(
+        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      );
+      let variance3Anchor = cesc2(
+        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      );
+      let variance5Anchor = cesc2(
+        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      );
+      let variance6Anchor = cesc2(
+        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      );
 
-      let variancePrimes = me.math.variance([2, 3, 5, 7], 'uncorrected');
-      let variance100 = me.math.variance(Array.from({ length: 100 }, (_, i) => i + 1), 'uncorrected')
+      let variancePrimes = me.math.variance([2, 3, 5, 7], "uncorrected");
+      let variance100 = me.math.variance(
+        Array.from({ length: 100 }, (_, i) => i + 1),
+        "uncorrected",
+      );
 
-      cy.log('Test value displayed in browser')
+      cy.log("Test value displayed in browser");
 
-      cy.get('#\\/variancePrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variancePrimes, 1E-6);
-      });
-      cy.get(variance2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variancePrimes, 1E-6);
-      });
-      cy.get(variance3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variancePrimes, 1E-6);
-      });
-      cy.get('#\\/variance100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variance100, 1E-6);
-      });
-      cy.get(variance5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variance100, 1E-6);
-      });
-      cy.get(variance6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(variance100, 1E-6);
-      });
+      cy.get(cesc("#\\/variancePrime"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variancePrimes, 1e-6);
+        });
+      cy.get(variance2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variancePrimes, 1e-6);
+        });
+      cy.get(variance3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variancePrimes, 1e-6);
+        });
+      cy.get(cesc("#\\/variance100"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variance100, 1e-6);
+        });
+      cy.get(variance5Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variance100, 1e-6);
+        });
+      cy.get(variance6Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(variance100, 1e-6);
+        });
 
-      cy.log('Test internal values are set to the correct values')
+      cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/variancePrime'].stateValues.value).closeTo(variancePrimes, 1E-12);
-        expect(stateVariables[stateVariables['/_copy1'].replacements[0].componentName].stateValues.value).closeTo(variancePrimes, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy2'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(variancePrimes, 1E-12);
-        expect(stateVariables['/variance100'].stateValues.value).closeTo(variance100, 1E-12);
-        expect(stateVariables[stateVariables['/_copy3'].replacements[0].componentName].stateValues.value).closeTo(variance100, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy4'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(variance100, 1E-12);
-      })
-    })
-  })
+        expect(stateVariables["/variancePrime"].stateValues.value).closeTo(
+          variancePrimes,
+          1e-12,
+        );
+        expect(
+          stateVariables[
+            stateVariables["/_copy1"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(variancePrimes, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy2"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(variancePrimes, 1e-12);
+        expect(stateVariables["/variance100"].stateValues.value).closeTo(
+          variance100,
+          1e-12,
+        );
+        expect(
+          stateVariables[
+            stateVariables["/_copy3"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(variance100, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy4"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(variance100, 1e-12);
+      });
+    });
+  });
 
   // TODO: skipping most checks of ugly expressions for now
-  it('standard deviation', () => {
+  it("standard deviation", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <standarddeviation name="numbers"><number>3</number><number>17</number><number>5-4</number></standarddeviation>
       <standarddeviation name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></standarddeviation>
@@ -3864,119 +7476,265 @@ describe('Math Operator Tag Tests', function () {
       <standarddeviation name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       let theStandardDeviation = me.math.std([3, 17, 1]);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√32+172+12−(3+17+1)232')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√76')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√32+172+12−(3+17+1)232')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√76')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√(62)2+172+12−(62+17+1)232')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√76')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get('#\\/withNumberStandardDeviation').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(me.math.std([3, me.math.std([17, 1])]), 1E-6)
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
-      });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√32+172+12−(3+17+1)232");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√76");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√32+172+12−(3+17+1)232");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√76");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√(62)2+172+12−(62+17+1)232");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√76");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(cesc("#\\/withNumberStandardDeviation"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(
+            me.math.std([3, me.math.std([17, 1])]),
+            1e-6,
+          );
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232");
+        });
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
-      });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).closeTo(theStandardDeviation, 1E-12);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbers"].stateValues.value).closeTo(
+          theStandardDeviation,
+          1e-12,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
         // expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eqls(['apply', 'sqrt', 76]);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).closeTo(theStandardDeviation, 1E-16);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eqls(["apply", "sqrt", 76]);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.value,
+        ).closeTo(theStandardDeviation, 1e-16);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eqls(['apply', 'sqrt', 76]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eqls(["apply", "sqrt", 76]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(false);
         // expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eqls(['apply', 'sqrt', 76]);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).closeTo(theStandardDeviation, 1E-12);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberStandardDeviation'].stateValues.value).closeTo(me.math.std([3, me.math.std([17, 1])]), 1E-12);
-        expect(stateVariables['/withNumberStandardDeviation'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberStandardDeviation'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eqls(["apply", "sqrt", 76]);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).closeTo(theStandardDeviation, 1e-12);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumberStandardDeviation"].stateValues.value,
+        ).closeTo(me.math.std([3, me.math.std([17, 1])]), 1e-12);
+        expect(
+          stateVariables["/withNumberStandardDeviation"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumberStandardDeviation"].stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
         // expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['/', ['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z'], 3]);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
-        expect(stateVariables[replacement1Name].stateValues.value).closeTo(theStandardDeviation, 1E-12);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables[replacement1Name].stateValues.value).closeTo(
+          theStandardDeviation,
+          1e-12,
+        );
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
         // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-
-  it('standard deviation as math expression', () => {
+  it("standard deviation as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">13</number>
@@ -4017,102 +7775,216 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupSimplify" simplify>
         std($nums)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     let theStd = me.math.std([13, 25, 1]);
     let theStdString = theStd.toString();
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('std(13,25,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theStdString)
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('std(13⋅25⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('std(13,25,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theStdString)
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('std(13⋅25⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('std(13,25,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theStdString)
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('std(13⋅25⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('std(13,25,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal(theStdString)
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("std(13,25,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theStdString);
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("std(13⋅25⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("std(13,25,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theStdString);
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("std(13⋅25⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("std(13,25,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theStdString);
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("std(13⋅25⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("std(13,25,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal(theStdString);
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'std', ["tuple", 13, 25, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(theStd);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'std', ["+", ["*", 13, 25, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(0);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "std",
+          ["tuple", 13, 25, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(
+          theStd,
+        );
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "std",
+          ["+", ["*", 13, 25, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(0);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'std', ["tuple", 13, 25, 1]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(theStd);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'std', ["*", 13, 25, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(0);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "std", ["tuple", 13, 25, 1]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(theStd);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "std", ["*", 13, 25, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(0);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'std', ["tuple", 13, 25, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(theStd);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'std', ["*", 13, 25, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(0);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "std",
+          ["tuple", 13, 25, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(
+          theStd,
+        );
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "std",
+          ["*", 13, 25, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          0,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'std', ["tuple", 13, 25, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(theStd);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "std",
+          ["tuple", 13, 25, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(theStd);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
+      });
+    });
+  });
 
-      })
-    })
-  })
-
-
-  it('standard deviation additional cases', () => {
+  it("standard deviation additional cases", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p name="pPrime">Standard deviation of first primes: <standarddeviation name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviationPrime" /></p>
@@ -4121,60 +7993,120 @@ describe('Math Operator Tag Tests', function () {
     <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviation100" /></p>
     <copy target="p100" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let std2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let std3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let std5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let std6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let std2Anchor = cesc2(
+        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      );
+      let std3Anchor = cesc2(
+        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      );
+      let std5Anchor = cesc2(
+        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      );
+      let std6Anchor = cesc2(
+        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      );
 
       let stdPrimes = me.math.std(2, 3, 5, 7);
-      let std100 = me.math.std(Array.from({ length: 100 }, (_, i) => i + 1))
+      let std100 = me.math.std(Array.from({ length: 100 }, (_, i) => i + 1));
 
-      cy.log('Test value displayed in browser')
+      cy.log("Test value displayed in browser");
 
-      cy.get('#\\/standarddeviationPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(stdPrimes, 1E-6);
-      });
-      cy.get(std2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(stdPrimes, 1E-6);
-      });
-      cy.get(std3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(stdPrimes, 1E-6);
-      });
-      cy.get('#\\/standarddeviation100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(std100, 1E-6);
-      });
-      cy.get(std5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(std100, 1E-6);
-      });
-      cy.get(std6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(std100, 1E-6);
-      });
+      cy.get(cesc("#\\/standarddeviationPrime"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(stdPrimes, 1e-6);
+        });
+      cy.get(std2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(stdPrimes, 1e-6);
+        });
+      cy.get(std3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(stdPrimes, 1e-6);
+        });
+      cy.get(cesc("#\\/standarddeviation100"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(std100, 1e-6);
+        });
+      cy.get(std5Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(std100, 1e-6);
+        });
+      cy.get(std6Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(std100, 1e-6);
+        });
 
-      cy.log('Test internal values are set to the correct values')
+      cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/standarddeviationPrime'].stateValues.value).closeTo(stdPrimes, 1E-12);
-        expect(stateVariables[stateVariables['/_copy1'].replacements[0].componentName].stateValues.value).closeTo(stdPrimes, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy2'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(stdPrimes, 1E-12);
-        expect(stateVariables['/standarddeviation100'].stateValues.value).closeTo(std100, 1E-12);
-        expect(stateVariables[stateVariables['/_copy3'].replacements[0].componentName].stateValues.value).closeTo(std100, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy4'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(std100, 1E-12);
-      })
-    })
-  })
+        expect(
+          stateVariables["/standarddeviationPrime"].stateValues.value,
+        ).closeTo(stdPrimes, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables["/_copy1"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(stdPrimes, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy2"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(stdPrimes, 1e-12);
+        expect(
+          stateVariables["/standarddeviation100"].stateValues.value,
+        ).closeTo(std100, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables["/_copy3"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(std100, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy4"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(std100, 1e-12);
+      });
+    });
+  });
 
   // TODO: skipping most checks of ugly expressions for now
-  it('population standard deviation', () => {
+  it("population standard deviation", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <standarddeviation population name="numbers"><number>4</number><number>16</number><number>5-4</number></standarddeviation>
       <standarddeviation population name="numbersForceSymbolic" forceSymbolic><number>4</number><number>16</number><number>5-4</number></standarddeviation>
@@ -4191,118 +8123,271 @@ describe('Math Operator Tag Tests', function () {
       <standarddeviation population name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      let theStandardDeviation = me.math.std([4, 16, 1], 'uncorrected');
+      let theStandardDeviation = me.math.std([4, 16, 1], "uncorrected");
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√42+162+12−(4+16+1)233')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√42')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√42+162+12−(4+16+1)233')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√42')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√(82)2+162+12−(82+16+1)233')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√42')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get('#\\/withNumberStandardDeviation').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(me.math.std([3, me.math.std([17, 1], 'uncorrected')], 'uncorrected'), 1E-6)
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233')
-      });
-      // cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√42+162+12−(4+16+1)233");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√42");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√42+162+12−(4+16+1)233");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√42");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√(82)2+162+12−(82+16+1)233");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√42");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(cesc("#\\/withNumberStandardDeviation"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(
+            me.math.std(
+              [3, me.math.std([17, 1], "uncorrected")],
+              "uncorrected",
+            ),
+            1e-6,
+          );
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233");
+        });
+      // cy.get(cesc('#\\/varsSimplify')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       //   expect(text.trim()).equal('3x+2y+z3')
       // });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(theStandardDeviation, 1E-6)
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233')
-      });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("√x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).closeTo(theStandardDeviation, 1E-12);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbers"].stateValues.value).closeTo(
+          theStandardDeviation,
+          1e-12,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
         // expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eqls(['apply', 'sqrt', 42]);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).closeTo(theStandardDeviation, 1E-16);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eqls(["apply", "sqrt", 42]);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.value,
+        ).closeTo(theStandardDeviation, 1e-16);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['/', ['+', 3, 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eqls(['apply', 'sqrt', 42]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eqls(["apply", "sqrt", 42]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(false);
         // expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 1], 3]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eqls(['apply', 'sqrt', 42]);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).closeTo(theStandardDeviation, 1E-12);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberStandardDeviation'].stateValues.value).closeTo(me.math.std([3, me.math.std([17, 1], 'uncorrected')], 'uncorrected'), 1E-12);
-        expect(stateVariables['/withNumberStandardDeviation'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberStandardDeviation'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eqls(["apply", "sqrt", 42]);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).closeTo(theStandardDeviation, 1e-12);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumberStandardDeviation"].stateValues.value,
+        ).closeTo(
+          me.math.std([3, me.math.std([17, 1], "uncorrected")], "uncorrected"),
+          1e-12,
+        );
+        expect(
+          stateVariables["/withNumberStandardDeviation"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumberStandardDeviation"].stateValues.isNumber,
+        ).eq(true);
         // expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
         // expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['/', ['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z'], 3]);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
-        expect(stateVariables[replacement1Name].stateValues.value).closeTo(theStandardDeviation, 1E-12);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables[replacement1Name].stateValues.value).closeTo(
+          theStandardDeviation,
+          1e-12,
+        );
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
         // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('population standard deviation additional cases', () => {
+  it("population standard deviation additional cases", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p name="pPrime">Standard deviation of first primes: <standarddeviation population name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviationPrime" /></p>
@@ -4311,59 +8396,122 @@ describe('Math Operator Tag Tests', function () {
     <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation population name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviation100" /></p>
     <copy target="p100" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let std2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let std3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let std5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let std6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let std2Anchor = cesc2(
+        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      );
+      let std3Anchor = cesc2(
+        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      );
+      let std5Anchor = cesc2(
+        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      );
+      let std6Anchor = cesc2(
+        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      );
 
-      let stdPrimes = me.math.std([2, 3, 5, 7], 'uncorrected');
-      let std100 = me.math.std(Array.from({ length: 100 }, (_, i) => i + 1), 'uncorrected')
+      let stdPrimes = me.math.std([2, 3, 5, 7], "uncorrected");
+      let std100 = me.math.std(
+        Array.from({ length: 100 }, (_, i) => i + 1),
+        "uncorrected",
+      );
 
-      cy.log('Test value displayed in browser')
+      cy.log("Test value displayed in browser");
 
-      cy.get('#\\/standarddeviationPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(stdPrimes, 1E-6);
-      });
-      cy.get(std2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(stdPrimes, 1E-6);
-      });
-      cy.get(std3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(stdPrimes, 1E-6);
-      });
-      cy.get('#\\/standarddeviation100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(std100, 1E-6);
-      });
-      cy.get(std5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(std100, 1E-6);
-      });
-      cy.get(std6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(std100, 1E-6);
-      });
+      cy.get(cesc("#\\/standarddeviationPrime"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(stdPrimes, 1e-6);
+        });
+      cy.get(std2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(stdPrimes, 1e-6);
+        });
+      cy.get(std3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(stdPrimes, 1e-6);
+        });
+      cy.get(cesc("#\\/standarddeviation100"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(std100, 1e-6);
+        });
+      cy.get(std5Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(std100, 1e-6);
+        });
+      cy.get(std6Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(Number(text)).closeTo(std100, 1e-6);
+        });
 
-      cy.log('Test internal values are set to the correct values')
+      cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/standarddeviationPrime'].stateValues.value).closeTo(stdPrimes, 1E-12);
-        expect(stateVariables[stateVariables['/_copy1'].replacements[0].componentName].stateValues.value).closeTo(stdPrimes, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy2'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(stdPrimes, 1E-12);
-        expect(stateVariables['/standarddeviation100'].stateValues.value).closeTo(std100, 1E-12);
-        expect(stateVariables[stateVariables['/_copy3'].replacements[0].componentName].stateValues.value).closeTo(std100, 1E-12);
-        expect(stateVariables[stateVariables[stateVariables['/_copy4'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).closeTo(std100, 1E-12);
-      })
-    })
-  })
+        expect(
+          stateVariables["/standarddeviationPrime"].stateValues.value,
+        ).closeTo(stdPrimes, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables["/_copy1"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(stdPrimes, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy2"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(stdPrimes, 1e-12);
+        expect(
+          stateVariables["/standarddeviation100"].stateValues.value,
+        ).closeTo(std100, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables["/_copy3"].replacements[0].componentName
+          ].stateValues.value,
+        ).closeTo(std100, 1e-12);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy4"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).closeTo(std100, 1e-12);
+      });
+    });
+  });
 
-  it('count', () => {
+  it("count", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <count name="numbers"><number>3</number><number>17</number><number>5-4</number></count>
       <count name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></count>
@@ -4380,116 +8528,258 @@ describe('Math Operator Tag Tests', function () {
       <count name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></count>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/withNumberCount').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/withNumberCount"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/varsSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(3);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberCount'].stateValues.value).eq(2);
-        expect(stateVariables['/withNumberCount'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberCount'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eq(3);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/varsSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eq(3);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbers"].stateValues.value).eq(3);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          3,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumericMath"].stateValues.value).eq(
+          3,
+        );
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberCount"].stateValues.value).eq(2);
+        expect(
+          stateVariables["/withNumberCount"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberCount"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/vars"].stateValues.value).eq(3);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(true);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsSimplify"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          true,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(3);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement2Name].stateValues.value).eq(3);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(true);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('count with sugar', () => {
+  it("count with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">3</number>
       <number name="b">17</number>
@@ -4517,150 +8807,355 @@ describe('Math Operator Tag Tests', function () {
       <count name="varsAsString">x x+y x+y+z</count>
       <count name="varsAsStringSimplify" simplify>x x+y x+y+z</count>
       <count name="varsAsStringForceNumeric" forceNumeric>x x+y x+y+z</count>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/vars"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/varsAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/varsAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/varsAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(3);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eq(3);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(3);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(3);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(3);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eq(3);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.value).eq(3);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(3);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eq(3);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/varsAsString'].stateValues.value).eq(3);
-        expect(stateVariables['/varsAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.value).eq(3);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumber).eq(true);
-      })
-    })
-  })
+        expect(stateVariables["/numbers"].stateValues.value).eq(3);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          3,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(3);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eq(3);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(true);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsAsString"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/varsAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsAsString"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/varsAsStringSimplify"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+      });
+    });
+  });
 
   // need to upgrade mathjs to get the count function
-  it.skip('count as math expression', () => {
+  it.skip("count as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">3</number>
@@ -4719,132 +9214,284 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupPlus3Simplify" simplify>
         count($a, $b, $nums, $c)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3,17,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3⋅17⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3,17,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3⋅17⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3,17,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3⋅17⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3,17,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('6')
-    });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('6')
-    });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('count(3,17,3,17,1,1)')
-    });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('6')
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3,17,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3⋅17⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3,17,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3,17,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/groupPlus"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlusSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("6");
+      });
+    cy.get(cesc("#\\/groupPlus2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlus2Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("6");
+      });
+    cy.get(cesc("#\\/groupPlus3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("count(3,17,3,17,1,1)");
+      });
+    cy.get(cesc("#\\/groupPlus3Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("6");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'count', ["+", ["*", 3, 17, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["tuple", 3, 17, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(3);
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["+", ["*", 3, 17, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'count', ["*", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "count", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(3);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "count", ["*", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'count', ["*", 3, 17, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(3);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["*", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          1,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(3);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(3);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(6);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.value).eq(6);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(6);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus2"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus2"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.value).eq(6);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, 3, 17, 1, 1]]);
-        expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(6);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus3"].stateValues.value).eqls([
+          "apply",
+          "count",
+          ["tuple", 3, 17, 3, 17, 1, 1],
+        ]);
+        expect(stateVariables["/groupPlus3"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.value).eq(6);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.isNumber).eq(
+          true,
+        );
+      });
+    });
+  });
 
-
-      })
-    })
-  })
-
-  it('count additional cases', () => {
+  it("count additional cases", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p name="pPrime">Count of first primes: <count name="countPrime">2 3 5 7</count></p>
     <p>Copying that count: <copy target="countPrime" /></p>
@@ -4853,57 +9500,111 @@ describe('Math Operator Tag Tests', function () {
     <p name="p100">Count of numbers from 1 to 100: <count name="count100"><sequence to="100" /></count></p>
     <p>Copying that count: <copy target="count100" /></p>
     <copy target="p100" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let count2Anchor = cesc('#' + stateVariables['/_copy1'].replacements[0].componentName);
-      let count3Anchor = cesc('#' + stateVariables['/_copy2'].replacements[0].componentName);
-      let count5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
-      let count6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
+      let count2Anchor = cesc2(
+        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      );
+      let count3Anchor = cesc2(
+        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      );
+      let count5Anchor = cesc2(
+        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      );
+      let count6Anchor = cesc2(
+        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      );
 
-      cy.log('Test value displayed in browser')
+      cy.log("Test value displayed in browser");
 
-      cy.get('#\\/countPrime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      });
-      cy.get(count2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      });
-      cy.get(count3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4')
-      });
-      cy.get('#\\/count100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('100')
-      });
-      cy.get(count5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('100')
-      });
-      cy.get(count6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('100')
-      });
+      cy.get(cesc("#\\/countPrime"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
+        });
+      cy.get(count2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
+        });
+      cy.get(count3Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
+        });
+      cy.get(cesc("#\\/count100"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("100");
+        });
+      cy.get(count5Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("100");
+        });
+      cy.get(count6Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("100");
+        });
 
-      cy.log('Test internal values are set to the correct values')
+      cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
-        expect(stateVariables['/countPrime'].stateValues.value).eq(4);
-        expect(stateVariables[stateVariables['/_copy1'].replacements[0].componentName].stateValues.value).eq(4);
-        expect(stateVariables[stateVariables[stateVariables['/_copy2'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).eq(4);
-        expect(stateVariables['/count100'].stateValues.value).eq(100);
-        expect(stateVariables[stateVariables['/_copy3'].replacements[0].componentName].stateValues.value).eq(100);
-        expect(stateVariables[stateVariables[stateVariables['/_copy4'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).eq(100);
-      })
+        expect(stateVariables["/countPrime"].stateValues.value).eq(4);
+        expect(
+          stateVariables[
+            stateVariables["/_copy1"].replacements[0].componentName
+          ].stateValues.value,
+        ).eq(4);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy2"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).eq(4);
+        expect(stateVariables["/count100"].stateValues.value).eq(100);
+        expect(
+          stateVariables[
+            stateVariables["/_copy3"].replacements[0].componentName
+          ].stateValues.value,
+        ).eq(100);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/_copy4"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].stateValues.value,
+        ).eq(100);
+      });
+    });
+  });
 
-    })
-  })
-
-  it('min', () => {
+  it("min", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <min name="numbers"><number>3</number><number>17</number><number>5-4</number></min>
       <min name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></min>
@@ -4920,116 +9621,274 @@ describe('Math Operator Tag Tests', function () {
       <min name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></min>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('min(3,17,1)')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('min(3,17,1)')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('min(62,17,1)')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/withNumberMin').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('min(x,x+y,x+y+z)')
-      });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('min(x,x+y,x+y+z)')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('min(x,x+y,x+y+z)')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("min(3,17,1)");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("min(3,17,1)");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("min(62,17,1)");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/withNumberMin"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("min(x,x+y,x+y+z)");
+        });
+      cy.get(cesc("#\\/varsSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("min(x,x+y,x+y+z)");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("min(x,x+y,x+y+z)");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(1);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['apply', 'min', ["tuple", ['/', 6, 2], 17, 1]]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMin'].stateValues.value).eq(1);
-        expect(stateVariables['/withNumberMin'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMin'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['apply', 'min', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['apply', 'min', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbers"].stateValues.value).eq(1);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          1,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["apply", "min", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["apply", "min", ["tuple", ["/", 6, 2], 17, 1]]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(1);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberMin"].stateValues.value).eq(1);
+        expect(
+          stateVariables["/withNumberMin"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMin"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(1);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['apply', 'min', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('min with sugar', () => {
+  it("min with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">3</number>
       <number name="b">17</number>
@@ -5057,149 +9916,374 @@ describe('Math Operator Tag Tests', function () {
       <min name="varsAsString">x x+y x+y+z</min>
       <min name="varsAsStringSimplify" simplify>x x+y x+y+z</min>
       <min name="varsAsStringForceNumeric" forceNumeric>x x+y x+y+z</min>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1)')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(62,17,5−4)')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1)')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1)')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(62,17,1)')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(x,x+y,x+y+z)')
-    });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(x,x+y,x+y+z)')
-    });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(x,x+y,x+y+z)')
-    });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
-    });
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1)");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(62,17,5−4)");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1)");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1)");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(62,17,1)");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/vars"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(x,x+y,x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(x,x+y,x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(x,x+y,x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("NaN");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(1);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['apply', 'min', ["tuple", ['/', 6, 2], 17, ['+', 5, -4]]]);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(1);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(1);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(1);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.value).eqls(['apply', 'min', ["tuple", ['/', 6, 2], 17, 1]]);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(1);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['apply', 'min', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.value).eqls(['apply', 'min', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/varsAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.value).eqls(['apply', 'min', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+        expect(stateVariables["/numbers"].stateValues.value).eq(1);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(1);
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "min", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(1);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", ["/", 6, 2], 17, ["+", 5, -4]],
+        ]);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          1,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(1);
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "min", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(1);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(1);
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(1);
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "min", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", ["/", 6, 2], 17, 1],
+        ]);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables["/varsAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables["/varsAsStringSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.value,
+        ).eqls(NaN);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(false);
+      });
+    });
+  });
 
-  it('min as math expression', () => {
+  it("min as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">3</number>
@@ -5258,132 +10342,284 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupPlus3Simplify" simplify>
         min($a, $b, $nums, $c)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3⋅17⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('251')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3⋅17⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3⋅17⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('min(3,17,3,17,1,1)')
-    });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3⋅17⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("251");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/groupPlus"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlusSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/groupPlus2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlus2Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/groupPlus3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("min(3,17,3,17,1,1)");
+      });
+    cy.get(cesc("#\\/groupPlus3Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'min', ["+", ["*", 3, 17, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", 3, 17, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(1);
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["+", ["*", 3, 17, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(251);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'min', ["*", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "min", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(1);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "min", ["*", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'min', ["*", 3, 17, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(1);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["*", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(1);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(1);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.value).eq(1);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(1);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus2"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus2"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.value).eq(1);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, 3, 17, 1, 1]]);
-        expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(1);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus3"].stateValues.value).eqls([
+          "apply",
+          "min",
+          ["tuple", 3, 17, 3, 17, 1, 1],
+        ]);
+        expect(stateVariables["/groupPlus3"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.value).eq(1);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.isNumber).eq(
+          true,
+        );
+      });
+    });
+  });
 
-
-      })
-    })
-  })
-
-  it('min can be invertible', () => {
+  it("min can be invertible", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <min name="numbers00"><number>3</number><number>6</number></min>
       <min name="numbers01"><number>3</number><number fixed>6</number></min>
@@ -5406,159 +10642,424 @@ describe('Math Operator Tag Tests', function () {
       <mathinput name="mimaths11" bindValueTo="$maths11" />
 
 
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}1{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '1')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should("contain.text", "1");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '1')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '3')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should("contain.text", "3");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "5");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "5");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}8{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}8{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}8{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths01 .mjx-mrow').should('contain.text', '6')
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow").should("contain.text", "6");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'min(3,x)')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should(
+      "contain.text",
+      "min(3,x)",
+    );
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'min(x,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'min(3,x)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "min(x,6)");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "min(3,x)");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{shift+home}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{shift+home}{backspace}y{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'min(3,y)')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should(
+      "contain.text",
+      "min(3,y)",
+    );
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'min(y,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'min(3,y)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "min(y,6)");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "min(3,y)");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}2{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{shift+home}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{shift+home}{backspace}2{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '2')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should("contain.text", "2");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '2')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '3')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+  });
 
-  })
-
-  it('max', () => {
+  it("max", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <max name="numbers"><number>3</number><number>17</number><number>5-4</number></max>
       <max name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></max>
@@ -5575,116 +11076,274 @@ describe('Math Operator Tag Tests', function () {
       <max name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></max>
       <copy target="numbers" />
       <copy target="vars" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
-      let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
-      let replacement2Anchor = cesc('#' + replacement2Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
+      let replacement2Name =
+        stateVariables["/_copy2"].replacements[0].componentName;
+      let replacement2Anchor = cesc2("#" + replacement2Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('max(3,17,1)')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('max(3,17,1)')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('max(62,17,1)')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get('#\\/withNumberMax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('max(x,x+y,x+y+z)')
-      });
-      cy.get('#\\/varsSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('max(x,x+y,x+y+z)')
-      });
-      cy.get('#\\/varsForcedNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('NaN')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('17')
-      });
-      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('max(x,x+y,x+y+z)')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("max(3,17,1)");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("max(3,17,1)");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("max(62,17,1)");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(cesc("#\\/withNumberMax"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(cesc("#\\/vars"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("max(x,x+y,x+y+z)");
+        });
+      cy.get(cesc("#\\/varsSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("max(x,x+y,x+y+z)");
+        });
+      cy.get(cesc("#\\/varsForcedNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("NaN");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("17");
+        });
+      cy.get(replacement2Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("max(x,x+y,x+y+z)");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(17);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['apply', 'max', ["tuple", ['/', 6, 2], 17, 1]]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMax'].stateValues.value).eq(17);
-        expect(stateVariables['/withNumberMax'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMax'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['apply', 'max', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.value).eqls(['apply', 'max', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsForcedNumeric'].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbers"].stateValues.value).eq(17);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          17,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["apply", "max", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["apply", "max", ["tuple", ["/", 6, 2], 17, 1]]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(17);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberMax"].stateValues.value).eq(17);
+        expect(
+          stateVariables["/withNumberMax"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMax"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables["/varsSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsSimplify"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.value).eqls(
+          NaN,
+        );
+        expect(
+          stateVariables["/varsForcedNumeric"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
+          false,
+        );
         expect(stateVariables[replacement1Name].stateValues.value).eq(17);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls(['apply', 'max', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables[replacement2Name].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables[replacement2Name].stateValues.isNumericOperator,
+        ).eq(false);
         expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('max with sugar', () => {
+  it("max with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">3</number>
       <number name="b">17</number>
@@ -5712,149 +11371,374 @@ describe('Math Operator Tag Tests', function () {
       <max name="varsAsString">x x+y x+y+z</max>
       <max name="varsAsStringSimplify" simplify>x x+y x+y+z</max>
       <max name="varsAsStringForceNumeric" forceNumeric>x x+y x+y+z</max>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1)')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(62,17,5−4)')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1)')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1)')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(62,17,1)')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(x,x+y,x+y+z)')
-    });
-    cy.get('#\\/varsAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(x,x+y,x+y+z)')
-    });
-    cy.get('#\\/varsAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(x,x+y,x+y+z)')
-    });
-    cy.get('#\\/varsAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('NaN')
-    });
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1)");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(62,17,5−4)");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1)");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1)");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(62,17,1)");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/vars"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(x,x+y,x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(x,x+y,x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(x,x+y,x+y+z)");
+      });
+    cy.get(cesc("#\\/varsAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("NaN");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(17);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['apply', 'max', ["tuple", ['/', 6, 2], 17, ['+', 5, -4]]]);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(17);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(17);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(17);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.value).eqls(['apply', 'max', ["tuple", ['/', 6, 2], 17, 1]]);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(17);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/vars'].stateValues.value).eqls(['apply', 'max', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/vars'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/vars'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.value).eqls(['apply', 'max', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/varsAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.value).eqls(['apply', 'max', ["tuple", 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]]);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/varsAsStringSimplify'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.value).eqls(NaN);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/varsAsStringForceNumeric'].stateValues.isNumber).eq(false);
-      })
-    })
-  })
+        expect(stateVariables["/numbers"].stateValues.value).eq(17);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(17);
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "max", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(17);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", ["/", 6, 2], 17, ["+", 5, -4]],
+        ]);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          17,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(17);
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "max", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(17);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(17);
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(17);
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "max", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", ["/", 6, 2], 17, 1],
+        ]);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/vars"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(stateVariables["/vars"].stateValues.isNumericOperator).eq(false);
+        expect(stateVariables["/vars"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables["/varsAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
+        ]);
+        expect(
+          stateVariables["/varsAsStringSimplify"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/varsAsStringSimplify"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.value,
+        ).eqls(NaN);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/varsAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(false);
+      });
+    });
+  });
 
-  it('max as math expression', () => {
+  it("max as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">3</number>
@@ -5913,132 +11797,288 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupPlus3Simplify" simplify>
         max($a, $b, $nums, $c)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,5−4)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3⋅17⋅5−4)')
-    });
-    cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('251')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3⋅17⋅1)')
-    });
-    cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3⋅17⋅1)')
-    });
-    cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,1,3,17,1)')
-    });
-    cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
-    cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('max(3,17,3,17,1,1)')
-    });
-    cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('17')
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,5−4)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numberStringProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3⋅17⋅5−4)");
+      });
+    cy.get(cesc("#\\/numberStringProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("251");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/numberComponentsProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/numberComponentsProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/macrosProduct"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3⋅17⋅1)");
+      });
+    cy.get(cesc("#\\/macrosProductSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("51");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/groupPlus"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlusSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/groupPlus2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,1,3,17,1)");
+      });
+    cy.get(cesc("#\\/groupPlus2Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
+    cy.get(cesc("#\\/groupPlus3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("max(3,17,3,17,1,1)");
+      });
+    cy.get(cesc("#\\/groupPlus3Simplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("17");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, ["+", 5, -4]]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'max', ["+", ["*", 3, 17, 5], -4]]);
-        expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
-        expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", 3, 17, ["+", 5, -4]],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(
+          17,
+        );
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/numberStringProduct"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["+", ["*", 3, 17, 5], -4],
+        ]);
+        expect(stateVariables["/numberStringProduct"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.value,
+        ).eq(251);
+        expect(
+          stateVariables["/numberStringProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'max', ["*", 3, 17, 1]]);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "max", ["tuple", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(17);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.value,
+        ).eqls(["apply", "max", ["*", 3, 17, 1]]);
+        expect(
+          stateVariables["/numberComponentsProduct"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues.value,
+        ).eq(51);
+        expect(
+          stateVariables["/numberComponentsProductSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'max', ["*", 3, 17, 1]]);
-        expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(51);
-        expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(
+          17,
+        );
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/macrosProduct"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["*", 3, 17, 1],
+        ]);
+        expect(stateVariables["/macrosProduct"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosProductSimplify"].stateValues.value).eq(
+          51,
+        );
+        expect(
+          stateVariables["/macrosProductSimplify"].stateValues.isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", 3, 17, 1],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(17);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(17);
-        expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.value).eq(17);
+        expect(stateVariables["/groupPlusSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 1, 3, 17, 1]]);
-        expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(17);
-        expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus2"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", 3, 17, 1, 3, 17, 1],
+        ]);
+        expect(stateVariables["/groupPlus2"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.value).eq(17);
+        expect(stateVariables["/groupPlus2Simplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, 3, 17, 1, 1]]);
-        expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(17);
-        expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/groupPlus3"].stateValues.value).eqls([
+          "apply",
+          "max",
+          ["tuple", 3, 17, 3, 17, 1, 1],
+        ]);
+        expect(stateVariables["/groupPlus3"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.value).eq(17);
+        expect(stateVariables["/groupPlus3Simplify"].stateValues.isNumber).eq(
+          true,
+        );
+      });
+    });
+  });
 
-
-      })
-    })
-  })
-
-  it('max can be invertible', () => {
+  it("max can be invertible", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <max name="numbers00"><number>3</number><number>6</number></max>
       <max name="numbers01"><number>3</number><number fixed>6</number></max>
@@ -6061,159 +12101,424 @@ describe('Math Operator Tag Tests', function () {
       <mathinput name="mimaths11" bindValueTo="$maths11" />
 
 
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}9{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}9{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}9{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '9')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should("contain.text", "9");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '9')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}5{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '5')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should("contain.text", "5");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "5");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '5')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "5");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}2{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '3')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should("contain.text", "3");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '3')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{backspace}x{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{backspace}x{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'max(3,x)')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should(
+      "contain.text",
+      "max(3,x)",
+    );
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'max(x,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'max(3,x)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "max(x,6)");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "max(3,x)");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}y{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{shift+home}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{shift+home}{backspace}y{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', 'max(3,y)')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should(
+      "contain.text",
+      "max(3,y)",
+    );
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', 'NaN')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', 'max(y,6)')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', 'max(3,y)')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "max(y,6)");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "max(3,y)");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/minumbers00 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/minumbers11 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/minumbers01 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/minumbers10 textarea').type("{end}{backspace}7{enter}", { force: true });
+    cy.get(cesc("#\\/minumbers00") + " textarea").type(
+      "{end}{backspace}7{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers11") + " textarea").type(
+      "{end}{backspace}7{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers01") + " textarea").type(
+      "{end}{backspace}7{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/minumbers10") + " textarea").type(
+      "{end}{backspace}7{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/mimaths00 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/mimaths11 textarea').type("{end}{backspace}7{enter}", { force: true });
-    cy.get('#\\/mimaths01 textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
-    cy.get('#\\/mimaths10 textarea').type("{end}{shift+home}{backspace}7{enter}", { force: true });
+    cy.get(cesc("#\\/mimaths00") + " textarea").type(
+      "{end}{backspace}7{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths11") + " textarea").type(
+      "{end}{backspace}7{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths01") + " textarea").type(
+      "{end}{shift+home}{backspace}7{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/mimaths10") + " textarea").type(
+      "{end}{shift+home}{backspace}7{enter}",
+      { force: true },
+    );
 
-    cy.get('#\\/maths10 .mjx-mrow').should('contain.text', '7')
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow").should("contain.text", "7");
 
-    cy.get('#\\/numbers00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/numbers01 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/numbers10 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/numbers11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/numbers00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/numbers01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "7");
+    cy.get(cesc("#\\/numbers10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "7");
+    cy.get(cesc("#\\/numbers11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
 
-    cy.get('#\\/maths00 .mjx-mrow').eq(0).should('have.text', '6')
-    cy.get('#\\/maths01 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/maths10 .mjx-mrow').eq(0).should('have.text', '7')
-    cy.get('#\\/maths11 .mjx-mrow').eq(0).should('have.text', '6')
+    cy.get(cesc("#\\/maths00") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+    cy.get(cesc("#\\/maths01") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "7");
+    cy.get(cesc("#\\/maths10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "7");
+    cy.get(cesc("#\\/maths11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6");
+  });
 
-  })
-
-  it('mod', () => {
+  it("mod", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <mod name="numbers"><number>17</number><number>3</number></mod>
       <mod name="numbersForceSymbolic" forceSymbolic><number>17</number><number>3</number></mod>
@@ -6226,90 +12531,209 @@ describe('Math Operator Tag Tests', function () {
       <mod name="numbersWithNumericMathForceNumeric" forceNumeric><number>17</number><math>6/2</math></mod>
       <mod name="withNumberMod"><math>17</math><mod><number>16</number><number>9</number></mod></mod>
       <copy target="numbers" />
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name = stateVariables['/_copy1'].replacements[0].componentName;
-      let replacement1Anchor = cesc('#' + replacement1Name);
+      let replacement1Name =
+        stateVariables["/_copy1"].replacements[0].componentName;
+      let replacement1Anchor = cesc2("#" + replacement1Name);
 
-      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
-      cy.get('#\\/numbersForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('mod(17,3)')
-      });
-      cy.get('#\\/numbersForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
-      cy.get('#\\/numbersWithNumberMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('mod(17,3)')
-      });
-      cy.get('#\\/numbersWithNumberMathForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
-      cy.get('#\\/numbersWithNumericMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('mod(17,62)')
-      });
-      cy.get('#\\/numbersWithNumericMathSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
-      cy.get('#\\/numbersWithNumericMathForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
-      cy.get('#\\/withNumberMod').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3')
-      });
-      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      });
+      cy.get(cesc("#\\/numbers"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("mod(17,3)");
+        });
+      cy.get(cesc("#\\/numbersForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolic"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("mod(17,3)");
+        });
+      cy.get(cesc("#\\/numbersWithNumberMathForceSymbolicSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMath"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("mod(17,62)");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathSimplify"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
+      cy.get(cesc("#\\/numbersWithNumericMathForceNumeric"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
+      cy.get(cesc("#\\/withNumberMod"))
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("3");
+        });
+      cy.get(replacement1Anchor)
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("2");
+        });
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(2);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumberMath'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumberMathForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, ['/', 6, 2]]]);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMath'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersWithNumericMathSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMod'].stateValues.value).eq(3);
-        expect(stateVariables['/withNumberMod'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMod'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbers"].stateValues.value).eq(2);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.value).eqls([
+          "apply",
+          "mod",
+          ["tuple", 17, 3],
+        ]);
+        expect(
+          stateVariables["/numbersForceSymbolic"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numbersForceSymbolic"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersForceSymbolicSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersWithNumberMath"].stateValues.value).eq(
+          2,
+        );
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMath"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .value,
+        ).eqls(["apply", "mod", ["tuple", 17, 3]]);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumberMathForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.value,
+        ).eqls(["apply", "mod", ["tuple", 17, ["/", 6, 2]]]);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMath"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersWithNumericMathSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .value,
+        ).eq(2);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numbersWithNumericMathForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumberMod"].stateValues.value).eq(3);
+        expect(
+          stateVariables["/withNumberMod"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMod"].stateValues.isNumber).eq(true);
         expect(stateVariables[replacement1Name].stateValues.value).eq(2);
-        expect(stateVariables[replacement1Name].stateValues.isNumericOperator).eq(true);
+        expect(
+          stateVariables[replacement1Name].stateValues.isNumericOperator,
+        ).eq(true);
         expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('mod with sugar', () => {
+  it("mod with sugar", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <number name="a">17</number>
       <number name="b">3</number>
@@ -6332,125 +12756,309 @@ describe('Math Operator Tag Tests', function () {
       <mod name="withNumericMathMacro">$a$bNumericMath</mod>
       <mod name="withNumericMathMacroSimplify" simplify>$a$bNumericMath</mod>
       <mod name="withNumericMathMacroForceNumeric" forceNumeric>$a$bNumericMath</mod>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numbersAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,3)')
-    });
-    cy.get('#\\/numbersAsStringForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numericAsString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,62)')
-    });
-    cy.get('#\\/numericAsStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numericAsStringForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numbersAsMacros').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,3)')
-    });
-    cy.get('#\\/numbersAsMacrosForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numbersAsMacros2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/withNumberMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,3)')
-    });
-    cy.get('#\\/withNumberMathMacroForceSymbolicSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/withNumericMathMacro').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,62)')
-    });
-    cy.get('#\\/withNumericMathMacroSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/withNumericMathMacroForceNumeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
+    cy.get(cesc("#\\/numbers"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numbersAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,3)");
+      });
+    cy.get(cesc("#\\/numbersAsStringForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numericAsString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,62)");
+      });
+    cy.get(cesc("#\\/numericAsStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numericAsStringForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numbersAsMacros"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,3)");
+      });
+    cy.get(cesc("#\\/numbersAsMacrosForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numbersAsMacros2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/withNumberMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolic"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,3)");
+      });
+    cy.get(cesc("#\\/withNumberMathMacroForceSymbolicSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/withNumericMathMacro"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,62)");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/withNumericMathMacroForceNumeric"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numbers'].stateValues.value).eq(2);
-        expect(stateVariables['/numbers'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbers'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsString'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, ['/', 6, 2]]]);
-        expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numericAsStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.value).eq(2);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numericAsStringForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/numbersAsMacrosForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.value).eq(2);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/numbersAsMacros2'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.value).eq(2);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumberMathMacro'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolic'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumberMathMacroForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, ['/', 6, 2]]]);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacro'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumericOperator).eq(false);
-        expect(stateVariables['/withNumericMathMacroSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.value).eq(2);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumericOperator).eq(true);
-        expect(stateVariables['/withNumericMathMacroForceNumeric'].stateValues.isNumber).eq(true);
-      })
-    })
-  })
+        expect(stateVariables["/numbers"].stateValues.value).eq(2);
+        expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.value).eq(2);
+        expect(
+          stateVariables["/numbersAsString"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsString"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "mod", ["tuple", 17, 3]]);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(2);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsStringForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numericAsString"].stateValues.value).eqls([
+          "apply",
+          "mod",
+          ["tuple", 17, ["/", 6, 2]],
+        ]);
+        expect(
+          stateVariables["/numericAsString"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/numericAsString"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(stateVariables["/numericAsStringSimplify"].stateValues.value).eq(
+          2,
+        );
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numericAsStringSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/numericAsStringForceNumeric"].stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.value).eq(2);
+        expect(
+          stateVariables["/numbersAsMacros"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "mod", ["tuple", 17, 3]]);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolic"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .value,
+        ).eq(2);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/numbersAsMacrosForceSymbolicSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.value).eq(2);
+        expect(
+          stateVariables["/numbersAsMacros2"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/numbersAsMacros2"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/withNumberMathMacro"].stateValues.value).eq(2);
+        expect(
+          stateVariables["/withNumberMathMacro"].stateValues.isNumericOperator,
+        ).eq(true);
+        expect(stateVariables["/withNumberMathMacro"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues.value,
+        ).eqls(["apply", "mod", ["tuple", 17, 3]]);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolic"].stateValues
+            .isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumberMathMacroForceSymbolicSimplify"]
+            .stateValues.isNumber,
+        ).eq(true);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.value).eqls([
+          "apply",
+          "mod",
+          ["tuple", 17, ["/", 6, 2]],
+        ]);
+        expect(
+          stateVariables["/withNumericMathMacro"].stateValues.isNumericOperator,
+        ).eq(false);
+        expect(stateVariables["/withNumericMathMacro"].stateValues.isNumber).eq(
+          false,
+        );
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues
+            .isNumericOperator,
+        ).eq(false);
+        expect(
+          stateVariables["/withNumericMathMacroSimplify"].stateValues.isNumber,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumericOperator,
+        ).eq(true);
+        expect(
+          stateVariables["/withNumericMathMacroForceNumeric"].stateValues
+            .isNumber,
+        ).eq(true);
+      });
+    });
+  });
 
-  it('mod as math expression', () => {
+  it("mod as math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <group name="nums">
         <number name="a">17</number>
@@ -6476,103 +13084,179 @@ describe('Math Operator Tag Tests', function () {
       <math name="groupSimplify" simplify>
         mod($nums)
       </math>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,3)')
-    });
-    cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,3)')
-    });
-    cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,3)')
-    });
-    cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-    cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('mod(17,3)')
-    });
-    cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
+    cy.get(cesc("#\\/numberString"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,3)");
+      });
+    cy.get(cesc("#\\/numberStringSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/numberComponentsCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,3)");
+      });
+    cy.get(cesc("#\\/numberComponentsCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/macrosCommas"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,3)");
+      });
+    cy.get(cesc("#\\/macrosCommasSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
+    cy.get(cesc("#\\/group"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("mod(17,3)");
+      });
+    cy.get(cesc("#\\/groupSimplify"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numberString"].stateValues.value).eqls([
+          "apply",
+          "mod",
+          ["tuple", 17, 3],
+        ]);
+        expect(stateVariables["/numberString"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numberStringSimplify"].stateValues.value).eq(2);
+        expect(stateVariables["/numberStringSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.value,
+        ).eqls(["apply", "mod", ["tuple", 17, 3]]);
+        expect(
+          stateVariables["/numberComponentsCommas"].stateValues.isNumber,
+        ).eq(false);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues.value,
+        ).eq(2);
+        expect(
+          stateVariables["/numberComponentsCommasSimplify"].stateValues
+            .isNumber,
+        ).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/macrosCommas"].stateValues.value).eqls([
+          "apply",
+          "mod",
+          ["tuple", 17, 3],
+        ]);
+        expect(stateVariables["/macrosCommas"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.value).eq(2);
+        expect(stateVariables["/macrosCommasSimplify"].stateValues.isNumber).eq(
+          true,
+        );
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'mod', ["tuple", 17, 3]]);
-        expect(stateVariables['/group'].stateValues.isNumber).eq(false);
-        expect(stateVariables['/groupSimplify'].stateValues.value).eq(2);
-        expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
+        expect(stateVariables["/group"].stateValues.value).eqls([
+          "apply",
+          "mod",
+          ["tuple", 17, 3],
+        ]);
+        expect(stateVariables["/group"].stateValues.isNumber).eq(false);
+        expect(stateVariables["/groupSimplify"].stateValues.value).eq(2);
+        expect(stateVariables["/groupSimplify"].stateValues.isNumber).eq(true);
+      });
+    });
+  });
 
-      })
-    })
-  })
-
-  it('gcd', () => {
+  it("gcd", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <gcd><number>135</number><number>81</number></gcd>
       <gcd>135 81 63</gcd>
       <gcd>x y z</gcd>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-
-    cy.get('#\\/_gcd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('27')
-    });
-    cy.get('#\\/_gcd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('9')
-    });
-    cy.get('#\\/_gcd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('gcd(x,y,z)')
-    });
+    cy.get(cesc("#\\/_gcd1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("27");
+      });
+    cy.get(cesc("#\\/_gcd2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("9");
+      });
+    cy.get(cesc("#\\/_gcd3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("gcd(x,y,z)");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_gcd1'].stateValues.value).eq(27);
-      expect(stateVariables['/_gcd2'].stateValues.value).eq(9);
-      expect(stateVariables['/_gcd3'].stateValues.value).eqls(["apply", "gcd", ["tuple", "x", "y", "z"]]);
+      expect(stateVariables["/_gcd1"].stateValues.value).eq(27);
+      expect(stateVariables["/_gcd2"].stateValues.value).eq(9);
+      expect(stateVariables["/_gcd3"].stateValues.value).eqls([
+        "apply",
+        "gcd",
+        ["tuple", "x", "y", "z"],
+      ]);
+    });
+  });
 
-
-    })
-  })
-
-
-  it('extract parts of math expression', () => {
+  it("extract parts of math expression", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <p>original expression: <math name="expr" functionSymbols="f g">f(x)+g(y,z)+h(q)</math></p>
       <p>Operator: <extractMathOperator name="operator">$expr</extractMathOperator></p>
@@ -6601,217 +13285,410 @@ describe('Math Operator Tag Tests', function () {
       <p>Function of resulting operand: <extractMath type="function" name="functionN">$operandN</extractMath></p>
       <p>Pick argument number: <mathinput name="nArgument" prefill="1" /></p>
       <p>Resulting argument: <extractMath type="functionArgument" argumentNumber="$nArgument" name="argumentN">$operandN</extractMath></p>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/operator').should('have.text', '+')
-    cy.get('#\\/numOperands').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/operand1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('f(x)')
-    });
-    cy.get('#\\/operand2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('g(y,z)')
-    });
-    cy.get('#\\/operand3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('hq')
-    });
-    cy.get('#\\/blank1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('f')
-    });
-    cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('g')
-    });
-    cy.get('#\\/blank2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/farg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x')
-    });
-    cy.get('#\\/farg1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x')
-    });
-    cy.get('#\\/blank3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/gargAll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(y,z)')
-    });
-    cy.get('#\\/garg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('y')
-    });
-    cy.get('#\\/garg2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('z')
-    });
-    cy.get('#\\/blank4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/blank5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/numOperands1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/operand11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('f(x)')
-    });
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('f(x)')
-    });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('f')
-    });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x')
-    });
+    cy.get(cesc("#\\/operator")).should("have.text", "+");
+    cy.get(cesc("#\\/numOperands"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
+    cy.get(cesc("#\\/operand1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("f(x)");
+      });
+    cy.get(cesc("#\\/operand2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("g(y,z)");
+      });
+    cy.get(cesc("#\\/operand3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("hq");
+      });
+    cy.get(cesc("#\\/blank1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/f"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("f");
+      });
+    cy.get(cesc("#\\/g"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("g");
+      });
+    cy.get(cesc("#\\/blank2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/farg1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+    cy.get(cesc("#\\/farg1a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+    cy.get(cesc("#\\/blank3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/gargAll"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("(y,z)");
+      });
+    cy.get(cesc("#\\/garg1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("y");
+      });
+    cy.get(cesc("#\\/garg2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("z");
+      });
+    cy.get(cesc("#\\/blank4"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/blank5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/numOperands1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
+    cy.get(cesc("#\\/operand11"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("f(x)");
+      });
+    cy.get(cesc("#\\/operandN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("f(x)");
+      });
+    cy.get(cesc("#\\/functionN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("f");
+      });
+    cy.get(cesc("#\\/argumentN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/operator'].stateValues.value).eq('+')
-      expect(stateVariables['/numOperands'].stateValues.value).eq(3)
-      expect(stateVariables['/operand1'].stateValues.value).eqls(['apply', 'f', 'x'])
-      expect(stateVariables['/operand2'].stateValues.value).eqls(['apply', 'g', ["tuple", 'y', "z"]])
-      expect(stateVariables['/operand3'].stateValues.value).eqls(['*', 'h', 'q'])
-      expect(stateVariables['/blank1'].stateValues.value).eqls('＿')
-      expect(stateVariables['/f'].stateValues.value).eqls('f')
-      expect(stateVariables['/g'].stateValues.value).eqls('g')
-      expect(stateVariables['/blank2'].stateValues.value).eqls('＿')
-      expect(stateVariables['/farg1'].stateValues.value).eqls('x')
-      expect(stateVariables['/farg1a'].stateValues.value).eqls('x')
-      expect(stateVariables['/blank3'].stateValues.value).eqls('＿')
-      expect(stateVariables['/gargAll'].stateValues.value).eqls(["tuple", 'y', "z"])
-      expect(stateVariables['/garg1'].stateValues.value).eqls('y')
-      expect(stateVariables['/garg2'].stateValues.value).eqls('z')
-      expect(stateVariables['/blank4'].stateValues.value).eqls('＿')
-      expect(stateVariables['/blank5'].stateValues.value).eqls('＿')
-      expect(stateVariables['/numOperands1'].stateValues.value).eq(1)
-      expect(stateVariables['/operand11'].stateValues.value).eqls(['apply', 'f', 'x'])
+      expect(stateVariables["/operator"].stateValues.value).eq("+");
+      expect(stateVariables["/numOperands"].stateValues.value).eq(3);
+      expect(stateVariables["/operand1"].stateValues.value).eqls([
+        "apply",
+        "f",
+        "x",
+      ]);
+      expect(stateVariables["/operand2"].stateValues.value).eqls([
+        "apply",
+        "g",
+        ["tuple", "y", "z"],
+      ]);
+      expect(stateVariables["/operand3"].stateValues.value).eqls([
+        "*",
+        "h",
+        "q",
+      ]);
+      expect(stateVariables["/blank1"].stateValues.value).eqls("＿");
+      expect(stateVariables["/f"].stateValues.value).eqls("f");
+      expect(stateVariables["/g"].stateValues.value).eqls("g");
+      expect(stateVariables["/blank2"].stateValues.value).eqls("＿");
+      expect(stateVariables["/farg1"].stateValues.value).eqls("x");
+      expect(stateVariables["/farg1a"].stateValues.value).eqls("x");
+      expect(stateVariables["/blank3"].stateValues.value).eqls("＿");
+      expect(stateVariables["/gargAll"].stateValues.value).eqls([
+        "tuple",
+        "y",
+        "z",
+      ]);
+      expect(stateVariables["/garg1"].stateValues.value).eqls("y");
+      expect(stateVariables["/garg2"].stateValues.value).eqls("z");
+      expect(stateVariables["/blank4"].stateValues.value).eqls("＿");
+      expect(stateVariables["/blank5"].stateValues.value).eqls("＿");
+      expect(stateVariables["/numOperands1"].stateValues.value).eq(1);
+      expect(stateVariables["/operand11"].stateValues.value).eqls([
+        "apply",
+        "f",
+        "x",
+      ]);
 
-      expect(stateVariables['/operandN'].stateValues.value).eqls(['apply', 'f', 'x'])
-      expect(stateVariables['/functionN'].stateValues.value).eqls('f')
-      expect(stateVariables['/argumentN'].stateValues.value).eqls('x')
-
-    })
-
-    cy.get('#\\/nArgument textarea').type('{end}{backspace}2', { force: true }).blur();
-    cy.get('#\\/argumentN .mjx-mrow').should('contain.text', '＿')
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
+      expect(stateVariables["/operandN"].stateValues.value).eqls([
+        "apply",
+        "f",
+        "x",
+      ]);
+      expect(stateVariables["/functionN"].stateValues.value).eqls("f");
+      expect(stateVariables["/argumentN"].stateValues.value).eqls("x");
     });
+
+    cy.get(cesc("#\\/nArgument") + " textarea")
+      .type("{end}{backspace}2", { force: true })
+      .blur();
+    cy.get(cesc("#\\/argumentN") + " .mjx-mrow").should("contain.text", "＿");
+    cy.get(cesc("#\\/argumentN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/argumentN'].stateValues.value).eqls('＿')
-    })
+      expect(stateVariables["/argumentN"].stateValues.value).eqls("＿");
+    });
 
-    cy.get('#\\/nOperand textarea').type('{end}{backspace}2', { force: true }).blur();
-    cy.get('#\\/operandN .mjx-mrow').should('contain.text', 'g(y,z)')
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('g(y,z)')
-    });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('g')
-    });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('z')
-    });
+    cy.get(cesc("#\\/nOperand") + " textarea")
+      .type("{end}{backspace}2", { force: true })
+      .blur();
+    cy.get(cesc("#\\/operandN") + " .mjx-mrow").should(
+      "contain.text",
+      "g(y,z)",
+    );
+    cy.get(cesc("#\\/operandN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("g(y,z)");
+      });
+    cy.get(cesc("#\\/functionN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("g");
+      });
+    cy.get(cesc("#\\/argumentN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("z");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/operandN'].stateValues.value).eqls(['apply', 'g', ["tuple", 'y', "z"]])
-      expect(stateVariables['/functionN'].stateValues.value).eqls('g')
-      expect(stateVariables['/argumentN'].stateValues.value).eqls('z')
-    })
-
-    cy.get('#\\/nArgument textarea').type('{end}{backspace}3', { force: true }).blur();
-    cy.get('#\\/argumentN .mjx-mrow').should('contain.text', '＿')
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
+      expect(stateVariables["/operandN"].stateValues.value).eqls([
+        "apply",
+        "g",
+        ["tuple", "y", "z"],
+      ]);
+      expect(stateVariables["/functionN"].stateValues.value).eqls("g");
+      expect(stateVariables["/argumentN"].stateValues.value).eqls("z");
     });
+
+    cy.get(cesc("#\\/nArgument") + " textarea")
+      .type("{end}{backspace}3", { force: true })
+      .blur();
+    cy.get(cesc("#\\/argumentN") + " .mjx-mrow").should("contain.text", "＿");
+    cy.get(cesc("#\\/argumentN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/argumentN'].stateValues.value).eqls('＿')
-    })
-
-
-    cy.get('#\\/nArgument textarea').type('{end}{backspace}1', { force: true }).blur();
-    cy.get('#\\/argumentN .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('y')
+      expect(stateVariables["/argumentN"].stateValues.value).eqls("＿");
     });
+
+    cy.get(cesc("#\\/nArgument") + " textarea")
+      .type("{end}{backspace}1", { force: true })
+      .blur();
+    cy.get(cesc("#\\/argumentN") + " .mjx-mrow").should("contain.text", "y");
+    cy.get(cesc("#\\/argumentN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("y");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/argumentN'].stateValues.value).eqls('y')
-    })
+      expect(stateVariables["/argumentN"].stateValues.value).eqls("y");
+    });
 
-    cy.get('#\\/nOperand textarea').type('{end}{backspace}3', { force: true }).blur();
-    cy.get('#\\/operandN .mjx-mrow').should('contain.text', 'hq')
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('hq')
-    });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
+    cy.get(cesc("#\\/nOperand") + " textarea")
+      .type("{end}{backspace}3", { force: true })
+      .blur();
+    cy.get(cesc("#\\/operandN") + " .mjx-mrow").should("contain.text", "hq");
+    cy.get(cesc("#\\/operandN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("hq");
+      });
+    cy.get(cesc("#\\/functionN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/argumentN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/operandN'].stateValues.value).eqls(['*', 'h', 'q'])
-      expect(stateVariables['/functionN'].stateValues.value).eqls('＿')
-      expect(stateVariables['/argumentN'].stateValues.value).eqls('＿')
-    })
+      expect(stateVariables["/operandN"].stateValues.value).eqls([
+        "*",
+        "h",
+        "q",
+      ]);
+      expect(stateVariables["/functionN"].stateValues.value).eqls("＿");
+      expect(stateVariables["/argumentN"].stateValues.value).eqls("＿");
+    });
 
-    cy.get('#\\/nOperand textarea').type('{end}{backspace}4', { force: true }).blur();
-    cy.get('#\\/operandN .mjx-mrow').should('contain.text', '＿')
-    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
-    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
-    });
+    cy.get(cesc("#\\/nOperand") + " textarea")
+      .type("{end}{backspace}4", { force: true })
+      .blur();
+    cy.get(cesc("#\\/operandN") + " .mjx-mrow").should("contain.text", "＿");
+    cy.get(cesc("#\\/operandN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/functionN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
+    cy.get(cesc("#\\/argumentN"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("＿");
+      });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/operandN'].stateValues.value).eqls('＿')
-      expect(stateVariables['/functionN'].stateValues.value).eqls('＿')
-      expect(stateVariables['/argumentN'].stateValues.value).eqls('＿')
-    })
+      expect(stateVariables["/operandN"].stateValues.value).eqls("＿");
+      expect(stateVariables["/functionN"].stateValues.value).eqls("＿");
+      expect(stateVariables["/argumentN"].stateValues.value).eqls("＿");
+    });
+  });
 
-
-  })
-
-  it('math operators that take multiple inputs ignore composites with no replacements', () => {
+  it("math operators that take multiple inputs ignore composites with no replacements", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <text>a</text>
       <function name="f" domain="[0,2]" simplify>(x+1)(x-2)(x-4)</function>
       <p>Min on [0,2]: <min name="min02">$$f(0) $(f.minimumValues) $$f(2)</min>.</p>
       <p>Abs treats as product of three factors: <abs name="abs">$$f(0) $(f.minimumValues) $$f(2)</abs>.</p>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/min02').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/abs').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('∣∣8＿⋅0∣∣')
-    });
+    cy.get(cesc("#\\/min02"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/abs"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("∣∣8＿⋅0∣∣");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/min02"].stateValues.value).eq(0);
-      expect(stateVariables["/abs"].stateValues.value).eqls(['apply', 'abs', ['*', 8, '＿', 0]]);
-    })
-  })
-
-})
+      expect(stateVariables["/abs"].stateValues.value).eqls([
+        "apply",
+        "abs",
+        ["*", 8, "＿", 0],
+      ]);
+    });
+  });
+});

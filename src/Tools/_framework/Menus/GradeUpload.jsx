@@ -1,16 +1,16 @@
-import React, { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import {parse} from 'csv-parse';
-import { useSetRecoilState } from 'recoil';
+import React, { useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { parse } from "csv-parse";
+import { useSetRecoilState } from "recoil";
 import {
   processGradesAtom,
   headersGradesAtom,
   entriesGradesAtom,
-} from '../ToolPanels/GradebookAssignment';
+} from "../ToolPanels/GradebookAssignment";
 
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import CollapseSection from "../../../_reactComponents/PanelHeaderComponents/CollapseSection";
 
 export default function GradeUpload() {
   const setProcess = useSetRecoilState(processGradesAtom);
@@ -24,11 +24,11 @@ export default function GradeUpload() {
       reader.onabort = () => {};
       reader.onerror = () => {};
       reader.onload = () => {
-        parse(reader.result, { comment: '#' }, function (err, data) {
+        parse(reader.result, { comment: "#" }, function (err, data) {
           setHeaders(data[0]);
           data.shift(); //Remove head row of data
           setEntries(data);
-          setProcess('Upload Choice Table');
+          setProcess("Upload Choice Table");
         });
       };
       reader.readAsText(file[0]);
@@ -39,7 +39,7 @@ export default function GradeUpload() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   if (isDragActive) {
-    setProcess('Assignment Table');
+    setProcess("Assignment Table");
   }
 
   return (
@@ -53,7 +53,7 @@ export default function GradeUpload() {
             <Button
               width="menu"
               value="Import CSV file"
-              onClick={() => setProcess('Assignment Table')}
+              onClick={() => setProcess("Assignment Table")}
             />
           </ButtonGroup>
         )}

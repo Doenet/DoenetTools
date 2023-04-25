@@ -1,5 +1,4 @@
-import BlockComponent from '../abstract/BlockComponent';
-
+import BlockComponent from "../abstract/BlockComponent";
 
 export default class OrbitalDiagram extends BlockComponent {
   constructor(args) {
@@ -8,12 +7,12 @@ export default class OrbitalDiagram extends BlockComponent {
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
 
   static componentType = "orbitalDiagram";
 
   static variableForPlainMacro = "value";
+  static plainMacroReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -21,75 +20,78 @@ export default class OrbitalDiagram extends BlockComponent {
       createComponentOfType: "textList",
       createStateVariable: "labels",
       defaultValue: [],
-    }
+    };
     return attributes;
   }
 
-
   static returnSugarInstructions() {
-    let sugarInstructions = [{
-      replacementFunction: function ({ matchedChildren }) {
-        if (matchedChildren.length === 1 && typeof matchedChildren[0] !== "string") {
-          return { success: false }
-        }
+    let sugarInstructions = [
+      {
+        replacementFunction: function ({ matchedChildren }) {
+          if (
+            matchedChildren.length === 1 &&
+            typeof matchedChildren[0] !== "string"
+          ) {
+            return { success: false };
+          }
 
-        return {
-          success: true,
-          newChildren: [{
-            componentType: "tupleList",
-            children: matchedChildren
-          }]
-        }
-      }
-    }];
+          return {
+            success: true,
+            newChildren: [
+              {
+                componentType: "tupleList",
+                children: matchedChildren,
+              },
+            ],
+          };
+        },
+      },
+    ];
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "tupleLists",
-      componentTypes: ["tupleList"],
-    }, {
-      group: "orbitalDiagrams",
-      componentTypes: ["orbitalDiagram"]
-    }]
-
+    return [
+      {
+        group: "tupleLists",
+        componentTypes: ["tupleList"],
+      },
+      {
+        group: "orbitalDiagrams",
+        componentTypes: ["orbitalDiagram"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       defaultValue: [{ orbitalText: "", boxes: [] }],
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "orbitalDiagram",
+        createComponentOfType: this.componentType,
       },
       forRenderer: true,
       returnDependencies: () => ({
         orbitalDiagramChildren: {
           dependencyType: "child",
           childGroups: ["orbitalDiagrams"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         tupleListChildren: {
           dependencyType: "child",
           childGroups: ["tupleLists"],
-          variableNames: ["maths"]
+          variableNames: ["maths"],
         },
         labels: {
           dependencyType: "stateVariable",
-          variableName: "labels"
-        }
+          variableName: "labels",
+        },
       }),
       definition: function ({ dependencyValues }) {
-
         function processedValues() {
-
           function boxFromEntry(entry) {
             if (entry === "u" || entry === "U") {
               return "U";
@@ -121,8 +123,11 @@ export default class OrbitalDiagram extends BlockComponent {
           }
 
           let rows = [];
-          if (dependencyValues.tupleListChildren[0]?.stateValues.maths.length > 0) {
-            let valuesList = dependencyValues.tupleListChildren[0].stateValues.maths;
+          if (
+            dependencyValues.tupleListChildren[0]?.stateValues.maths.length > 0
+          ) {
+            let valuesList =
+              dependencyValues.tupleListChildren[0].stateValues.maths;
             for (let [rowInd, row] of valuesList.entries()) {
               let orbitalText = "";
               if (dependencyValues.labels[rowInd]) {
@@ -140,7 +145,6 @@ export default class OrbitalDiagram extends BlockComponent {
             }
 
             return rows;
-
           } else {
             return [{ orbitalText: "", boxes: [] }];
           }
@@ -148,14 +152,13 @@ export default class OrbitalDiagram extends BlockComponent {
 
         return {
           setValue: {
-            value: processedValues()
-          }
+            value: processedValues(),
+          },
         };
       },
-    }
+    };
 
     return stateVariableDefinitions;
-
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -165,9 +168,8 @@ export default class OrbitalDiagram extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
 }

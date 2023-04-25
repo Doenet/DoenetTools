@@ -1,6 +1,6 @@
 // import { hasProps } from '@react-spring/core/dist/declarations/src/helpers';
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 // import './drivecard.css';
 
 const DriveCardContainer = styled.figure`
@@ -8,8 +8,8 @@ const DriveCardContainer = styled.figure`
   position: relative;
   background-size: cover;
   background-position: center center;
-  width: ${(props) => (props.width ? props.width : '100%')};
-  height: ${(props) => (props.height ? props.height : '100%')};
+  width: ${(props) => (props.width ? props.width : "100%")};
+  height: ${(props) => (props.height ? props.height : "100%")};
   overflow: hidden;
   font-size: 10px;
   line-height: 12px;
@@ -31,9 +31,9 @@ const Image = styled.img`
   color: var(--mainRed);
   // display: none;
   background-image: ${(props) =>
-    props.url == 'url(./drive_pictures/none)' ? 'none' : props.url};
+    props.url == "url(/drive_pictures/none)" ? "none" : props.url};
   background-color: ${(props) =>
-    props.color == 'none' ? 'none' : '#' + props.color};
+    props.color == "none" ? "none" : "#" + props.color};
   background-size: cover;
   background-position: center;
 `;
@@ -49,21 +49,21 @@ const Info = styled.figcaption`
 
 const LabelContainer = styled.p`
   text-transform: capitalize;
-  text-align: ${(props) => (props.textAlign ? props.textAlign : 'left')};
-  line-height: ${(props) => (props.lineHeight ? props.lineHeight : 'normal')};
+  text-align: ${(props) => (props.textAlign ? props.textAlign : "left")};
+  line-height: ${(props) => (props.lineHeight ? props.lineHeight : "normal")};
   margin: 7px;
   width: 100%;
   color: var(--canvastext);
   font-family: helvetica;
   font-size: 12px;
   overflow: hidden;
-  white-space: ${(props) => (props.whiteSpace ? props.whiteSpace : 'nowrap')};
+  white-space: ${(props) => (props.whiteSpace ? props.whiteSpace : "nowrap")};
   text-overflow: ellipsis;
 `;
 
 const DriveCard = (props) => {
   // console.log(">>> Drive Card", props)
-  let imageURL = `url(./drive_pictures/${props.image})`;
+  let imageURL = `url(/drive_pictures/${props.image})`;
 
   /* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
 
@@ -80,7 +80,7 @@ const DriveCard = (props) => {
       <Info
         style={{
           //color: props.isSelected ? 'black' : '',
-          backgroundColor: props.isSelected ? 'var(--lightBlue)' : '',
+          backgroundColor: props.isSelected ? "var(--lightBlue)" : "",
         }}
       >
         <LabelContainer
@@ -89,14 +89,14 @@ const DriveCard = (props) => {
           lineHeight={props.lineHeight}
           whiteSpace={props.whiteSpace}
           style={{
-            color: props.isSelected ? 'black' : 'var(--canvastext)',
+            color: props.isSelected ? "black" : "var(--canvastext)",
           }}
         >
           <b data-test="driveCardLabel">{props.label}</b>
         </LabelContainer>
         <LabelContainer
           id="role-label"
-          style={{ color: props.isSelected ? 'black' : 'var(--canvastext)' }}
+          style={{ color: props.isSelected ? "black" : "var(--canvastext)" }}
         >
           {props.roleLabel}
         </LabelContainer>

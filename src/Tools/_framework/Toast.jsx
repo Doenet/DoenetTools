@@ -1,14 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import {
   atom,
   useRecoilValue,
   useSetRecoilState,
   useRecoilCallback,
-} from 'recoil';
-import styled from 'styled-components';
-import { animated, useSpring } from '@react-spring/web';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+} from "recoil";
+import styled from "styled-components";
+import { animated, useSpring } from "@react-spring/web";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 // import { toastType } from './ToastTypes';
 
 const ToastContainer = styled.div`
@@ -36,7 +36,7 @@ const Message = styled(animated.div)`
   border-radius: 4px;
 `;
 
-const Content = styled('div')`
+const Content = styled("div")`
   color: var(--canvastext);
   /* background:  */
   /* opacity: 0.9; */
@@ -45,7 +45,7 @@ const Content = styled('div')`
   font-size: 1em;
   display: grid;
   grid-template-columns: ${(props) =>
-    props.canClose === false ? '1fr' : '1fr auto'};
+    props.canClose === false ? "1fr" : "1fr auto"};
   grid-gap: 10px;
   overflow: hidden;
   height: auto;
@@ -57,7 +57,7 @@ const Content = styled('div')`
 
 const Life = styled(animated.div)`
   position: absolute;
-  bottom: ${(props) => (props.top ? '10px' : '0')};
+  bottom: ${(props) => (props.top ? "10px" : "0")};
   left: 0px;
   width: auto;
   background-image: linear-gradient(
@@ -68,7 +68,7 @@ const Life = styled(animated.div)`
   height: 5px;
 `;
 
-const Button = styled('button')`
+const Button = styled("button")`
   cursor: pointer;
   pointer-events: all;
   border: none;
@@ -93,12 +93,12 @@ const Button = styled('button')`
 `;
 
 const toastStack = atom({
-  key: 'toastStack',
+  key: "toastStack",
   default: [],
 });
 
 const toastStackId = atom({
-  key: 'toastStackId',
+  key: "toastStackId",
   default: 0,
 });
 
@@ -131,33 +131,33 @@ export const toastType = Object.freeze({
   ERROR: {
     // process failed or error occured, user must dissmis
     timeout: -1,
-    background: 'var(--mainRed)',
-    gradientEnd: 'rgba()',
+    background: "var(--mainRed)",
+    gradientEnd: "rgba()",
   },
   ALERT: {
     // user attetion reqired to dissmiss
     timeout: -1,
-    background: 'var(--lightYellow)',
+    background: "var(--lightYellow)",
   },
   ACTION: {
     // requires user interaction
     timeout: -1,
-    background: 'rgba()',
+    background: "rgba()",
   },
   INFO: {
     // non-interactive information
     timeout: -1,
-    background: 'var(--mainBlue)',
+    background: "var(--mainBlue)",
   },
   SUCCESS: {
     // confirm action
     timeout: -1,
-    background: 'var(--mainGreen)',
+    background: "var(--mainGreen)",
   },
   CONFIRMATION: {
     //confirm action and offer undo
     timeout: -1,
-    background: 'var(--mainBlue)',
+    background: "var(--mainBlue)",
   },
 });
 
@@ -178,13 +178,13 @@ function ToastMessage({
   const setToasts = useSetRecoilState(toastStack);
   const ref = useRef();
   const props = useSpring({
-    from: { opacity: 0, height: 0, life: '100%' },
+    from: { opacity: 0, height: 0, life: "100%" },
     to: async (next, cancel) => {
       ref.current.cancel = cancel;
       // console.log(">>>offsetHight", ref.current.offsetHeight);
       await next({ opacity: 1, height: ref.current.offsetHeight });
       if (duration > 0) {
-        await next({ life: '0%', config: { duration: duration } });
+        await next({ life: "0%", config: { duration: duration } });
         await next({ opacity: 0 });
         await next({ height: 0 });
       }
@@ -209,7 +209,7 @@ function ToastMessage({
             setToasts((old) => old.filter((i) => i.props.tId !== tId));
           }}
           aria-label="Close alert:"
-          aria-labelledby='alert-message'
+          aria-labelledby="alert-message"
         >
           <FontAwesomeIcon icon={faTimes} />
         </Button>

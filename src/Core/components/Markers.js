@@ -1,24 +1,22 @@
-import BaseComponent from './abstract/BaseComponent';
+import BaseComponent from "./abstract/BaseComponent";
 
 export default class Markers extends BaseComponent {
   static componentType = "markers";
 
   static returnChildGroups() {
-
-    return [{
-      group: "texts",
-      componentTypes: ["text"]
-    }, {
-      group: "numbers",
-      componentTypes: ["number"]
-    }]
-
+    return [
+      {
+        group: "texts",
+        componentTypes: ["text"],
+      },
+      {
+        group: "numbers",
+        componentTypes: ["number"],
+      },
+    ];
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.markerType = {
@@ -45,9 +43,9 @@ export default class Markers extends BaseComponent {
         } else {
           markerType = "empty";
         }
-        return { setValue: { markerType } }
-      }
-    }
+        return { setValue: { markerType } };
+      },
+    };
 
     stateVariableDefinitions.markers = {
       public: true,
@@ -59,12 +57,12 @@ export default class Markers extends BaseComponent {
       returnDependencies: () => ({
         markerType: {
           dependencyType: "stateVariable",
-          variableName: "markerType"
+          variableName: "markerType",
         },
         textChildren: {
           dependencyType: "child",
           childGroups: ["texts"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         numberChildren: {
           dependencyType: "child",
@@ -77,10 +75,16 @@ export default class Markers extends BaseComponent {
         let componentType = dependencyValues.markerType;
 
         if (dependencyValues.markerType === "text") {
-          markers = dependencyValues.textChildren.map(x => x.stateValues.value);
+          markers = dependencyValues.textChildren.map(
+            (x) => x.stateValues.value,
+          );
         } else if (dependencyValues.markerType === "number") {
-          markers = dependencyValues.numberChildren.map(x => x.stateValues.value);
-          markers.sort((a, b) => { return a - b; })  //sort in number order
+          markers = dependencyValues.numberChildren.map(
+            (x) => x.stateValues.value,
+          );
+          markers.sort((a, b) => {
+            return a - b;
+          }); //sort in number order
         } else {
           componentType = "text"; // use "text" for case when "empty"
         }
@@ -88,11 +92,10 @@ export default class Markers extends BaseComponent {
         return {
           setValue: { markers },
           setCreateComponentOfType: { markers: componentType },
-        }
-      }
-    }
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
 }

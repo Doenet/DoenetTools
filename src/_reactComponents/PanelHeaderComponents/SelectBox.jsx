@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import "./selectbox.css";
-import cloneDeep from 'lodash/cloneDeep';
+import cloneDeep from "lodash/cloneDeep";
 
 function SelectBox({ items }) {
   const node = useRef();
@@ -9,41 +9,44 @@ function SelectBox({ items }) {
   const [showItems, setShowItems] = useState(false);
 
   useEffect(() => {
-    document.addEventListener('click', handleClick, false);
+    document.addEventListener("click", handleClick, false);
     return () => {
-      document.removeEventListener('click', handleClick, false);
+      document.removeEventListener("click", handleClick, false);
     };
   });
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     if (node.current.contains(event.target)) {
-      setShowItems(!showItems)
+      setShowItems(!showItems);
     } else {
-      setShowItems(false)
+      setShowItems(false);
     }
-  }
+  };
 
   const selectChild = (child, parent) => {
     setValue(child.label);
     child.callback(child, parent);
   };
 
-  const filter = ev => {
+  const filter = (ev) => {
     let itemsCopy = cloneDeep(items);
     console.log(itemsCopy);
     // let itemsCopy = JSON.parse(JSON.stringify(items));
     setValue(ev.target.value);
     if (!!ev && !!ev.target && !!ev.target.value) {
-      itemsCopy.map(i => {
-        let match = i.children.filter(c => c.label.toLowerCase().indexOf((ev.target.value).toLowerCase()) > -1);
+      itemsCopy.map((i) => {
+        let match = i.children.filter(
+          (c) =>
+            c.label.toLowerCase().indexOf(ev.target.value.toLowerCase()) > -1,
+        );
         i.children = match;
         return i;
       });
     }
     setItem(itemsCopy);
-  }
+  };
 
-  const noResults = !item.filter(i => !!i.children.length).length;
+  const noResults = !item.filter((i) => !!i.children.length).length;
 
   return (
     <div className="select-box-box" ref={node}>
@@ -54,10 +57,8 @@ function SelectBox({ items }) {
         <div className="select-box-arrow">
           <span
             className={`${
-              showItems
-                ? "select-box-arrow-up"
-                : "select-box-arrow-down"
-              }`}
+              showItems ? "select-box-arrow-up" : "select-box-arrow-down"
+            }`}
           />
         </div>
 
@@ -65,10 +66,12 @@ function SelectBox({ items }) {
           style={{ display: showItems ? "block" : "none" }}
           className={"select-box-items"}
         >
-          {item.map(i => (
+          {item.map((i) => (
             <>
-              {!!i.children.length && <div className="parent">{i.parent.title}</div>}
-              {i.children.map(child => (
+              {!!i.children.length && (
+                <div className="parent">{i.parent.title}</div>
+              )}
+              {i.children.map((child) => (
                 <div className="child-container">
                   {/* {!!child.icon && <FontAwesomeIcon icon={child.icon} style={{ paddingRight: "8px", fontSize: "15px"}}/>} */}
                   <div

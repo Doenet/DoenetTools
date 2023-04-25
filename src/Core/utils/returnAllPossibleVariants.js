@@ -1,14 +1,11 @@
-import { numberToLetters } from './sequence.js';
-import * as serializeFunctions from './serializedStateProcessing.js';
-import createComponentInfoObjects from './componentInfoObjects.js';
-import { retrieveTextFileForCid } from './retrieveTextFile.js';
-import { cidFromText } from './cid.js';
-import { getNumberOfVariants } from './variants.js';
+import { numberToLetters } from "./sequence.js";
+import * as serializeFunctions from "./serializedStateProcessing.js";
+import createComponentInfoObjects from "./componentInfoObjects.js";
+import { retrieveTextFileForCid } from "./retrieveTextFile.js";
+import { cidFromText } from "./cid.js";
+import { getNumberOfVariants } from "./variants.js";
 
-export async function returnAllPossibleVariants({
-  cid, doenetML
-}) {
-
+export async function returnAllPossibleVariants({ cid, doenetML }) {
   if (doenetML === undefined) {
     doenetML = await retrieveTextFileForCid(cid, "doenet");
   } else if (!cid) {
@@ -17,11 +14,12 @@ export async function returnAllPossibleVariants({
 
   let componentInfoObjects = createComponentInfoObjects();
 
-  let { fullSerializedComponents } = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-    contentIds: [cid],
-    doenetMLs: [doenetML],
-    componentInfoObjects,
-  });
+  let { fullSerializedComponents } =
+    await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
+      contentIds: [cid],
+      doenetMLs: [doenetML],
+      componentInfoObjects,
+    });
 
   let serializedComponents = fullSerializedComponents[0];
 
@@ -31,15 +29,14 @@ export async function returnAllPossibleVariants({
 
   let results = getNumberOfVariants({
     serializedComponent: document,
-    componentInfoObjects
-  })
+    componentInfoObjects,
+  });
 
   let nVariants = results.numberOfVariants;
 
   let allPossibleVariants;
 
   if (results.variantNames) {
-
     let variantNames = [...results.variantNames];
 
     if (variantNames.length >= nVariants) {
@@ -59,22 +56,18 @@ export async function returnAllPossibleVariants({
         }
         variantNames.push(variantString);
       }
-
     }
 
     allPossibleVariants = variantNames;
-
   } else {
-
-    allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
-
+    allPossibleVariants = [...Array(nVariants).keys()].map((x) =>
+      indexToLowercaseLetters(x + 1),
+    );
   }
 
   return { allPossibleVariants, doenetML, cid };
 }
 
-
 function indexToLowercaseLetters(index) {
-  return numberToLetters(index, true)
+  return numberToLetters(index, true);
 }
-

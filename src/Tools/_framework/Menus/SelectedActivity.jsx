@@ -1,9 +1,9 @@
-import { faFileCode } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { toastType, useToast } from '@Toast';
-import React, { useEffect, useState } from 'react';
-import { useRecoilValue, useSetRecoilState, atom } from 'recoil';
-import { useActivity } from '../../../_reactComponents/Activity/ActivityActions';
+import { faFileCode } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toastType, useToast } from "@Toast";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue, useSetRecoilState, atom } from "recoil";
+import { useActivity } from "../../../_reactComponents/Activity/ActivityActions";
 import {
   AssignedDate,
   AssignTo,
@@ -30,23 +30,23 @@ import {
   TimeLimit,
   TotalPointsOrPercent,
   CanViewAfterCompleted,
-} from '../../../_reactComponents/Activity/SettingComponents';
+} from "../../../_reactComponents/Activity/SettingComponents";
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
   selectedCourseItems,
   useCourse,
-} from '../../../_reactComponents/Course/CourseActions';
-import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+} from "../../../_reactComponents/Course/CourseActions";
+import ActionButton from "../../../_reactComponents/PanelHeaderComponents/ActionButton";
+import ActionButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
+import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
 
 export default function SelectedActivity() {
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const { canEditContent } = useRecoilValue(
@@ -67,10 +67,10 @@ export default function SelectedActivity() {
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
-    if (itemTextFieldLabel === '') {
+    if (itemTextFieldLabel === "") {
       effectiveItemLabel = recoilLabel;
-      if (recoilLabel === '') {
-        effectiveItemLabel = 'Untitled';
+      if (recoilLabel === "") {
+        effectiveItemLabel = "Untitled";
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
@@ -91,12 +91,12 @@ export default function SelectedActivity() {
   let firstPageDoenetId = findFirstPageOfActivity(content);
 
   let heading = (
-    <h2 data-test="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
+    <h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }}>
       <FontAwesomeIcon icon={faFileCode} /> {recoilLabel}
     </h2>
   );
 
-  if (canEditContent === '1') {
+  if (canEditContent === "1") {
     return (
       <>
         {heading}
@@ -111,8 +111,8 @@ export default function SelectedActivity() {
               } else {
                 setPageToolView((prev) => {
                   return {
-                    page: 'course',
-                    tool: 'editor',
+                    page: "course",
+                    tool: "editor",
                     view: prev.view,
                     params: {
                       doenetId,
@@ -133,9 +133,9 @@ export default function SelectedActivity() {
                 courseId,
                 successCallback: () => {
                   setPageToolView({
-                    page: 'course',
-                    tool: 'draftactivity',
-                    view: '',
+                    page: "course",
+                    tool: "draftactivity",
+                    view: "",
                     params: {
                       doenetId,
                       requestedVariant: 1,
@@ -151,9 +151,9 @@ export default function SelectedActivity() {
             dataTest="View Assigned Activity"
             onClick={() => {
               setPageToolView({
-                page: 'course',
-                tool: 'assignment',
-                view: '',
+                page: "course",
+                tool: "assignment",
+                view: "",
                 params: {
                   doenetId,
                 },
@@ -181,24 +181,22 @@ export default function SelectedActivity() {
         <ButtonGroup vertical>
           <Button
             width="menu"
-            onClick={() => create({ itemType: 'page' })}
+            onClick={() => create({ itemType: "page" })}
             value="Add Page"
             dataTest="Add Page"
           />
           <Button
             width="menu"
-            onClick={() => create({ itemType: 'order' })}
+            onClick={() => create({ itemType: "order" })}
             value="Add Order"
             dataTest="Add Order"
           />
           <Button
-          width="menu"
-          onClick={() =>
-            create({itemType:"collectionLink"})
-          }
-          dataTest="Add Collection Link"
-          value="Add Collection Link"
-        />
+            width="menu"
+            onClick={() => create({ itemType: "collectionLink" })}
+            dataTest="Add Collection Link"
+            value="Add Collection Link"
+          />
         </ButtonGroup>
         <br />
 
@@ -228,9 +226,9 @@ export default function SelectedActivity() {
         value="View Activity"
         onClick={() => {
           setPageToolView({
-            page: 'course',
-            tool: 'assignment',
-            view: '',
+            page: "course",
+            tool: "assignment",
+            view: "",
             params: {
               doenetId,
             },
@@ -244,7 +242,7 @@ export default function SelectedActivity() {
 
 //TODO: Emilio
 const temporaryRestrictToAtom = atom({
-  key: 'temporaryRestrictToAtom',
+  key: "temporaryRestrictToAtom",
   default: [],
 });
 
@@ -267,9 +265,9 @@ export function AssignmentSettings({ doenetId, courseId }) {
   const sharedProps = {
     courseId,
     doenetId,
-    editable: canModifyActivitySettings ?? '0',
+    editable: canModifyActivitySettings ?? "0",
   };
-  if (canViewActivitySettings === '1') {
+  if (canViewActivitySettings === "1") {
     return (
       <>
         <AssignTo {...sharedProps} />
@@ -277,13 +275,13 @@ export function AssignmentSettings({ doenetId, courseId }) {
         <AssignedDate {...sharedProps} />
         <DueDate {...sharedProps} />
         <TimeLimit {...sharedProps} />
-    
+
         <AttemptLimit {...sharedProps} />
         <AttemptAggregation {...sharedProps} />
         <TotalPointsOrPercent {...sharedProps} />
         <GradeCategory {...sharedProps} />
         <ItemWeights {...sharedProps} />
-        <div style={{ margin: '16px 0' }}>
+        <div style={{ margin: "16px 0" }}>
           <Individualize {...sharedProps} />
           <ShowSolution {...sharedProps} />
           <ShowSolutionInGradebook {...sharedProps} />
@@ -307,7 +305,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
   //default JSX
   let nAttemptsAllowed = numberOfAttemptsAllowed;
   if (nAttemptsAllowed === null) {
-    nAttemptsAllowed = 'unlimited';
+    nAttemptsAllowed = "unlimited";
   }
   let timeLimitJSX = null;
   if (timeLimit !== null) {

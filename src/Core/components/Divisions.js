@@ -1,5 +1,5 @@
-import BlockComponent from './abstract/BlockComponent';
-import InlineComponent from './abstract/InlineComponent';
+import BlockComponent from "./abstract/BlockComponent";
+import InlineComponent from "./abstract/InlineComponent";
 
 export class Div extends BlockComponent {
   constructor(args) {
@@ -8,19 +8,20 @@ export class Div extends BlockComponent {
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
   static componentType = "div";
   static rendererType = "containerBlock";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -30,28 +31,25 @@ export class Div extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
 }
-
 
 export class Span extends InlineComponent {
   static componentType = "span";
   static rendererType = "containerInline";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
-
-
 }
-

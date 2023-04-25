@@ -1,41 +1,188 @@
-import me from 'math-expressions';
+import me from "math-expressions";
 
 export var appliedFunctionSymbolsDefault = [
-  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
-  "cos", "cosh", "acos", "acosh", 'arccos', 'arccosh',
-  "cot", "coth", "acot", "acoth", 'arccot', 'arccoth',
-  "csc", "csch", "acsc", "acsch", 'arccsc', 'arccsch',
-  "sec", "sech", "asec", "asech", 'arcsec', 'arcsech',
-  "sin", "sinh", "asin", "asinh", 'arcsin', 'arcsinh',
-  "tan", "tanh", "atan", "atan2", "atanh", 'arctan', 'arctanh',
-  'arg',
-  'min', 'max', 'mean', 'median',
-  'floor', 'ceil', 'round',
-  'sum', 'prod', 'variance', 'std',
-  'count', 'mod', 're', 'im', 'det', 'trace',
-  'nPr', 'nCr',
+  "abs",
+  "exp",
+  "log",
+  "ln",
+  "log10",
+  "sign",
+  "sqrt",
+  "erf",
+  "cos",
+  "cosh",
+  "acos",
+  "acosh",
+  "arccos",
+  "arccosh",
+  "cot",
+  "coth",
+  "acot",
+  "acoth",
+  "arccot",
+  "arccoth",
+  "csc",
+  "csch",
+  "acsc",
+  "acsch",
+  "arccsc",
+  "arccsch",
+  "sec",
+  "sech",
+  "asec",
+  "asech",
+  "arcsec",
+  "arcsech",
+  "sin",
+  "sinh",
+  "asin",
+  "asinh",
+  "arcsin",
+  "arcsinh",
+  "tan",
+  "tanh",
+  "atan",
+  "atan2",
+  "atanh",
+  "arctan",
+  "arctanh",
+  "arg",
+  "min",
+  "max",
+  "mean",
+  "median",
+  "floor",
+  "ceil",
+  "round",
+  "sum",
+  "prod",
+  "variance",
+  "std",
+  "count",
+  "mod",
+  "re",
+  "im",
+  "det",
+  "trace",
+  "nPr",
+  "nCr",
 ];
 
 export var appliedFunctionSymbolsDefaultLatex = [
-  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
-  "cos", "cosh", "acos", "acosh", 'arccos', 'arccosh',
-  "cot", "coth", "acot", "acoth", 'arccot', 'arccoth',
-  "csc", "csch", "acsc", "acsch", 'arccsc', 'arccsch',
-  "sec", "sech", "asec", "asech", 'arcsec', 'arcsech',
-  "sin", "sinh", "asin", "asinh", 'arcsin', 'arcsinh',
-  "tan", "tanh", "atan", "atan2", "atanh", 'arctan', 'arctanh',
-  'arg',
-  'min', 'max', 'mean', 'median',
-  'floor', 'ceil', 'round',
-  'sum', 'prod', 'variance', 'std',
-  'count', 'mod', 'Re', 'Im', 'det', 'trace',
-  'nPr', 'nCr',
+  "abs",
+  "exp",
+  "log",
+  "ln",
+  "log10",
+  "sign",
+  "sqrt",
+  "erf",
+  "cos",
+  "cosh",
+  "acos",
+  "acosh",
+  "arccos",
+  "arccosh",
+  "cot",
+  "coth",
+  "acot",
+  "acoth",
+  "arccot",
+  "arccoth",
+  "csc",
+  "csch",
+  "acsc",
+  "acsch",
+  "arccsc",
+  "arccsch",
+  "sec",
+  "sech",
+  "asec",
+  "asech",
+  "arcsec",
+  "arcsech",
+  "sin",
+  "sinh",
+  "asin",
+  "asinh",
+  "arcsin",
+  "arcsinh",
+  "tan",
+  "tanh",
+  "atan",
+  "atan2",
+  "atanh",
+  "arctan",
+  "arctanh",
+  "arg",
+  "min",
+  "max",
+  "mean",
+  "median",
+  "floor",
+  "ceil",
+  "round",
+  "sum",
+  "prod",
+  "variance",
+  "std",
+  "count",
+  "mod",
+  "Re",
+  "Im",
+  "det",
+  "trace",
+  "nPr",
+  "nCr",
 ];
 
-let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset', 'angle', 'circ', '$', '%']
+let allowedLatexSymbols = [
+  "alpha",
+  "beta",
+  "gamma",
+  "Gamma",
+  "delta",
+  "Delta",
+  "epsilon",
+  "zeta",
+  "eta",
+  "theta",
+  "Theta",
+  "iota",
+  "kappa",
+  "lambda",
+  "Lambda",
+  "mu",
+  "nu",
+  "xi",
+  "Xi",
+  "pi",
+  "Pi",
+  "rho",
+  "sigma",
+  "Sigma",
+  "tau",
+  "Tau",
+  "upsilon",
+  "Upsilon",
+  "phi",
+  "Phi",
+  "chi",
+  "psi",
+  "Psi",
+  "omega",
+  "Omega",
+  "partial",
+  "varnothing",
+  "emptyset",
+  "angle",
+  "circ",
+  "$",
+  "%",
+];
 
 export var textToAst = new me.converters.textToAstObj({
-  appliedFunctionSymbols: appliedFunctionSymbolsDefault
+  appliedFunctionSymbols: appliedFunctionSymbolsDefault,
 });
 
 export function getFromText({
@@ -43,10 +190,16 @@ export function getFromText({
   appliedFunctionSymbols = appliedFunctionSymbolsDefault,
   splitSymbols = true,
   parseScientificNotation = false,
-}) {
-  return x => me.fromAst((new me.converters.textToAstObj({
-    appliedFunctionSymbols, functionSymbols, splitSymbols, parseScientificNotation
-  })).convert(x))
+} = {}) {
+  return (x) =>
+    me.fromAst(
+      new me.converters.textToAstObj({
+        appliedFunctionSymbols,
+        functionSymbols,
+        splitSymbols,
+        parseScientificNotation,
+      }).convert(x),
+    );
 }
 
 export var latexToAst = new me.converters.latexToAstObj({
@@ -59,25 +212,37 @@ export function getFromLatex({
   appliedFunctionSymbols = appliedFunctionSymbolsDefaultLatex,
   splitSymbols = true,
   parseScientificNotation = false,
-}) {
+} = {}) {
   if (splitSymbols) {
-    return x => me.fromAst((new me.converters.latexToAstObj({
-      appliedFunctionSymbols, functionSymbols,
-      allowedLatexSymbols, parseScientificNotation
-    })).convert(wrapWordIncludingNumberWithVar(x, parseScientificNotation)))
+    return (x) =>
+      me.fromAst(
+        new me.converters.latexToAstObj({
+          appliedFunctionSymbols,
+          functionSymbols,
+          allowedLatexSymbols,
+          parseScientificNotation,
+        }).convert(wrapWordIncludingNumberWithVar(x, parseScientificNotation)),
+      );
   } else {
-    return x => me.fromAst((new me.converters.latexToAstObj({
-      appliedFunctionSymbols, functionSymbols,
-      allowedLatexSymbols, parseScientificNotation
-    })).convert(wrapWordWithVar(x, parseScientificNotation)))
+    return (x) =>
+      me.fromAst(
+        new me.converters.latexToAstObj({
+          appliedFunctionSymbols,
+          functionSymbols,
+          allowedLatexSymbols,
+          parseScientificNotation,
+        }).convert(wrapWordWithVar(x, parseScientificNotation)),
+      );
   }
-
 }
 
-export function normalizeMathExpression({ value, simplify, expand = false,
-  createVectors = false, createIntervals = false
+export function normalizeMathExpression({
+  value,
+  simplify,
+  expand = false,
+  createVectors = false,
+  createIntervals = false,
 }) {
-
   if (createVectors) {
     value = value.tuples_to_vectors();
   }
@@ -121,7 +286,6 @@ export function findFiniteNumericalValue(value) {
   return null;
 }
 
-
 export function convertValueToMathExpression(value) {
   if (value instanceof me.class) {
     return value;
@@ -132,12 +296,11 @@ export function convertValueToMathExpression(value) {
     // let value be math-expression based on value
     return me.fromAst(value);
   } else {
-    return me.fromAst('\uFF3F');  // long underscore
+    return me.fromAst("\uFF3F"); // long underscore
   }
 }
 
 export function returnNVariables(n, variablesSpecified) {
-
   // console.log(`return N variables`, n, variablesSpecified)
 
   if (!Number.isInteger(n) || n < 1) {
@@ -152,27 +315,28 @@ export function returnNVariables(n, variablesSpecified) {
     } else if (n === 2) {
       return [me.fromAst("x"), me.fromAst("y")];
     } else if (n === 3) {
-      return [me.fromAst("x"), me.fromAst("y"), me.fromAst("z")]
+      return [me.fromAst("x"), me.fromAst("y"), me.fromAst("z")];
     } else {
       let variables = [];
       for (let i = 1; i <= n; i++) {
-        variables.push(me.fromAst(textToAst.convert(`x_${i}`)))
+        variables.push(me.fromAst(textToAst.convert(`x_${i}`)));
       }
       return variables;
     }
   }
 
-
-  if ((new Set(variablesSpecified.map(x => x.toString()))).size
-    < nVariablesSpecified) {
-    console.warn('Duplicate variables specified')
+  if (
+    new Set(variablesSpecified.map((x) => x.toString())).size <
+    nVariablesSpecified
+  ) {
+    console.warn("Duplicate variables specified");
   }
 
   if (n <= nVariablesSpecified) {
     return variablesSpecified.slice(0, n);
   }
 
-  let variablesUsed = [...variablesSpecified.map(x => x.toString())];
+  let variablesUsed = [...variablesSpecified.map((x) => x.toString())];
   let variables = [...variablesSpecified];
   for (let i = nVariablesSpecified + 1; i <= n; i++) {
     let preferredVariables;
@@ -195,8 +359,9 @@ export function returnNVariables(n, variablesSpecified) {
         preferredVariables = ["z", "x_3", "z_3"];
       }
     } else {
-      preferredVariables =
-        ["x", "y", "z", "u", "v", "w", "X", "Y", "Z"].map(x => `${x}_${i}`)
+      preferredVariables = ["x", "y", "z", "u", "v", "w", "X", "Y", "Z"].map(
+        (x) => `${x}_${i}`,
+      );
     }
     let addedVariable = false;
     for (let v of preferredVariables) {
@@ -208,24 +373,26 @@ export function returnNVariables(n, variablesSpecified) {
       }
     }
     if (!addedVariable) {
-      let v = preferredVariables[0]
+      let v = preferredVariables[0];
       variables.push(me.fromAst(textToAst.convert(v)));
       variablesUsed.push(v);
-      console.warn(`Variables added were not unique`)
+      console.warn(`Variables added were not unique`);
     }
   }
 
   return variables;
-
 }
 
-
-export async function preprocessMathInverseDefinition({ desiredValue,
-  stateValues, variableName = "value", arrayKey,
-  workspace }) {
-
-  if (!vectorOperators.includes(desiredValue.tree[0])
-    || !desiredValue.tree.includes()
+export async function preprocessMathInverseDefinition({
+  desiredValue,
+  stateValues,
+  variableName = "value",
+  arrayKey,
+  workspace,
+}) {
+  if (
+    !vectorOperators.includes(desiredValue.tree[0]) ||
+    !desiredValue.tree.includes()
   ) {
     return { desiredValue };
   }
@@ -244,22 +411,19 @@ export async function preprocessMathInverseDefinition({ desiredValue,
     // we will merge components from desired value into workspace value
     valueAst = workspace[workspaceKey].slice(0, desiredValue.tree.length);
   } else {
-
     let currentValue = await stateValues[variableName];
 
     if (currentValue && arrayKey !== undefined) {
       // TODO: generalize to multi-dimensional arrays?
-      currentValue = currentValue[arrayKey]
+      currentValue = currentValue[arrayKey];
     }
 
     if (currentValue && vectorOperators.includes(currentValue.tree[0])) {
-
       // if we have a currentValue that is a vector
       // we will merge components from desired value into current value
       valueAst = currentValue.tree.slice(0, desiredValue.tree.length);
     }
   }
-
 
   if (valueAst) {
     // have a vector that we'll merge desiredValue into
@@ -280,13 +444,12 @@ export async function preprocessMathInverseDefinition({ desiredValue,
     if (foundNotAffected) {
       return {
         desiredValue,
-        vectorComponentsNotAffected
-      }
+        vectorComponentsNotAffected,
+      };
     } else {
       return { desiredValue };
     }
   } else {
-
     // don't have a vector to merge desiredValue into
     // but desiredValue has undefined entries
     // desired expression could have undefined entries
@@ -294,80 +457,79 @@ export async function preprocessMathInverseDefinition({ desiredValue,
     let desiredOperands = [];
     for (let val of desiredValue.tree.slice(1)) {
       if (val === undefined) {
-        desiredOperands.push('\uff3f');
+        desiredOperands.push("\uff3f");
       } else {
-        desiredOperands.push(val)
+        desiredOperands.push(val);
       }
     }
 
-    desiredValue = me.fromAst([desiredValue.tree[0], ...desiredOperands])
+    desiredValue = me.fromAst([desiredValue.tree[0], ...desiredOperands]);
 
     return { desiredValue };
   }
-
 }
 
 export function normalizeLatexString(latexString, { unionFromU = false } = {}) {
-
   let substitutions = [
-    ['\u03B1', '\\alpha '], // 'α'
-    ['\u03B2', '\\beta '], // 'β'
-    ['\u03D0', '\\beta '], // 'ϐ'
-    ['\u0393', '\\Gamma '], // 'Γ'
-    ['\u03B3', '\\gamma '], // 'γ'
-    ['\u0394', '\\Delta '], // 'Δ'
-    ['\u03B4', '\\delta '], // 'δ'
-    ['\u03B5', '\\epsilon '], // 'ε' should this be varepsilon?
-    ['\u03F5', '\\epsilon '], // 'ϵ'
-    ['\u03B6', '\\zeta '], // 'ζ'
-    ['\u03B7', '\\eta '], // 'η'
-    ['\u0398', '\\Theta '], // 'Θ'
-    ['\u03F4', '\\Theta '], // 'ϴ'
-    ['\u03B8', '\\theta '], // 'θ'
-    ['\u1DBF', '\\theta '], // 'ᶿ'
-    ['\u03D1', '\\theta '], // 'ϑ'
-    ['\u03B9', '\\iota '], // 'ι'
-    ['\u03BA', '\\kappa '], // 'κ'
-    ['\u039B', '\\Lambda '], // 'Λ'
-    ['\u03BB', '\\lambda '], // 'λ'
-    ['\u03BC', '\\mu '], // 'μ'
-    ['\u00B5', '\\mu '], // 'µ' should this be micro?
-    ['\u03BD', '\\nu '], // 'ν'
-    ['\u039E', '\\Xi '], // 'Ξ'
-    ['\u03BE', '\\xi '], // 'ξ'
-    ['\u03A0', '\\Pi '], // 'Π'
-    ['\u03C0', '\\pi '], // 'π'
-    ['\u03D6', '\\pi '], // 'ϖ' should this be varpi?
-    ['\u03C1', '\\rho '], // 'ρ'
-    ['\u03F1', '\\rho '], // 'ϱ' should this be varrho?
-    ['\u03A3', '\\Sigma '], // 'Σ'
-    ['\u03C3', '\\sigma '], // 'σ'
-    ['\u03C2', '\\sigma '], // 'ς' should this be varsigma?
-    ['\u03C4', '\\tau '], // 'τ'
-    ['\u03A5', '\\Upsilon '], // 'Υ'
-    ['\u03C5', '\\upsilon '], // 'υ'
-    ['\u03A6', '\\Phi '], // 'Φ'
-    ['\u03C6', '\\phi '], // 'φ' should this be varphi?
-    ['\u03D5', '\\phi '], // 'ϕ'
-    ['\u03A8', '\\Psi '], // 'Ψ'
-    ['\u03C8', '\\psi '], // 'ψ'
-    ['\u03A9', '\\Omega '], // 'Ω'
-    ['\u03C9', '\\omega '], // 'ω'
-    ['\u2212', '-'], // minus sign
-    ['\u22C5', ' \\cdot '], // dot operator
-    ['\u00B7', ' \\cdot '], // middle dot
-    ['\u222A', ' \\cup '], // ∪
-    ['\u2229', ' \\cap '], // ∩
-    ['\u221E', ' \\infty '], // ∞
-    ['\u2205', ' \\emptyset '], // ∅
-
-  ]
+    ["\u03B1", "\\alpha "], // 'α'
+    ["\u03B2", "\\beta "], // 'β'
+    ["\u03D0", "\\beta "], // 'ϐ'
+    ["\u0393", "\\Gamma "], // 'Γ'
+    ["\u03B3", "\\gamma "], // 'γ'
+    ["\u0394", "\\Delta "], // 'Δ'
+    ["\u03B4", "\\delta "], // 'δ'
+    ["\u03B5", "\\epsilon "], // 'ε' should this be varepsilon?
+    ["\u03F5", "\\epsilon "], // 'ϵ'
+    ["\u03B6", "\\zeta "], // 'ζ'
+    ["\u03B7", "\\eta "], // 'η'
+    ["\u0398", "\\Theta "], // 'Θ'
+    ["\u03F4", "\\Theta "], // 'ϴ'
+    ["\u03B8", "\\theta "], // 'θ'
+    ["\u1DBF", "\\theta "], // 'ᶿ'
+    ["\u03D1", "\\theta "], // 'ϑ'
+    ["\u03B9", "\\iota "], // 'ι'
+    ["\u03BA", "\\kappa "], // 'κ'
+    ["\u039B", "\\Lambda "], // 'Λ'
+    ["\u03BB", "\\lambda "], // 'λ'
+    ["\u03BC", "\\mu "], // 'μ'
+    ["\u00B5", "\\mu "], // 'µ' should this be micro?
+    ["\u03BD", "\\nu "], // 'ν'
+    ["\u039E", "\\Xi "], // 'Ξ'
+    ["\u03BE", "\\xi "], // 'ξ'
+    ["\u03A0", "\\Pi "], // 'Π'
+    ["\u03C0", "\\pi "], // 'π'
+    ["\u03D6", "\\pi "], // 'ϖ' should this be varpi?
+    ["\u03C1", "\\rho "], // 'ρ'
+    ["\u03F1", "\\rho "], // 'ϱ' should this be varrho?
+    ["\u03A3", "\\Sigma "], // 'Σ'
+    ["\u03C3", "\\sigma "], // 'σ'
+    ["\u03C2", "\\sigma "], // 'ς' should this be varsigma?
+    ["\u03C4", "\\tau "], // 'τ'
+    ["\u03A5", "\\Upsilon "], // 'Υ'
+    ["\u03C5", "\\upsilon "], // 'υ'
+    ["\u03A6", "\\Phi "], // 'Φ'
+    ["\u03C6", "\\phi "], // 'φ' should this be varphi?
+    ["\u03D5", "\\phi "], // 'ϕ'
+    ["\u03A8", "\\Psi "], // 'Ψ'
+    ["\u03C8", "\\psi "], // 'ψ'
+    ["\u03A9", "\\Omega "], // 'Ω'
+    ["\u03C9", "\\omega "], // 'ω'
+    ["\u2212", "-"], // minus sign
+    ["\u22C5", " \\cdot "], // dot operator
+    ["\u00B7", " \\cdot "], // middle dot
+    ["\u222A", " \\cup "], // ∪
+    ["\u2229", " \\cap "], // ∩
+    ["\u221E", " \\infty "], // ∞
+    ["\u2205", " \\emptyset "], // ∅
+  ];
 
   for (let sub of substitutions) {
-    latexString = latexString.replaceAll(sub[0], sub[1])
+    latexString = latexString.replaceAll(sub[0], sub[1]);
   }
 
-  let startLdotsMatch = latexString.match(/^(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*(.*)$/)
+  let startLdotsMatch = latexString.match(
+    /^(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*(.*)$/,
+  );
 
   if (startLdotsMatch) {
     let afterLdots = startLdotsMatch[6];
@@ -378,7 +540,9 @@ export function normalizeLatexString(latexString, { unionFromU = false } = {}) {
     }
   }
 
-  let endLdotsMatch = latexString.match(/^(.*?)(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*$/)
+  let endLdotsMatch = latexString.match(
+    /^(.*?)(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*$/,
+  );
 
   if (endLdotsMatch) {
     let beforeLdots = endLdotsMatch[1];
@@ -391,17 +555,14 @@ export function normalizeLatexString(latexString, { unionFromU = false } = {}) {
 
   // replace [space]or[space]
   // with \or
-  latexString = latexString.replaceAll(/(\b|\\ )or(\b|\\ )/g, "$1\\lor$2")
-  latexString = latexString.replaceAll(/(\b|\\ )and(\b|\\ )/g, "$1\\land$2")
+  latexString = latexString.replaceAll(/(\b|\\ )or(\b|\\ )/g, "$1\\lor$2");
+  latexString = latexString.replaceAll(/(\b|\\ )and(\b|\\ )/g, "$1\\land$2");
 
   if (unionFromU) {
-    latexString = latexString.replaceAll(/(\b|\\ )U(\b|\\ )/g, "$1\\cup$2")
-
+    latexString = latexString.replaceAll(/(\b|\\ )U(\b|\\ )/g, "$1\\cup$2");
   }
 
-
   return latexString;
-
 }
 
 export function isValidVariable(expression) {
@@ -411,48 +572,64 @@ export function isValidVariable(expression) {
   let tree = expression.tree;
   let validVariable = true;
   if (typeof tree === "string") {
-    if (tree === '\uFF3F') {  // long underscore
+    if (tree === "\uFF3F") {
+      // long underscore
       validVariable = false;
     }
-  } else if (!Array.isArray(tree) ||
-    tree[0] !== '_' ||
-    (typeof tree[1] !== "string") ||
-    ((typeof tree[2] !== "string" && typeof tree[2] !== "number"))
+  } else if (
+    !Array.isArray(tree) ||
+    tree[0] !== "_" ||
+    typeof tree[1] !== "string" ||
+    (typeof tree[2] !== "string" && typeof tree[2] !== "number")
   ) {
     validVariable = false;
   }
 
   return validVariable;
-
 }
 
 export function mathStateVariableFromNumberStateVariable({
-  numberVariableName = "number", mathVariableName = "math", isPublic = false } = {}
-) {
-
+  numberVariableName = "number",
+  mathVariableName = "math",
+  isPublic = false,
+} = {}) {
   let mathDef = {
     returnDependencies: () => ({
       number: {
         dependencyType: "stateVariable",
-        variableName: numberVariableName
+        variableName: numberVariableName,
       },
     }),
     definition: function ({ dependencyValues }) {
-      return { setValue: { [mathVariableName]: numberToMathExpression(dependencyValues.number) } };
+      return {
+        setValue: {
+          [mathVariableName]: numberToMathExpression(dependencyValues.number),
+        },
+      };
     },
     inverseDefinition: function ({ desiredStateVariableValues }) {
+      let desiredMath = desiredStateVariableValues[mathVariableName];
 
-      let desiredNumber = desiredStateVariableValues[mathVariableName].evaluate_to_constant();
-      return {
-        success: true,
-        instructions: [{
-          setDependency: "number",
-          desiredValue: desiredNumber,
-        }],
+      let desiredNumber;
+      if (desiredMath instanceof me.class) {
+        desiredNumber = desiredMath.evaluate_to_constant();
+      } else if (typeof desiredMath === "number") {
+        desiredNumber = desiredMath;
+      } else {
+        desiredNumber = NaN;
       }
 
-    }
-  }
+      return {
+        success: true,
+        instructions: [
+          {
+            setDependency: "number",
+            desiredValue: desiredNumber,
+          },
+        ],
+      };
+    },
+  };
 
   if (isPublic) {
     mathDef.public = true;
@@ -460,7 +637,6 @@ export function mathStateVariableFromNumberStateVariable({
   }
 
   return mathDef;
-
 }
 
 export function numberToMathExpression(number) {
@@ -493,34 +669,40 @@ export function roundForDisplay({ value, dependencyValues, usedDefault }) {
   let rounded;
 
   // displayDigits takes precedence
-  // use displayDecimals only if 
+  // use displayDecimals only if
   // - didn't specify displayDigits or specified invalid displayDigits, and
   // - specified a valid displayDecimals
   if (
-    (usedDefault.displayDigits || !(dependencyValues.displayDigits >= 1))
-    && !usedDefault.displayDecimals
-    && Number.isFinite(dependencyValues.displayDecimals)
+    (usedDefault.displayDigits || !(dependencyValues.displayDigits >= 1)) &&
+    !usedDefault.displayDecimals &&
+    Number.isFinite(dependencyValues.displayDecimals)
   ) {
-    rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
+    rounded = me.round_numbers_to_decimals(
+      value,
+      dependencyValues.displayDecimals,
+    );
   } else {
     if (dependencyValues.displayDigits >= 1) {
-      rounded = me.round_numbers_to_precision(value, dependencyValues.displayDigits);
+      rounded = me.round_numbers_to_precision(
+        value,
+        dependencyValues.displayDigits,
+      );
     } else {
       // default behavior is round to 10 digits
       rounded = me.round_numbers_to_precision(value, 10);
     }
     if (dependencyValues.displaySmallAsZero > 0) {
-      rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: dependencyValues.displaySmallAsZero });
+      rounded = me.evaluate_numbers(rounded, {
+        skip_ordering: true,
+        set_small_zero: dependencyValues.displaySmallAsZero,
+      });
     }
-
   }
 
   return rounded;
-
 }
 
 export function mergeListsWithOtherContainers(tree) {
-
   if (!Array.isArray(tree)) {
     return tree;
   }
@@ -529,27 +711,32 @@ export function mergeListsWithOtherContainers(tree) {
   let operands = tree.slice(1);
 
   if ([...vectorOperators, "list", "set"].includes(operator)) {
-    operands = operands.reduce((a, c) => Array.isArray(c) && c[0] === "list" ? [...a, ...c.slice(1)] : [...a, c], [])
+    operands = operands.reduce(
+      (a, c) =>
+        Array.isArray(c) && c[0] === "list" ? [...a, ...c.slice(1)] : [...a, c],
+      [],
+    );
   }
 
-  operands = operands.map(x => mergeListsWithOtherContainers(x))
+  operands = operands.map((x) => mergeListsWithOtherContainers(x));
 
   return [operator, ...operands];
-
 }
 
 export function wrapWordWithVar(string, parseScientificNotation) {
-
   // wrap words that aren't already in a \operatorname with a \operatorname
 
   let newString = "";
 
-  let regex = /\\operatorname\s*{[^{}]*}/
+  let regex = /\\operatorname\s*{[^{}]*}/;
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length;
-    newString += wrapWordWithVarSub(string.substring(0, beginMatch), parseScientificNotation);
+    newString += wrapWordWithVarSub(
+      string.substring(0, beginMatch),
+      parseScientificNotation,
+    );
     newString += string.substring(beginMatch, endMatch);
     string = string.substring(endMatch);
     match = string.match(regex);
@@ -557,11 +744,9 @@ export function wrapWordWithVar(string, parseScientificNotation) {
   newString += wrapWordWithVarSub(string, parseScientificNotation);
 
   return newString;
-
 }
 
 function wrapWordWithVarSub(string, parseScientificNotation) {
-
   let newString = "";
 
   const regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
@@ -569,8 +754,15 @@ function wrapWordWithVarSub(string, parseScientificNotation) {
   let regexSN;
 
   if (parseScientificNotation) {
-    const sci_notat_exp_regex = '(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))';
-    regexSN = new RegExp('([0-9]+(\\.[0-9]*)?' + sci_notat_exp_regex + ')|(\\.[0-9]+' + sci_notat_exp_regex + ')');
+    const sci_notat_exp_regex =
+      "(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))";
+    regexSN = new RegExp(
+      "([0-9]+(\\.[0-9]*)?" +
+        sci_notat_exp_regex +
+        ")|(\\.[0-9]+" +
+        sci_notat_exp_regex +
+        ")",
+    );
   }
 
   let match = string.match(regex);
@@ -578,8 +770,12 @@ function wrapWordWithVarSub(string, parseScientificNotation) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
     if (parseScientificNotation) {
-      let matchSN = string.match(regexSN)
-      if (matchSN && matchSN.index < endMatch && matchSN.index + matchSN[0].length > beginMatch) {
+      let matchSN = string.match(regexSN);
+      if (
+        matchSN &&
+        matchSN.index < endMatch &&
+        matchSN.index + matchSN[0].length > beginMatch
+      ) {
         // skip because is part of scientific notation
         newString += string.substring(0, endMatch);
         string = string.substring(endMatch);
@@ -604,40 +800,53 @@ function wrapWordWithVarSub(string, parseScientificNotation) {
   newString += string;
 
   return newString;
-
 }
 
-export function wrapWordIncludingNumberWithVar(string, parseScientificNotation) {
-
+export function wrapWordIncludingNumberWithVar(
+  string,
+  parseScientificNotation,
+) {
   let newString = "";
 
-  let regex = /\\operatorname\s*{[^{}]*}/
+  let regex = /\\operatorname\s*{[^{}]*}/;
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length;
-    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch), parseScientificNotation);
+    newString += wrapWordIncludingNumberWithVarSub(
+      string.substring(0, beginMatch),
+      parseScientificNotation,
+    );
     newString += string.substring(beginMatch, endMatch);
     string = string.substring(endMatch);
     match = string.match(regex);
   }
-  newString += wrapWordIncludingNumberWithVarSub(string, parseScientificNotation);
+  newString += wrapWordIncludingNumberWithVarSub(
+    string,
+    parseScientificNotation,
+  );
 
   return newString;
-
 }
 
 function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
-
   let newString = "";
 
-  const regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  const regex =
+    /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
 
   let regexSN;
 
   if (parseScientificNotation) {
-    const sci_notat_exp_regex = '(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))';
-    regexSN = new RegExp('([0-9]+(\\.[0-9]*)?' + sci_notat_exp_regex + ')|(\\.[0-9]+' + sci_notat_exp_regex + ')');
+    const sci_notat_exp_regex =
+      "(E[+\\-]?[0-9]+\\s*($|(?=\\,|&|\\||\\\\\\||\\)|\\}|\\\\}|\\]|\\\\\\\\|\\\\end)))";
+    regexSN = new RegExp(
+      "([0-9]+(\\.[0-9]*)?" +
+        sci_notat_exp_regex +
+        ")|(\\.[0-9]+" +
+        sci_notat_exp_regex +
+        ")",
+    );
   }
 
   let match = string.match(regex);
@@ -645,8 +854,12 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
     if (parseScientificNotation) {
-      let matchSN = string.match(regexSN)
-      if (matchSN && matchSN.index < endMatch && matchSN.index + matchSN[0].length > beginMatch) {
+      let matchSN = string.match(regexSN);
+      if (
+        matchSN &&
+        matchSN.index < endMatch &&
+        matchSN.index + matchSN[0].length > beginMatch
+      ) {
         // skip because is part of scientific notation
         newString += string.substring(0, endMatch);
         string = string.substring(endMatch);
@@ -672,46 +885,46 @@ function wrapWordIncludingNumberWithVarSub(string, parseScientificNotation) {
   newString += string;
 
   return newString;
-
 }
 
 export function stripLatex(latex) {
-  return latex.replaceAll(`\\,`, '').replaceAll(/\\operatorname{([^{}]*)}/g, '$1');
+  return latex
+    .replaceAll(`\\,`, "")
+    .replaceAll(/\\operatorname{([^{}]*)}/g, "$1");
 }
 
 export function superSubscriptsToUnicode(text) {
-
   let charToSubscriptUnicode = {
-    '0': '\u2080',
-    '1': '\u2081',
-    '2': '\u2082',
-    '3': '\u2083',
-    '4': '\u2084',
-    '5': '\u2085',
-    '6': '\u2086',
-    '7': '\u2087',
-    '8': '\u2088',
-    '9': '\u2089',
-    '+': '\u208A',
-    '-': '\u208B',
-    ' ': '',
-  }
+    0: "\u2080",
+    1: "\u2081",
+    2: "\u2082",
+    3: "\u2083",
+    4: "\u2084",
+    5: "\u2085",
+    6: "\u2086",
+    7: "\u2087",
+    8: "\u2088",
+    9: "\u2089",
+    "+": "\u208A",
+    "-": "\u208B",
+    " ": "",
+  };
 
   let charToSuperscriptUnicode = {
-    '0': '\u2070',
-    '1': '\u00B9',
-    '2': '\u00B2',
-    '3': '\u00B3',
-    '4': '\u2074',
-    '5': '\u2075',
-    '6': '\u2076',
-    '7': '\u2077',
-    '8': '\u2078',
-    '9': '\u2079',
-    '+': '\u207A',
-    '-': '\u207B',
-    ' ': '',
-  }
+    0: "\u2070",
+    1: "\u00B9",
+    2: "\u00B2",
+    3: "\u00B3",
+    4: "\u2074",
+    5: "\u2075",
+    6: "\u2076",
+    7: "\u2077",
+    8: "\u2078",
+    9: "\u2079",
+    "+": "\u207A",
+    "-": "\u207B",
+    " ": "",
+  };
 
   function replaceSubscripts(match, p1) {
     let newVal = "";
@@ -733,46 +946,44 @@ export function superSubscriptsToUnicode(text) {
     return newVal;
   }
 
-  text = text.replaceAll(/_(\d+)/g, replaceSubscripts)
-  text = text.replaceAll(/_\(([\d +-]+)\)/g, replaceSubscripts)
-  text = text.replaceAll(/\^(\d+)/g, replaceSuperscripts)
-  text = text.replaceAll(/\^\(([\d +-]+)\)/g, replaceSuperscripts)
+  text = text.replaceAll(/_(\d+)/g, replaceSubscripts);
+  text = text.replaceAll(/_\(([\d +-]+)\)/g, replaceSubscripts);
+  text = text.replaceAll(/\^(\d+)/g, replaceSuperscripts);
+  text = text.replaceAll(/\^\(([\d +-]+)\)/g, replaceSuperscripts);
 
   return text;
-
 }
 
 export function unicodeToSuperSubscripts(text) {
-
   let subscriptUnicodeToChar = {
-    '\u2080': '0',
-    '\u2081': '1',
-    '\u2082': '2',
-    '\u2083': '3',
-    '\u2084': '4',
-    '\u2085': '5',
-    '\u2086': '6',
-    '\u2087': '7',
-    '\u2088': '8',
-    '\u2089': '9',
-    '\u208A': '+',
-    '\u208B': '-',
-  }
+    "\u2080": "0",
+    "\u2081": "1",
+    "\u2082": "2",
+    "\u2083": "3",
+    "\u2084": "4",
+    "\u2085": "5",
+    "\u2086": "6",
+    "\u2087": "7",
+    "\u2088": "8",
+    "\u2089": "9",
+    "\u208A": "+",
+    "\u208B": "-",
+  };
 
   let superscriptUnicodeToChar = {
-    '\u2070': '0',
-    '\u00B9': '1',
-    '\u00B2': '2',
-    '\u00B3': '3',
-    '\u2074': '4',
-    '\u2075': '5',
-    '\u2076': '6',
-    '\u2077': '7',
-    '\u2078': '8',
-    '\u2079': '9',
-    '\u207A': '+',
-    '\u207B': '-',
-  }
+    "\u2070": "0",
+    "\u00B9": "1",
+    "\u00B2": "2",
+    "\u00B3": "3",
+    "\u2074": "4",
+    "\u2075": "5",
+    "\u2076": "6",
+    "\u2077": "7",
+    "\u2078": "8",
+    "\u2079": "9",
+    "\u207A": "+",
+    "\u207B": "-",
+  };
 
   function replaceSubscripts(match, p1) {
     let newVal = "";
@@ -781,7 +992,7 @@ export function unicodeToSuperSubscripts(text) {
       newVal += subscriptUnicodeToChar[char];
     }
 
-    return '_(' + newVal + ')';
+    return "_(" + newVal + ")";
   }
 
   function replaceSuperscripts(match, p1) {
@@ -791,38 +1002,73 @@ export function unicodeToSuperSubscripts(text) {
       newVal += superscriptUnicodeToChar[char];
     }
 
-    return '^(' + newVal + ')';
+    return "^(" + newVal + ")";
   }
 
-
-  text = text.replaceAll(/([\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089\u208A\u208B]+)/g, replaceSubscripts)
-  text = text.replaceAll(/([\u2070\u00B9\u00B2\u00B3\u2074\u2075\u2076\u2077\u2078\u2079\u207A\u207B]+)/g, replaceSuperscripts)
+  text = text.replaceAll(
+    /([\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089\u208A\u208B]+)/g,
+    replaceSubscripts,
+  );
+  text = text.replaceAll(
+    /([\u2070\u00B9\u00B2\u00B3\u2074\u2075\u2076\u2077\u2078\u2079\u207A\u207B]+)/g,
+    replaceSuperscripts,
+  );
 
   return text;
-
 }
 
 export const mathjaxConfig = {
   showProcessingMessages: false,
   "fast-preview": {
-    disabled: true
+    disabled: true,
   },
   jax: ["input/TeX", "output/CommonHTML"],
-  extensions: ["tex2jax.js", "MathMenu.js", "MathZoom.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+  extensions: [
+    "tex2jax.js",
+    "MathMenu.js",
+    "MathZoom.js",
+    "AssistiveMML.js",
+    "a11y/accessibility-menu.js",
+  ],
   TeX: {
-    extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"],
+    extensions: [
+      "AMSmath.js",
+      "AMSsymbols.js",
+      "noErrors.js",
+      "noUndefined.js",
+    ],
     equationNumbers: {
-      autoNumber: "AMS"
+      autoNumber: "AMS",
     },
     Macros: {
-      lt: '<', gt: '>', amp: '&', var: ['\\mathrm{#1}', 1],
-      csch: '\\operatorname{csch}',
-      sech: '\\operatorname{sech}'
-    }
+      lt: "<",
+      gt: ">",
+      amp: "&",
+      var: ["\\mathrm{#1}", 1],
+      csch: "\\operatorname{csch}",
+      sech: "\\operatorname{sech}",
+    },
   },
   tex2jax: {
-    displayMath: [['\\[', '\\]']]
-  }
+    displayMath: [["\\[", "\\]"]],
+  },
 };
 
 export const vectorOperators = ["vector", "altvector", "tuple"];
+
+export function removeFunctionsMathExpressionClass(value) {
+  if (value instanceof me.class) {
+    value = value.tree;
+  } else if (typeof value === "function") {
+    value = undefined;
+  } else if (Array.isArray(value)) {
+    value = value.map((x) => removeFunctionsMathExpressionClass(x));
+  } else if (typeof value === "object" && value !== null) {
+    let valueCopy = {};
+    for (let key in value) {
+      valueCopy[key] = removeFunctionsMathExpressionClass(value[key]);
+    }
+    value = valueCopy;
+  }
+  return value;
+}

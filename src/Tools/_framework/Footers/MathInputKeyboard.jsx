@@ -20,20 +20,20 @@ import styled from 'styled-components';
 import { MathJax } from 'better-react-mathjax';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { faBackspace, faArrowUp } from '@fortawesome/free-solid-svg-icons';
-import { useToast, toastType } from '../Toast';
+import { faBackspace, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { useToast, toastType } from "../Toast";
 
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import {
   focusedMathField,
   palletRef,
   focusedMathFieldReturn,
-} from './MathInputSelector';
+} from "./MathInputSelector";
 
 // import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/theme';
 
-import { useRef } from 'react';
+import { useRef } from "react";
 
 const Panel = styled.div`
   height: 240px;

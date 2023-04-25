@@ -1,10 +1,10 @@
-.headingContainer{
+.headingContainer {
   display: flex;
   /* position: fixed; */
   flex-direction: row;
   box-sizing: border-box;
   background-color: white;
-  border-bottom: 1px solid #E3E2E2;
+  border-bottom: 1px solid #e3e2e2;
   justify-content: space-between;
   /* padding: 6px; */
   width: 100%;
@@ -14,10 +14,10 @@
 }
 .select {
   background-color: white;
-  border-color: #E3E2E2;
+  border-color: #e3e2e2;
 }
 
-.toolName{
+.toolName {
   width: 300px;
   display: flex;
   flex-direction: row;
@@ -35,9 +35,9 @@
   margin-left: 10px;
 }
 
-.headingTitle{
+.headingTitle {
   flex-grow: 1;
-  display:flex;
+  display: flex;
   padding: 0 10px;
   align-items: center;
   line-height: 2em;
@@ -54,17 +54,15 @@
   color: #333333;
   scrollbar-width: none; /*Firefox;*/
   -ms-overflow-style: none; /* Internet Explorer 10+ */
-  
 }
-.headingTitle span::-webkit-scrollbar{
+.headingTitle span::-webkit-scrollbar {
   display: none;
-
 }
 
 .headingToolbar {
   position: relative;
   width: 400px;
-  display:flex;
+  display: flex;
   margin: 0px 20px 0px 10px;
   flex-direction: row;
   justify-content: flex-end;
@@ -111,22 +109,23 @@
 } */
 
 #userButton-anonymous {
-    text-align: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: none;
-    padding: 5px 0px;
-    color: #333333;
-    text-transform: none;
-    font-weight: 700;
-    border: 0.5px solid;
-    border-color: #333333;
-    transition: 300ms;
-    margin: 0px 10px;
+  text-align: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: none;
+  padding: 5px 0px;
+  color: #333333;
+  text-transform: none;
+  font-weight: 700;
+  border: 0.5px solid;
+  border-color: #333333;
+  transition: 300ms;
+  margin: 0px 10px;
 }
 
-#userButton-anonymous:hover, #userButton-anonymous:hover #userButtonIcon {
+#userButton-anonymous:hover,
+#userButton-anonymous:hover #userButtonIcon {
   background-color: #fff;
   border-color: #fff;
   color: #6d4445;
@@ -142,34 +141,32 @@
 }
 
 .toolboxContainer {
-
   position: relative;
   padding: 15px;
   cursor: pointer;
 }
 
 #toolboxButton {
-  
   font-size: 25px;
   color: #333333;
   transition: all 0.5s ease-in-out 0s;
   cursor: pointer;
 }
 
-.toolboxContainer:hover #toolboxButton{
+.toolboxContainer:hover #toolboxButton {
   color: grey;
 }
 
 .toolbox {
-  position:absolute;
+  position: absolute;
   width: 225px;
   height: auto;
   top: 50px;
-  z-index:999;
+  z-index: 999;
   right: -75px;
   background: #fff;
   border: 1px solid #ccc;
-  border-color: rgba(0,0,0,.2);
+  border-color: rgba(0, 0, 0, 0.2);
   border-radius: 2px;
   padding: 5px;
 }
@@ -212,24 +209,22 @@
   cursor: default;
 }
 
-.selectedToolboxNavLink a{
+.selectedToolboxNavLink a {
   display: block;
   width: 100%;
   color: rgb(177, 177, 177);
   text-decoration: none;
   line-height: 2em;
 }
-.headerPlayBtn{
+.headerPlayBtn {
   display: none;
 }
-.menu-slider{
+.menu-slider {
   display: none;
 }
 
 @media only screen and (max-width: 767px) {
-
-
-  .menu-slider{
+  .menu-slider {
     display: block;
     width: 100%;
     background-color: white;
@@ -247,22 +242,22 @@
     opacity: 1;
   }
 
-  .headerPlayBtn{
-    height:50px;
+  .headerPlayBtn {
+    height: 50px;
     min-width: 32px;
     display: flex;
     padding: 0px 0px 0px 20px;
     align-items: center;
   }
-  #headerPlayBtn-icon{
+  #headerPlayBtn-icon {
     vertical-align: middle;
     font-size: 20px;
   }
-  .extended-header{
+  .extended-header {
     height: 50px;
     display: flex;
     align-items: center;
-    justify-content: center;    
+    justify-content: center;
   }
   .toolName {
     display: flex;
@@ -270,7 +265,6 @@
     align-items: center;
     padding: 0px 20px;
     height: 40px;
-
   }
 
   .toolName span {
@@ -279,13 +273,12 @@
   }
 
   .headingToolbar {
-    display:none;
-  
+    display: none;
   }
-.headingTitle{
-  display: none;
-}
-  .headingTitlePhone{
+  .headingTitle {
+    display: none;
+  }
+  .headingTitlePhone {
     width: 100%;
     max-width: none;
     margin: 0 auto;
@@ -301,11 +294,9 @@
     color: #333333;
     scrollbar-width: none; /*Firefox;*/
     -ms-overflow-style: none; /* Internet Explorer 10+ */
-    
   }
-  .headingTitlePhone span::-webkit-scrollbar{
+  .headingTitlePhone span::-webkit-scrollbar {
     display: none;
-
   }
 
   #doenetLogo {
@@ -318,7 +309,7 @@
     font-size: 25px;
   }
 
-  #userButton-anonymous{
+  #userButton-anonymous {
     display: flex;
     align-items: center;
     padding: 0px;
@@ -328,7 +319,7 @@
     border-radius: 50%;
     cursor: pointer;
     padding: 7px 5px;
-    color:#333333;
+    color: #333333;
     text-transform: none;
     font-weight: 700;
     border: 0.5px solid;
@@ -337,7 +328,7 @@
     margin: 0px 10px;
   }
 
-  #userButtonIcon{
+  #userButtonIcon {
     font-size: 15px;
     margin: 1px 1px 1px 2px;
     display: inline;
@@ -345,10 +336,10 @@
     color: #333333;
     transition: 300ms;
   }
-  #userButton-registered{
+  #userButton-registered {
     display: none;
   }
-  #userButton-phone{
+  #userButton-phone {
     display: block;
   }
   .toolboxContainer {
@@ -366,12 +357,12 @@
     height: auto;
     background: #fff;
     border: 1px solid #ccc;
-    border-color: rgba(0,0,0,.2);
+    border-color: rgba(0, 0, 0, 0.2);
     border-radius: 2px;
     padding: 5px;
   }
 
-  .headingContainer{
+  .headingContainer {
     justify-content: space-around;
     height: 50px;
     padding: 0px;
@@ -380,10 +371,6 @@
   }
   .select {
     background-color: white;
-    border-color: #E3E2E2;
+    border-color: #e3e2e2;
   }
 }
-
-
-
-

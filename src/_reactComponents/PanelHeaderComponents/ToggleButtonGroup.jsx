@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import React, { useState } from "react";
+import styled, { ThemeProvider } from "styled-components";
 
 const Container = styled.div`
-  display: ${(props) => (props.vertical ? 'static' : 'flex')};
-  width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
+  display: ${(props) => (props.vertical ? "static" : "flex")};
+  width: ${(props) => (props.width == "menu" ? "var(--menuWidth)" : "")};
   // height: 'fit-content';
   // margin: 2px 0px 2px 0px ;
   /* flex-wrap: wrap; */
@@ -11,15 +11,15 @@ const Container = styled.div`
 `;
 
 const toggleGroup = {
-  margin: '0px -2px 0px -2px',
-  borderRadius: '0',
-  padding: '0px 12px 0px 10px',
+  margin: "0px -2px 0px -2px",
+  borderRadius: "0",
+  padding: "0px 12px 0px 10px",
 };
 
 const verticalToggleGroup = {
-  margin: '-2px 4px -2px 4px',
-  borderRadius: '0',
-  padding: '0px 10px 0px 10px',
+  margin: "-2px 4px -2px 4px",
+  borderRadius: "0",
+  padding: "0px 10px 0px 10px",
 };
 
 const ToggleButtonGroup = (props) => {
@@ -39,8 +39,8 @@ const ToggleButtonGroup = (props) => {
     }
   };
 
-  let first_prop = props.vertical ? 'first_vert' : 'first';
-  let last_prop = props.vertical ? 'last_vert' : 'last';
+  let first_prop = props.vertical ? "first_vert" : "first";
+  let last_prop = props.vertical ? "last_vert" : "last";
 
   let elem = React.Children.toArray(props.children);
 
@@ -52,16 +52,21 @@ const ToggleButtonGroup = (props) => {
     };
 
     if (index === 0) {
-      props['num'] = first_prop;
+      props["num"] = first_prop;
     } else if (index === elem.length - 1) {
-      props['num'] = last_prop;
-    };
+      props["num"] = last_prop;
+    }
 
     return React.cloneElement(element, props);
   });
 
   return (
-    <Container style={{ height: 'fit-content' }} vertical={props.vertical} width={props.width} role="group">
+    <Container
+      style={{ height: "fit-content" }}
+      vertical={props.vertical}
+      width={props.width}
+      role="group"
+    >
       <ThemeProvider theme={props.vertical ? verticalToggleGroup : toggleGroup}>
         {modElem}
       </ThemeProvider>

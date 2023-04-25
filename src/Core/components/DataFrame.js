@@ -1,4 +1,4 @@
-import BaseComponent from './abstract/BaseComponent';
+import BaseComponent from "./abstract/BaseComponent";
 
 export default class DataFrame extends BaseComponent {
   static componentType = "dataFrame";
@@ -10,7 +10,7 @@ export default class DataFrame extends BaseComponent {
     attributes.source = {
       createComponentOfType: "text",
       createStateVariable: "source",
-      required: true,  // not implemented yet
+      required: true, // not implemented yet
       public: true,
       forRenderer: true,
     };
@@ -19,23 +19,20 @@ export default class DataFrame extends BaseComponent {
       createComponentOfType: "boolean",
       createStateVariable: "hasHeader",
       defaultValue: true,
-      public: true
-    }
+      public: true,
+    };
 
     attributes.columnTypes = {
       createComponentOfType: "textList",
       createStateVariable: "columnTypesPrelim",
       defaultValue: [],
-    }
+    };
 
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.cid = {
       forRenderer: true,
@@ -47,12 +44,13 @@ export default class DataFrame extends BaseComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.source ||
+        if (
+          !dependencyValues.source ||
           dependencyValues.source.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            setValue: { cid: null }
-          }
+            setValue: { cid: null },
+          };
         }
 
         let cid = null;
@@ -68,54 +66,65 @@ export default class DataFrame extends BaseComponent {
 
     stateVariableDefinitions.dataFrame = {
       stateVariablesDeterminingDependencies: ["cid", "source"],
-      additionalStateVariablesDefined: [{
-        variableName: "numRows",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "integer",
+      additionalStateVariablesDefined: [
+        {
+          variableName: "numRows",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "integer",
+          },
         },
-      }, {
-        variableName: "numColumns",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "integer",
+        {
+          variableName: "numColumns",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "integer",
+          },
         },
-      }, {
-        variableName: "columnTypes",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "textList",
+        {
+          variableName: "columnTypes",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "textList",
+          },
         },
-      }, {
-        variableName: "columnNames",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "textList",
+        {
+          variableName: "columnNames",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "textList",
+          },
         },
-      }],
+      ],
       returnDependencies: ({ stateValues }) => ({
         fileContents: {
           dependencyType: "file",
           cid: stateValues.cid,
           uri: stateValues.source,
-          fileType: "csv"
+          fileType: "csv",
         },
         hasHeader: {
           dependencyType: "stateVariable",
-          variableName: "hasHeader"
+          variableName: "hasHeader",
         },
         columnTypesPrelim: {
           dependencyType: "stateVariable",
-          variableName: "columnTypesPrelim"
+          variableName: "columnTypesPrelim",
         },
-
       }),
       definition: function ({ dependencyValues, componentName }) {
+        let columnTypes = [],
+          columnNames = [];
 
-        let columnTypes = [], columnNames = [];
-
-        let originalData = dependencyValues.fileContents.trim().split("\n")
-          .map(x => x.trim().split(",").map(y => y.trim()))
+        let originalData = dependencyValues.fileContents
+          .trim()
+          .split("\n")
+          .map((x) =>
+            x
+              .trim()
+              .split(",")
+              .map((y) => y.trim()),
+          );
 
         let numColumns = originalData[0]?.length;
 
@@ -128,8 +137,18 @@ export default class DataFrame extends BaseComponent {
         }
 
         if (foundInconsistentRow) {
-          console.warn(`Data has invalid shape.  Rows has inconsistent lengths. Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, columnTypes, columnNames } }
+          console.warn(
+            `Data has invalid shape.  Rows has inconsistent lengths. Found in componentName :${componentName}`,
+          );
+          return {
+            setValue: {
+              dataFrame: null,
+              numRows,
+              numColumns,
+              columnTypes,
+              columnNames,
+            },
+          };
         }
 
         // know that all rows have length numColumns
@@ -138,40 +157,65 @@ export default class DataFrame extends BaseComponent {
         let data = [];
 
         if (dependencyValues.hasHeader) {
-          dataFrame.columnNames = originalData[0].map(value => {
-            if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+          dataFrame.columnNames = originalData[0].map((value) => {
+            if (
+              [`"`, `'`].includes(value[0]) &&
+              value[value.length - 1] === value[0]
+            ) {
               value = value.substring(1, value.length - 1);
             }
             return value;
           });
           data = originalData.slice(1);
         } else {
-          dataFrame.columnNames = [...Array(numColumns).keys()].map(x => `col${x + 1}`);
+          dataFrame.columnNames = [...Array(numColumns).keys()].map(
+            (x) => `col${x + 1}`,
+          );
           data = originalData;
         }
 
-        if ([...new Set(dataFrame.columnNames)].length < dataFrame.columnNames) {
-          console.warn(`Data has duplicate column names.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, columnTypes, columnNames } }
+        if (
+          [...new Set(dataFrame.columnNames)].length < dataFrame.columnNames
+        ) {
+          console.warn(
+            `Data has duplicate column names.  Found in componentName :${componentName}`,
+          );
+          return {
+            setValue: {
+              dataFrame: null,
+              numRows,
+              numColumns,
+              columnTypes,
+              columnNames,
+            },
+          };
         }
 
         if (dataFrame.columnNames.includes("")) {
-          console.warn(`Data is missing a column name.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, columnTypes, columnNames } }
+          console.warn(
+            `Data is missing a column name.  Found in componentName :${componentName}`,
+          );
+          return {
+            setValue: {
+              dataFrame: null,
+              numRows,
+              numColumns,
+              columnTypes,
+              columnNames,
+            },
+          };
         }
 
         let numRows = data.length;
         dataFrame.shape = [numRows, numColumns];
 
-
-
         // data is an array of array of strings
         // uses columnType to convert to acceptable format
         // Default columnType is auto
 
-
         for (let colInd = 0; colInd < numColumns; colInd++) {
-          let prescribedType = dependencyValues.columnTypesPrelim[colInd]?.toLowerCase();
+          let prescribedType =
+            dependencyValues.columnTypesPrelim[colInd]?.toLowerCase();
           if (!["number", "string"].includes(prescribedType)) {
             prescribedType = "auto";
           }
@@ -183,7 +227,6 @@ export default class DataFrame extends BaseComponent {
 
             let foundNonNumericValue = false;
             for (let rowInd = 0; rowInd < numRows; rowInd++) {
-
               let value = data[rowInd][colInd];
               if (value !== "") {
                 let numVal = Number(value);
@@ -194,17 +237,14 @@ export default class DataFrame extends BaseComponent {
               }
             }
             if (foundNonNumericValue) {
-              prescribedType = "string"
+              prescribedType = "string";
             } else {
-              prescribedType = "number"
+              prescribedType = "number";
             }
-
           }
-
 
           if (prescribedType === "number") {
             for (let rowInd = 0; rowInd < numRows; rowInd++) {
-
               let value = data[rowInd][colInd];
               if (value === "") {
                 data[rowInd][colInd] = null;
@@ -214,28 +254,34 @@ export default class DataFrame extends BaseComponent {
             }
           } else {
             for (let rowInd = 0; rowInd < numRows; rowInd++) {
-
               let value = data[rowInd][colInd];
-              if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+              if (
+                [`"`, `'`].includes(value[0]) &&
+                value[value.length - 1] === value[0]
+              ) {
                 value = value.substring(1, value.length - 1);
               }
               data[rowInd][colInd] = value;
-
             }
           }
 
           columnTypes.push(prescribedType);
-
         }
-
 
         dataFrame.data = data;
         dataFrame.columnTypes = columnTypes;
 
-        return { setValue: { dataFrame, numRows, numColumns, columnTypes, columnNames: dataFrame.columnNames } };
+        return {
+          setValue: {
+            dataFrame,
+            numRows,
+            numColumns,
+            columnTypes,
+            columnNames: dataFrame.columnNames,
+          },
+        };
       },
-
-    }
+    };
 
     stateVariableDefinitions.means = {
       public: true,
@@ -261,7 +307,7 @@ export default class DataFrame extends BaseComponent {
           },
           numColumns: {
             dependencyType: "stateVariable",
-            variableName: "numColumns"
+            variableName: "numColumns",
           },
           numRows: {
             dependencyType: "stateVariable",
@@ -270,28 +316,31 @@ export default class DataFrame extends BaseComponent {
           columnTypes: {
             dependencyType: "stateVariable",
             variableName: "columnTypes",
-          }
+          },
         };
 
-        return { globalDependencies }
-
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
-
         let means = {};
 
         for (let arrayKey of arrayKeys) {
           let theMean = 0;
           let numValues = 0;
           if (globalDependencyValues.columnTypes[arrayKey] === "number") {
-            for (let rowInd = 0; rowInd < globalDependencyValues.numRows; rowInd++) {
-              let theValue = globalDependencyValues.dataFrame.data[rowInd][arrayKey];
+            for (
+              let rowInd = 0;
+              rowInd < globalDependencyValues.numRows;
+              rowInd++
+            ) {
+              let theValue =
+                globalDependencyValues.dataFrame.data[rowInd][arrayKey];
               if (theValue !== null) {
                 theMean += theValue;
                 numValues++;
               }
             }
-            theMean /= numValues
+            theMean /= numValues;
           } else {
             theMean = NaN;
           }
@@ -299,17 +348,10 @@ export default class DataFrame extends BaseComponent {
           means[arrayKey] = theMean;
         }
 
-
-        return { setValue: { means } }
-
-
-      }
-    }
-
+        return { setValue: { means } };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
 }

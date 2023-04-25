@@ -2,7 +2,7 @@ const { defineConfig } = require('cypress')
 
 // This is for db data testing/checking (CANNOT GET DATA AND CHECK VIA CYPRESS)
 //For connecting to SQL Server
-const mysql = require('mysql')
+const mysql = require('mysql2')
 function queryTestDb(query, config) {
   // creates a new mysql connection using credentials from cypress.json env's
   const connection = mysql.createConnection(config.env.db)
@@ -36,7 +36,7 @@ module.exports = defineConfig({
       on('task', { queryDb: query => { return queryTestDb(query, config) }, }); //For running sql query
     },
 
-    baseUrl: 'http://localhost:8000',
+    baseUrl: 'http://localhost:8080',
   },
   env: {
     db: {

@@ -1,6 +1,5 @@
-import CompositeComponent from './abstract/CompositeComponent';
-import * as serializeFunctions from '../utils/serializedStateProcessing';
-
+import CompositeComponent from "./abstract/CompositeComponent";
+import * as serializeFunctions from "../utils/serializedStateProcessing";
 
 export default class CustomAttribute extends CompositeComponent {
   static componentType = "customAttribute";
@@ -23,71 +22,73 @@ export default class CustomAttribute extends CompositeComponent {
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.componentNameForAttributes = {
       returnDependencies: () => ({
         parentVariableContainingName: {
           dependencyType: "parentStateVariable",
-          variableName: "componentNameForAttributes"
+          variableName: "componentNameForAttributes",
         },
       }),
       definition({ dependencyValues }) {
-        let componentNameForAttributes = dependencyValues.parentVariableContainingName;
-        return { setValue: { componentNameForAttributes } }
-      }
-    }
+        let componentNameForAttributes =
+          dependencyValues.parentVariableContainingName;
+        return { setValue: { componentNameForAttributes } };
+      },
+    };
 
     stateVariableDefinitions.attributeName = {
       returnDependencies: () => ({
         attribute: {
           dependencyType: "attributePrimitive",
-          attributeName: "attribute"
-        }
+          attributeName: "attribute",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { attributeName: dependencyValues.attribute } }
-      }
-    }
-
+        return { setValue: { attributeName: dependencyValues.attribute } };
+      },
+    };
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
-      stateVariablesDeterminingDependencies: [
-        "componentNameForAttributes"
-      ],
+      stateVariablesDeterminingDependencies: ["componentNameForAttributes"],
       returnDependencies: ({ stateValues }) => ({
         componentIdentity: {
           dependencyType: "componentIdentity",
           componentName: stateValues.componentNameForAttributes,
-        }
+        },
       }),
       definition() {
         return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
-
     return stateVariableDefinitions;
-
   }
 
-
-  static async createSerializedReplacements({ component, components, workspace,
-    componentInfoObjects, flags,
+  static async createSerializedReplacements({
+    component,
+    components,
+    workspace,
+    componentInfoObjects,
+    flags,
   }) {
-
     let newNamespace = component.attributes.newNamespace?.primitive;
 
-    let componentType = componentInfoObjects.componentTypeLowerCaseMapping[component.attributes.componentType.primitive.toLowerCase()];
-    let componentClass = componentInfoObjects.allComponentClasses[componentType];
+    let componentType =
+      componentInfoObjects.componentTypeLowerCaseMapping[
+        component.attributes.componentType.primitive.toLowerCase()
+      ];
+    let componentClass =
+      componentInfoObjects.allComponentClasses[componentType];
 
     if (!componentClass) {
-      console.warn(`Could not find component type ${componentType}`)
+      console.warn(`Could not find component type ${componentType}`);
       return { replacements: [] };
     }
 
-    let componentForAttribute = components[await component.stateValues.componentNameForAttributes];
+    let componentForAttribute =
+      components[await component.stateValues.componentNameForAttributes];
     let attributeLowerCaseMapping = {};
 
     for (let attrName in componentForAttribute.attributes) {
@@ -95,15 +96,17 @@ export default class CustomAttribute extends CompositeComponent {
     }
 
     let SVattributeName = await component.stateValues.attributeName;
-    let attributeName = attributeLowerCaseMapping[SVattributeName.toLowerCase()];
+    let attributeName =
+      attributeLowerCaseMapping[SVattributeName.toLowerCase()];
 
     let attributeValue = componentForAttribute.attributes[attributeName];
 
-
     if (attributeValue === undefined) {
       if (component.attributes.defaultValue === undefined) {
-        console.warn('Cannot create component from attribute if neither attribute nor default value specified')
-        return { replacements: [] }
+        console.warn(
+          "Cannot create component from attribute if neither attribute nor default value specified",
+        );
+        return { replacements: [] };
       } else {
         attributeValue = component.attributes.defaultValue;
       }
@@ -112,27 +115,32 @@ export default class CustomAttribute extends CompositeComponent {
     // check if have attribute name is already defined for componentForAttribute's class
     // in which case setting via custom attributes won't work
     let containerClass = componentForAttribute.constructor;
-    let containerAttrNames = Object.keys(containerClass.createAttributesObject()).map(x => x.toLowerCase());
-    containerAttrNames.push("name", "target", "assignnames")
+    let containerAttrNames = Object.keys(
+      containerClass.createAttributesObject(),
+    ).map((x) => x.toLowerCase());
+    containerAttrNames.push("name", "target", "assignnames");
     if (containerAttrNames.includes(SVattributeName.toLowerCase())) {
-      console.warn(`Cannot add attribute ${SVattributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`)
-      return { replacements: [] }
+      console.warn(
+        `Cannot add attribute ${SVattributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`,
+      );
+      return { replacements: [] };
     }
-
 
     let attrObj = {
-      createComponentOfType: componentType
-    }
+      createComponentOfType: componentType,
+    };
 
     let serializedComponent = serializeFunctions.componentFromAttribute({
       attrObj,
       value: attributeValue,
-      componentInfoObjects
+      componentInfoObjects,
     }).component;
 
-
     if (serializedComponent.children) {
-      serializeFunctions.applyMacros(serializedComponent.children, componentInfoObjects);
+      serializeFunctions.applyMacros(
+        serializedComponent.children,
+        componentInfoObjects,
+      );
       if (newNamespace) {
         // modify targets to go back one namespace
         for (let child of serializedComponent.children) {
@@ -147,11 +155,12 @@ export default class CustomAttribute extends CompositeComponent {
     }
 
     serializeFunctions.applySugar({
-      serializedComponents: [serializedComponent], isAttributeComponent: true, componentInfoObjects
-    })
+      serializedComponents: [serializedComponent],
+      isAttributeComponent: true,
+      componentInfoObjects,
+    });
 
     serializeFunctions.setTNamesToAbsolute([serializedComponent]);
-
 
     let processResult = serializeFunctions.processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -162,10 +171,5 @@ export default class CustomAttribute extends CompositeComponent {
     });
 
     return { replacements: processResult.serializedComponents };
-
-
-
   }
-
 }
-

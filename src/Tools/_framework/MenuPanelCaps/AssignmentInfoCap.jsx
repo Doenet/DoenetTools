@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { find_image_label, find_color_label } from './util';
-import { useRecoilValue } from 'recoil';
+import React, { useEffect, useState } from "react";
+import { find_image_label, find_color_label } from "./util";
+import { useRecoilValue } from "recoil";
 // import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 // import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 // import axios from 'axios';
@@ -10,7 +10,7 @@ import {
   courseIdAtom,
   coursePermissionsAndSettingsByCourseId,
   // useCourse
-} from '../../../_reactComponents/Course/CourseActions';
+} from "../../../_reactComponents/Course/CourseActions";
 
 export default function AssignmentInfoCap() {
   const courseId = useRecoilValue(courseIdAtom);
@@ -25,16 +25,16 @@ export default function AssignmentInfoCap() {
   let image = course.image;
   // let label = course.label;
 
-  let accessible_name = 'course';
+  let accessible_name = "course";
 
-  if (image != 'none') {
+  if (image != "none") {
     accessible_name = find_image_label(image);
-    image = 'url(./drive_pictures/' + image + ')';
+    image = "url(/drive_pictures/" + image + ")";
   }
 
-  if (color != 'none') {
+  if (color != "none") {
     accessible_name = find_color_label(color);
-    color = '#' + color;
+    color = "#" + color;
   }
   // let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   // let { page } = useRecoilValue(pageToolViewAtom);
@@ -78,20 +78,20 @@ export default function AssignmentInfoCap() {
     <div>
       <div
         style={{
-          position: 'relative',
-          width: '100%',
-          height: '165px',
-          overflow: 'hidden',
+          position: "relative",
+          width: "100%",
+          height: "165px",
+          overflow: "hidden",
         }}
       >
         <img
           aria-label={accessible_name}
           style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundImage: image,
             backgroundColor: color,
           }}

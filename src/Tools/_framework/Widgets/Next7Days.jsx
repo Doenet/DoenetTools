@@ -1,23 +1,23 @@
 /**
  * External dependencies
  */
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState,
   atom,
-} from 'recoil';
+} from "recoil";
 /**
  * Internal dependencies
  */
-import { pageToolViewAtom } from '../NewToolRoot';
+import { pageToolViewAtom } from "../NewToolRoot";
 import {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
   clearDriveAndItemSelections,
-} from '../../../_reactComponents/Drive/NewDrive';
+} from "../../../_reactComponents/Drive/NewDrive";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import {
 //   faLessThan,
@@ -26,46 +26,50 @@ import {
 
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import axios from 'axios';
-import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
-import { mainPanelClickAtom } from '../Panels/NewMainPanel';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { selectedMenuPanelAtom } from "../Panels/NewMenuPanel";
+import axios from "axios";
+import Checkbox from "../../../_reactComponents/PanelHeaderComponents/Checkbox";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import { globalSelectedNodesAtom } from "../../../_reactComponents/Drive/NewDrive";
+import { mainPanelClickAtom } from "../Panels/NewMainPanel";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import { UTCDateStringToDate } from "../../../_utils/dateUtilityFunction";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
   faThumbtack,
-} from '@fortawesome/free-solid-svg-icons';
-import { findFirstPageOfActivity, itemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  findFirstPageOfActivity,
+  itemByDoenetId,
+  useInitCourseItems,
+} from "../../../_reactComponents/Course/CourseActions";
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
 //startTime as text "01:00"
 //endTime as text "02:00"
 export const classTimesAtom = atom({
-  key: 'classTimesAtom',
+  key: "classTimesAtom",
   default: [],
 });
 
 //boolean
 export const showCompletedAtom = atom({
-  key: 'showCompletedAtom',
+  key: "showCompletedAtom",
   default: true,
 });
 //boolean
 export const showOverdueAtom = atom({
-  key: 'showOverdueAtom',
+  key: "showOverdueAtom",
   default: false,
 });
 
 function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
   //If we don't have a dt datetime then return null
-  if (dt == 'Invalid Date' || dt == null) {
+  if (dt == "Invalid Date" || dt == null) {
     return null;
   }
   //After Class and In Class
@@ -74,10 +78,10 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
     //Only process if it's the right day of the week
     if (classTime.dotwIndex == dtDOTW) {
       let classStartDT = new Date(dt.getTime());
-      const [starthours, startminutes] = classTime.startTime.split(':');
+      const [starthours, startminutes] = classTime.startTime.split(":");
       classStartDT.setHours(starthours, startminutes, 0, 0);
       let classEndDT = new Date(dt.getTime());
-      const [endhours, endminutes] = classTime.endTime.split(':');
+      const [endhours, endminutes] = classTime.endTime.split(":");
       classEndDT.setHours(endhours, endminutes, 0, 0);
 
       if (dt >= classStartDT && dt < classEndDT) {
@@ -88,7 +92,7 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
           return `In Class ${dt.getMonth() + 1}/${dt.getDate()}`;
         }
 
-        return 'In Class';
+        return "In Class";
       } else if (dt.getTime() == classEndDT.getTime()) {
         if (
           dt.getMonth() != dueDT.getMonth() ||
@@ -96,17 +100,17 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
         ) {
           return `After Class ${dt.getMonth() + 1}/${dt.getDate()}`;
         }
-        return 'After Class';
+        return "After Class";
       }
     }
   }
 
-  let time = dt.toLocaleString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
+  let time = dt.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
     hour12: true,
   });
-  if (time === 'Invalid Date') {
+  if (time === "Invalid Date") {
     time = null;
   }
 
@@ -135,13 +139,13 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
 
     //Day of the Week
     const dotwLabel = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
     ];
     return `${dotwLabel[dt.getDay()]} - ${time}`;
   }
@@ -155,7 +159,7 @@ function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
 }
 
 function formatDueDate(dt, classTimes) {
-  if (dt == 'Invalid Date' || dt == null) {
+  if (dt == "Invalid Date" || dt == null) {
     return null;
   }
 
@@ -165,29 +169,29 @@ function formatDueDate(dt, classTimes) {
     //Only process if it's the right day of the week
     if (classTime.dotwIndex == dtDOTW) {
       let classStartDT = new Date(dt.getTime());
-      const [starthours, startminutes] = classTime.startTime.split(':');
+      const [starthours, startminutes] = classTime.startTime.split(":");
       classStartDT.setHours(starthours, startminutes, 0, 0);
       let classEndDT = new Date(dt.getTime());
-      const [endhours, endminutes] = classTime.endTime.split(':');
+      const [endhours, endminutes] = classTime.endTime.split(":");
       classEndDT.setHours(endhours, endminutes, 0, 0);
       if (dt.getTime() == classStartDT.getTime()) {
-        return 'Before Class';
+        return "Before Class";
       } else if (dt > classStartDT && dt < classEndDT) {
-        return 'In Class';
+        return "In Class";
       } else if (dt.getTime() == classEndDT.getTime()) {
-        return 'End of Class';
+        return "End of Class";
       }
     }
   }
 
   // console.log(">>>>formatDueDate dt",dt)
-  let returnValue = dt.toLocaleString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
+  let returnValue = dt.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
     hour12: true,
   });
   returnValue = `${dt.getMonth() + 1}/${dt.getDate()} ${returnValue}`;
-  if (returnValue === 'Invalid Date') {
+  if (returnValue === "Invalid Date") {
     returnValue = null;
   }
 
@@ -195,8 +199,8 @@ function formatDueDate(dt, classTimes) {
 }
 
 function buildRows({
-  dotw = '',
-  rowLabel = '',
+  dotw = "",
+  rowLabel = "",
   assignments,
   clickCallback,
   completedArray,
@@ -223,15 +227,15 @@ function buildRows({
       let assignment = assignments[i];
 
       let assignedDate = UTCDateStringToDate(assignment.assignedDate);
-      let displayAssignedDate = '';
+      let displayAssignedDate = "";
 
       if (assignedDate) {
         assignedDate.setSeconds(0, 0);
       }
 
       let dueDate = UTCDateStringToDate(assignment.dueDate);
-      let displayDueDate = '';
-      let effectiveRowLabel = '';
+      let displayDueDate = "";
+      let effectiveRowLabel = "";
 
       if (dueDate) {
         dueDate.setSeconds(0, 0);
@@ -248,36 +252,39 @@ function buildRows({
         }
       }
 
-      if (rowLabel !== '') {
+      if (rowLabel !== "") {
         effectiveRowLabel = rowLabel;
       }
 
       let bgColor = null;
       if (assignment.itemId === selectedItemId) {
-        bgColor = '#B8D2EA';
+        bgColor = "#B8D2EA";
       }
       let oneClick = (e) => {
         e.stopPropagation();
         clickCallback({
           courseId: assignment.courseId,
-          doenetId: assignment.doenetId
+          doenetId: assignment.doenetId,
         });
       };
- 
+
       let checked = completedArray.includes(assignment.doenetId);
 
       if (!showCompleted && checked) {
         continue;
       }
 
-      let score = '';
+      let score = "";
       // console.log("assignment",assignment)
 
-      if (assignment.gradeCategory){
-        const totalPointsOrPercent = Number(assignment.totalPointsOrPercent)
-        let pointsAwarded = Math.round(assignment.credit * totalPointsOrPercent * 100) / 100;
-        if (assignment.creditOverride){
-          pointsAwarded = Math.round(assignment.creditOverride * totalPointsOrPercent * 100) / 100;
+      if (assignment.gradeCategory) {
+        const totalPointsOrPercent = Number(assignment.totalPointsOrPercent);
+        let pointsAwarded =
+          Math.round(assignment.credit * totalPointsOrPercent * 100) / 100;
+        if (assignment.creditOverride) {
+          pointsAwarded =
+            Math.round(assignment.creditOverride * totalPointsOrPercent * 100) /
+            100;
         }
         score = `${pointsAwarded}/${totalPointsOrPercent}`;
       }
@@ -300,7 +307,7 @@ function buildRows({
               });
             }
 
-            axios.get('/api/saveCompleted.php', {
+            axios.get("/api/saveCompleted.php", {
               params: { doenetId: assignment.doenetId },
             });
             // .then(({data})=>{
@@ -319,10 +326,13 @@ function buildRows({
         isFirstRow = false;
 
         newRows.push(
-          <tr data-test={`cbw row ${i}`} key={`${effectiveRowLabel}${assignment.doenetId}`}>
+          <tr
+            data-test={`cbw row ${i}`}
+            key={`${effectiveRowLabel}${assignment.doenetId}`}
+          >
             <td
               data-test={`cbw row label ${i}`}
-              style={{ borderBottom: '2px solid black', padding: '8px' }}
+              style={{ borderBottom: "2px solid black", padding: "8px" }}
               rowSpan={numberOfVisibleRows}
             >
               {effectiveRowLabel}
@@ -331,9 +341,9 @@ function buildRows({
               data-test={`cbw assignment label ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                cursor:"pointer"
+                padding: "8px",
+                borderBottom: "2px solid black",
+                cursor: "pointer",
               }}
               onClick={oneClick}
             >
@@ -343,9 +353,9 @@ function buildRows({
               data-test={`cbw assigned date ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                cursor:"pointer"
+                padding: "8px",
+                borderBottom: "2px solid black",
+                cursor: "pointer",
               }}
               onClick={oneClick}
             >
@@ -355,9 +365,9 @@ function buildRows({
               data-test={`cbw due date ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                cursor:"pointer"
+                padding: "8px",
+                borderBottom: "2px solid black",
+                cursor: "pointer",
               }}
               onClick={oneClick}
             >
@@ -367,9 +377,9 @@ function buildRows({
               data-test={`cbw score ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                textAlign: 'center',
+                padding: "8px",
+                borderBottom: "2px solid black",
+                textAlign: "center",
               }}
             >
               {score}
@@ -378,9 +388,9 @@ function buildRows({
               data-test={`cbw completed ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                textAlign: 'center',
+                padding: "8px",
+                borderBottom: "2px solid black",
+                textAlign: "center",
               }}
             >
               {checkbox}
@@ -389,14 +399,17 @@ function buildRows({
         );
       } else {
         newRows.push(
-          <tr data-test={`cbw row ${i}`} key={`${effectiveRowLabel}${assignment.doenetId}${i}`}>
+          <tr
+            data-test={`cbw row ${i}`}
+            key={`${effectiveRowLabel}${assignment.doenetId}${i}`}
+          >
             <td
               data-test={`cbw assignment label ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                cursor:"pointer"
+                padding: "8px",
+                borderBottom: "2px solid black",
+                cursor: "pointer",
               }}
               onClick={oneClick}
             >
@@ -406,9 +419,9 @@ function buildRows({
               data-test={`cbw assigned date ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                cursor:"pointer"
+                padding: "8px",
+                borderBottom: "2px solid black",
+                cursor: "pointer",
               }}
               onClick={oneClick}
             >
@@ -418,9 +431,9 @@ function buildRows({
               data-test={`cbw due date ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                cursor:"pointer"
+                padding: "8px",
+                borderBottom: "2px solid black",
+                cursor: "pointer",
               }}
               onClick={oneClick}
             >
@@ -430,9 +443,9 @@ function buildRows({
               data-test={`cbw score ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                textAlign: 'center',
+                padding: "8px",
+                borderBottom: "2px solid black",
+                textAlign: "center",
               }}
             >
               {score}
@@ -441,9 +454,9 @@ function buildRows({
               data-test={`cbw completed ${i}`}
               style={{
                 backgroundColor: bgColor,
-                padding: '8px',
-                borderBottom: '2px solid black',
-                textAlign: 'center',
+                padding: "8px",
+                borderBottom: "2px solid black",
+                textAlign: "center",
               }}
             >
               {checkbox}
@@ -467,12 +480,12 @@ export default function Next7Days({ courseId }) {
   let [pinnedArray, setPinnedArray] = useState([]);
   let [completedArray, setCompletedArray] = useState([]);
   let [initialized, setInitialized] = useState(false);
-  let [problemMessage, setProblemMessage] = useState('');
+  let [problemMessage, setProblemMessage] = useState("");
   let [weekShift, setWeekShift] = useState(0); //-1 means 7 days before
   let classTimes = useRecoilValue(classTimesAtom);
   let selected = useRecoilValue(globalSelectedNodesAtom);
   let selectedItemId = null;
-  if (selected[0]?.driveInstanceId === 'currentContent') {
+  if (selected[0]?.driveInstanceId === "currentContent") {
     selectedItemId = selected[0].itemId;
   }
 
@@ -484,7 +497,7 @@ export default function Next7Days({ courseId }) {
       { atom: selectedMenuPanelAtom, value: null },
     ]);
 
-    const { data } = await axios.get('/api/loadTODO.php', {
+    const { data } = await axios.get("/api/loadTODO.php", {
       params: { courseId },
     });
     // console.log('Next7 data: ', data);
@@ -511,44 +524,39 @@ export default function Next7Days({ courseId }) {
         const courseId = info.courseId;
         const doenetId = info.doenetId;
         let { canEditContent } = await snapshot.getPromise(
-          effectivePermissionsByCourseId(courseId)
-          );
-          
-          //Note: need to send pageId
-        if (canEditContent === '1') {
-            let itemObj = await snapshot.getPromise(
-              itemByDoenetId(doenetId)
-              );
-              let pageId = findFirstPageOfActivity(itemObj.content)
-              //TODO: VariantIndex params
-              setPageToolView({
-                page: 'course',
-                tool: 'editor',
-                view: '',
-                params: {
-                  doenetId,
-                  pageId
-                },
-              });
+          effectivePermissionsByCourseId(courseId),
+        );
 
-          
+        //Note: need to send pageId
+        if (canEditContent === "1") {
+          let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+          let pageId = findFirstPageOfActivity(itemObj.content);
+          //TODO: VariantIndex params
+          setPageToolView({
+            page: "course",
+            tool: "editor",
+            view: "",
+            params: {
+              doenetId,
+              pageId,
+            },
+          });
         } else {
           //no edit permissions
-            setPageToolView({
-              page: 'course',
-              tool: 'assignment',
-              view: '',
-              params: {
-                doenetId,
-              },
-            });
-     
+          setPageToolView({
+            page: "course",
+            tool: "assignment",
+            view: "",
+            params: {
+              doenetId,
+            },
+          });
         }
       },
     [],
   );
 
-  if (!initialized && courseId !== '') {
+  if (!initialized && courseId !== "") {
     //Runs every time the page is returned to
     setInitialized(true); //prevent load on each refresh
     loadAssignmentArray(courseId);
@@ -556,7 +564,7 @@ export default function Next7Days({ courseId }) {
   }
   // return null;   // for testing
 
-  if (problemMessage !== '') {
+  if (problemMessage !== "") {
     return (
       <div>
         <h2>{problemMessage}</h2>
@@ -618,7 +626,7 @@ export default function Next7Days({ courseId }) {
 
       overdueRows.push(
         ...buildRows({
-          rowLabel: 'Overdue',
+          rowLabel: "Overdue",
           assignments: overdueArray,
           clickCallback,
           completedArray,
@@ -658,13 +666,13 @@ export default function Next7Days({ courseId }) {
   dueByDOTW.push(dueByDOTW.shift());
 
   const dotwLabel = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   for (let [index, dayAssignments] of Object.entries(dueByDOTW)) {
@@ -687,32 +695,32 @@ export default function Next7Days({ courseId }) {
     <>
       <div
         style={{
-          display: 'flex',
+          display: "flex",
           // backgroundColor:"grey",
-          alignItems: 'center',
-          justifyContent: 'space-evenly',
-          width: '850px',
-          height: '70px',
+          alignItems: "center",
+          justifyContent: "space-evenly",
+          width: "850px",
+          height: "70px",
         }}
       >
         <span>
-          <Button onClick={() => setWeekShift(0)} value="This Week" />{' '}
+          <Button onClick={() => setWeekShift(0)} value="This Week" />{" "}
         </span>
         <h1>Content by Week</h1>
-        <span style={{ fontSize: '1.4em' }}>
+        <span style={{ fontSize: "1.4em" }}>
           {headerMonday} - {headerSunday}
         </span>
         <ButtonGroup>
           <span>
             <Button
-              dataTest='previous week button'
+              dataTest="previous week button"
               onClick={() => setWeekShift((was) => was - 1)}
               icon={<FontAwesomeIcon icon={faChevronLeft} />}
             />
           </span>
           <span>
             <Button
-              dataTest='next week button'
+              dataTest="next week button"
               onClick={() => setWeekShift((was) => was + 1)}
               icon={<FontAwesomeIcon icon={faChevronRight} />}
             />
@@ -720,64 +728,64 @@ export default function Next7Days({ courseId }) {
         </ButtonGroup>
       </div>
 
-      <table style={{ width: '850px', borderSpacing: '0em .2em' }}>
+      <table style={{ width: "850px", borderSpacing: "0em .2em" }}>
         <tr>
           <th
             style={{
-              width: '100px',
-              padding: '8px',
-              textAlign: 'left',
-              borderBottom: '2px solid black',
+              width: "100px",
+              padding: "8px",
+              textAlign: "left",
+              borderBottom: "2px solid black",
             }}
           >
             Day
           </th>
           <th
             style={{
-              width: '200px',
-              padding: '8px',
-              textAlign: 'left',
-              borderBottom: '2px solid black',
+              width: "200px",
+              padding: "8px",
+              textAlign: "left",
+              borderBottom: "2px solid black",
             }}
           >
             Name
           </th>
           <th
             style={{
-              width: '200px',
-              padding: '8px',
-              textAlign: 'left',
-              borderBottom: '2px solid black',
+              width: "200px",
+              padding: "8px",
+              textAlign: "left",
+              borderBottom: "2px solid black",
             }}
           >
             Assigned
           </th>
           <th
             style={{
-              width: '200px',
-              padding: '8px',
-              textAlign: 'left',
-              borderBottom: '2px solid black',
+              width: "200px",
+              padding: "8px",
+              textAlign: "left",
+              borderBottom: "2px solid black",
             }}
           >
             Due
           </th>
           <th
             style={{
-              width: '50px',
-              padding: '8px',
-              textAlign: 'left',
-              borderBottom: '2px solid black',
+              width: "50px",
+              padding: "8px",
+              textAlign: "left",
+              borderBottom: "2px solid black",
             }}
           >
             Score
           </th>
           <th
             style={{
-              width: '100px',
-              padding: '8px',
-              textAlign: 'center',
-              borderBottom: '2px solid black',
+              width: "100px",
+              padding: "8px",
+              textAlign: "center",
+              borderBottom: "2px solid black",
             }}
           >
             Completed

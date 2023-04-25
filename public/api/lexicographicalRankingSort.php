@@ -62,5 +62,42 @@ namespace SortOrder {
 
         return $newOrder;
     }
+
+    function lettersToANumber($sequence){
+        $valueOfA = 97;
+        $num = 0;
+        for ($i = 0; $i < strlen($sequence); $i++){
+          $letter = substr($sequence, strlen($sequence) - $i - 1, 1);
+          $letterNum = ord($letter) - $valueOfA + 1;
+          $positionmultiplier = pow(26, $i);
+          $valueOfLetterAtThePossition = $letterNum * $positionmultiplier;
+          $num = $num + $valueOfLetterAtThePossition;
+        }
+        return $num;
+      }
+  
+      function numberToLetters($num,$numOfLetters){
+        $valueOfA = 97;
+        $letters = "";
+        $remainingNum = $num;
+        for ($i = $numOfLetters; $i >= 0; $i--){
+          $divisor = pow(26, $i);
+          $quotient = (int) ($remainingNum / $divisor);
+          if ($quotient > 0){
+            $char = chr($quotient + $valueOfA - 1);
+            $letters = $letters . $char;
+            $remainingNum = $remainingNum - $quotient * $divisor;
+          }
+        }
+        return $letters;
+      }
+  
+     //This is incomplete!
+     //After 'aay' it goes to 'ab'
+      function getNextSortOrder($str){
+        $str_as_num = lettersToANumber($str);
+        return numberToLetters($str_as_num + 1,strlen($str));
+      }
+    
 }
 ?>

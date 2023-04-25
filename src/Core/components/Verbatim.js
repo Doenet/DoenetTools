@@ -1,4 +1,8 @@
-import BlockComponent from './abstract/BlockComponent';
+import {
+  returnSelectedStyleStateVariableDefinition,
+  returnTextStyleDescriptionDefinitions,
+} from "../utils/style";
+import BlockComponent from "./abstract/BlockComponent";
 
 export class Pre extends BlockComponent {
   constructor(args) {
@@ -7,7 +11,6 @@ export class Pre extends BlockComponent {
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
   static componentType = "pre";
   static renderChildren = true;
@@ -15,12 +18,12 @@ export class Pre extends BlockComponent {
   static includeBlankStringChildren = true;
 
   static returnChildGroups() {
-
-    return [{
-      group: "allChildren",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "allChildren",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -30,14 +33,11 @@ export class Pre extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
 }
-
-
 
 export class DisplayDoenetML extends BlockComponent {
   constructor(args) {
@@ -46,7 +46,6 @@ export class DisplayDoenetML extends BlockComponent {
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
   static componentType = "displayDoenetML";
   static rendererType = "text";
@@ -54,30 +53,34 @@ export class DisplayDoenetML extends BlockComponent {
   static includeBlankStringChildren = true;
 
   static returnChildGroups() {
-
-    return [{
-      group: "allChildren",
-      componentTypes: ["_base"]
-    }]
+    return [
+      {
+        group: "allChildren",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.value = {
       returnDependencies: () => ({
         childrenDoenetML: {
           dependencyType: "doenetML",
           displayOnlyChildren: true,
-        }
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { value: dependencyValues.childrenDoenetML } }
-      }
-
-    }
-
+        return { setValue: { value: dependencyValues.childrenDoenetML } };
+      },
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -88,17 +91,15 @@ export class DisplayDoenetML extends BlockComponent {
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
-          variableName: "value"
-        }
+          variableName: "value",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { text: dependencyValues.value }
-      })
-    }
-
+        setValue: { text: dependencyValues.value },
+      }),
+    };
 
     return stateVariableDefinitions;
-
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -108,9 +109,8 @@ export class DisplayDoenetML extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
 }
