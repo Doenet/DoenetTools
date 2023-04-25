@@ -8,7 +8,7 @@ import {
 import CodeMirror from "../CodeMirror";
 
 import styled from "styled-components";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 import {
   pageVariantInfoAtom,
@@ -17,24 +17,42 @@ import {
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   Box,
-  Card,
-  Center,
+  Button,
+  ButtonGroup,
+  Editable,
+  EditableInput,
+  EditablePreview,
   Flex,
   Grid,
   GridItem,
+  Input,
   Text,
 } from "@chakra-ui/react";
+import { BsPlayBtnFill } from "react-icons/bs";
+import { MdModeEditOutline } from "react-icons/md";
+import { FaCog } from "react-icons/fa";
+import { useFetcher } from "react-router-dom";
 
-export async function action({ params }) {
-  let response = await fetch(
-    `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  );
-  let respObj = await response.json();
+export async function action({ params, request }) {
+  const formData = await request.formData();
+  let formObj = Object.fromEntries(formData);
+  // console.log("formObj", formObj, params.doenetId);
+  if (formObj._action == "update label") {
+    let response = await fetch(
+      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${formObj.label}`,
+    );
+    let respObj = await response.json();
+  }
+  return true;
+  // let response = await fetch(
+  //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
+  // );
+  // let respObj = await response.json();
 
-  const { nextActivityDoenetId, nextPageDoenetId } = respObj;
-  return redirect(
-    `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  );
+  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
+  // return redirect(
+  //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
+  // );
 }
 
 export async function loader({ params }) {
@@ -76,6 +94,8 @@ export function PortfolioActivityEditor() {
   const updateInternalValue = doenetML;
   let editorDoenetML = doenetML;
 
+  const fetcher = useFetcher();
+
   let editorRef = useRef(null);
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
@@ -116,9 +136,48 @@ export function PortfolioActivityEditor() {
         width="100%"
         zIndex="500"
       >
-        <Flex>
-          <Text>Icon Buttons</Text>
-          <Text>Label Here</Text>
+        <Flex justifyContent="space-between">
+          <ButtonGroup
+            size="sm"
+            ml="10px"
+            mt="4px"
+            isAttached
+            variant="outline"
+          >
+            <Button size="sm" leftIcon={<BsPlayBtnFill />}>
+              View
+            </Button>
+            <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
+              Edit
+            </Button>
+          </ButtonGroup>
+          <Editable
+            mt="4px"
+            defaultValue={activityData.label}
+            textAlign="center"
+            // selectAllOnFocus={false}
+            onSubmit={(value) => {
+              console.log("new label:", value);
+              fetcher.submit(
+                { _action: "update label", label: value },
+                { method: "post" },
+              );
+            }}
+          >
+            <EditablePreview />
+            {/* <Input as="EditableInput" /> */}
+            <EditableInput width="400px" />
+          </Editable>
+
+          <Button
+            mt="4px"
+            mr="10px"
+            size="sm"
+            variant="outline"
+            leftIcon={<FaCog />}
+          >
+            Controls
+          </Button>
         </Flex>
       </GridItem>
 

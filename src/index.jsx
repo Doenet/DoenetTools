@@ -53,6 +53,7 @@ import "@fontsource/jost";
 import {
   PortfolioActivityEditor,
   loader as portfolioEditorLoader,
+  action as portfolioEditorAction,
 } from "./Tools/_framework/Paths/PortfolioActivityEditor";
 // import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
 
@@ -231,7 +232,7 @@ const router = createBrowserRouter([
       {
         path: "portfolioeditor/:doenetId/:pageId",
         loader: portfolioEditorLoader,
-        // action: portfolioEditorSupportPanelAction,
+        action: portfolioEditorAction,
         // errorElement: <div>Error!</div>,
         element: (
           <DarkmodeController>
