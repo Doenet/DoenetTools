@@ -1742,4 +1742,361 @@ export default class RegularPolygon extends Polygon {
 
     return stateVariableDefinitions;
   }
+
+  async movePolygon({
+    pointCoords,
+    transient,
+    sourceDetails,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    let nVerticesMoved = Object.keys(pointCoords).length;
+
+    if (nVerticesMoved === 1) {
+      // single vertex dragged
+
+      if (!(await this.stateValues.verticesDraggable)) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+
+      // Since the case where drag the entire regular polygon is complicated,
+      // we perform the entire move for a single vertex here and return.
+
+      // If a single vertex is dragged, we perform update on the vertex,
+      // as one typically does for a polygon
+      let vertexComponents = {};
+      for (let ind in pointCoords) {
+        vertexComponents[ind + ",0"] = me.fromAst(pointCoords[ind][0]);
+        vertexComponents[ind + ",1"] = me.fromAst(pointCoords[ind][1]);
+      }
+
+      if (transient) {
+        return await this.coreFunctions.performUpdate({
+          updateInstructions: [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "vertices",
+              value: vertexComponents,
+              sourceDetails,
+            },
+          ],
+          transient,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
+        });
+      } else {
+        return await this.coreFunctions.performUpdate({
+          updateInstructions: [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "vertices",
+              value: vertexComponents,
+              sourceDetails,
+            },
+          ],
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
+          event: {
+            verb: "interacted",
+            object: {
+              componentName: this.componentName,
+              componentType: this.componentType,
+            },
+            result: {
+              pointCoordinates: pointCoords,
+            },
+          },
+        });
+      }
+    }
+
+    // whole polyline dragged
+    if (!(await this.stateValues.draggable)) {
+      return await this.coreFunctions.resolveAction({ actionId });
+    }
+
+    // In order to detect if one of the points used to defined the regular polygon is constrained
+    // (so that we can adjust to keep the shape in that case)
+    // we perform that calculations of the inverseDefinition of vertices here
+    // and perform that update directly on centerComponents and directionWithRadius.
+    // (The inverse definition of vertices will still be used if other components
+    // are connected to the vertices.)
+    // We just want this special behavior for the case when the entire polygon
+    // is moved by the renderer.
+
+    let nVertices = await this.stateValues.nVertices;
+
+    // First calculate the desired centers as the average of all points
+
+    let center_x = 0,
+      center_y = 0;
+
+    for (let vertexInd = 0; vertexInd < nVertices; vertexInd++) {
+      center_x += pointCoords[vertexInd][0];
+      center_y += pointCoords[vertexInd][1];
+    }
+
+    center_x /= nVertices;
+    center_y /= nVertices;
+
+    let center = [center_x, center_y];
+
+    // use the first index determine directionWithRadius
+    let vertex1 = pointCoords[0];
+
+    let directionWithRadius = [vertex1[0] - center[0], vertex1[1] - center[1]];
+
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "centerComponents",
+        value: center,
+        sourceDetails,
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "directionWithRadius",
+        value: directionWithRadius,
+        sourceDetails,
+      },
+    ];
+
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
+    if (transient) {
+      await this.coreFunctions.performUpdate({
+        updateInstructions,
+        transient,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate: true,
+      });
+    } else {
+      await this.coreFunctions.performUpdate({
+        updateInstructions,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate: true,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            pointCoordinates: pointCoords,
+          },
+        },
+      });
+    }
+
+    // unless allowFlexibleMotion is set,
+    // we will attempt to create a rigid translation of the polygon
+    // even if a subset of the vertices are constrained.
+    if (!(await this.stateValues.allowFlexibleMotion)) {
+      let nVerticesSpecified = await this.stateValues.nVerticesSpecified;
+      let haveSpecifiedCenter = await this.stateValues.haveSpecifiedCenter;
+
+      if (haveSpecifiedCenter) {
+        if (nVerticesSpecified >= 1) {
+          // polygon was determined by center and 1 vertex
+
+          let resultingCenter = await this.stateValues.centerComponents;
+
+          let resultingDirectionWithRadius = await this.stateValues
+            .directionWithRadius;
+          let resultingVertex1 = [
+            resultingCenter[0] + resultingDirectionWithRadius[0],
+            resultingCenter[1] + resultingDirectionWithRadius[1],
+          ];
+
+          let tol = 1e-6;
+
+          let vertex1Changed = !vertex1.every(
+            (v, i) => Math.abs(v - resultingVertex1[i]) < tol,
+          );
+          let centerChanged = !center.every(
+            (v, i) => Math.abs(v - resultingCenter[i]) < tol,
+          );
+
+          if (centerChanged) {
+            if (!vertex1Changed) {
+              // only center changed
+              // keep directionWithRadius the same
+              // and use new center position
+
+              let newInstructions = [
+                {
+                  updateType: "updateValue",
+                  componentName: this.componentName,
+                  stateVariable: "centerComponents",
+                  value: resultingCenter,
+                },
+                {
+                  updateType: "updateValue",
+                  componentName: this.componentName,
+                  stateVariable: "directionWithRadius",
+                  value: directionWithRadius,
+                },
+              ];
+              return await this.coreFunctions.performUpdate({
+                updateInstructions: newInstructions,
+                transient,
+                actionId,
+                sourceInformation,
+                skipRendererUpdate,
+              });
+            }
+          } else if (vertex1Changed) {
+            // only vertex 1 changed
+            // keep directionWithRadius the same
+            // adjust center to put vertex 1 at its new location
+
+            let newCenter = [
+              resultingVertex1[0] - directionWithRadius[0],
+              resultingVertex1[1] - directionWithRadius[1],
+            ];
+
+            let newInstructions = [
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "centerComponents",
+                value: newCenter,
+              },
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "directionWithRadius",
+                value: directionWithRadius,
+              },
+            ];
+            return await this.coreFunctions.performUpdate({
+              updateInstructions: newInstructions,
+              transient,
+              actionId,
+              sourceInformation,
+              skipRendererUpdate,
+            });
+          }
+        }
+      } else if (nVerticesSpecified >= 2) {
+        //polygon was determined by two vertices
+
+        // calculate the value of vertex2 calculated from center and vertex1
+        let angle = (2 * Math.PI) / nVertices;
+
+        let c = Math.cos(angle);
+        let s = Math.sin(angle);
+
+        let directionWithRadius2 = [
+          directionWithRadius[0] * c - directionWithRadius[1] * s,
+          directionWithRadius[0] * s + directionWithRadius[1] * c,
+        ];
+
+        let vertex2 = [
+          directionWithRadius2[0] + center[0],
+          directionWithRadius2[1] + center[1],
+        ];
+
+        let resultingVertices = await this.stateValues.vertices;
+        let resultingVertex1 = resultingVertices[0].map((x) =>
+          x.evaluate_to_constant(),
+        );
+        let resultingVertex2 = resultingVertices[1].map((x) =>
+          x.evaluate_to_constant(),
+        );
+
+        let tol = 1e-6;
+
+        let vertex1Changed = !vertex1.every(
+          (v, i) => Math.abs(v - resultingVertex1[i]) < tol,
+        );
+        let vertex2Changed = !vertex2.every(
+          (v, i) => Math.abs(v - resultingVertex2[i]) < tol,
+        );
+
+        if (vertex1Changed) {
+          if (!vertex2Changed) {
+            // only vertex 1 changed
+            // keep directionWithRadius the same
+            // adjust center to put vertex 1 at its new location
+
+            let newCenter = [
+              resultingVertex1[0] - directionWithRadius[0],
+              resultingVertex1[1] - directionWithRadius[1],
+            ];
+
+            let newInstructions = [
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "centerComponents",
+                value: newCenter,
+              },
+              {
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "directionWithRadius",
+                value: directionWithRadius,
+              },
+            ];
+            return await this.coreFunctions.performUpdate({
+              updateInstructions: newInstructions,
+              transient,
+              actionId,
+              sourceInformation,
+              skipRendererUpdate,
+            });
+          }
+        } else if (vertex2Changed) {
+          // only vertex 2 changed
+          // keep directionWithRadius the same
+          // adjust center to put vertex 2 at its new location
+
+          let newCenter = [
+            resultingVertex2[0] - directionWithRadius2[0],
+            resultingVertex2[1] - directionWithRadius2[1],
+          ];
+
+          let newInstructions = [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "centerComponents",
+              value: newCenter,
+            },
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "directionWithRadius",
+              value: directionWithRadius,
+            },
+          ];
+          return await this.coreFunctions.performUpdate({
+            updateInstructions: newInstructions,
+            transient,
+            actionId,
+            sourceInformation,
+            skipRendererUpdate,
+          });
+        }
+      }
+    }
+
+    // if no modifications were made, still need to update renderers
+    // as original update was performed with skipping renderer update
+    return await this.coreFunctions.updateRenderers({
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
+  }
 }

@@ -206,14 +206,25 @@ export default React.memo(function ButtonComponent(props) {
         Math.max(yminAdjusted, calculatedY.current),
       );
 
+      let args = {
+        x: calculatedX.current,
+        y: calculatedY.current,
+        transient: true,
+        skippable: true,
+      };
+
+      if (!viaPointer) {
+        args.viaKeyboard = true;
+        args.lastPosition = lastPositionFromCore.current;
+        args.limits = [
+          [xminAdjusted, xmaxAdjusted],
+          [yminAdjusted, ymaxAdjusted],
+        ];
+      }
+
       callAction({
         action: actions.moveButton,
-        args: {
-          x: calculatedX.current,
-          y: calculatedY.current,
-          transient: true,
-          skippable: true,
-        },
+        args,
       });
 
       newButtonJXG.relativeCoords.setCoordinates(JXG.COORDS_BY_USER, [0, 0]);
