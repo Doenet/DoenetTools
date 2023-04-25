@@ -1116,7 +1116,7 @@ describe("Line Tag Tests", function () {
   <copy target="a" />)
   </point>
   <point>(5,3)</point>
-  <line through="$_point1 $_point2" />
+  <line through="$_point1 $_point2" allowFlexibleMotion />
   </graph>
   <math name="a" hide simplify><copy prop="x" target="_point2" />+1</math>
   <copy prop="point1" target="_line1" assignNames="p1" />
@@ -4547,7 +4547,7 @@ describe("Line Tag Tests", function () {
   <text>a</text>
   <graph name="g1" newNamespace>
     <point hide fixed>(-5,9)</point>
-    <line name="l" through="$_point1" />
+    <line name="l" through="$_point1" allowFlexibleMotion />
     <copy assignNames="A" prop="point1" target="l" />
     <copy assignNames="B" prop="point2" target="l" />
   </graph>
@@ -5503,7 +5503,7 @@ describe("Line Tag Tests", function () {
     </sources>
   </map>
   <graph name="g1" newNamespace>
-    <line through="$(../_map1)" name="l" />
+    <line through="$(../_map1)" name="l" allowFlexibleMotion />
     <copy assignNames="A" prop="point1" target="l" />
     <copy assignNames="B" prop="point2" target="l" />
   </graph>
@@ -6220,7 +6220,7 @@ describe("Line Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <line through="(3, $(_line1.pointX1_1)) (4,5)" />
+    <line through="(3, $(_line1.pointX1_1)) (4,5)" allowFlexibleMotion />
   </graph>
 
   <graph>
@@ -6575,7 +6575,7 @@ describe("Line Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <line through="(3,$(la.pointX1_1)) (4,5)" />
+    <line through="(3,$(la.pointX1_1)) (4,5)" allowFlexibleMotion />
   </graph>
 
   <graph>
@@ -12041,5 +12041,195 @@ describe("Line Tag Tests", function () {
       "background-color",
       "rgb(0, 0, 255)",
     );
+  });
+
+  it("line through two points, one constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P" labelIsName>(3,5)
+    <constraints><constrainToGrid dx="2" dy="3" /></constraints>
+    </point>
+  <point name="Q" labelIsName>(-4,-1)</point>
+  <line through="$P $Q" />
+  </graph>
+  <copy target="P" assignNames="Pa" />
+  <copy target="Q" assignNames="Qa" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    let x1 = 4,
+      y1 = 6;
+    let x2 = -4,
+      y2 = -1;
+
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x1)},${nInDOM(y1)})`,
+    );
+    cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x2)},${nInDOM(y2)})`,
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
+
+    cy.log(
+      "move line down 4 and right 0.5 actually moves it down 3 and right none",
+    );
+    cy.window().then(async (win) => {
+      let dx = 0.5,
+        dy = -4;
+
+      let x1Desired = x1 + dx;
+      let y1Desired = y1 + dy;
+      let x2Desired = x2 + dx;
+      let y2Desired = y2 + dy;
+
+      dx = 0;
+      dy = -3;
+      x1 += dx;
+      y1 += dy;
+      x2 += dx;
+      y2 += dy;
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/_line1",
+        args: {
+          point1coords: [x1Desired, y1Desired],
+          point2coords: [x2Desired, y2Desired],
+        },
+      });
+
+      cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x1)},${nInDOM(y1)})`,
+      );
+      cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x2)},${nInDOM(y2)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
+  });
+
+  it("line through two points, one constrained to grid, allow flexible motion", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P" labelIsName>(3,5)
+    <constraints><constrainToGrid dx="2" dy="3" /></constraints>
+    </point>
+  <point name="Q" labelIsName>(-4,-1)</point>
+  <line through="$P $Q" allowFlexibleMotion />
+  </graph>
+  <copy target="P" assignNames="Pa" />
+  <copy target="Q" assignNames="Qa" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    let x1 = 4,
+      y1 = 6;
+    let x2 = -4,
+      y2 = -1;
+
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x1)},${nInDOM(y1)})`,
+    );
+    cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x2)},${nInDOM(y2)})`,
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
+
+    cy.log("move line down 4 and right 0.5");
+    cy.window().then(async (win) => {
+      let dx = 0.5,
+        dy = -4;
+
+      let x1Desired = x1 + dx;
+      let y1Desired = y1 + dy;
+      let x2Desired = x2 + dx;
+      let y2Desired = y2 + dy;
+
+      dx = 0;
+      dy = -3;
+      x1 += dx;
+      y1 += dy;
+      x2 = x2Desired;
+      y2 = y2Desired;
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/_line1",
+        args: {
+          point1coords: [x1Desired, y1Desired],
+          point2coords: [x2Desired, y2Desired],
+        },
+      });
+
+      cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x1)},${nInDOM(y1)})`,
+      );
+      cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x2)},${nInDOM(y2)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
   });
 });

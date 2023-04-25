@@ -19694,4 +19694,686 @@ describe("Vector Tag Tests", function () {
       "rgb(0, 0, 255)",
     );
   });
+
+  it("vector with head and tail, tail constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+    </constraints>
+  </point>
+  <point name="Q">(-4,2)</point>
+  <vector tail="$P" head="$Q" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let tailx = 5;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move vector up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied head");
+    cy.window().then(async (win) => {
+      headx = -5;
+      heady = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied tail");
+    cy.window().then(async (win) => {
+      tailx = -3;
+      taily = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily },
+      });
+
+      // adjust for constraints
+      tailx = -5;
+      taily = -9;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied displacement");
+    cy.window().then(async (win) => {
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady],
+        },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+  });
+
+  it("vector with head and tail, tail constrained to grid, allow flexible motion", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+    </constraints>
+  </point>
+  <point name="Q">(-4,2)</point>
+  <vector tail="$P" head="$Q" allowFlexibleMotion />
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let tailx = 5;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move vector up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      tailx += moveX;
+      taily += moveY;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied head");
+    cy.window().then(async (win) => {
+      headx = -5;
+      heady = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied tail");
+    cy.window().then(async (win) => {
+      tailx = -3;
+      taily = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily },
+      });
+
+      // adjust for constraints
+      tailx = -5;
+      taily = -9;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied displacement");
+    cy.window().then(async (win) => {
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady],
+        },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+  });
+
+  it("vector with head and tail, head constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)</point>
+  <point name="Q">(-4,2)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+    </constraints>
+  </point>
+  <vector tail="$P" head="$Q" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let tailx = 4;
+    let taily = 1;
+    let headx = -5;
+    let heady = 3;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move vector up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied head");
+    cy.window().then(async (win) => {
+      headx = -5;
+      heady = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady },
+      });
+
+      // adjust for constraints
+      headx = -5;
+      heady = 6;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied tail");
+    cy.window().then(async (win) => {
+      tailx = -3;
+      taily = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied displacement");
+    cy.window().then(async (win) => {
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady],
+        },
+      });
+
+      // adjust for constraints
+      headx = Math.round(headx / 5) * 5;
+      heady = Math.round(heady / 3) * 3;
+      headx = headx === 0 ? 0 : headx; // change -0 to 0
+      displacementx = headx - tailx;
+      displacementy = heady - taily;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+  });
+
+  it("vector with head and tail, head constrained to grid, allow flexible motion", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)</point>
+  <point name="Q">(-4,2)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+    </constraints>
+  </point>
+  <vector tail="$P" head="$Q" allowFlexibleMotion />
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let tailx = 4;
+    let taily = 1;
+    let headx = -5;
+    let heady = 3;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move vector up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      headx += moveX;
+      heady += moveY;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied head");
+    cy.window().then(async (win) => {
+      headx = -5;
+      heady = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady },
+      });
+
+      // adjust for constraints
+      headx = -5;
+      heady = 6;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied tail");
+    cy.window().then(async (win) => {
+      tailx = -3;
+      taily = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied displacement");
+    cy.window().then(async (win) => {
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady],
+        },
+      });
+
+      // adjust for constraints
+      headx = Math.round(headx / 5) * 5;
+      heady = Math.round(heady / 3) * 3;
+      headx = headx === 0 ? 0 : headx; // change -0 to 0
+      displacementx = headx - tailx;
+      displacementy = heady - taily;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+  });
 });
