@@ -32,6 +32,7 @@ import { BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
 import { useFetcher } from "react-router-dom";
+import { RxUpdate } from "react-icons/rx";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -137,20 +138,31 @@ export function PortfolioActivityEditor() {
         zIndex="500"
       >
         <Flex justifyContent="space-between">
-          <ButtonGroup
-            size="sm"
-            ml="10px"
-            mt="4px"
-            isAttached
-            variant="outline"
-          >
-            <Button size="sm" leftIcon={<BsPlayBtnFill />}>
-              View
+          <Box>
+            <ButtonGroup
+              size="sm"
+              ml="10px"
+              mt="4px"
+              isAttached
+              variant="outline"
+            >
+              <Button size="sm" leftIcon={<BsPlayBtnFill />}>
+                View
+              </Button>
+              <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
+                Edit
+              </Button>
+            </ButtonGroup>
+            <Button
+              ml="10px"
+              mt="-1"
+              size="sm"
+              variant="outline"
+              leftIcon={<RxUpdate />}
+            >
+              Update
             </Button>
-            <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
-              Edit
-            </Button>
-          </ButtonGroup>
+          </Box>
           <Editable
             mt="4px"
             defaultValue={activityData.label}
