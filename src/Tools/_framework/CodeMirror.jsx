@@ -265,7 +265,11 @@ export default function CodeMirror({
   //should rewrite using compartments once a more formal config component is established
   return (
     <>
-      <div ref={parent} style={{ paddingBottom: "50vh" }}></div>
+      <div
+        ref={parent}
+        // style={{ width: "inherit" }}
+        // style={{ paddingBottom: "50vh" }}
+      ></div>
     </>
   );
 }

@@ -198,8 +198,10 @@ export function PortfolioActivityEditor() {
         placeSelf="stretch"
       >
         <Box
-          position="fixed"
-          // top={0}
+          // position="fixed" //sticky?
+          position="sticky"
+          top={0}
+          alignSelf="start"
           // bottom={0}
           // left={0}
           // right={0}
@@ -208,7 +210,7 @@ export function PortfolioActivityEditor() {
           height="calc(100vh - 120px)"
           // height="200px"
           // width="inherit"
-          width="600px" //This should change with
+          // width="600px" //This should change with
           overflowY="scroll"
         >
           <CodeMirror
