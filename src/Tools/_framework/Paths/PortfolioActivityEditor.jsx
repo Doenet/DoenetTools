@@ -57,9 +57,9 @@ export async function loader({ params }) {
   }
 
   //TODO: get the doenetML of the pageId.
-  let doenetML = "<graph ><point name='p'/></graph>$p.x";
-  // let doenetML =
-  //   "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
+  // let doenetML = "<graph ><point name='p'/></graph>$p.x";
+  let doenetML =
+    "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
 
   return {
     activityData,
@@ -114,22 +114,31 @@ export function PortfolioActivityEditor() {
     <Grid
       minHeight="calc(100vh - 40px)" //40px header height
       // background="grey"
-      templateAreas={`"header header header header"
-      "leftGutter viewer rightGutter textEditor"
+      templateAreas={`"header header header header header"
+      "leftGutter viewer middleGutter textEditor rightGutter "
       `}
       templateRows="40px auto"
-      templateColumns="auto minmax(400px,600px) auto minmax(300px,600px)"
+      templateColumns="auto minmax(400px,600px) auto minmax(300px,600px) auto"
       // templateColumns="auto minmax(400px,600px) auto minmax(300px,auto)"
       // templateColumns="auto minMax('400px','850px') auto min-content"
       // templateColumns="auto max-content auto min-content"
+      position="relative"
     >
-      <GridItem area="header">
+      <GridItem
+        area="header"
+        position="fixed"
+        height="40px"
+        background="doenet.canvas"
+        width="100%"
+        zIndex="500"
+      >
         <Flex>
           <Text>Icon Buttons</Text>
           <Text>Label Here</Text>
         </Flex>
       </GridItem>
       <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
+      <GridItem area="middleGutter" background="doenet.lightBlue"></GridItem>
       <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
       <GridItem
         area="viewer"
@@ -178,36 +187,60 @@ export function PortfolioActivityEditor() {
           />
         </Box>
       </GridItem>
-      <GridItem area="textEditor" background="blue.700" maxWidth="600px">
-        <CodeMirror
-          key="codemirror"
-          // readOnly={false}
-          editorRef={editorRef}
-          // setInternalValue={updateInternalValue}
-          setInternalValue={`one
+      <GridItem
+        area="textEditor"
+        maxWidth="600px"
+        paddingTop="30px"
+        background="doenet.lightBlue"
+        height="100%"
+        // justifySelf="stretch"
+        position="relative"
+        placeSelf="stretch"
+      >
+        <Box
+          position="fixed"
+          // top={0}
+          // bottom={0}
+          // left={0}
+          // right={0}
+          // background="black"
+          background="doenet.canvas"
+          height="calc(100vh - 120px)"
+          // height="200px"
+          // width="inherit"
+          width="600px" //This should change with
+          overflowY="scroll"
+        >
+          <CodeMirror
+            key="codemirror"
+            // readOnly={false}
+            editorRef={editorRef}
+            // setInternalValue={updateInternalValue}
+            setInternalValue={`one
 two
 three`}
-          // value={editorDoenetML}
-          // value="starter value"
-          onBeforeChange={(value) => {
-            // console.log(value);
-            //   setEditorDoenetML(value);
-            //   // Debounce save to server at 3 seconds
-            //   clearTimeout(timeout.current);
-            //   timeout.current = setTimeout(function () {
-            //     saveDraft({
-            //       pageId: initializedPageId,
-            //       courseId,
-            //       backup: backupOldDraft.current,
-            //     }).then(({ success }) => {
-            //       if (success) {
-            //         backupOldDraft.current = false;
-            //       }
-            //     });
-            //     timeout.current = null;
-            //   }, 3000); //3 seconds
-          }}
-        />
+            // value={editorDoenetML}
+            // value="starter value"
+            onBeforeChange={(value) => {
+              // console.log(value);
+              //   setEditorDoenetML(value);
+              //   // Debounce save to server at 3 seconds
+              //   clearTimeout(timeout.current);
+              //   timeout.current = setTimeout(function () {
+              //     saveDraft({
+              //       pageId: initializedPageId,
+              //       courseId,
+              //       backup: backupOldDraft.current,
+              //     }).then(({ success }) => {
+              //       if (success) {
+              //         backupOldDraft.current = false;
+              //       }
+              //     });
+              //     timeout.current = null;
+              //   }, 3000); //3 seconds
+            }}
+          />
+        </Box>
       </GridItem>
     </Grid>
   );
