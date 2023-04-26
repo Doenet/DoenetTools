@@ -1171,6 +1171,14 @@ export default class BaseComponent {
       serializedComponent.state = deepClone(this.essentialState);
     }
 
+    if (parameters.copyAll) {
+      if (this.doenetMLrange) {
+        serializedComponent.range = JSON.parse(
+          JSON.stringify(this.doenetMLrange),
+        );
+      }
+    }
+
     if (parameters.copyVariants) {
       if (this.state.generatedVariantInfo) {
         serializedComponent.variants = {
