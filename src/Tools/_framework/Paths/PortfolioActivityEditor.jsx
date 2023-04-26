@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Outlet,
   redirect,
   useLoaderData,
   useNavigate,
@@ -19,21 +20,50 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Card,
+  Center,
+  Checkbox,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Editable,
   EditableInput,
   EditablePreview,
   Flex,
   Grid,
   GridItem,
+  Icon,
+  IconButton,
+  Image,
   Input,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Table,
+  TableContainer,
+  Tabs,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
   Tooltip,
+  Tr,
+  VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline } from "react-icons/md";
-import { FaCog } from "react-icons/fa";
+import { FaCog, FaFileImage } from "react-icons/fa";
 import { useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
+import axios from "axios";
+import { useDropzone } from "react-dropzone";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -88,11 +118,266 @@ export async function loader({ params }) {
     activityData,
     pageId,
     doenetML,
+    doenetId: params.doenetId,
   };
+}
+
+function GeneralControls({ onClose }) {
+  const { activityData, doenetId } = useLoaderData();
+  const { isPublic, label, imagePath: dataImagePath } = activityData;
+  let numberOfFilesUploading = useRef(0);
+  let [imagePath, setImagePath] = useState(dataImagePath);
+
+  const onDrop = useCallback(
+    async (files) => {
+      let success = true;
+      const file = files[0];
+      if (files.length > 1) {
+        success = false;
+        //Should we just grab the first one and ignore the rest
+        console.log("Only one file upload allowed!");
+      }
+
+      //Only upload one batch at a time
+      if (numberOfFilesUploading.current > 0) {
+        console.log(
+          "Already uploading files.  Please wait before sending more.",
+        );
+        success = false;
+      }
+
+      //If any settings aren't right then abort
+      if (!success) {
+        return;
+      }
+
+      numberOfFilesUploading.current = 1;
+
+      let image = await window.BrowserImageResizer.readAndCompressImage(file, {
+        quality: 0.9,
+        maxWidth: 350,
+        maxHeight: 234,
+        debug: true,
+      });
+      // const convertToBase64 = (blob) => {
+      //   return new Promise((resolve) => {
+      //     var reader = new FileReader();
+      //     reader.onload = function () {
+      //       resolve(reader.result);
+      //     };
+      //     reader.readAsDataURL(blob);
+      //   });
+      // };
+      // let base64Image = await convertToBase64(image);
+      // console.log("image",image)
+      // console.log("base64Image",base64Image)
+
+      //Upload files
+      const reader = new FileReader();
+      reader.readAsDataURL(image); //This one could be used with image source to preview image
+
+      reader.onabort = () => {};
+      reader.onerror = () => {};
+      reader.onload = () => {
+        const uploadData = new FormData();
+        // uploadData.append('file',file);
+        uploadData.append("file", image);
+        uploadData.append("doenetId", doenetId);
+        axios.post("/api/upload.php", uploadData).then(({ data }) => {
+          // console.log("RESPONSE data>",data)
+
+          //uploads are finished clear it out
+          numberOfFilesUploading.current = 0;
+          let { success, cid } = data;
+          if (success) {
+            setImagePath(`/media/${cid}.jpg`);
+          }
+        });
+      };
+    },
+    [doenetId],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  return (
+    <>
+      <TableContainer
+        borderWidth="1px"
+        borderStyle="solid"
+        borderColor="doenet.grey"
+        p="10px"
+        borderRadius="lg"
+      >
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Property</Th>
+              <Th>Setting</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr key="drop" {...getRootProps()}>
+              {isDragActive ? (
+                <Td colSpan={2}>
+                  <input {...getInputProps()} />
+                  <VStack
+                    spacing={4}
+                    p="24px"
+                    border="2px dashed #949494"
+                    borderRadius="lg"
+                    width="556px"
+                  >
+                    <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
+                    <Text color="#949494" fontSize="24pt">
+                      Drop Image Here
+                    </Text>
+                  </VStack>
+                </Td>
+              ) : (
+                <>
+                  <Td>
+                    <input {...getInputProps()} />
+                    <Flex>
+                      <Text>Image</Text>
+                    </Flex>
+                  </Td>
+                  <Td>
+                    <input {...getInputProps()} />
+                    <Card width="180px" height="120px" p="0" m="0">
+                      <Image
+                        height="120px"
+                        maxWidth="180px"
+                        src={imagePath}
+                        alt="Activity Card Image"
+                        borderTopRadius="md"
+                        objectFit="cover"
+                      />
+                    </Card>
+                  </Td>
+                </>
+              )}
+            </Tr>
+
+            <Tr>
+              <Td>
+                <Text>Activity Label</Text>
+              </Td>
+              <Td>
+                <Input
+                  size="sm"
+                  width="392px"
+                  placeholder="Activity 1"
+                  data-test="Activity Label"
+                  defaultValue={label}
+                  // onChange={(e) => {
+                  //   setLabel(e.target.value);
+                  // }}
+                />
+              </Td>
+            </Tr>
+
+            <Tr>
+              <Td>
+                <Checkbox
+                  size="lg"
+                  name="public"
+                  value="on"
+                  isChecked={isPublic}
+                  // defaultChecked={data.public == '1'}
+                  onChange={(e) => {
+                    // setIsPublic(e.target.checked);
+                    // //Need to track that it was not public and now it is
+                    // if (e.target.checked && data.public == 0) {
+                    //   setIsMakePublic(true);
+                    // } else {
+                    //   setIsMakePublic(false);
+                    // }
+                  }}
+                >
+                  Public
+                </Checkbox>
+              </Td>
+              <Td></Td>
+            </Tr>
+          </Tbody>
+        </Table>
+      </TableContainer>
+      <Flex mt="14px" justifyContent="flex-end">
+        <Button size="sm" mr={3} onClick={onClose} background="doenet.mainRed">
+          Cancel
+        </Button>
+        <Button size="sm" colorScheme="blue" onClick={onClose}>
+          Update
+        </Button>
+      </Flex>
+    </>
+  );
+}
+
+function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
+  // const { pageId, activityData } = useLoaderData();
+
+  return (
+    <Drawer
+      isOpen={isOpen}
+      placement="right"
+      onClose={onClose}
+      finalFocusRef={finalFocusRef}
+      size="md"
+    >
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader>
+          <Center>
+            <Icon as={FaCog} mr="14px" />
+            <Text>Activity Controls</Text>
+            <Icon as={FaCog} ml="14px" />
+          </Center>
+        </DrawerHeader>
+
+        <DrawerBody>
+          <Tabs>
+            <TabList>
+              <Tab>General</Tab>
+              <Tab>Pages & Orders</Tab>
+              <Tab>Support Files</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>
+                <GeneralControls onClose={onClose} />
+              </TabPanel>
+              <TabPanel>
+                <p>Pages & Orders</p>
+              </TabPanel>
+              <TabPanel>
+                <p>Support Files</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </DrawerBody>
+        {/* <DrawerFooter>
+          <Button mr={3} onClick={onClose} background="doenet.mainRed">
+            Cancel
+          </Button>
+          <Button colorScheme="blue" onClick={onClose}>
+            Update
+          </Button>
+        </DrawerFooter> */}
+      </DrawerContent>
+    </Drawer>
+  );
 }
 
 export function PortfolioActivityEditor() {
   const { doenetML, pageId, activityData } = useLoaderData();
+  const {
+    isOpen: controlsAreOpen,
+    onOpen: controlsOnOpen,
+    onClose: controlsOnClose,
+  } = useDisclosure();
   // const [textEditorDoenetML, setTextEditorDoenetML] = useState(doenetML);
   let textEditorDoenetML = useRef(doenetML);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
@@ -109,6 +394,10 @@ export function PortfolioActivityEditor() {
         event.preventDefault();
         setViewerDoenetML(textEditorDoenetML.current);
       }
+      if (event.metaKey && event.code === "KeyI") {
+        event.preventDefault();
+        controlsOnOpen();
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -120,6 +409,7 @@ export function PortfolioActivityEditor() {
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+  const controlsBtnRef = useRef(null);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
@@ -136,185 +426,194 @@ export function PortfolioActivityEditor() {
   }
 
   return (
-    <Grid
-      minHeight="calc(100vh - 40px)" //40px header height
-      templateAreas={`"header header header header header"
+    <>
+      <PortfolioActivitySettingsDrawer
+        isOpen={controlsAreOpen}
+        onClose={controlsOnClose}
+        finalFocusRef={controlsBtnRef}
+        activityData={activityData}
+      />
+
+      <Grid
+        minHeight="calc(100vh - 40px)" //40px header height
+        templateAreas={`"header header header header header"
       "leftGutter viewer middleGutter textEditor rightGutter "
       `}
-      templateRows="40px auto"
-      templateColumns="minmax(10px,auto) minmax(500px,800px) minmax(10px,auto) minmax(350px,600px) minmax(10px,auto)"
-      position="relative"
-    >
-      <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-      <GridItem area="middleGutter" background="doenet.lightBlue"></GridItem>
-      <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
-      <GridItem
-        area="header"
-        position="fixed"
-        height="40px"
-        background="doenet.canvas"
-        width="100%"
-        zIndex="500"
+        templateRows="40px auto"
+        templateColumns="minmax(10px,auto) minmax(500px,800px) minmax(10px,auto) minmax(350px,600px) minmax(10px,auto)"
+        position="relative"
       >
-        <Flex justifyContent="space-between">
-          <Box>
-            <ButtonGroup
-              size="sm"
-              ml="10px"
-              mt="4px"
-              isAttached
-              variant="outline"
-            >
-              <Tooltip hasArrow label="View Activity CMD+V">
-                <Button size="sm" leftIcon={<BsPlayBtnFill />}>
-                  View
-                </Button>
-              </Tooltip>
-              <Tooltip hasArrow label="Edit Activity CMD+E">
-                <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
-                  Edit
-                </Button>
-              </Tooltip>
-            </ButtonGroup>
-            <Tooltip hasArrow label="Updates Viewer CMD+S">
-              <Button
+        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
+        <GridItem area="middleGutter" background="doenet.lightBlue"></GridItem>
+        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
+        <GridItem
+          area="header"
+          position="fixed"
+          height="40px"
+          background="doenet.canvas"
+          width="100%"
+          zIndex="500"
+        >
+          <Flex justifyContent="space-between">
+            <Box>
+              <ButtonGroup
+                size="sm"
                 ml="10px"
-                mt="-1"
+                mt="4px"
+                isAttached
+                variant="outline"
+              >
+                <Tooltip hasArrow label="View Activity cmd+v">
+                  <Button size="sm" leftIcon={<BsPlayBtnFill />}>
+                    View
+                  </Button>
+                </Tooltip>
+                <Tooltip hasArrow label="Edit Activity cmd+e">
+                  <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
+                    Edit
+                  </Button>
+                </Tooltip>
+              </ButtonGroup>
+              <Tooltip hasArrow label="Updates Viewer cmd+s">
+                <Button
+                  ml="10px"
+                  mt="-1"
+                  size="sm"
+                  variant="outline"
+                  leftIcon={<RxUpdate />}
+                  onClick={() => {
+                    setViewerDoenetML(textEditorDoenetML.current);
+                  }}
+                >
+                  Update
+                </Button>
+              </Tooltip>
+              Variant Control
+            </Box>
+            <Editable
+              mt="4px"
+              defaultValue={activityData.label}
+              textAlign="center"
+              onSubmit={(value) => {
+                fetcher.submit(
+                  { _action: "update label", label: value },
+                  { method: "post" },
+                );
+              }}
+            >
+              <EditablePreview />
+              <EditableInput width="400px" />
+            </Editable>
+            <Tooltip hasArrow label="Open Controls cmd+i">
+              <Button
+                mt="4px"
+                mr="10px"
                 size="sm"
                 variant="outline"
-                leftIcon={<RxUpdate />}
-                onClick={() => {
-                  setViewerDoenetML(textEditorDoenetML.current);
-                }}
+                leftIcon={<FaCog />}
+                onClick={controlsOnOpen}
+                ref={controlsBtnRef}
               >
-                Update
+                Controls
               </Button>
             </Tooltip>
-          </Box>
-          <Editable
-            mt="4px"
-            defaultValue={activityData.label}
-            textAlign="center"
-            // selectAllOnFocus={false}
-            onSubmit={(value) => {
-              console.log("new label:", value);
-              fetcher.submit(
-                { _action: "update label", label: value },
-                { method: "post" },
-              );
-            }}
-          >
-            <EditablePreview />
-            {/* <Input as="EditableInput" /> */}
-            <EditableInput width="400px" />
-          </Editable>
-          <Tooltip hasArrow label="Toggles Controls CMD+C">
-            <Button
-              mt="4px"
-              mr="10px"
-              size="sm"
-              variant="outline"
-              leftIcon={<FaCog />}
-            >
-              Controls
-            </Button>
-          </Tooltip>
-        </Flex>
-      </GridItem>
+          </Flex>
+        </GridItem>
 
-      <GridItem
-        area="viewer"
-        placeSelf="center"
-        minHeight="100%"
-        width="100%"
-        background="doenet.lightBlue"
-      >
-        <Box
-          minHeight="calc(100vh - 100px)"
-          background="var(--canvas)"
-          borderWidth="1px"
-          borderStyle="solid"
-          borderColor="doenet.mediumGray"
-          margin="10px 0px 10px 0px" //Only need when there is an outline
-          padding="20px 5px 20px 5px"
-          flexGrow={1}
-          overflow="scroll"
+        <GridItem
+          area="viewer"
+          placeSelf="center"
+          minHeight="100%"
+          width="100%"
+          background="doenet.lightBlue"
         >
-          <PageViewer
-            key={`HPpageViewer`}
-            doenetML={viewerDoenetML}
-            // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
-            flags={{
-              showCorrectness: true,
-              solutionDisplayMode: true,
-              showFeedback: true,
-              showHints: true,
-              autoSubmit: false,
-              allowLoadState: false,
-              allowSaveState: false,
-              allowLocalState: false,
-              allowSaveSubmissions: false,
-              allowSaveEvents: false,
-            }}
-            // doenetId={doenetId}
-            attemptNumber={1}
-            generatedVariantCallback={variantCallback} //TODO:Replace
-            requestedVariantIndex={variantInfo.index}
-            // setIsInErrorState={setIsInErrorState}
-            pageIsActive={true}
-          />
-        </Box>
-      </GridItem>
-      <GridItem
-        area="textEditor"
-        maxWidth="600px"
-        background="doenet.lightBlue"
-        height="100%"
-        alignSelf="start"
-        paddingTop="10px"
-      >
-        <Box
-          position="sticky"
-          top="50px"
-          boxSizing="border-box"
-          background="doenet.canvas"
-          height="calc(100vh - 100px)"
-          overflowY="scroll"
-          borderWidth="1px"
-          borderStyle="solid"
-          borderColor="doenet.mediumGray"
+          <Box
+            minHeight="calc(100vh - 100px)"
+            background="var(--canvas)"
+            borderWidth="1px"
+            borderStyle="solid"
+            borderColor="doenet.mediumGray"
+            margin="10px 0px 10px 0px" //Only need when there is an outline
+            padding="20px 5px 20px 5px"
+            flexGrow={1}
+            overflow="scroll"
+          >
+            <PageViewer
+              key={`HPpageViewer`}
+              doenetML={viewerDoenetML}
+              // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
+              flags={{
+                showCorrectness: true,
+                solutionDisplayMode: true,
+                showFeedback: true,
+                showHints: true,
+                autoSubmit: false,
+                allowLoadState: false,
+                allowSaveState: false,
+                allowLocalState: false,
+                allowSaveSubmissions: false,
+                allowSaveEvents: false,
+              }}
+              // doenetId={doenetId}
+              attemptNumber={1}
+              generatedVariantCallback={variantCallback} //TODO:Replace
+              requestedVariantIndex={variantInfo.index}
+              // setIsInErrorState={setIsInErrorState}
+              pageIsActive={true}
+            />
+          </Box>
+        </GridItem>
+        <GridItem
+          area="textEditor"
+          maxWidth="600px"
+          background="doenet.lightBlue"
+          height="100%"
+          alignSelf="start"
+          paddingTop="10px"
         >
-          <CodeMirror
-            key="codemirror"
-            // readOnly={false}
-            editorRef={editorRef}
-            // setInternalValue={updateInternalValue}
-            setInternalValue={textEditorDoenetML.current}
-            // value={editorDoenetML}
-            // value="starter value"
-            onBeforeChange={(value) => {
-              textEditorDoenetML.current = value;
-              // setTextEditorDoenetML(value);
-              // console.log(value);
-              //   setEditorDoenetML(value);
-              //   // Debounce save to server at 3 seconds
-              //   clearTimeout(timeout.current);
-              //   timeout.current = setTimeout(function () {
-              //     saveDraft({
-              //       pageId: initializedPageId,
-              //       courseId,
-              //       backup: backupOldDraft.current,
-              //     }).then(({ success }) => {
-              //       if (success) {
-              //         backupOldDraft.current = false;
-              //       }
-              //     });
-              //     timeout.current = null;
-              //   }, 3000); //3 seconds
-            }}
-          />
-        </Box>
-      </GridItem>
-    </Grid>
+          <Box
+            position="sticky"
+            top="50px"
+            boxSizing="border-box"
+            background="doenet.canvas"
+            height="calc(100vh - 100px)"
+            overflowY="scroll"
+            borderWidth="1px"
+            borderStyle="solid"
+            borderColor="doenet.mediumGray"
+          >
+            <CodeMirror
+              key="codemirror"
+              // readOnly={false}
+              editorRef={editorRef}
+              // setInternalValue={updateInternalValue}
+              setInternalValue={textEditorDoenetML.current}
+              // value={editorDoenetML}
+              // value="starter value"
+              onBeforeChange={(value) => {
+                textEditorDoenetML.current = value;
+                // setTextEditorDoenetML(value);
+                // console.log(value);
+                //   setEditorDoenetML(value);
+                //   // Debounce save to server at 3 seconds
+                //   clearTimeout(timeout.current);
+                //   timeout.current = setTimeout(function () {
+                //     saveDraft({
+                //       pageId: initializedPageId,
+                //       courseId,
+                //       backup: backupOldDraft.current,
+                //     }).then(({ success }) => {
+                //       if (success) {
+                //         backupOldDraft.current = false;
+                //       }
+                //     });
+                //     timeout.current = null;
+                //   }, 3000); //3 seconds
+              }}
+            />
+          </Box>
+        </GridItem>
+      </Grid>
+    </>
   );
 }
