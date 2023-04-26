@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
@@ -89,15 +89,30 @@ export async function loader({ params }) {
 
 export function PortfolioActivityEditor() {
   const { doenetML, pageId, activityData } = useLoaderData();
-  console.log("activityData", activityData);
-  console.log("pageId", pageId);
-  console.log("doenetML", doenetML);
-  const updateInternalValue = doenetML;
-  let editorDoenetML = doenetML;
+  // const [textEditorDoenetML, setTextEditorDoenetML] = useState(doenetML);
+  let textEditorDoenetML = useRef(doenetML);
+  const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
+  // console.log("activityData", activityData);
+  // console.log("pageId", pageId);
 
   const fetcher = useFetcher();
 
   let editorRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.metaKey && event.code === "KeyS") {
+        event.preventDefault();
+        setViewerDoenetML(textEditorDoenetML.current);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [textEditorDoenetML]);
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -159,6 +174,9 @@ export function PortfolioActivityEditor() {
               size="sm"
               variant="outline"
               leftIcon={<RxUpdate />}
+              onClick={() => {
+                setViewerDoenetML(textEditorDoenetML.current);
+              }}
             >
               Update
             </Button>
@@ -213,7 +231,7 @@ export function PortfolioActivityEditor() {
         >
           <PageViewer
             key={`HPpageViewer`}
-            doenetML={doenetML}
+            doenetML={viewerDoenetML}
             // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
             flags={{
               showCorrectness: true,
@@ -260,12 +278,12 @@ export function PortfolioActivityEditor() {
             // readOnly={false}
             editorRef={editorRef}
             // setInternalValue={updateInternalValue}
-            setInternalValue={`one
-two
-three`}
+            setInternalValue={textEditorDoenetML.current}
             // value={editorDoenetML}
             // value="starter value"
             onBeforeChange={(value) => {
+              textEditorDoenetML.current = value;
+              // setTextEditorDoenetML(value);
               // console.log(value);
               //   setEditorDoenetML(value);
               //   // Debounce save to server at 3 seconds

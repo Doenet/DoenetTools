@@ -62,7 +62,7 @@ export default function CodeMirror({
       borderLeftColor: "var(--canvastext)",
     },
     "&.cm-focused .cm-selectionBackground, ::selection": {
-      backgroundColor: "var(--lightBlue)",
+      backgroundColor: "var(--mainGray)",
     },
     "&.cm-focused": {
       color: "var(--canvastext)",
@@ -76,7 +76,7 @@ export default function CodeMirror({
       border: "none",
     },
     ".cm-activeLine": {
-      backgroundColor: "var(--lightBlue)",
+      backgroundColor: "var(--mainGray)",
       color: "black",
     },
   });
