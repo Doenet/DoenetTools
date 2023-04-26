@@ -11,11 +11,13 @@ export async function expandDoenetMLsToFullSerializedComponents({
   cids,
   doenetMLs,
   componentInfoObjects,
+  nPreviousDoenetMLs = 0,
 }) {
   let arrayOfSerializedComponents = [];
   let cidComponents = {};
+  let allDoenetMLs = [...doenetMLs];
 
-  for (let doenetML of doenetMLs) {
+  for (let [ind, doenetML] of doenetMLs.entries()) {
     let serializedComponents = parseAndCompile(doenetML);
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
@@ -61,6 +63,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
       }
       cidComponents[cid].push(...newContentComponents.cidComponents[cid]);
     }
+
+    addDoenetMLIdToRange(serializedComponents, nPreviousDoenetMLs + ind);
   }
 
   let cidList = Object.keys(cidComponents);
@@ -91,12 +95,15 @@ export async function expandDoenetMLsToFullSerializedComponents({
     }
 
     // recurse to additional doenetMLs
-    let { fullSerializedComponents } =
+    let { fullSerializedComponents, allDoenetMLs: additionalDoenetMLs } =
       await expandDoenetMLsToFullSerializedComponents({
         doenetMLs: newDoenetMLs,
         cids: newCids,
         componentInfoObjects,
+        nPreviousDoenetMLs: nPreviousDoenetMLs + doenetMLs.length,
       });
+
+    allDoenetMLs.push(...additionalDoenetMLs);
 
     for (let [ind, cid] of cidList.entries()) {
       let serializedComponentsForCid = fullSerializedComponents[ind];
@@ -179,7 +186,19 @@ export async function expandDoenetMLsToFullSerializedComponents({
   return {
     cids,
     fullSerializedComponents: arrayOfSerializedComponents,
+    allDoenetMLs,
   };
+}
+
+function addDoenetMLIdToRange(serializedComponents, doenetMLId) {
+  for (let component of serializedComponents) {
+    if (component.range) {
+      component.range.doenetMLId = doenetMLId;
+    }
+    if (component.children) {
+      addDoenetMLIdToRange(component.children, doenetMLId);
+    }
+  }
 }
 
 function cidsToDoenetMLs(cids) {

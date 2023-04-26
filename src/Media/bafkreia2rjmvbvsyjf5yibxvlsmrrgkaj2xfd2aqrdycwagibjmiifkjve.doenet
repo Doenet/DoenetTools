@@ -1,0 +1,14 @@
+<section boxed>
+  <title>Copied content</title>
+<copy uri="doenet:cid=bafkreia3r7nyo7bvh3xnx47jvrb7y755a2xg3yhayg5jllknuedks4oalm" 
+ assignNames="external"/>
+</section>
+
+<p>Grab the DoenetML from external graph:</p>
+
+<pre>$(external/_graph1.doenetML)</pre>
+
+<p>DoenetML of single line:</p>
+<pre><displayDoenetML>
+  <text>hi</text>
+</displayDoenetML></pre>

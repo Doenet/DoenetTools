@@ -187,8 +187,13 @@ export default class Core {
       });
   }
 
-  async finishCoreConstruction({ cids, fullSerializedComponents }) {
+  async finishCoreConstruction({
+    cids,
+    fullSerializedComponents,
+    allDoenetMLs,
+  }) {
     this.cid = cids[0];
+    this.allDoenetMLs = allDoenetMLs;
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -11663,7 +11668,11 @@ export default class Core {
         range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd;
     }
 
-    let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);
+    let doenetMLId = range.doenetMLId || 0;
+    let componentDoenetML = this.allDoenetMLs[doenetMLId].slice(
+      startInd - 1,
+      endInd,
+    );
 
     if (displayOnlyChildren) {
       // remove any leading linebreak
@@ -11685,6 +11694,11 @@ export default class Core {
           Math.min(a, c.trim().length > 1 ? c.search(/\S|$/) : Infinity),
         Infinity,
       );
+
+    // check first line if didn't get a number of spaces from remaining lines
+    if (minSpaces === Infinity && lines[0].trim().length > 1) {
+      minSpaces = lines[0].search(/\S|$/);
+    }
 
     if (Number.isFinite(minSpaces) && minSpaces > 0) {
       lines = lines.map((s) => {
