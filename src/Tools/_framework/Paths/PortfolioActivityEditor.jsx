@@ -27,6 +27,7 @@ import {
   GridItem,
   Input,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline } from "react-icons/md";
@@ -76,7 +77,10 @@ export async function loader({ params }) {
   }
 
   //TODO: get the doenetML of the pageId.
-  let doenetML = "<graph ><point name='p'/></graph>$p.x";
+  let doenetML = `<graph>
+  <point name='p'/>
+</graph>
+<p>$p.x</p>`;
   // let doenetML =
   //   "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
 
@@ -161,25 +165,31 @@ export function PortfolioActivityEditor() {
               isAttached
               variant="outline"
             >
-              <Button size="sm" leftIcon={<BsPlayBtnFill />}>
-                View
-              </Button>
-              <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
-                Edit
-              </Button>
+              <Tooltip hasArrow label="View Activity CMD+V">
+                <Button size="sm" leftIcon={<BsPlayBtnFill />}>
+                  View
+                </Button>
+              </Tooltip>
+              <Tooltip hasArrow label="Edit Activity CMD+E">
+                <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
+                  Edit
+                </Button>
+              </Tooltip>
             </ButtonGroup>
-            <Button
-              ml="10px"
-              mt="-1"
-              size="sm"
-              variant="outline"
-              leftIcon={<RxUpdate />}
-              onClick={() => {
-                setViewerDoenetML(textEditorDoenetML.current);
-              }}
-            >
-              Update
-            </Button>
+            <Tooltip hasArrow label="Updates Viewer CMD+S">
+              <Button
+                ml="10px"
+                mt="-1"
+                size="sm"
+                variant="outline"
+                leftIcon={<RxUpdate />}
+                onClick={() => {
+                  setViewerDoenetML(textEditorDoenetML.current);
+                }}
+              >
+                Update
+              </Button>
+            </Tooltip>
           </Box>
           <Editable
             mt="4px"
@@ -198,16 +208,17 @@ export function PortfolioActivityEditor() {
             {/* <Input as="EditableInput" /> */}
             <EditableInput width="400px" />
           </Editable>
-
-          <Button
-            mt="4px"
-            mr="10px"
-            size="sm"
-            variant="outline"
-            leftIcon={<FaCog />}
-          >
-            Controls
-          </Button>
+          <Tooltip hasArrow label="Toggles Controls CMD+C">
+            <Button
+              mt="4px"
+              mr="10px"
+              size="sm"
+              variant="outline"
+              leftIcon={<FaCog />}
+            >
+              Controls
+            </Button>
+          </Tooltip>
         </Flex>
       </GridItem>
 
