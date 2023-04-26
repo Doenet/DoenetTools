@@ -3683,14 +3683,12 @@ export default class Core {
                     defaultValue: valueFromTarget,
                   },
                 },
-                alwaysShadow: [primaryStateVariableForDefinition],
               };
             }
             return {
               setValue: {
                 [primaryStateVariableForDefinition]: valueFromTarget,
               },
-              alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         } else {
@@ -3702,7 +3700,6 @@ export default class Core {
                     defaultValue: dependencyValues.targetVariable,
                   },
                 },
-                alwaysShadow: [primaryStateVariableForDefinition],
               };
             }
             return {
@@ -3710,7 +3707,6 @@ export default class Core {
                 [primaryStateVariableForDefinition]:
                   dependencyValues.targetVariable,
               },
-              alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         }
@@ -3944,7 +3940,6 @@ export default class Core {
 
           let result = {
             setValue: { [varName]: newEntries },
-            alwaysShadow: [varName],
           };
 
           // TODO: how do we make it do this just once?
@@ -4032,9 +4027,7 @@ export default class Core {
           return dependencies;
         };
         stateDef.definition = function ({ dependencyValues, usedDefault }) {
-          let result = {
-            alwaysShadow: [varName],
-          };
+          let result = {};
 
           // TODO: how do we make it do this just once?
           if ("targetVariableComponentType" in dependencyValues) {
