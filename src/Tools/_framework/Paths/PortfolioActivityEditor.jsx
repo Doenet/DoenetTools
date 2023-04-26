@@ -60,7 +60,7 @@ import {
 import { BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline } from "react-icons/md";
 import { FaCog, FaFileImage } from "react-icons/fa";
-import { useFetcher } from "react-router-dom";
+import { Form, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
@@ -75,6 +75,20 @@ export async function action({ params, request }) {
     );
     let respObj = await response.json();
   }
+
+  if (formObj._action == "update general") {
+    // console.log("formObj params", formObj, params);
+    let response = await axios.post(
+      "/api/updatePortfolioActivitySettings.php",
+      {
+        label: formObj.label,
+        imagePath: formObj.imagePath,
+        public: formObj.public,
+        doenetId: params.doenetId,
+      },
+    );
+  }
+
   return true;
   // let response = await fetch(
   //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
@@ -125,6 +139,7 @@ export async function loader({ params }) {
 function GeneralControls({ onClose }) {
   const { activityData, doenetId } = useLoaderData();
   const { isPublic, label, imagePath: dataImagePath } = activityData;
+
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
 
@@ -202,115 +217,126 @@ function GeneralControls({ onClose }) {
 
   return (
     <>
-      <TableContainer
-        borderWidth="1px"
-        borderStyle="solid"
-        borderColor="doenet.grey"
-        p="10px"
-        borderRadius="lg"
-      >
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Property</Th>
-              <Th>Setting</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr key="drop" {...getRootProps()}>
-              {isDragActive ? (
-                <Td colSpan={2}>
-                  <input {...getInputProps()} />
-                  <VStack
-                    spacing={4}
-                    p="24px"
-                    border="2px dashed #949494"
-                    borderRadius="lg"
-                    width="556px"
-                  >
-                    <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
-                    <Text color="#949494" fontSize="24pt">
-                      Drop Image Here
-                    </Text>
-                  </VStack>
+      <Form method="post">
+        <TableContainer
+          borderWidth="1px"
+          borderStyle="solid"
+          borderColor="doenet.grey"
+          p="10px"
+          borderRadius="lg"
+        >
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Property</Th>
+                <Th>Setting</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              <Tr key="drop" {...getRootProps()}>
+                {isDragActive ? (
+                  <Td colSpan={2}>
+                    <input {...getInputProps()} />
+                    <VStack
+                      spacing={4}
+                      p="24px"
+                      border="2px dashed #949494"
+                      borderRadius="lg"
+                      width="556px"
+                    >
+                      <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
+                      <Text color="#949494" fontSize="24pt">
+                        Drop Image Here
+                      </Text>
+                    </VStack>
+                  </Td>
+                ) : (
+                  <>
+                    <Td>
+                      <input {...getInputProps()} />
+                      <Flex>
+                        <Text>Image</Text>
+                      </Flex>
+                    </Td>
+                    <Td>
+                      <input {...getInputProps()} />
+                      <Card width="180px" height="120px" p="0" m="0">
+                        <Image
+                          height="120px"
+                          maxWidth="180px"
+                          src={imagePath}
+                          alt="Activity Card Image"
+                          borderTopRadius="md"
+                          objectFit="cover"
+                        />
+                      </Card>
+                    </Td>
+                  </>
+                )}
+              </Tr>
+
+              <Tr>
+                <Td>
+                  <Text>Activity Label</Text>
                 </Td>
-              ) : (
-                <>
-                  <Td>
-                    <input {...getInputProps()} />
-                    <Flex>
-                      <Text>Image</Text>
-                    </Flex>
-                  </Td>
-                  <Td>
-                    <input {...getInputProps()} />
-                    <Card width="180px" height="120px" p="0" m="0">
-                      <Image
-                        height="120px"
-                        maxWidth="180px"
-                        src={imagePath}
-                        alt="Activity Card Image"
-                        borderTopRadius="md"
-                        objectFit="cover"
-                      />
-                    </Card>
-                  </Td>
-                </>
-              )}
-            </Tr>
+                <Td>
+                  <Input
+                    name="label"
+                    size="sm"
+                    width="392px"
+                    placeholder="Activity 1"
+                    data-test="Activity Label"
+                    defaultValue={label}
+                    // onChange={(e) => {
+                    //   setLabel(e.target.value);
+                    // }}
+                  />
+                </Td>
+              </Tr>
 
-            <Tr>
-              <Td>
-                <Text>Activity Label</Text>
-              </Td>
-              <Td>
-                <Input
-                  size="sm"
-                  width="392px"
-                  placeholder="Activity 1"
-                  data-test="Activity Label"
-                  defaultValue={label}
-                  // onChange={(e) => {
-                  //   setLabel(e.target.value);
-                  // }}
-                />
-              </Td>
-            </Tr>
-
-            <Tr>
-              <Td>
-                <Checkbox
-                  size="lg"
-                  name="public"
-                  value="on"
-                  isChecked={isPublic}
-                  // defaultChecked={data.public == '1'}
-                  onChange={(e) => {
-                    // setIsPublic(e.target.checked);
-                    // //Need to track that it was not public and now it is
-                    // if (e.target.checked && data.public == 0) {
-                    //   setIsMakePublic(true);
-                    // } else {
-                    //   setIsMakePublic(false);
-                    // }
-                  }}
-                >
-                  Public
-                </Checkbox>
-              </Td>
-              <Td></Td>
-            </Tr>
-          </Tbody>
-        </Table>
-      </TableContainer>
-      <Flex mt="14px" justifyContent="flex-end">
-        <Button size="sm" mr={3} onClick={onClose} background="doenet.mainRed">
-          Cancel
-        </Button>
-        <Button size="sm" colorScheme="blue" onClick={onClose}>
-          Update
-        </Button>
-      </Flex>
+              <Tr>
+                <Td>
+                  <Checkbox
+                    size="lg"
+                    name="public"
+                    value="on"
+                    // isChecked={isPublic}
+                    defaultChecked={isPublic}
+                    // defaultChecked={data.public == '1'}
+                    onChange={(e) => {
+                      // setIsPublic(e.target.checked);
+                      // //Need to track that it was not public and now it is
+                      // if (e.target.checked && data.public == 0) {
+                      //   setIsMakePublic(true);
+                      // } else {
+                      //   setIsMakePublic(false);
+                      // }
+                    }}
+                  >
+                    Public
+                  </Checkbox>
+                </Td>
+                <Td></Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
+        <Flex mt="14px" justifyContent="flex-end">
+          <Button
+            size="sm"
+            mr={3}
+            onClick={onClose}
+            background="doenet.mainRed"
+          >
+            Cancel
+          </Button>
+          <Button type="submit" size="sm" colorScheme="blue" onClick={onClose}>
+            Update
+          </Button>
+        </Flex>
+        <input type="hidden" name="imagePath" value={imagePath} />
+        <input type="hidden" name="_action" value="update general" />
+      </Form>
     </>
   );
 }
@@ -394,7 +420,7 @@ export function PortfolioActivityEditor() {
         event.preventDefault();
         setViewerDoenetML(textEditorDoenetML.current);
       }
-      if (event.metaKey && event.code === "KeyI") {
+      if (event.metaKey && event.code === "KeyU") {
         event.preventDefault();
         controlsOnOpen();
       }
@@ -504,7 +530,7 @@ export function PortfolioActivityEditor() {
               <EditablePreview />
               <EditableInput width="400px" />
             </Editable>
-            <Tooltip hasArrow label="Open Controls cmd+i">
+            <Tooltip hasArrow label="Open Controls cmd+u">
               <Button
                 mt="4px"
                 mr="10px"

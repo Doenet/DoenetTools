@@ -23,6 +23,7 @@ try {
     imagePath,
     label,
     isBanned,
+    isPublic,
     CAST(jsonDefinition as CHAR) AS json
     FROM course_content
     WHERE doenetId = '$doenetId'
@@ -30,12 +31,12 @@ try {
     ";
 $result = $conn->query($sql);
 
-
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $type = $row['type'];
     $imagePath = $row['imagePath'];
     $isBanned = $row['isBanned'];
+    $isPublic = $row['isPublic'];
     $label = $row['label'];
     $json = json_decode($row['json'], true);
     if ($isBanned == '1'){
@@ -53,6 +54,7 @@ if ($result->num_rows > 0) {
             "imagePath"=>$imagePath,
             "content"=>$json['content'],
             "isSinglePage"=>$json['isSinglePage'],
+            "isPublic"=>$isPublic,
             "version"=>$json['version'],
         ],
     ];
