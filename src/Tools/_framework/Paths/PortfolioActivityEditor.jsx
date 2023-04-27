@@ -563,6 +563,7 @@ export function PortfolioActivityEditor() {
             padding="20px 5px 20px 5px"
             flexGrow={1}
             overflow="scroll"
+            marginBottom="50vh"
           >
             <PageViewer
               key={`HPpageViewer`}
