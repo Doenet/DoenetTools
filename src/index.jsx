@@ -45,6 +45,10 @@ import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
 } from "./Tools/_framework/Panels/NewSupportPanel";
+import Dashboard, {
+  action as dashboardAction,
+  loader as dashboardLoader,
+} from "./Tools/_framework/ToolPanels/Dashboard";
 
 import "@fontsource/jost";
 
@@ -213,7 +217,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
   {
     path: "/portfolio/:doenetId/settings",
     loader: portfolioActivitySettingsLoader,
@@ -222,6 +225,17 @@ const router = createBrowserRouter([
     element: (
       <ChakraProvider theme={theme}>
         <PortfolioActivitySettings />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "/course/dashboard/:courseId",
+    loader: dashboardLoader,
+    action: dashboardAction,
+    
+    element: (
+      <ChakraProvider theme={theme}>
+        <Dashboard />
       </ChakraProvider>
     ),
   },
