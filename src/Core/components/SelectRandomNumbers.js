@@ -1,7 +1,7 @@
-import { convertAttributesForComponentType } from '../utils/copy';
-import { sampleFromRandomNumbers } from '../utils/randomNumbers';
-import { processAssignNames } from '../utils/serializedStateProcessing';
-import SampleRandomNumbers from './SampleRandomNumbers';
+import { convertAttributesForComponentType } from "../utils/copy";
+import { sampleFromRandomNumbers } from "../utils/randomNumbers";
+import { processAssignNames } from "../utils/serializedStateProcessing";
+import SampleRandomNumbers from "./SampleRandomNumbers";
 
 export default class SelectRandomNumbers extends SampleRandomNumbers {
   static componentType = "selectRandomNumbers";
@@ -14,20 +14,19 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     delete attributes.numberOfSamples;
 
     attributes.assignNamesSkip = {
-      createPrimitiveOfType: "number"
-    }
+      createPrimitiveOfType: "number",
+    };
     attributes.numberToSelect = {
       createComponentOfType: "integer",
       createStateVariable: "numberToSelect",
       defaultValue: 1,
       public: true,
-    }
+    };
 
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.variants = {
@@ -41,7 +40,6 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
       },
     };
 
-
     stateVariableDefinitions.step.immutable = true;
     stateVariableDefinitions.from.immutable = true;
     stateVariableDefinitions.from.additionalStateVariablesDefined[0].immutable = true;
@@ -50,7 +48,6 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     stateVariableDefinitions.mean.immutable = true;
     stateVariableDefinitions.variance.immutable = true;
     stateVariableDefinitions.standardDeviation.immutable = true;
-
 
     delete stateVariableDefinitions.sampledValues;
 
@@ -65,65 +62,67 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         },
         type: {
           dependencyType: "stateVariable",
-          variableName: "type"
+          variableName: "type",
         },
         from: {
           dependencyType: "stateVariable",
-          variableName: "from"
+          variableName: "from",
         },
         to: {
           dependencyType: "stateVariable",
-          variableName: "to"
+          variableName: "to",
         },
         step: {
           dependencyType: "stateVariable",
-          variableName: "step"
+          variableName: "step",
         },
         nDiscreteValues: {
           dependencyType: "stateVariable",
-          variableName: "nDiscreteValues"
+          variableName: "nDiscreteValues",
         },
         mean: {
           dependencyType: "stateVariable",
-          variableName: "mean"
+          variableName: "mean",
         },
         standardDeviation: {
           dependencyType: "stateVariable",
-          variableName: "standardDeviation"
+          variableName: "standardDeviation",
         },
         variants: {
           dependencyType: "stateVariable",
-          variableName: "variants"
+          variableName: "variants",
         },
         rng: {
           dependencyType: "value",
           value: sharedParameters.variantRng,
           doNotProxy: true,
         },
-
-
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.numberOfSamples < 1) {
           return {
             setEssentialValue: { selectedValues: [] },
-            setValue: { selectedValues: [] }
-          }
+            setValue: { selectedValues: [] },
+          };
         }
 
-        if (dependencyValues.variants && dependencyValues.variants.desiredVariant) {
+        if (
+          dependencyValues.variants &&
+          dependencyValues.variants.desiredVariant
+        ) {
           let desiredValues = dependencyValues.variants.desiredVariant.values;
           if (desiredValues) {
             if (desiredValues.length !== dependencyValues.numberOfSamples) {
-              throw Error("Number of values specified for selectRandomNumber must match number to select");
+              throw Error(
+                "Number of values specified for selectRandomNumber must match number to select",
+              );
             }
 
             // just give the desired values without any verification
             return {
               setEssentialValue: { selectedValues: desiredValues },
-              setValue: { selectedValues: desiredValues }
-            }
-
+              setValue: { selectedValues: desiredValues },
+            };
           }
         }
 
@@ -131,38 +130,34 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
         return {
           setEssentialValue: { selectedValues },
-          setValue: { selectedValues }
-        }
-
-      }
-    }
+          setValue: { selectedValues },
+        };
+      },
+    };
 
     stateVariableDefinitions.isVariantComponent = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { isVariantComponent: true } })
-    }
+      definition: () => ({ setValue: { isVariantComponent: true } }),
+    };
 
     stateVariableDefinitions.generatedVariantInfo = {
       returnDependencies: () => ({
         selectedValues: {
           dependencyType: "stateVariable",
-          variableName: "selectedValues"
+          variableName: "selectedValues",
         },
       }),
       definition({ dependencyValues, componentName }) {
-
         let generatedVariantInfo = {
           values: dependencyValues.selectedValues,
-          meta: { createdBy: componentName }
+          meta: { createdBy: componentName },
         };
 
-        return { setValue: { generatedVariantInfo } }
-
-      }
-    }
+        return { setValue: { generatedVariantInfo } };
+      },
+    };
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
-
       returnDependencies: () => ({
         selectedValues: {
           dependencyType: "stateVariable",
@@ -175,21 +170,26 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     };
 
     return stateVariableDefinitions;
-
   }
 
-
-  static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
-
+  static async createSerializedReplacements({
+    component,
+    componentInfoObjects,
+    flags,
+  }) {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+    for (let attr of [
+      "displayDigits",
+      "displaySmallAsZero",
+      "displayDecimals",
+      "padZeros",
+    ]) {
       if (attr in component.attributes) {
-        attributesToConvert[attr] = component.attributes[attr]
+        attributesToConvert[attr] = component.attributes[attr];
       }
     }
-
 
     let replacements = [];
 
@@ -202,14 +202,14 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           componentType: "number",
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
-          flags
-        })
+          flags,
+        });
       }
 
       replacements.push({
         componentType: "number",
         attributes: attributesFromComposite,
-        state: { value }
+        state: { value },
       });
     }
 
@@ -222,11 +222,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     });
 
     return { replacements: processResult.serializedComponents };
-
-
   }
-
-
 }
 
 delete SelectRandomNumbers.stateVariableToEvaluateAfterReplacements;

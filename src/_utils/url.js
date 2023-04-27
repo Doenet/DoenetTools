@@ -1,9 +1,9 @@
-import cssesc from 'cssesc';
+import cssesc from "cssesc";
 
 // since component names include a "/", escape them before using them as css identifiers
 export function cesc(s) {
   s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
+  if (s.slice(0, 2) === "\\#") {
     // just for convenience in case have a hash, don't escape leading #
     s = s.slice(1);
   }

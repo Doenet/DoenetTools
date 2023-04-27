@@ -1,14 +1,17 @@
-import axios from 'axios';
-import { useRecoilCallback, useRecoilValueLoadable } from 'recoil';
-import { useToast } from '../../Tools/_framework/Toast';
-import { DateToUTCDateString, DateToUTCDateWithoutSecondsString } from '../../_utils/dateUtilityFunction';
-import { itemByDoenetId } from '../Course/CourseActions';
+import axios from "axios";
+import { useRecoilCallback, useRecoilValueLoadable } from "recoil";
+import { useToast } from "../../Tools/_framework/Toast";
+import {
+  DateToUTCDateString,
+  DateToUTCDateWithoutSecondsString,
+} from "../../_utils/dateUtilityFunction";
+import { itemByDoenetId } from "../Course/CourseActions";
 
 const dateFormatKeys = [
-  'assignedDate',
-  'dueDate',
-  'pinnedUntilDate',
-  'pinnedAfterDate',
+  "assignedDate",
+  "dueDate",
+  "pinnedUntilDate",
+  "pinnedAfterDate",
 ];
 
 export const useActivity = (courseId, doenetId) => {
@@ -26,37 +29,49 @@ export const useActivity = (courseId, doenetId) => {
           {},
         );
 
-        let updateDBObj = {...updateObject}
+        let updateDBObj = { ...updateObject };
 
         //Update assigned date to UTC time for the database
-        if (updateDBObj['assignedDate'] !== undefined &&
-        updateDBObj['assignedDate'] !== null
-        ){
-          updateDBObj['assignedDate'] = DateToUTCDateString(new Date(updateDBObj['assignedDate']))
+        if (
+          updateDBObj["assignedDate"] !== undefined &&
+          updateDBObj["assignedDate"] !== null
+        ) {
+          updateDBObj["assignedDate"] = DateToUTCDateString(
+            new Date(updateDBObj["assignedDate"]),
+          );
         }
 
         // Update due date to UTC time for the database
-        if (updateDBObj['dueDate'] !== undefined &&
-        updateDBObj['dueDate'] !== null
-        ){
-          updateDBObj['dueDate'] = DateToUTCDateWithoutSecondsString(new Date(updateDBObj['dueDate']))
+        if (
+          updateDBObj["dueDate"] !== undefined &&
+          updateDBObj["dueDate"] !== null
+        ) {
+          updateDBObj["dueDate"] = DateToUTCDateWithoutSecondsString(
+            new Date(updateDBObj["dueDate"]),
+          );
         }
 
         // Update pinned After Date to UTC time for the database
-        if (updateDBObj['pinnedAfterDate'] !== undefined &&
-        updateDBObj['pinnedAfterDate'] !== null
-        ){
-          updateDBObj['pinnedAfterDate'] = DateToUTCDateString(new Date(updateDBObj['pinnedAfterDate']))
+        if (
+          updateDBObj["pinnedAfterDate"] !== undefined &&
+          updateDBObj["pinnedAfterDate"] !== null
+        ) {
+          updateDBObj["pinnedAfterDate"] = DateToUTCDateString(
+            new Date(updateDBObj["pinnedAfterDate"]),
+          );
         }
 
         // Update pinned Until Date to UTC time for the database
-        if (updateDBObj['pinnedUntilDate'] !== undefined &&
-        updateDBObj['pinnedUntilDate'] !== null
-        ){
-          updateDBObj['pinnedUntilDate'] = DateToUTCDateString(new Date(updateDBObj['pinnedUntilDate']))
+        if (
+          updateDBObj["pinnedUntilDate"] !== undefined &&
+          updateDBObj["pinnedUntilDate"] !== null
+        ) {
+          updateDBObj["pinnedUntilDate"] = DateToUTCDateString(
+            new Date(updateDBObj["pinnedUntilDate"]),
+          );
         }
 
-        const resp = await axios.post('/api/updateAssignmentSettings.php', {
+        const resp = await axios.post("/api/updateAssignmentSettings.php", {
           ...updateDBObj,
           courseId,
           doenetId,
@@ -101,7 +116,7 @@ export const useActivity = (courseId, doenetId) => {
           {},
         );
 
-        const resp = await axios.post('/api/updateContentFlags.php', {
+        const resp = await axios.post("/api/updateContentFlags.php", {
           ...updateObject,
           courseId,
           doenetId,

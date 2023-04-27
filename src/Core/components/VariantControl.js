@@ -1,4 +1,4 @@
-import BaseComponent from './abstract/BaseComponent';
+import BaseComponent from "./abstract/BaseComponent";
 
 export default class VariantControl extends BaseComponent {
   static componentType = "variantControl";
@@ -17,21 +17,20 @@ export default class VariantControl extends BaseComponent {
 
     attributes.variantsToInclude = {
       createComponentOfType: "textListFromString",
-    }
+    };
 
     attributes.variantsToExclude = {
       createComponentOfType: "textListFromString",
-    }
+    };
 
     attributes.variantNames = {
-      createComponentOfType: "textListFromString"
-    }
+      createComponentOfType: "textListFromString",
+    };
 
     attributes.seeds = {
-      createComponentOfType: "textListFromString"
-    }
+      createComponentOfType: "textListFromString",
+    };
 
     return attributes;
   }
-
 }

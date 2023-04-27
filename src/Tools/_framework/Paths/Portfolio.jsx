@@ -1,27 +1,27 @@
 // import axios from 'axios';
-import { Box, Icon, Text, Flex, Wrap } from '@chakra-ui/react';
-import React, { useRef } from 'react';
+import { Box, Icon, Text, Flex, Wrap } from "@chakra-ui/react";
+import React, { useRef } from "react";
 import {
   redirect,
   Form,
   useOutletContext,
   useLoaderData,
-} from 'react-router-dom';
-import styled from 'styled-components';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+} from "react-router-dom";
+import styled from "styled-components";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 
-import { RiEmotionSadLine } from 'react-icons/ri';
-import RecoilActivityCard from '../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard';
-import { pageToolViewAtom } from '../NewToolRoot';
-import { useRecoilState } from 'recoil';
+import { RiEmotionSadLine } from "react-icons/ri";
+import RecoilActivityCard from "../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard";
+import { pageToolViewAtom } from "../NewToolRoot";
+import { useRecoilState } from "recoil";
 
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  if (formObj?._action == 'Add Activity') {
+  if (formObj?._action == "Add Activity") {
     //Create a portfilio activity and redirect to the editor for it
-    let response = await fetch('/api/createPortfolioActivity.php');
+    let response = await fetch("/api/createPortfolioActivity.php");
 
     if (response.ok) {
       let { doenetId, pageDoenetId } = await response.json();
@@ -31,7 +31,7 @@ export async function action({ request }) {
     } else {
       throw Error(response.message);
     }
-  } else if (formObj?._action == 'Delete') {
+  } else if (formObj?._action == "Delete") {
     let response = await fetch(
       `/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`,
     );
@@ -42,7 +42,7 @@ export async function action({ request }) {
     } else {
       throw Error(response.message);
     }
-  } else if (formObj?._action == 'Make Public') {
+  } else if (formObj?._action == "Make Public") {
     let response = await fetch(
       `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`,
     );
@@ -53,7 +53,7 @@ export async function action({ request }) {
     } else {
       throw Error(response.message);
     }
-  } else if (formObj?._action == 'Make Private') {
+  } else if (formObj?._action == "Make Private") {
     let response = await fetch(
       `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`,
     );
@@ -64,7 +64,7 @@ export async function action({ request }) {
     } else {
       throw Error(response.message);
     }
-  } else if (formObj?._action == 'noop') {
+  } else if (formObj?._action == "noop") {
     return true;
   }
 
@@ -73,8 +73,8 @@ export async function action({ request }) {
 
 export async function loader({ params }) {
   //If we didn't create the course yet for this user then create it
-  if (params.courseId == 'not_created') {
-    const response = await fetch('/api/createPortfolioCourse.php');
+  if (params.courseId == "not_created") {
+    const response = await fetch("/api/createPortfolioCourse.php");
     const data = await response.json();
     return redirect(`/portfolio/${data.portfolioCourseId}`);
   }
@@ -133,11 +133,11 @@ export function Portfolio() {
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
 
-  let navigateTo = useRef('');
+  let navigateTo = useRef("");
 
-  if (navigateTo.current != '') {
+  if (navigateTo.current != "") {
     const newHref = navigateTo.current;
-    navigateTo.current = '';
+    navigateTo.current = "";
     location.href = newHref;
   }
 
@@ -169,22 +169,22 @@ export function Portfolio() {
           <Text fontSize="16px" fontWeight="700">
             Portfolio
           </Text>
-          <div style={{ position: 'absolute', top: '48px', right: '10px' }}>
+          <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             {/* <Form method="post"> */}
             <Button
               value="Add Activity"
               dataTest="Add Activity"
               onClick={async () => {
                 //Create a portfilio activity and redirect to the editor for it
-                let response = await fetch('/api/createPortfolioActivity.php');
+                let response = await fetch("/api/createPortfolioActivity.php");
 
                 if (response.ok) {
                   let { doenetId, pageDoenetId } = await response.json();
                   navigateTo.current = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
                   setRecoilPageToolView({
-                    page: 'portfolioeditor',
-                    tool: 'editor',
-                    view: '',
+                    page: "portfolioeditor",
+                    tool: "editor",
+                    view: "",
                     params: { doenetId, pageId: pageDoenetId },
                   });
                 } else {

@@ -1,13 +1,13 @@
-import React from 'react';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faCog } from '@fortawesome/free-solid-svg-icons';
-import { atom, useRecoilCallback, useSetRecoilState } from 'recoil';
-import { pageToolViewAtom } from '../NewToolRoot';
-import Banner from '../../../_reactComponents/PanelHeaderComponents/Banner.jsx';
+import React from "react";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight, faCog } from "@fortawesome/free-solid-svg-icons";
+import { atom, useRecoilCallback, useSetRecoilState } from "recoil";
+import { pageToolViewAtom } from "../NewToolRoot";
+import Banner from "../../../_reactComponents/PanelHeaderComponents/Banner.jsx";
 
 export const mainPanelClickAtom = atom({
-  key: 'mainPanelClickAtom',
+  key: "mainPanelClickAtom",
   default: [],
 });
 
@@ -59,7 +59,7 @@ export default function MainPanel({
     const atomArray = await snapshot.getPromise(mainPanelClickAtom);
     // console.log(">>>mpOnClick",atomArray)
     for (let obj of atomArray) {
-      if (typeof obj === 'function') {
+      if (typeof obj === "function") {
         obj();
       } else {
         set(obj.atom, obj.value);

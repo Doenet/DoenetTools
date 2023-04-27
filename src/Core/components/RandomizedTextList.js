@@ -1,4 +1,4 @@
-import InlineComponent from './abstract/InlineComponent';
+import InlineComponent from "./abstract/InlineComponent";
 
 export default class TextList extends InlineComponent {
   static componentType = "randomizedTextList";
@@ -19,42 +19,42 @@ export default class TextList extends InlineComponent {
 
     let atLeastZeroTexts = childLogic.newLeaf({
       name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0
+      componentType: "text",
+      comparison: "atLeast",
+      number: 0,
     });
 
     let atLeastZeroTextLists = childLogic.newLeaf({
       name: "atLeastZeroTextLists",
-      componentType: 'textList',
-      comparison: 'atLeast',
-      number: 0
+      componentType: "textList",
+      comparison: "atLeast",
+      number: 0,
     });
 
     let breakStringIntoTextsByCommas = function ({ dependencyValues }) {
       let stringChild = dependencyValues.stringChildren[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
+      let newChildren = stringChild.stateValues.value.split(",").map((x) => ({
         componentType: "text",
-        state: { value: x.trim() }
+        state: { value: x.trim() },
       }));
       return {
         success: true,
         newChildren: newChildren,
         toDelete: [stringChild.componentName],
-      }
-    }
+      };
+    };
 
     let exactlyOneString = childLogic.newLeaf({
       name: "exactlyOneString",
-      componentType: 'string',
+      componentType: "string",
       number: 1,
       isSugar: true,
       returnSugarDependencies: () => ({
         stringChildren: {
           dependencyType: "child",
           childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
+          variableNames: ["value"],
+        },
       }),
       logicToWaitOnSugar: ["atLeastZeroTexts"],
       replacementFunction: breakStringIntoTextsByCommas,
@@ -63,12 +63,12 @@ export default class TextList extends InlineComponent {
     let textAndTextLists = childLogic.newOperator({
       name: "textAndTextLists",
       operator: "and",
-      propositions: [atLeastZeroTexts, atLeastZeroTextLists]
-    })
+      propositions: [atLeastZeroTexts, atLeastZeroTextLists],
+    });
 
     childLogic.newOperator({
       name: "TextsXorSugar",
-      operator: 'xor',
+      operator: "xor",
       propositions: [exactlyOneString, textAndTextLists],
       setAsBase: true,
     });
@@ -76,9 +76,7 @@ export default class TextList extends InlineComponent {
     return childLogic;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.texts = {
@@ -101,13 +99,15 @@ export default class TextList extends InlineComponent {
         },
         childrenToRender: {
           dependencyType: "stateVariable",
-          variableName: "childrenToRender"
-        }
+          variableName: "childrenToRender",
+        },
       }),
       definition: function ({ dependencyValues }) {
         let texts = [];
 
-        let childNames = dependencyValues.textAndTextListChildren.map(x => x.componentName);
+        let childNames = dependencyValues.textAndTextListChildren.map(
+          (x) => x.componentName,
+        );
         for (let childName of dependencyValues.childrenToRender) {
           let index = childNames.indexOf(childName);
           let child = dependencyValues.textAndTextListChildren[index];
@@ -118,10 +118,9 @@ export default class TextList extends InlineComponent {
           }
         }
 
-        return { setValue: { texts } }
-
-      }
-    }
+        return { setValue: { texts } };
+      },
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -131,13 +130,13 @@ export default class TextList extends InlineComponent {
       returnDependencies: () => ({
         texts: {
           dependencyType: "stateVariable",
-          variableName: "texts"
-        }
+          variableName: "texts",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { text: dependencyValues.texts.join(", ") }
-      })
-    }
+        setValue: { text: dependencyValues.texts.join(", ") },
+      }),
+    };
 
     stateVariableDefinitions.nComponents = {
       public: true,
@@ -147,13 +146,13 @@ export default class TextList extends InlineComponent {
       returnDependencies: () => ({
         texts: {
           dependencyType: "stateVariable",
-          variableName: "texts"
-        }
+          variableName: "texts",
+        },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nComponents: dependencyValues.texts.length } }
-      }
-    }
+        return { setValue: { nComponents: dependencyValues.texts.length } };
+      },
+    };
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: ({ sharedParameters }) => ({
@@ -171,14 +170,12 @@ export default class TextList extends InlineComponent {
           dependencyType: "value",
           value: sharedParameters.selectRng,
           doNotProxy: true,
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
         let childrenToRender = [];
 
-
         for (let child of dependencyValues.textAndTextListChildren) {
-
           if (child.stateValues.childrenToRender) {
             childrenToRender.push(...child.stateValues.childrenToRender);
           } else {
@@ -189,29 +186,31 @@ export default class TextList extends InlineComponent {
         let maxNum = dependencyValues.maximumNumber;
         if (maxNum !== null && childrenToRender.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
-          childrenToRender = childrenToRender.slice(0, maxNum)
+          childrenToRender = childrenToRender.slice(0, maxNum);
         }
 
-        console.log(`randomizing children`)
+        console.log(`randomizing children`);
 
         // first shuffle the array
         // https://stackoverflow.com/a/12646864
         for (let i = childrenToRender.length - 1; i > 0; i--) {
           const rand = dependencyValues.selectRng();
           const j = Math.floor(rand * (i + 1));
-          [childrenToRender[i], childrenToRender[j]] = [childrenToRender[j], childrenToRender[i]];
+          [childrenToRender[i], childrenToRender[j]] = [
+            childrenToRender[j],
+            childrenToRender[i],
+          ];
         }
 
-        let numChildren = Math.ceil(dependencyValues.selectRng() * childrenToRender.length);
-        console.log(`numChildren: ${numChildren}`)
-        childrenToRender = childrenToRender.slice(0, numChildren)
+        let numChildren = Math.ceil(
+          dependencyValues.selectRng() * childrenToRender.length,
+        );
+        console.log(`numChildren: ${numChildren}`);
+        childrenToRender = childrenToRender.slice(0, numChildren);
 
-
-        return { setValue: { childrenToRender } }
-
-      }
-    }
-
+        return { setValue: { childrenToRender } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
@@ -223,5 +222,4 @@ export default class TextList extends InlineComponent {
       });
     }
   }
-
 }

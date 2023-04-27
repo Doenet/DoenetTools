@@ -1,7 +1,4 @@
-
-
 export function textFromComponent({ component, textClass }) {
-
   if (typeof component === "string") {
     return { success: true, textValue: component };
   } else if (component instanceof textClass) {
@@ -15,5 +12,5 @@ export function textFromComponent({ component, textClass }) {
     }
   }
 
-  return { success: false, textValue: "" }
+  return { success: false, textValue: "" };
 }

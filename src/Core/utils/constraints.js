@@ -1,6 +1,7 @@
-
 export function applyConstraintFromComponentConstraints({
-  variables, applyComponentConstraint, scales
+  variables,
+  applyComponentConstraint,
+  scales,
 }) {
   let newVariables = {};
   let constrained = false;
@@ -8,20 +9,19 @@ export function applyConstraintFromComponentConstraints({
   for (let varName in variables) {
     let result = applyComponentConstraint({
       variables: { [varName]: variables[varName] },
-      scales
-    })
+      scales,
+    });
     if (result.constrained) {
       constrained = true;
-      newVariables[varName] = result.variables[varName]
+      newVariables[varName] = result.variables[varName];
     }
   }
   if (constrained) {
     return {
       constrained,
-      variables: newVariables
-    }
+      variables: newVariables,
+    };
   } else {
     return {};
   }
-
 }

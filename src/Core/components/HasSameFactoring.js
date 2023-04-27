@@ -1,6 +1,6 @@
-import checkEquality from '../utils/checkEquality';
-import BooleanComponent from './Boolean';
-import me from 'math-expressions';
+import checkEquality from "../utils/checkEquality";
+import BooleanComponent from "./Boolean";
+import me from "math-expressions";
 
 export default class HasSameFactoring extends BooleanComponent {
   static componentType = "hasSameFactoring";
@@ -12,50 +12,46 @@ export default class HasSameFactoring extends BooleanComponent {
     attributes.variable = {
       createComponentOfType: "variable",
       createStateVariable: "variable",
-      defaultValue: me.fromAst("x")
-    }
+      defaultValue: me.fromAst("x"),
+    };
 
     attributes.restrictDivision = {
       createComponentOfType: "boolean",
       createStateVariable: "restrictDivision",
-      defaultValue: false
-    }
+      defaultValue: false,
+    };
 
     // Note: monomialFactorMustMatch implies restrictDivision
     attributes.monomialFactorMustMatch = {
       createComponentOfType: "boolean",
       createStateVariable: "monomialFactorMustMatch",
-      defaultValue: false
-    }
+      defaultValue: false,
+    };
 
     // Note: allowOnlySignDifferences implies monomialFactorMustMatch and restrictDivision
     attributes.allowOnlySignDifferences = {
       createComponentOfType: "boolean",
       createStateVariable: "allowOnlySignDifferences",
-      defaultValue: false
-    }
-
+      defaultValue: false,
+    };
 
     return attributes;
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "maths",
-      componentTypes: ["math"]
-    }]
-
+    return [
+      {
+        group: "maths",
+        componentTypes: ["math"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     delete stateVariableDefinitions.parsedExpression;
     delete stateVariableDefinitions.mathChildrenByCode;
-
 
     stateVariableDefinitions.value = {
       public: true,
@@ -67,62 +63,64 @@ export default class HasSameFactoring extends BooleanComponent {
         mathChildren: {
           dependencyType: "child",
           childGroups: ["maths"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         allowedErrorInNumbers: {
           dependencyType: "stateVariable",
-          variableName: "allowedErrorInNumbers"
+          variableName: "allowedErrorInNumbers",
         },
         includeErrorInNumberExponents: {
           dependencyType: "stateVariable",
-          variableName: "includeErrorInNumberExponents"
+          variableName: "includeErrorInNumberExponents",
         },
         allowedErrorIsAbsolute: {
           dependencyType: "stateVariable",
-          variableName: "allowedErrorIsAbsolute"
+          variableName: "allowedErrorIsAbsolute",
         },
         nSignErrorsMatched: {
           dependencyType: "stateVariable",
-          variableName: "nSignErrorsMatched"
+          variableName: "nSignErrorsMatched",
         },
         variable: {
           dependencyType: "stateVariable",
-          variableName: "variable"
+          variableName: "variable",
         },
         restrictDivision: {
           dependencyType: "stateVariable",
-          variableName: "restrictDivision"
+          variableName: "restrictDivision",
         },
         monomialFactorMustMatch: {
           dependencyType: "stateVariable",
-          variableName: "monomialFactorMustMatch"
+          variableName: "monomialFactorMustMatch",
         },
         allowOnlySignDifferences: {
           dependencyType: "stateVariable",
-          variableName: "allowOnlySignDifferences"
-        }
+          variableName: "allowOnlySignDifferences",
+        },
       }),
       definition: function ({ dependencyValues }) {
-
         if (dependencyValues.mathChildren.length !== 2) {
-          return { setValue: { value: false } }
+          return { setValue: { value: false } };
         }
 
         let expr1 = dependencyValues.mathChildren[0].stateValues.value;
         let expr2 = dependencyValues.mathChildren[1].stateValues.value;
 
         let result = checkEquality({
-          object1: expr1, object2: expr2,
-          isUnordered: false, partialMatches: false,
+          object1: expr1,
+          object2: expr2,
+          isUnordered: false,
+          partialMatches: false,
           symbolicEquality: false,
           allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
-          includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
+          includeErrorInNumberExponents:
+            dependencyValues.includeErrorInNumberExponents,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
           nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         });
 
         if (result.fraction_equal !== 1) {
-          return { setValue: { value: false } }
+          return { setValue: { value: false } };
         }
 
         if (Array.isArray(expr1.tree) && expr1.tree[0] === "-") {
@@ -132,21 +130,27 @@ export default class HasSameFactoring extends BooleanComponent {
           expr2 = me.fromAst(expr2.tree[1]);
         }
 
-        if (!dependencyValues.restrictDivision && !dependencyValues.monomialFactorMustMatch
-          && !dependencyValues.allowOnlySignDifferences
+        if (
+          !dependencyValues.restrictDivision &&
+          !dependencyValues.monomialFactorMustMatch &&
+          !dependencyValues.allowOnlySignDifferences
         ) {
           // if have a ratio where denominator is a constant
           // ignore denominator
-          if (Array.isArray(expr1.tree) && expr1.tree[0] === "/"
-            && me.fromAst(expr1.tree[2]).variables().length === 0
+          if (
+            Array.isArray(expr1.tree) &&
+            expr1.tree[0] === "/" &&
+            me.fromAst(expr1.tree[2]).variables().length === 0
           ) {
             expr1 = me.fromAst(expr1.tree[1]);
             if (Array.isArray(expr1.tree) && expr1.tree[0] === "-") {
               expr1 = me.fromAst(expr1.tree[1]);
             }
           }
-          if (Array.isArray(expr2.tree) && expr2.tree[0] === "/"
-            && me.fromAst(expr2.tree[2]).variables().length === 0
+          if (
+            Array.isArray(expr2.tree) &&
+            expr2.tree[0] === "/" &&
+            me.fromAst(expr2.tree[2]).variables().length === 0
           ) {
             expr2 = me.fromAst(expr2.tree[1]);
             if (Array.isArray(expr2.tree) && expr2.tree[0] === "-") {
@@ -161,25 +165,27 @@ export default class HasSameFactoring extends BooleanComponent {
         if (!(Array.isArray(expr1.tree) && expr1.tree[0] === "*")) {
           if (!(Array.isArray(expr2.tree) && expr2.tree[0] === "*")) {
             // neither expression is a product, so they have the same factoring
-            return { setValue: { value: true } }
+            return { setValue: { value: true } };
           } else {
-            return { setValue: { value: false } }
+            return { setValue: { value: false } };
           }
         } else if (!(Array.isArray(expr2.tree) && expr2.tree[0] === "*")) {
-          return { setValue: { value: false } }
-        };
+          return { setValue: { value: false } };
+        }
 
         // both expressions are products and are mathematically equivalent
 
-
-        if (dependencyValues.monomialFactorMustMatch || dependencyValues.allowOnlySignDifferences) {
+        if (
+          dependencyValues.monomialFactorMustMatch ||
+          dependencyValues.allowOnlySignDifferences
+        ) {
           let monomial1 = findMonomialFromFactors(expr1.tree.slice(1));
           let monomial2 = findMonomialFromFactors(expr2.tree.slice(1));
           if (!monomial1.equals(monomial2)) {
             // also OK if monomials are opposites
-            let monomial2Opposite = me.fromAst(['-', monomial2.tree]);
+            let monomial2Opposite = me.fromAst(["-", monomial2.tree]);
             if (!monomial1.equals(monomial2Opposite)) {
-              return { setValue: { value: false } }
+              return { setValue: { value: false } };
             }
           }
         }
@@ -190,68 +196,82 @@ export default class HasSameFactoring extends BooleanComponent {
           return {
             setValue: {
               value: expr1Normalized.equalsViaSyntax(expr2Normalized, {
-                allowed_error_in_numbers: dependencyValues.allowedErrorInNumbers,
-                include_error_in_number_exponents: dependencyValues.includeErrorInNumberExponents,
-                allowed_error_is_absolute: dependencyValues.allowedErrorIsAbsolute,
-              })
-            }
-          }
+                allowed_error_in_numbers:
+                  dependencyValues.allowedErrorInNumbers,
+                include_error_in_number_exponents:
+                  dependencyValues.includeErrorInNumberExponents,
+                allowed_error_is_absolute:
+                  dependencyValues.allowedErrorIsAbsolute,
+              }),
+            },
+          };
         }
 
-
-        let nonConstantFactors1 = expr1.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
-        let nonConstantFactors2 = expr2.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
-
+        let nonConstantFactors1 = expr1.tree
+          .slice(1)
+          .filter((x) => me.fromAst(x).variables().length > 0);
+        let nonConstantFactors2 = expr2.tree
+          .slice(1)
+          .filter((x) => me.fromAst(x).variables().length > 0);
 
         if (nonConstantFactors1.length !== nonConstantFactors2.length) {
-          return { setValue: { value: false } }
+          return { setValue: { value: false } };
         }
 
-        let numQuadraticFactors1 = 0, numLinearFactors1 = 0;
-        let numQuadraticFactors2 = 0, numLinearFactors2 = 0;
+        let numQuadraticFactors1 = 0,
+          numLinearFactors1 = 0;
+        let numQuadraticFactors2 = 0,
+          numLinearFactors2 = 0;
 
         let v = dependencyValues.variable.subscripts_to_strings().tree;
 
-
         for (let factor of nonConstantFactors1) {
-          let deriv2 = me.fromAst(factor).subscripts_to_strings().derivative(v).derivative(v).simplify();
+          let deriv2 = me
+            .fromAst(factor)
+            .subscripts_to_strings()
+            .derivative(v)
+            .derivative(v)
+            .simplify();
           if (deriv2.tree === 0) {
             numLinearFactors1++;
           } else if (deriv2.variables().length === 0) {
             numQuadraticFactors1++;
           } else {
-            return { setValue: { value: false } }
+            return { setValue: { value: false } };
           }
         }
 
         for (let factor of nonConstantFactors2) {
-          let deriv2 = me.fromAst(factor).subscripts_to_strings().derivative(v).derivative(v).simplify();
+          let deriv2 = me
+            .fromAst(factor)
+            .subscripts_to_strings()
+            .derivative(v)
+            .derivative(v)
+            .simplify();
           if (deriv2.tree === 0) {
             numLinearFactors2++;
           } else if (deriv2.variables().length === 0) {
             numQuadraticFactors2++;
           } else {
-            return { setValue: { value: false } }
+            return { setValue: { value: false } };
           }
         }
 
-        let value = numLinearFactors1 === numLinearFactors2 && numQuadraticFactors1 === numQuadraticFactors2;
+        let value =
+          numLinearFactors1 === numLinearFactors2 &&
+          numQuadraticFactors1 === numQuadraticFactors2;
 
         return {
           setValue: {
-            value
-          }
-        }
-      }
-    }
+            value,
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
 }
-
 
 function expandPositiveIntegerPowers(tree) {
   if (!Array.isArray(tree)) {
@@ -262,7 +282,7 @@ function expandPositiveIntegerPowers(tree) {
     let base = tree[1];
     let exponent = tree[2];
     if (Number.isInteger(exponent) && exponent > 0) {
-      tree = ["*", ...Array(exponent).fill(base)]
+      tree = ["*", ...Array(exponent).fill(base)];
     }
   }
 
@@ -274,7 +294,7 @@ function expandPositiveIntegerPowers(tree) {
         let base = factor[1];
         let exponent = factor[2];
         if (Number.isInteger(exponent) && exponent > 0) {
-          tree.push(...Array(exponent).fill(base))
+          tree.push(...Array(exponent).fill(base));
         } else {
           tree.push(factor);
         }
@@ -282,25 +302,25 @@ function expandPositiveIntegerPowers(tree) {
         tree.push(factor);
       }
     }
-
   }
 
   return tree;
-
 }
 
 function findMonomialFromFactors(factors) {
-
   let monomialFactors = [];
 
   let inMonomial = false;
 
   for (let factor of factors) {
-    if (typeof factor === "string" || me.fromAst(factor).variables().length === 0) {
+    if (
+      typeof factor === "string" ||
+      me.fromAst(factor).variables().length === 0
+    ) {
       if (!inMonomial) {
         if (monomialFactors.length > 0) {
           // found a second monomial
-          return me.fromAst('\uff3f')
+          return me.fromAst("\uff3f");
         } else {
           inMonomial = true;
         }
@@ -318,15 +338,13 @@ function findMonomialFromFactors(factors) {
   } else if (monomialFactors.length === 1) {
     monomialTree = monomialFactors[0];
   } else {
-    monomialTree = ['*', ...monomialFactors];
+    monomialTree = ["*", ...monomialFactors];
   }
 
   return me.fromAst(monomialTree);
-
 }
 
 function normalizeFactorSigns(expr) {
-
   let exprTree = expr.simplify().tree;
 
   if (exprTree[0] === "-") {
@@ -337,8 +355,7 @@ function normalizeFactorSigns(expr) {
     return me.fromAst(exprTree).simplify();
   }
 
-
-  let newTree = ['*'];
+  let newTree = ["*"];
 
   for (let factor of exprTree.slice(1)) {
     if (typeof factor === "number") {
@@ -350,7 +367,7 @@ function normalizeFactorSigns(expr) {
     } else if (!Array.isArray(factor)) {
       newTree.push(factor);
     } else if (factor[0] === "-") {
-      newTree.push(factor[1])
+      newTree.push(factor[1]);
     } else if (factor[0] === "+") {
       let firstTermHasNeg = false;
       let term = factor[1];
@@ -367,14 +384,17 @@ function normalizeFactorSigns(expr) {
             if (firstFactorInTerm < 0) {
               firstTermHasNeg = true;
             }
-          } else if (Array.isArray(firstFactorInTerm) && firstFactorInTerm[0] === "-") {
+          } else if (
+            Array.isArray(firstFactorInTerm) &&
+            firstFactorInTerm[0] === "-"
+          ) {
             firstTermHasNeg = true;
           }
         }
       }
 
       if (firstTermHasNeg) {
-        newTree.push(me.fromAst(["-", factor]).simplify().tree)
+        newTree.push(me.fromAst(["-", factor]).simplify().tree);
       } else {
         newTree.push(factor);
       }
@@ -384,5 +404,4 @@ function normalizeFactorSigns(expr) {
   }
 
   return me.fromAst(newTree).simplify();
-
 }

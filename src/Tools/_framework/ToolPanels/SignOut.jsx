@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import React, { useState, useEffect } from "react";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import {
   checkIfUserClearedOut,
   clearUsersInformationFromTheBrowser,
-} from '../../../_utils/applicationUtils';
-import { useNavigate } from 'react-router';
+} from "../../../_utils/applicationUtils";
+import { useNavigate } from "react-router";
 
 export default function SignOut() {
   const [isSignedOut, setIsSignedOut] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,35 +38,35 @@ export default function SignOut() {
       <div>
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '20',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "20",
           }}
         >
           <img
-            style={{ width: '250px', height: '250px' }}
-            src={'/Doenet_Logo_Frontpage.png'}
+            style={{ width: "250px", height: "250px" }}
+            src={"/Doenet_Logo_Frontpage.png"}
             alt={
-              'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+              "Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background"
             }
           />
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
           >
             <h2>You are Signed Out!</h2>
             <Button
               dataTest="homepage button"
               value="Homepage"
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
             />
           </div>
         </div>
@@ -74,26 +74,26 @@ export default function SignOut() {
     );
   }
 
-  if (errorMessage != '') {
+  if (errorMessage != "") {
     return (
       <div>
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '20',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "20",
           }}
         >
           <img
-            style={{ width: '250px', height: '250px' }}
-            src={'/Doenet_Logo_Frontpage.png'}
+            style={{ width: "250px", height: "250px" }}
+            src={"/Doenet_Logo_Frontpage.png"}
             alt={
-              'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+              "Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background"
             }
           />
           <div>
@@ -110,21 +110,21 @@ export default function SignOut() {
     <div>
       <div
         style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: '20',
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          margin: "20",
         }}
       >
         <img
-          style={{ width: '250px', height: '250px' }}
-          src={'/Doenet_Logo_Frontpage.png'}
+          style={{ width: "250px", height: "250px" }}
+          src={"/Doenet_Logo_Frontpage.png"}
           alt={
-            'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+            "Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background"
           }
         />
         <div>

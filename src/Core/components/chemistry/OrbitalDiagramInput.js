@@ -1,4 +1,4 @@
-import BlockComponent from '../abstract/BlockComponent';
+import BlockComponent from "../abstract/BlockComponent";
 
 export default class OrbitalDiagramInput extends BlockComponent {
   constructor(args) {
@@ -17,7 +17,6 @@ export default class OrbitalDiagramInput extends BlockComponent {
       selectBox: this.selectBox.bind(this),
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
 
   static componentType = "orbitalDiagramInput";
@@ -31,19 +30,16 @@ export default class OrbitalDiagramInput extends BlockComponent {
       createComponentOfType: "orbitalDiagram",
       createStateVariable: "prefill",
       defaultValue: [],
-    }
+    };
     attributes.prefillLabel = {
       createComponentOfType: "textList",
       createStateVariable: "prefillLabel",
       defaultValue: [],
-    }
+    };
     return attributes;
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
@@ -57,17 +53,15 @@ export default class OrbitalDiagramInput extends BlockComponent {
       returnDependencies: () => ({
         prefill: {
           dependencyType: "stateVariable",
-          variableName: "prefill"
+          variableName: "prefill",
         },
         prefillLabel: {
           dependencyType: "stateVariable",
-          variableName: "prefillLabel"
-        }
+          variableName: "prefillLabel",
+        },
       }),
       definition: function ({ dependencyValues }) {
-
         function processedPrefill() {
-
           if (dependencyValues.prefill?.length > 0) {
             let value = JSON.parse(JSON.stringify(dependencyValues.prefill));
             for (let [rowInd, row] of value.entries()) {
@@ -77,7 +71,6 @@ export default class OrbitalDiagramInput extends BlockComponent {
             }
 
             return value;
-
           } else {
             return [{ orbitalText: "", boxes: [] }];
           }
@@ -88,22 +81,23 @@ export default class OrbitalDiagramInput extends BlockComponent {
             value: {
               get defaultValue() {
                 return processedPrefill();
-              }
-            }
-          }
+              },
+            },
+          },
         };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "value",
-            value: desiredStateVariableValues.value
-          }]
-        }
-      }
-    }
-
+          instructions: [
+            {
+              setEssentialValue: "value",
+              value: desiredStateVariableValues.value,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.rows = {
       public: true,
@@ -114,24 +108,25 @@ export default class OrbitalDiagramInput extends BlockComponent {
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
-          variableName: "value"
+          variableName: "value",
         },
       }),
       definition({ dependencyValues }) {
         let rows = [...dependencyValues.value].reverse();
 
-        return { setValue: { rows } }
-
+        return { setValue: { rows } };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setDependency: "value",
-            desiredValue: [...desiredStateVariableValues.rows].reverse()
-          }]
-        }
-      }
+          instructions: [
+            {
+              setDependency: "value",
+              desiredValue: [...desiredStateVariableValues.rows].reverse(),
+            },
+          ],
+        };
+      },
     };
 
     stateVariableDefinitions.numRows = {
@@ -142,14 +137,13 @@ export default class OrbitalDiagramInput extends BlockComponent {
       returnDependencies: () => ({
         rows: {
           dependencyType: "stateVariable",
-          variableName: "rows"
-        }
+          variableName: "rows",
+        },
       }),
       definition: function ({ dependencyValues }) {
         return { setValue: { numRows: dependencyValues.rows.length } };
       },
-    }
-
+    };
 
     stateVariableDefinitions.selectedRowIndex = {
       defaultValue: 0,
@@ -168,20 +162,25 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
         let desiredRowIndex = desiredStateVariableValues.selectedRowIndex;
         if (Number.isFinite(desiredRowIndex)) {
-          desiredRowIndex = Math.min(numRows, Math.max(0, Math.round(desiredRowIndex)));
+          desiredRowIndex = Math.min(
+            numRows,
+            Math.max(0, Math.round(desiredRowIndex)),
+          );
         } else {
           desiredRowIndex = 0;
         }
 
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "selectedRowIndex",
-            value: desiredRowIndex
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "selectedRowIndex",
+              value: desiredRowIndex,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.selectedBoxIndex = {
       defaultValue: 0,
@@ -216,7 +215,6 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
         // let desiredBoxIndex = desiredStateVariableValues.selectedBoxIndex;
 
-
         // let nBoxesInRow = rows[activeRowIndex0]?.boxes.length;
         // if (nBoxesInRow === undefined) {
         //   desiredBoxIndex = 0;
@@ -230,57 +228,60 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "selectedBoxIndex",
-            value: desiredBoxIndex
-          }]
-        }
-      }
-    }
-
-
+          instructions: [
+            {
+              setEssentialValue: "selectedBoxIndex",
+              value: desiredBoxIndex,
+            },
+          ],
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 
-  async addRow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async addRow({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    if (oldRows.length < 20) { //maximum number of rows
+    if (oldRows.length < 20) {
+      //maximum number of rows
       newRows = [{ orbitalText: "", boxes: [] }, ...oldRows];
     }
 
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "rows",
-      value: newRows,
-    }]
-
-
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rows",
+        value: newRows,
+      },
+    ];
 
     //If a row was selected deselect it
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
     if (selectedRowIndex0 !== -1) {
       updateInstructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "selectedRowIndex",
         value: 0,
-      })
+      });
     }
 
     //If a box was selected deselect it
-    let selectedBoxIndex0 = await this.stateValues.selectedBoxIndex - 1;
+    let selectedBoxIndex0 = (await this.stateValues.selectedBoxIndex) - 1;
     if (selectedBoxIndex0 !== -1) {
       updateInstructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "selectedBoxIndex",
         value: 0,
-      })
+      });
     }
 
     return await this.coreFunctions.performUpdate({
@@ -295,44 +296,50 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
-
   }
 
-  async removeRow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async removeRow({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    if (oldRows.length > 1) {//Don't delete the last one
+    if (oldRows.length > 1) {
+      //Don't delete the last one
       let removeRowIndex0 = oldRows.length - 1 - selectedRowIndex0;
       if (selectedRowIndex0 === -1) {
         removeRowIndex0 = 0;
       }
-      newRows.splice(removeRowIndex0, 1)
+      newRows.splice(removeRowIndex0, 1);
     }
 
     return await this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "rows",
-        value: newRows,
-      }, {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "selectedRowIndex",
-        value: 0,
-      }, {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "selectedBoxIndex",
-        value: 0,
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rows",
+          value: newRows,
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "selectedRowIndex",
+          value: 0,
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "selectedBoxIndex",
+          value: 0,
+        },
+      ],
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -343,35 +350,39 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
   }
 
-  async addBox({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async addBox({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
 
     let activeRowIndex0 = oldRows.length - selectedRowIndex0 - 1;
     if (selectedRowIndex0 === -1) {
       activeRowIndex0 = 0;
     }
 
-    if (newRows[activeRowIndex0].boxes.length < 17) {//maximum boxes in one row
-      newRows[activeRowIndex0].boxes.push('');
+    if (newRows[activeRowIndex0].boxes.length < 17) {
+      //maximum boxes in one row
+      newRows[activeRowIndex0].boxes.push("");
     }
 
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "rows",
-      value: newRows,
-    }]
-
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rows",
+        value: newRows,
+      },
+    ];
 
     if (selectedRowIndex0 !== -1) {
       // //Add selection to added box if another box was selected
@@ -383,7 +394,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "selectedBoxIndex",
         value: newIndex,
-      })
+      });
     }
 
     return await this.coreFunctions.performUpdate({
@@ -398,24 +409,26 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
   }
 
-  async removeBox({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async removeBox({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
 
     let activeRowIndex0 = oldRows.length - selectedRowIndex0 - 1;
     if (selectedRowIndex0 === -1) {
       activeRowIndex0 = 0;
     }
-    let selectedBoxIndex0 = await this.stateValues.selectedBoxIndex - 1;
+    let selectedBoxIndex0 = (await this.stateValues.selectedBoxIndex) - 1;
     let activeBoxIndex0 = selectedBoxIndex0;
     if (selectedBoxIndex0 === -1) {
       activeBoxIndex0 = newRows[activeRowIndex0].boxes.length - 1;
@@ -423,12 +436,14 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     newRows[activeRowIndex0].boxes.splice(activeBoxIndex0, 1);
 
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "rows",
-      value: newRows,
-    }]
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rows",
+        value: newRows,
+      },
+    ];
 
     //If selected box is removed remove selection too
     if (selectedBoxIndex0 !== -1) {
@@ -437,7 +452,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "selectedBoxIndex",
         value: 0,
-      })
+      });
     }
 
     return await this.coreFunctions.performUpdate({
@@ -452,44 +467,46 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
-
-
   }
 
-  async addUpArrow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async addUpArrow({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
 
     let activeRowIndex0 = oldRows.length - selectedRowIndex0 - 1;
     if (selectedRowIndex0 === -1) {
       activeRowIndex0 = 0;
     }
-    let selectedBoxIndex0 = await this.stateValues.selectedBoxIndex - 1;
+    let selectedBoxIndex0 = (await this.stateValues.selectedBoxIndex) - 1;
     let activeBoxIndex0 = selectedBoxIndex0;
     if (selectedBoxIndex0 === -1) {
       activeBoxIndex0 = newRows[activeRowIndex0].boxes.length - 1;
     }
 
-
-    if (newRows[activeRowIndex0].boxes.length > 0 && //Has to have a box to put an arrow in it
+    if (
+      newRows[activeRowIndex0].boxes.length > 0 && //Has to have a box to put an arrow in it
       newRows[activeRowIndex0].boxes[activeBoxIndex0].length < 3 //Limit number of arrows
     ) {
-      newRows[activeRowIndex0].boxes[activeBoxIndex0] = newRows[activeRowIndex0].boxes[activeBoxIndex0] + "U";
+      newRows[activeRowIndex0].boxes[activeBoxIndex0] =
+        newRows[activeRowIndex0].boxes[activeBoxIndex0] + "U";
     }
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "rows",
-      value: newRows,
-    }]
-
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rows",
+        value: newRows,
+      },
+    ];
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
@@ -503,41 +520,46 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
   }
 
-  async addDownArrow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async addDownArrow({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
 
     let activeRowIndex0 = oldRows.length - selectedRowIndex0 - 1;
     if (selectedRowIndex0 === -1) {
       activeRowIndex0 = 0;
     }
-    let selectedBoxIndex0 = await this.stateValues.selectedBoxIndex - 1;
+    let selectedBoxIndex0 = (await this.stateValues.selectedBoxIndex) - 1;
     let activeBoxIndex0 = selectedBoxIndex0;
     if (selectedBoxIndex0 === -1) {
       activeBoxIndex0 = newRows[activeRowIndex0].boxes.length - 1;
     }
 
-
-    if (newRows[activeRowIndex0].boxes.length > 0 && //Has to have a box to put an arrow in it
+    if (
+      newRows[activeRowIndex0].boxes.length > 0 && //Has to have a box to put an arrow in it
       newRows[activeRowIndex0].boxes[activeBoxIndex0].length < 3 //Limit number of arrows
     ) {
-      newRows[activeRowIndex0].boxes[activeBoxIndex0] = newRows[activeRowIndex0].boxes[activeBoxIndex0] + "D";
+      newRows[activeRowIndex0].boxes[activeBoxIndex0] =
+        newRows[activeRowIndex0].boxes[activeBoxIndex0] + "D";
     }
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "rows",
-      value: newRows,
-    }]
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rows",
+        value: newRows,
+      },
+    ];
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
@@ -551,42 +573,47 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
   }
 
-  async removeArrow({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async removeArrow({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
 
     let activeRowIndex0 = oldRows.length - selectedRowIndex0 - 1;
     if (selectedRowIndex0 === -1) {
       activeRowIndex0 = 0;
     }
-    let selectedBoxIndex0 = await this.stateValues.selectedBoxIndex - 1;
+    let selectedBoxIndex0 = (await this.stateValues.selectedBoxIndex) - 1;
     let activeBoxIndex0 = selectedBoxIndex0;
     if (selectedBoxIndex0 === -1) {
       activeBoxIndex0 = newRows[activeRowIndex0].boxes.length - 1;
     }
 
-
-    if (newRows[activeRowIndex0].boxes.length > 0 && //Has to have a box to remove an arrow from it
+    if (
+      newRows[activeRowIndex0].boxes.length > 0 && //Has to have a box to remove an arrow from it
       newRows[activeRowIndex0].boxes[activeBoxIndex0].length > 0 //Has to have an arrow to remove
     ) {
-      newRows[activeRowIndex0].boxes[activeBoxIndex0] = newRows[activeRowIndex0].boxes[activeBoxIndex0].slice(0, -1);
+      newRows[activeRowIndex0].boxes[activeBoxIndex0] = newRows[
+        activeRowIndex0
+      ].boxes[activeBoxIndex0].slice(0, -1);
     }
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "rows",
-      value: newRows,
-    }]
-
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rows",
+        value: newRows,
+      },
+    ];
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
@@ -600,18 +627,21 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
   }
 
-  async updateRowText({ newValue, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async updateRowText({
+    newValue,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let oldRows = await this.stateValues.rows;
     let newRows = JSON.parse(JSON.stringify(oldRows));
-    let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
+    let selectedRowIndex0 = (await this.stateValues.selectedRowIndex) - 1;
 
     let activeRowIndex0 = oldRows.length - selectedRowIndex0 - 1;
     if (selectedRowIndex0 === -1) {
@@ -620,13 +650,14 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     newRows[activeRowIndex0].orbitalText = newValue;
 
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "rows",
-      value: newRows,
-    }]
-
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rows",
+        value: newRows,
+      },
+    ];
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
@@ -640,22 +671,27 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          rows: newRows
-        }
-      }
+          rows: newRows,
+        },
+      },
     });
-
   }
 
-  async selectRow({ index, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async selectRow({
+    index,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     return await this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "selectedRowIndex",
-        value: index,
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "selectedRowIndex",
+          value: index,
+        },
+      ],
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -666,22 +702,27 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          selectedRowIndex: index
-        }
-      }
+          selectedRowIndex: index,
+        },
+      },
     });
-
   }
 
-  async selectBox({ index, actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async selectBox({
+    index,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     return await this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "selectedBoxIndex",
-        value: index,
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "selectedBoxIndex",
+          value: index,
+        },
+      ],
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -692,11 +733,10 @@ export default class OrbitalDiagramInput extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          selectedBoxIndex: index
-        }
-      }
+          selectedBoxIndex: index,
+        },
+      },
     });
-
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -706,12 +746,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
-
 }
-
-

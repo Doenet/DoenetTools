@@ -2,7 +2,7 @@
  * External dependencies
  */
 // import React from 'react';
-import { useRecoilCallback } from 'recoil';
+import { useRecoilCallback } from "recoil";
 
 /**
  * Internal dependencies
@@ -17,10 +17,10 @@ import {
   nodePathSelector,
   folderOpenAtom,
   folderSortOrderAtom,
-} from './NewDrive';
-import { toastType, useToast } from '../../Tools/_framework/Toast';
+} from "./NewDrive";
+import { toastType, useToast } from "../../Tools/_framework/Toast";
 
-const dragShadowId = 'dragShadow';
+const dragShadowId = "dragShadow";
 
 export const useDragShadowCallbacks = () => {
   const replaceDragShadow = useRecoilCallback(({ snapshot }) => async () => {
@@ -77,11 +77,11 @@ export const useDragShadowCallbacks = () => {
           assignmentId: null,
           doenetId: null,
           cid: null,
-          creationDate: '',
-          isPublished: '0',
+          creationDate: "",
+          isPublished: "0",
           itemId: dragShadowId,
-          itemType: 'DragShadow',
-          label: '',
+          itemType: "DragShadow",
+          label: "",
           parentFolderId: parentId,
           url: null,
           urlDescription: null,
@@ -121,7 +121,7 @@ export const useDragShadowCallbacks = () => {
           );
         }
 
-        if (insertPosition === 'intoCurrent') {
+        if (insertPosition === "intoCurrent") {
           /*
            * Handle drag move: display drag shadow as a child of target item
            * insert dragShadowId into driveIdFolderId.folderId (contentDictionary, contentIds)
@@ -222,7 +222,7 @@ export const useDragShadowCallbacks = () => {
 
               // Compute insertion index
               let index = newDefaultOrder.indexOf(itemId);
-              if (insertPosition === 'afterCurrent') index += 1;
+              if (insertPosition === "afterCurrent") index += 1;
 
               // Check if insertion index valid
               isValid =
@@ -406,7 +406,7 @@ export const useAssignmentCallbacks = () => {
         set(folderDictionary(driveIdFolderId), (old) => {
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[itemId];
-          newItemObj.isAssigned = '1';
+          newItemObj.isAssigned = "1";
           newItemObj.dueDate = payload?.dueDate;
           return newObj;
         });
@@ -422,8 +422,8 @@ export const useAssignmentCallbacks = () => {
         set(folderDictionary(driveIdFolderId), (old) => {
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[itemId];
-          newItemObj.assignment_isPublished = '1';
-          newItemObj.isAssigned = '1';
+          newItemObj.assignment_isPublished = "1";
+          newItemObj.isAssigned = "1";
           return newObj;
         });
       },
@@ -439,7 +439,7 @@ export const useAssignmentCallbacks = () => {
         set(folderDictionary(driveIdFolderId), (old) => {
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[itemId];
-          newItemObj.isPublished = '1';
+          newItemObj.isPublished = "1";
           return newObj;
         });
       },
@@ -455,7 +455,7 @@ export const useAssignmentCallbacks = () => {
         set(folderDictionary(driveIdFolderId), (old) => {
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[itemId];
-          newItemObj.isAssigned = '1';
+          newItemObj.isAssigned = "1";
           newItemObj.assignedDate = payloadAssignment?.assignedDate;
           newItemObj.dueDate = payloadAssignment?.dueDate;
           newItemObj.timeLimit = payloadAssignment?.timeLimit;
@@ -479,7 +479,7 @@ export const useAssignmentCallbacks = () => {
         set(folderDictionary(driveIdFolderId), (old) => {
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[itemId];
-          newItemObj.isAssigned = '0';
+          newItemObj.isAssigned = "0";
           return newObj;
         });
       },

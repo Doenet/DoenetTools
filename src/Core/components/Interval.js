@@ -1,4 +1,4 @@
-import MathComponent from './Math';
+import MathComponent from "./Math";
 
 export default class Interval extends MathComponent {
   static componentType = "interval";
@@ -11,7 +11,6 @@ export default class Interval extends MathComponent {
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.createIntervals = {
@@ -20,13 +19,11 @@ export default class Interval extends MathComponent {
         createComponentOfType: "boolean",
       },
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { createIntervals: true } })
-    }
+      definition: () => ({ setValue: { createIntervals: true } }),
+    };
 
     return stateVariableDefinitions;
-
   }
 
   // TODO: do we want to give warnings or errors if value is not in form of an interval?
-
 }

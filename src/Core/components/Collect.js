@@ -1,9 +1,11 @@
-import CompositeComponent from './abstract/CompositeComponent';
-import { convertAttributesForComponentType, postProcessCopy } from '../utils/copy';
-import { processAssignNames } from '../utils/serializedStateProcessing';
-import { replacementFromProp } from './Copy';
-import { deepClone } from '../utils/deepFunctions';
-
+import CompositeComponent from "./abstract/CompositeComponent";
+import {
+  convertAttributesForComponentType,
+  postProcessCopy,
+} from "../utils/copy";
+import { processAssignNames } from "../utils/serializedStateProcessing";
+import { replacementFromProp } from "./Copy";
+import { deepClone } from "../utils/deepFunctions";
 
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
@@ -13,7 +15,8 @@ export default class Collect extends CompositeComponent {
   static acceptTarget = true;
   static acceptAnyAttribute = true;
 
-  static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
+  static stateVariableToEvaluateAfterReplacements =
+    "needsReplacementsUpdatedWhenStale";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -27,8 +30,8 @@ export default class Collect extends CompositeComponent {
     delete attributes.isResponse;
 
     attributes.assignNamesSkip = {
-      createPrimitiveOfType: "number"
-    }
+      createPrimitiveOfType: "number",
+    };
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
@@ -67,21 +70,19 @@ export default class Collect extends CompositeComponent {
     };
 
     attributes.componentTypes = {
-      createComponentOfType: "textList"
-    }
+      createComponentOfType: "textList",
+    };
 
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.link = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { link: true } })
-    }
+      definition: () => ({ setValue: { link: true } }),
+    };
 
     stateVariableDefinitions.targetComponent = {
       shadowVariable: true,
@@ -93,9 +94,9 @@ export default class Collect extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
-            targetComponent: dependencyValues.targetComponent
-          }
-        }
+            targetComponent: dependencyValues.targetComponent,
+          },
+        };
       },
     };
 
@@ -107,22 +108,23 @@ export default class Collect extends CompositeComponent {
             targetIsInactiveCompositeReplacement: {
               dependencyType: "stateVariable",
               componentName: stateValues.targetComponent.componentName,
-              variableName: "isInactiveCompositeReplacement"
-            }
-          }
+              variableName: "isInactiveCompositeReplacement",
+            },
+          };
         } else {
-          return {}
+          return {};
         }
       },
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
-            targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
-          }
-        }
+            targetInactive: Boolean(
+              dependencyValues.targetIsInactiveCompositeReplacement,
+            ),
+          },
+        };
       },
     };
-
 
     stateVariableDefinitions.targetName = {
       returnDependencies: () => ({
@@ -134,9 +136,13 @@ export default class Collect extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.targetComponent === null) {
           console.warn(`No copy target`);
-          return { setValue: { targetName: "" } }
+          return { setValue: { targetName: "" } };
         }
-        return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
+        return {
+          setValue: {
+            targetName: dependencyValues.targetComponent.componentName,
+          },
+        };
       },
     };
 
@@ -145,63 +151,72 @@ export default class Collect extends CompositeComponent {
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
-          attributeName: "prop"
+          attributeName: "prop",
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { propName: dependencyValues.propName } }
-      }
-    }
-
+        return { setValue: { propName: dependencyValues.propName } };
+      },
+    };
 
     stateVariableDefinitions.componentTypesToCollect = {
       shadowVariable: true,
-      additionalStateVariablesDefined: [{
-        variableName: "componentClassesToCollect",
-        shadowVariable: true
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "componentClassesToCollect",
+          shadowVariable: true,
+        },
+      ],
       returnDependencies: () => ({
         componentTypesAttr: {
           dependencyType: "attributeComponent",
           attributeName: "componentTypes",
           variableNames: ["texts"],
-        }
+        },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
         let componentTypesToCollect = [];
         let componentClassesToCollect = [];
 
         if (dependencyValues.componentTypesAttr !== null) {
-
-          for (let cType of dependencyValues.componentTypesAttr.stateValues.texts) {
-            let componentType = componentInfoObjects.componentTypeLowerCaseMapping[cType.toLowerCase()];
-            let cClass = componentInfoObjects.allComponentClasses[componentType];
+          for (let cType of dependencyValues.componentTypesAttr.stateValues
+            .texts) {
+            let componentType =
+              componentInfoObjects.componentTypeLowerCaseMapping[
+                cType.toLowerCase()
+              ];
+            let cClass =
+              componentInfoObjects.allComponentClasses[componentType];
 
             if (cClass) {
               componentTypesToCollect.push(componentType);
               componentClassesToCollect.push(cClass);
             } else {
-              let message = "Cannot collect component type " + cType + ". Component type not found.";
+              let message =
+                "Cannot collect component type " +
+                cType +
+                ". Component type not found.";
               console.warn(message);
             }
-
           }
-
         }
 
         return {
           setValue: {
-            componentTypesToCollect, componentClassesToCollect
-          }
-        }
-
-      }
-    }
-
+            componentTypesToCollect,
+            componentClassesToCollect,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.collectedComponents = {
       stateVariablesDeterminingDependencies: [
-        "componentTypesToCollect", "targetName", "propName", "componentIndex", "propIndex"
+        "componentTypesToCollect",
+        "targetName",
+        "propName",
+        "componentIndex",
+        "propIndex",
       ],
       additionalStateVariablesDefined: ["effectivePropNameByComponent"],
       returnDependencies: function ({ stateValues }) {
@@ -217,7 +232,7 @@ export default class Collect extends CompositeComponent {
           includeNonActiveChildren: true,
           recurseToMatchedChildren: false,
           componentIndex: stateValues.componentIndex,
-        }
+        };
 
         if (stateValues.propName) {
           let propIndex = stateValues.propIndex;
@@ -225,7 +240,7 @@ export default class Collect extends CompositeComponent {
             // make propIndex be a shallow copy
             // so that can detect if it changed
             // when update dependencies
-            propIndex = [...propIndex]
+            propIndex = [...propIndex];
           }
           descendants.variableNames = [stateValues.propName];
           descendants.variablesOptional = true;
@@ -239,16 +254,15 @@ export default class Collect extends CompositeComponent {
           descendants,
           maximumNumber: {
             dependencyType: "stateVariable",
-            variableName: "maximumNumber"
+            variableName: "maximumNumber",
           },
           propName: {
             dependencyType: "stateVariable",
-            variableName: "propName"
-          }
-        }
+            variableName: "propName",
+          },
+        };
       },
       definition: function ({ dependencyValues }) {
-
         // console.log(`definition of collectedComponents for ${componentName}`)
         // console.log(dependencyValues)
 
@@ -257,9 +271,12 @@ export default class Collect extends CompositeComponent {
           collectedComponents = [];
         }
 
-        if (dependencyValues.maximumNumber !== null && collectedComponents.length > dependencyValues.maximumNumber) {
+        if (
+          dependencyValues.maximumNumber !== null &&
+          collectedComponents.length > dependencyValues.maximumNumber
+        ) {
           let maxnum = Math.max(0, Math.floor(dependencyValues.maximumNumber));
-          collectedComponents = collectedComponents.slice(0, maxnum)
+          collectedComponents = collectedComponents.slice(0, maxnum);
         }
 
         let effectivePropNameByComponent = [];
@@ -273,70 +290,66 @@ export default class Collect extends CompositeComponent {
             // a propName was specified, but it just wasn't found
             propName = "__prop_name_not_found";
           }
-          effectivePropNameByComponent.push(propName)
+          effectivePropNameByComponent.push(propName);
         }
 
         return {
-          setValue: { collectedComponents, effectivePropNameByComponent }
-        }
-
-      }
-    }
-
+          setValue: { collectedComponents, effectivePropNameByComponent },
+        };
+      },
+    };
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({
         collectedComponents: {
           dependencyType: "stateVariable",
-          variableName: "collectedComponents"
+          variableName: "collectedComponents",
         },
         needsReplacementsUpdatedWhenStale: {
           dependencyType: "stateVariable",
-          variableName: "needsReplacementsUpdatedWhenStale"
+          variableName: "needsReplacementsUpdatedWhenStale",
         },
       }),
       definition: () => ({
-        setValue: { readyToExpandWhenResolved: true }
-      })
-    }
-
+        setValue: { readyToExpandWhenResolved: true },
+      }),
+    };
 
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
       returnDependencies() {
         return {
           collectedComponents: {
             dependencyType: "stateVariable",
-            variableName: "collectedComponents"
-          }
-        }
+            variableName: "collectedComponents",
+          },
+        };
       },
       // the whole point of this state variable is to return updateReplacements
       // on mark stale
       markStale() {
-        return { updateReplacements: true }
+        return { updateReplacements: true };
       },
       definition() {
-        return { setValue: { needsReplacementsUpdatedWhenStale: true } }
-      }
-    }
+        return { setValue: { needsReplacementsUpdatedWhenStale: true } };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 
-
-
-  static async createSerializedReplacements({ component, components, workspace,
+  static async createSerializedReplacements({
+    component,
+    components,
+    workspace,
     componentInfoObjects,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags
+    flags,
   }) {
-
     // console.log(`create serialized replacements for ${component.componentName}`)
     // console.log(await component.stateValues.collectedComponents)
 
-    if (!await component.stateValues.targetComponent) {
+    if (!(await component.stateValues.targetComponent)) {
       return { replacements: [] };
     }
 
@@ -353,9 +366,15 @@ export default class Collect extends CompositeComponent {
     let compositeAttributesObj = this.createAttributesObject();
 
     let collectedComponents = await component.stateValues.collectedComponents;
-    for (let collectedNum = 0; collectedNum < collectedComponents.length; collectedNum++) {
+    for (
+      let collectedNum = 0;
+      collectedNum < collectedComponents.length;
+      collectedNum++
+    ) {
       if (collectedComponents[collectedNum]) {
-        let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
+        let uniqueIdentifiersUsed = (workspace.uniqueIdentifiersUsedByCollected[
+          collectedNum
+        ] = []);
         let results = await this.createReplacementForCollected({
           component,
           collectedNum,
@@ -366,45 +385,49 @@ export default class Collect extends CompositeComponent {
           compositeAttributesObj,
           nComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
-          flags
+          flags,
         });
 
-        workspace.propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopiedByReplacement;
+        workspace.propVariablesCopiedByCollected[collectedNum] =
+          results.propVariablesCopiedByReplacement;
 
         let collectedReplacements = results.serializedReplacements;
         numReplacementsByCollected[collectedNum] = collectedReplacements.length;
         numReplacementsSoFar += collectedReplacements.length;
         replacements.push(...collectedReplacements);
-        replacementNamesByCollected[collectedNum] = collectedReplacements.map(x => x.componentName);
+        replacementNamesByCollected[collectedNum] = collectedReplacements.map(
+          (x) => x.componentName,
+        );
       } else {
         numReplacementsByCollected[collectedNum] = 0;
         replacementNamesByCollected[collectedNum] = [];
         workspace.propVariablesCopiedByCollected[collectedNum] = [];
-
       }
     }
 
     workspace.numReplacementsByCollected = numReplacementsByCollected;
-    workspace.collectedNames = collectedComponents.map(x => x.componentName)
+    workspace.collectedNames = collectedComponents.map((x) => x.componentName);
     workspace.replacementNamesByCollected = replacementNamesByCollected;
     return { replacements };
-
   }
 
-
-
-  static async createReplacementForCollected({ component, components, collectedNum,
-    numReplacementsSoFar, uniqueIdentifiersUsed, componentInfoObjects,
+  static async createReplacementForCollected({
+    component,
+    components,
+    collectedNum,
+    numReplacementsSoFar,
+    uniqueIdentifiersUsed,
+    componentInfoObjects,
     compositeAttributesObj,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags
+    flags,
   }) {
-
     // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
 
-
-    let collectedObj = (await component.stateValues.collectedComponents)[collectedNum];
+    let collectedObj = (await component.stateValues.collectedComponents)[
+      collectedNum
+    ];
     let collectedName = collectedObj.componentName;
     let collectedComponent = components[collectedName];
 
@@ -421,11 +444,13 @@ export default class Collect extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
-    let propName = (await component.stateValues.effectivePropNameByComponent)[collectedNum];
+    let propName = (await component.stateValues.effectivePropNameByComponent)[
+      collectedNum
+    ];
     if (propName) {
-
       let results = await replacementFromProp({
-        component, components,
+        component,
+        components,
         replacementSource: collectedObj,
         propName,
         // numReplacementsSoFar,
@@ -434,27 +459,29 @@ export default class Collect extends CompositeComponent {
         componentInfoObjects,
         nComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-      })
+      });
 
       serializedReplacements = results.serializedReplacements;
-      propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
-
+      propVariablesCopiedByReplacement =
+        results.propVariablesCopiedByReplacement;
     } else {
+      let sourceAttributesToIgnore = await component.stateValues
+        .sourceAttributesToIgnore;
+      let sourceAttributesToIgnoreRecursively = await component.stateValues
+        .sourceAttributesToIgnoreRecursively;
 
-      let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
-      let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
-
-      let serializedCopy = [await collectedComponent.serialize(
-        {
+      let serializedCopy = [
+        await collectedComponent.serialize({
           sourceAttributesToIgnore,
-          sourceAttributesToIgnoreRecursively
-        }
-      )];
+          sourceAttributesToIgnoreRecursively,
+        }),
+      ];
 
       serializedReplacements = postProcessCopy({
         serializedComponents: serializedCopy,
         componentName: component.componentName,
-        uniqueIdentifiersUsed, identifierPrefix: collectedNum + "|"
+        uniqueIdentifiersUsed,
+        identifierPrefix: collectedNum + "|",
       });
 
       for (let repl of serializedReplacements) {
@@ -468,11 +495,10 @@ export default class Collect extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           compositeCreatesNewNamespace: newNamespace,
-          flags
+          flags,
         });
-        Object.assign(repl.attributes, attributesFromComposite)
+        Object.assign(repl.attributes, attributesFromComposite);
       }
-
     }
 
     let processResult = processAssignNames({
@@ -487,17 +513,18 @@ export default class Collect extends CompositeComponent {
     serializedReplacements = processResult.serializedComponents;
 
     return { serializedReplacements, propVariablesCopiedByReplacement };
-
   }
 
-
-  static async calculateReplacementChanges({ component, componentChanges, components, workspace,
+  static async calculateReplacementChanges({
+    component,
+    componentChanges,
+    components,
+    workspace,
     componentInfoObjects,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags
+    flags,
   }) {
-
     // console.log("Calculating replacement changes for " + component.componentName);
     // console.log((await component.stateValues.collectedComponents).map(x => x.componentName))
     // console.log(deepClone(workspace));
@@ -506,11 +533,19 @@ export default class Collect extends CompositeComponent {
     let numReplacementsFoundSoFar = 0;
 
     // adjust workspace variables by any replacements that were deleted
-    for (let collectedNum = 0; collectedNum < workspace.numReplacementsByCollected.length; collectedNum++) {
+    for (
+      let collectedNum = 0;
+      collectedNum < workspace.numReplacementsByCollected.length;
+      collectedNum++
+    ) {
       let indsDeleted = [];
-      for (let [ind, repName] of workspace.replacementNamesByCollected[collectedNum].entries()) {
-        if (!component.replacements[numReplacementsFoundSoFar] ||
-          component.replacements[numReplacementsFoundSoFar].componentName !== repName
+      for (let [ind, repName] of workspace.replacementNamesByCollected[
+        collectedNum
+      ].entries()) {
+        if (
+          !component.replacements[numReplacementsFoundSoFar] ||
+          component.replacements[numReplacementsFoundSoFar].componentName !==
+            repName
         ) {
           indsDeleted.push(ind);
         } else {
@@ -523,7 +558,6 @@ export default class Collect extends CompositeComponent {
         workspace.propVariablesCopiedByCollected[collectedNum].splice(ind, 1);
       }
       workspace.numReplacementsByCollected[collectedNum] -= indsDeleted.length;
-
     }
 
     let replacementChanges = [];
@@ -535,23 +569,30 @@ export default class Collect extends CompositeComponent {
     let replacementNamesByCollected = [];
 
     let collectedComponents = await component.stateValues.collectedComponents;
-    let maxCollectedLength = Math.max(collectedComponents.length, workspace.numReplacementsByCollected.length);
+    let maxCollectedLength = Math.max(
+      collectedComponents.length,
+      workspace.numReplacementsByCollected.length,
+    );
 
     let recreateRemaining = false;
 
     let compositeAttributesObj = this.createAttributesObject();
 
-    for (let collectedNum = 0; collectedNum < maxCollectedLength; collectedNum++) {
+    for (
+      let collectedNum = 0;
+      collectedNum < maxCollectedLength;
+      collectedNum++
+    ) {
       let collected = collectedComponents[collectedNum];
       if (collected === undefined) {
         if (workspace.numReplacementsByCollected[collectedNum] > 0) {
-
           if (!recreateRemaining) {
             // since deleting replacement will shift the remaining replacements
             // and change resulting names,
             // delete all remaining and mark to be recreated
 
-            let numberReplacementsLeft = workspace.numReplacementsByCollected.slice(collectedNum)
+            let numberReplacementsLeft = workspace.numReplacementsByCollected
+              .slice(collectedNum)
               .reduce((a, c) => a + c, 0);
 
             if (numberReplacementsLeft > 0) {
@@ -560,7 +601,7 @@ export default class Collect extends CompositeComponent {
                 changeTopLevelReplacements: true,
                 firstReplacementInd: numReplacementsSoFar,
                 numberReplacementsToDelete: numberReplacementsLeft,
-              }
+              };
               replacementChanges.push(replacementInstruction);
             }
 
@@ -568,13 +609,12 @@ export default class Collect extends CompositeComponent {
 
             // since deleted remaining, change in workspace
             // so that don't attempt to delete again
-            workspace.numReplacementsByCollected.slice(collectedNum)
-              .forEach((v, i) => workspace.numReplacementsByCollected[i] = 0)
-
+            workspace.numReplacementsByCollected
+              .slice(collectedNum)
+              .forEach((v, i) => (workspace.numReplacementsByCollected[i] = 0));
           }
 
           workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
-
         }
 
         numReplacementsByCollected[collectedNum] = 0;
@@ -587,13 +627,15 @@ export default class Collect extends CompositeComponent {
       let prevCollectedName = workspace.collectedNames[collectedNum];
 
       // check if collected has changed
-      if (prevCollectedName === undefined || collected.componentName !== prevCollectedName
-        || recreateRemaining
+      if (
+        prevCollectedName === undefined ||
+        collected.componentName !== prevCollectedName ||
+        recreateRemaining
       ) {
-
         let prevNumReplacements = 0;
         if (prevCollectedName !== undefined) {
-          prevNumReplacements = workspace.numReplacementsByCollected[collectedNum];
+          prevNumReplacements =
+            workspace.numReplacementsByCollected[collectedNum];
         }
 
         let numReplacementsToDelete = prevNumReplacements;
@@ -602,7 +644,9 @@ export default class Collect extends CompositeComponent {
           numReplacementsToDelete = 0;
         }
 
-        let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
+        let uniqueIdentifiersUsed = (workspace.uniqueIdentifiersUsedByCollected[
+          collectedNum
+        ] = []);
         let results = await this.recreateReplacements({
           component,
           collectedNum,
@@ -614,37 +658,43 @@ export default class Collect extends CompositeComponent {
           compositeAttributesObj,
           nComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
-          flags
+          flags,
         });
 
         numReplacementsSoFar += results.numReplacements;
 
         numReplacementsByCollected[collectedNum] = results.numReplacements;
 
-        propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopiedByReplacement;
+        propVariablesCopiedByCollected[collectedNum] =
+          results.propVariablesCopiedByReplacement;
 
         let replacementInstruction = results.replacementInstruction;
 
-        replacementNamesByCollected[collectedNum] = replacementInstruction.serializedReplacements.map(x => x.componentName);
+        replacementNamesByCollected[collectedNum] =
+          replacementInstruction.serializedReplacements.map(
+            (x) => x.componentName,
+          );
 
         if (!recreateRemaining) {
           if (results.numReplacements !== prevNumReplacements) {
             // we changed the number of replacements which shifts remaining ones
-            // since names won't match, we need to delete 
+            // since names won't match, we need to delete
             // all the remaining replacements and recreate them
 
-            let numberReplacementsLeft = workspace.numReplacementsByCollected.slice(collectedNum)
+            let numberReplacementsLeft = workspace.numReplacementsByCollected
+              .slice(collectedNum)
               .reduce((a, c) => a + c, 0);
 
-            replacementInstruction.numberReplacementsToReplace = numberReplacementsLeft;
+            replacementInstruction.numberReplacementsToReplace =
+              numberReplacementsLeft;
 
             recreateRemaining = true;
 
             // since deleted remaining, change in workspace
             // so that don't attempt to delete again
-            workspace.numReplacementsByCollected.slice(collectedNum)
-              .forEach((v, i) => workspace.numReplacementsByCollected[i] = 0)
-
+            workspace.numReplacementsByCollected
+              .slice(collectedNum)
+              .forEach((v, i) => (workspace.numReplacementsByCollected[i] = 0));
           }
         }
 
@@ -653,19 +703,22 @@ export default class Collect extends CompositeComponent {
         continue;
       }
 
-      if (!await component.stateValues.propName) {
-        numReplacementsSoFar += workspace.numReplacementsByCollected[collectedNum];
-        numReplacementsByCollected[collectedNum] = workspace.numReplacementsByCollected[collectedNum];
-        replacementNamesByCollected[collectedNum] = workspace.replacementNamesByCollected[collectedNum];
+      if (!(await component.stateValues.propName)) {
+        numReplacementsSoFar +=
+          workspace.numReplacementsByCollected[collectedNum];
+        numReplacementsByCollected[collectedNum] =
+          workspace.numReplacementsByCollected[collectedNum];
+        replacementNamesByCollected[collectedNum] =
+          workspace.replacementNamesByCollected[collectedNum];
         propVariablesCopiedByCollected[collectedNum] = [];
         continue;
-
       }
-
 
       // use new uniqueIdentifiersUsed
       // so will get the same names for pieces that match
-      let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
+      let uniqueIdentifiersUsed = (workspace.uniqueIdentifiersUsedByCollected[
+        collectedNum
+      ] = []);
       let results = await this.createReplacementForCollected({
         component,
         collectedNum,
@@ -676,10 +729,11 @@ export default class Collect extends CompositeComponent {
         compositeAttributesObj,
         nComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-        flags
+        flags,
       });
 
-      let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
+      let propVariablesCopiedByReplacement =
+        results.propVariablesCopiedByReplacement;
 
       let newSerializedReplacements = results.serializedReplacements;
 
@@ -691,7 +745,8 @@ export default class Collect extends CompositeComponent {
         // and change resulting names,
         // delete all remaining and mark to be recreated
 
-        let numberReplacementsLeft = workspace.numReplacementsByCollected.slice(collectedNum)
+        let numberReplacementsLeft = workspace.numReplacementsByCollected
+          .slice(collectedNum)
           .reduce((a, c) => a + c, 0);
 
         let replacementInstruction = {
@@ -709,17 +764,19 @@ export default class Collect extends CompositeComponent {
 
         // since deleted remaining, change in workspace
         // so that don't attempt to delete again
-        workspace.numReplacementsByCollected.slice(collectedNum)
-          .forEach((v, i) => workspace.numReplacementsByCollected[i] = 0)
-
-
+        workspace.numReplacementsByCollected
+          .slice(collectedNum)
+          .forEach((v, i) => (workspace.numReplacementsByCollected[i] = 0));
       } else {
-
         for (let ind = 0; ind < nNewReplacements; ind++) {
-          if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedByCollected[collectedNum][ind].length ||
-            workspace.propVariablesCopiedByCollected[collectedNum][ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i])
+          if (
+            propVariablesCopiedByReplacement[ind].length !==
+              workspace.propVariablesCopiedByCollected[collectedNum][ind]
+                .length ||
+            workspace.propVariablesCopiedByCollected[collectedNum][ind].some(
+              (v, i) => v !== propVariablesCopiedByReplacement[ind][i],
+            )
           ) {
-
             let replacementInstruction = {
               changeType: "add",
               changeTopLevelReplacements: true,
@@ -733,44 +790,54 @@ export default class Collect extends CompositeComponent {
         }
       }
 
-
       numReplacementsSoFar += nNewReplacements;
 
       numReplacementsByCollected[collectedNum] = nNewReplacements;
 
-      propVariablesCopiedByCollected[collectedNum] = propVariablesCopiedByReplacement;
+      propVariablesCopiedByCollected[collectedNum] =
+        propVariablesCopiedByReplacement;
 
-      replacementNamesByCollected[collectedNum] = newSerializedReplacements.map(x => x.componentName);
-
+      replacementNamesByCollected[collectedNum] = newSerializedReplacements.map(
+        (x) => x.componentName,
+      );
     }
 
-
     workspace.numReplacementsByCollected = numReplacementsByCollected;
-    workspace.collectedNames = collectedComponents.map(x => x.componentName)
+    workspace.collectedNames = collectedComponents.map((x) => x.componentName);
     workspace.propVariablesCopiedByCollected = propVariablesCopiedByCollected;
     workspace.replacementNamesByCollected = replacementNamesByCollected;
 
     return replacementChanges;
-
   }
 
-  static async recreateReplacements({ component, collectedNum, numReplacementsSoFar,
+  static async recreateReplacements({
+    component,
+    collectedNum,
+    numReplacementsSoFar,
     numReplacementsToDelete,
-    uniqueIdentifiersUsed, components, componentInfoObjects, compositeAttributesObj,
+    uniqueIdentifiersUsed,
+    components,
+    componentInfoObjects,
+    compositeAttributesObj,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags
+    flags,
   }) {
-
     let results = await this.createReplacementForCollected({
-      component, collectedNum, components, numReplacementsSoFar, uniqueIdentifiersUsed,
-      componentInfoObjects, compositeAttributesObj,
+      component,
+      collectedNum,
+      components,
+      numReplacementsSoFar,
+      uniqueIdentifiersUsed,
+      componentInfoObjects,
+      compositeAttributesObj,
       nComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
-      flags
+      flags,
     });
 
-    let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
+    let propVariablesCopiedByReplacement =
+      results.propVariablesCopiedByReplacement;
 
     let newSerializedChildren = results.serializedReplacements;
 
@@ -786,8 +853,7 @@ export default class Collect extends CompositeComponent {
     return {
       numReplacements: newSerializedChildren.length,
       propVariablesCopiedByReplacement,
-      replacementInstruction
-    }
+      replacementInstruction,
+    };
   }
-
 }

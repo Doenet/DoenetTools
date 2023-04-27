@@ -1,11 +1,10 @@
-import Text from './Text';
-import nlp from 'compromise';
-import compromise_numbers from 'compromise-numbers';
+import Text from "./Text";
+import nlp from "compromise";
+import compromise_numbers from "compromise-numbers";
 
-import { renameStateVariable } from '../utils/stateVariables';
+import { renameStateVariable } from "../utils/stateVariables";
 
 nlp.extend(compromise_numbers);
-
 
 export default class Pluralize extends Text {
   static componentType = "pluralize";
@@ -28,17 +27,14 @@ export default class Pluralize extends Text {
     return attributes;
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // rename unnormalizedValue to unnormalizedValuePreOperator
     renameStateVariable({
       stateVariableDefinitions,
       oldName: "value",
-      newName: "valuePrePluralize"
+      newName: "valuePrePluralize",
     });
 
     stateVariableDefinitions.value = {
@@ -49,26 +45,24 @@ export default class Pluralize extends Text {
       returnDependencies: () => ({
         valuePrePluralize: {
           dependencyType: "stateVariable",
-          variableName: "valuePrePluralize"
+          variableName: "valuePrePluralize",
         },
         pluralForm: {
           dependencyType: "stateVariable",
-          variableName: "pluralForm"
+          variableName: "pluralForm",
         },
         basedOnNumber: {
           dependencyType: "stateVariable",
-          variableName: "basedOnNumber"
+          variableName: "basedOnNumber",
         },
       }),
       definition: function ({ dependencyValues }) {
-
-
         let text = nlp(dependencyValues.valuePrePluralize);
 
         let allwords = text.values().toNumber().all().terms().json();
 
         if (allwords.length === 0) {
-          return { setValue: { value: dependencyValues.valuePrePluralize } }
+          return { setValue: { value: dependencyValues.valuePrePluralize } };
         }
 
         let makePlural;
@@ -85,31 +79,29 @@ export default class Pluralize extends Text {
           }
 
           if (!makePlural) {
-            return { setValue: { value: dependencyValues.valuePrePluralize } }
+            return { setValue: { value: dependencyValues.valuePrePluralize } };
           }
 
           // if have pluralForm, the one word should be turned into the pluralForm
           if (dependencyValues.pluralForm !== null) {
             return {
               setValue: {
-                value: dependencyValues.pluralForm
-              }
-            }
+                value: dependencyValues.pluralForm,
+              },
+            };
           } else {
             // attempt to pluralize via nlp
             return {
               setValue: {
-                value: text.nouns().toPlural().all().out('text')
-              }
-            }
+                value: text.nouns().toPlural().all().out("text"),
+              },
+            };
           }
         }
-
 
         // have more than one word
         // if don't have basedOnNumber, look for numbers before nouns to determine if plurals
         if (makePlural === undefined) {
-
           // find indices in allwords of nouns and values
           let nounIndices = [];
           let valueIndices = [];
@@ -139,24 +131,25 @@ export default class Pluralize extends Text {
               lastValueInd++;
             }
 
-            if (numbers[lastValueInd] && numberDesignatesPlural(Number(numbers[lastValueInd].normal))) {
+            if (
+              numbers[lastValueInd] &&
+              numberDesignatesPlural(Number(numbers[lastValueInd].normal))
+            ) {
               makePlural.push(true);
             } else {
               makePlural.push(false);
             }
           }
-
         }
 
         if (makePlural === false) {
-          return { setValue: { value: dependencyValues.valuePrePluralize } }
+          return { setValue: { value: dependencyValues.valuePrePluralize } };
         }
 
         // not sure why have to create new text for this to work
         let text2 = nlp(dependencyValues.valuePrePluralize);
 
         if (dependencyValues.pluralForm !== null) {
-
           // replace all nouns with plural form
           for (let [ind, nounObj] of text.nouns().data().entries()) {
             if (makePlural === true || makePlural[ind] === true) {
@@ -164,7 +157,6 @@ export default class Pluralize extends Text {
             }
           }
         } else {
-
           let numNouns = text.nouns().json().length;
           for (let ind = 0; ind < numNouns; ind++) {
             if (makePlural === true || makePlural[ind] === true) {
@@ -174,13 +166,11 @@ export default class Pluralize extends Text {
         }
         return {
           setValue: {
-            value: text2.out('text')
-          }
-        }
-
-      }
-
-    }
+            value: text2.out("text"),
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -191,20 +181,16 @@ export default class Pluralize extends Text {
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
-          variableName: "value"
-        }
+          variableName: "value",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { text: dependencyValues.value }
-      })
-    }
+        setValue: { text: dependencyValues.value },
+      }),
+    };
 
     return stateVariableDefinitions;
   }
-
-
-
-
 }
 
 function numberDesignatesPlural(num) {

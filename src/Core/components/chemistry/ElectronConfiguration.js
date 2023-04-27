@@ -1,11 +1,10 @@
-import MathComponent from '../Math';
+import MathComponent from "../Math";
 
 export default class ElectronConfiguration extends MathComponent {
   static componentType = "electronConfiguration";
   static rendererType = "math";
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.latex = {
@@ -16,7 +15,7 @@ export default class ElectronConfiguration extends MathComponent {
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
-          variableName: "valueForDisplay"
+          variableName: "valueForDisplay",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
@@ -24,15 +23,14 @@ export default class ElectronConfiguration extends MathComponent {
         try {
           latex = dependencyValues.valueForDisplay.toLatex();
         } catch (e) {
-          latex = '\uff3f';
+          latex = "\uff3f";
         }
-        latex = latex.replaceAll('\\,', '')
-        latex = latex.replaceAll('\\cdot', '~')
+        latex = latex.replaceAll("\\,", "");
+        latex = latex.replaceAll("\\cdot", "~");
         return { setValue: { latex } };
-      }
-    }
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 }

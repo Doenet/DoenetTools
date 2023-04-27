@@ -1,14 +1,14 @@
-import { Box, Center, Icon, Text } from '@chakra-ui/react';
-import React, { useRef } from 'react';
-import { Outlet, useLoaderData, useNavigate } from 'react-router';
-import { NavLink } from 'react-router-dom';
-import styled from 'styled-components';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-import RouterLogo from '../RouterLogo';
-import { pageToolViewAtom } from '../NewToolRoot';
-import { useRecoilState } from 'recoil';
-import { FaCog } from 'react-icons/fa';
+import { Box, Center, Icon, Text } from "@chakra-ui/react";
+import React, { useRef } from "react";
+import { Outlet, useLoaderData, useNavigate } from "react-router";
+import { NavLink } from "react-router-dom";
+import styled from "styled-components";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
+import RouterLogo from "../RouterLogo";
+import { pageToolViewAtom } from "../NewToolRoot";
+import { useRecoilState } from "recoil";
+import { FaCog } from "react-icons/fa";
 
 export async function loader() {
   //Check if signedIn
@@ -21,12 +21,12 @@ export async function loader() {
   let isAdmin = false;
   if (signedIn) {
     //Check on portfolio courseId
-    const response = await fetch('/api/getPorfolioCourseId.php');
+    const response = await fetch("/api/getPorfolioCourseId.php");
 
     const data = await response.json();
     portfolioCourseId = data.portfolioCourseId;
-    if (data.portfolioCourseId == '') {
-      portfolioCourseId = 'not_created';
+    if (data.portfolioCourseId == "") {
+      portfolioCourseId = "not_created";
     }
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const isAdminJson = await isAdminResponse.json();
@@ -69,28 +69,17 @@ const BarMenu = styled.div`
   column-gap: 20px;
 `;
 
-const TopContainer = styled.div`
-  display: grid;
-  grid-template-rows: 40px auto;
-`;
-
-//Minimal container.  The idea is the Outlet should provide its own layout.
-const ContentContainer = styled.main`
-  grid-row: 2 / 3;
-  margin: 0;
-`;
-
 function MenuItem({ to, children, dataTest }) {
   return (
     <StyledMenuItem
       to={to}
       data-test={dataTest}
       className={({ isActive, isPending }) =>
-        location.pathname === '/' || isActive
-          ? 'active'
+        location.pathname === "/" || isActive
+          ? "active"
           : isPending
-          ? 'pending'
-          : ''
+          ? "pending"
+          : ""
       }
     >
       {children}
@@ -101,16 +90,16 @@ function MenuItem({ to, children, dataTest }) {
 export function SiteHeader(props) {
   let data = useLoaderData();
   const isAdmin = data?.isAdmin;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
 
-  let navigateTo = useRef('');
+  let navigateTo = useRef("");
 
-  if (navigateTo.current != '') {
+  if (navigateTo.current != "") {
     const newHref = navigateTo.current;
-    navigateTo.current = '';
+    navigateTo.current = "";
     location.href = newHref;
   }
 
@@ -120,11 +109,11 @@ export function SiteHeader(props) {
       size="medium"
       value="My Courses"
       onClick={() => {
-        navigateTo.current = '/course';
+        navigateTo.current = "/course";
         setRecoilPageToolView({
-          page: 'course',
-          tool: '',
-          view: '',
+          page: "course",
+          tool: "",
+          view: "",
           params: {},
         });
       }}
@@ -137,11 +126,11 @@ export function SiteHeader(props) {
         size="medium"
         value="Sign In"
         onClick={() => {
-          navigateTo.current = '/signin';
+          navigateTo.current = "/signin";
           setRecoilPageToolView({
-            page: 'signin',
-            tool: '',
-            view: '',
+            page: "signin",
+            tool: "",
+            view: "",
             params: {},
           });
         }}
@@ -151,7 +140,12 @@ export function SiteHeader(props) {
 
   return (
     <>
-      <TopContainer>
+      <Box
+        display="grid"
+        gridTemplateRows="40px auto"
+        width="100vw"
+        height="100vh"
+      >
         <Box
           as="header"
           gridRow="1 / 2"
@@ -177,11 +171,11 @@ export function SiteHeader(props) {
                 fontSize="16pt"
                 as={FaCog}
                 onClick={() => {
-                  navigateTo.current = '/settings';
+                  navigateTo.current = "/settings";
                   setRecoilPageToolView({
-                    page: 'settings',
-                    tool: '',
-                    view: '',
+                    page: "settings",
+                    tool: "",
+                    view: "",
                     params: {},
                   });
                 }}
@@ -213,10 +207,10 @@ export function SiteHeader(props) {
           <SignInButtonContainer>{signInButton}</SignInButtonContainer>
         </Box>
 
-        <ContentContainer>
+        <Box as="main" gridRow="2 / 3" margin="0" overflowY="scroll">
           <Outlet context={{ signedIn: data.signedIn }} />
-        </ContentContainer>
-      </TopContainer>
+        </Box>
+      </Box>
     </>
   );
 }

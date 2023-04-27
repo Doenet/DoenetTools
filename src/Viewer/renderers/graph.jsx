@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useRef, createContext } from 'react';
-import { sizeToCSS } from './utils/css';
-import useDoenetRender from '../useDoenetRenderer';
-import me from 'math-expressions';
-import VisibilitySensor from 'react-visibility-sensor-v2';
-import JXG from './jsxgraph-distrib/jsxgraphcore.mjs';
+import React, { useEffect, useState, useRef, createContext } from "react";
+import { sizeToCSS } from "./utils/css";
+import useDoenetRender from "../useDoenetRenderer";
+import me from "math-expressions";
+import VisibilitySensor from "react-visibility-sensor-v2";
+import JXG from "./jsxgraph-distrib/jsxgraphcore.mjs";
 // import JXG from './jsxgraph';
-import { cesc } from '../../_utils/url';
-
+import { cesc } from "../../_utils/url";
 
 export const BoardContext = createContext();
 
@@ -28,15 +27,14 @@ export default React.memo(function Graph(props) {
   let previousXaxisWithLabel = useRef(null);
   let previousYaxisWithLabel = useRef(null);
 
-
   let showNavigation = SVs.showNavigation && !SVs.fixAxes;
 
-  let onChangeVisibility = isVisible => {
+  let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
-      args: { isVisible }
-    })
-  }
+      args: { isVisible },
+    });
+  };
 
   useEffect(() => {
     if (SVs.haveGraphParent) {
@@ -45,10 +43,10 @@ export default React.memo(function Graph(props) {
     return () => {
       callAction({
         action: actions.recordVisibilityChange,
-        args: { isVisible: false }
-      })
-    }
-  }, [])
+        args: { isVisible: false },
+      });
+    };
+  }, []);
 
   //Draw Board after mounting component
   useEffect(() => {
@@ -71,49 +69,57 @@ export default React.memo(function Graph(props) {
       JXG.Options.grid.gridY = SVs.grid[1];
     }
 
-    let newBoard = window.JXG.JSXGraph.initBoard(id,
-      {
-        boundingbox,
-        axis: false,
-        showCopyright: false,
-        showNavigation: false, // will add navigation buttons later so can style them
-        // keepAspectRatio: SVs.identicalAxisScales,
-        zoom: { wheel: !SVs.fixAxes },
-        pan: { enabled: !SVs.fixAxes },
-        grid: haveFixedGrid
-
-      });
+    let newBoard = window.JXG.JSXGraph.initBoard(id, {
+      boundingbox,
+      axis: false,
+      showCopyright: false,
+      showNavigation: false, // will add navigation buttons later so can style them
+      // keepAspectRatio: SVs.identicalAxisScales,
+      zoom: { wheel: !SVs.fixAxes },
+      pan: { enabled: !SVs.fixAxes },
+      grid: haveFixedGrid,
+    });
 
     newBoard.itemsRenderedLowQuality = {};
 
-    newBoard.on('boundingbox', () => {
-      if (!(settingBoundingBox.current
-        //  || resizingBoard.current
-      )) {
+    newBoard.on("boundingbox", () => {
+      if (
+        !(
+          settingBoundingBox.current
+          //  || resizingBoard.current
+        )
+      ) {
         let newBoundingbox = newBoard.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newBoundingbox;
 
         // look for a change in bounding box that isn't due to roundoff error
         let xscale = Math.abs(xmax - xmin);
         let yscale = Math.abs(ymax - ymin);
-        let diffs = newBoundingbox.map((v, i) => Math.abs(v - previousBoundingbox.current[i]));
-        if (Math.max(diffs[0] / xscale, diffs[1] / yscale, diffs[2] / xscale, diffs[3] / yscale) > 1E-12) {
-
+        let diffs = newBoundingbox.map((v, i) =>
+          Math.abs(v - previousBoundingbox.current[i]),
+        );
+        if (
+          Math.max(
+            diffs[0] / xscale,
+            diffs[1] / yscale,
+            diffs[2] / xscale,
+            diffs[3] / yscale,
+          ) > 1e-12
+        ) {
           previousBoundingbox.current = newBoundingbox;
           callAction({
             action: actions.changeAxisLimits,
-            args: { xmin, xmax, ymin, ymax }
-          })
+            args: { xmin, xmax, ymin, ymax },
+          });
         }
       }
-    })
+    });
     setBoard(newBoard);
 
     previousDimensions.current = {
       width: parseFloat(sizeToCSS(SVs.width)),
       aspectRatio: SVs.aspectRatio,
     };
-
 
     if (SVs.displayXAxis) {
       createXAxis(newBoard);
@@ -136,67 +142,66 @@ export default React.memo(function Graph(props) {
     function keyFocusOutListener(evt) {
       let id_node = evt.target.id;
 
-      if (id_node === '') {
+      if (id_node === "") {
         return false;
       }
 
-      let el_id = id_node.replace(id + '_', '');
+      let el_id = id_node.replace(id + "_", "");
       let el = newBoard.select(el_id);
-      el.triggerEventHandlers?.(['keyfocusout'], [evt]);
+      el.triggerEventHandlers?.(["keyfocusout"], [evt]);
     }
 
-    newBoard.containerObj.addEventListener("focusout", keyFocusOutListener)
-
+    newBoard.containerObj.addEventListener("focusout", keyFocusOutListener);
 
     function keyDownListener(evt) {
       let id_node = evt.target.id;
 
-      if (id_node === '') {
+      if (id_node === "") {
         return false;
       }
 
-
-      let el_id = id_node.replace(id + '_', '');
+      let el_id = id_node.replace(id + "_", "");
       let el = newBoard.select(el_id);
-      el.triggerEventHandlers?.(['keydown'], [evt]);
+      el.triggerEventHandlers?.(["keydown"], [evt]);
     }
 
-    newBoard.containerObj.addEventListener("keydown", keyDownListener)
+    newBoard.containerObj.addEventListener("keydown", keyDownListener);
 
     // on unmount
     return () => {
-      newBoard.off('boundingbox');
-    }
-
-  }, [])
+      newBoard.off("boundingbox");
+    };
+  }, []);
 
   useEffect(() => {
     if (board && showNavigation) {
       addNavigationButtons();
     }
-  }, [board])
+  }, [board]);
 
   if (SVs.haveGraphParent) {
     // have have graph parent, then don't render graph
     // but just render children so that will be inside parent graph
-    return <>
-      <a name={id} />
-      {children}
-    </>
+    return (
+      <>
+        <a name={id} />
+        {children}
+      </>
+    );
   }
 
   const divStyle = {
     width: sizeToCSS(SVs.width),
     aspectRatio: String(SVs.aspectRatio),
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  };
 
   let outerStyle = {};
 
   if (SVs.hidden) {
     divStyle.display = "none";
   } else if (SVs.displayMode === "inline") {
-    outerStyle = { display: "inline-block", verticalAlign: "middle" }
+    outerStyle = { display: "inline-block", verticalAlign: "middle" };
   } else {
     outerStyle = { display: "flex", justifyContent: SVs.horizontalAlign };
   }
@@ -211,7 +216,6 @@ export default React.memo(function Graph(props) {
   divStyle.backgroundColor = "var(--canvas)";
   divStyle.color = "var(--canvastext)";
 
-
   if (!board) {
     return (
       <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
@@ -223,15 +227,15 @@ export default React.memo(function Graph(props) {
     );
   }
 
-
   if (boardJustInitialized.current) {
     // skip the update logic the first time after just created the board
     boardJustInitialized.current = false;
   } else {
-
     // check if have grid with specified width
     if (Array.isArray(SVs.grid)) {
-      let gridParamsChanged = JXG.Options.grid.gridX !== SVs.grid[0] || JXG.Options.grid.gridY !== SVs.grid[1];
+      let gridParamsChanged =
+        JXG.Options.grid.gridX !== SVs.grid[0] ||
+        JXG.Options.grid.gridY !== SVs.grid[1];
       if (gridParamsChanged) {
         JXG.Options.grid.gridX = SVs.grid[0];
         JXG.Options.grid.gridY = SVs.grid[1];
@@ -241,7 +245,7 @@ export default React.memo(function Graph(props) {
         }
       }
       if (board.grids.length === 0) {
-        board.create("grid", [], { gridX: SVs.grid[0], gridY: SVs.grid[1] })
+        board.create("grid", [], { gridX: SVs.grid[0], gridY: SVs.grid[1] });
       }
     } else {
       if (board.grids.length > 0) {
@@ -249,7 +253,6 @@ export default React.memo(function Graph(props) {
         board.grids = [];
       }
     }
-
 
     if (SVs.grid === "dense") {
       if (xaxis.current) {
@@ -282,8 +285,12 @@ export default React.memo(function Graph(props) {
 
     // Note: since we display a zero tick only if the other axis does not exist,
     // if the display of one axis changed, we delete and rebuild the other axis
-    let displayXAxisChanged = SVs.displayXAxis ? !Boolean(xaxis.current) : Boolean(xaxis.current);
-    let displayYAxisChanged = SVs.displayYAxis ? !Boolean(yaxis.current) : Boolean(yaxis.current);
+    let displayXAxisChanged = SVs.displayXAxis
+      ? !Boolean(xaxis.current)
+      : Boolean(xaxis.current);
+    let displayYAxisChanged = SVs.displayYAxis
+      ? !Boolean(yaxis.current)
+      : Boolean(yaxis.current);
 
     if (displayYAxisChanged && !displayXAxisChanged && SVs.displayXAxis) {
       board.removeObject(xaxis.current);
@@ -304,14 +311,16 @@ export default React.memo(function Graph(props) {
           previousXaxisWithLabel.current = xaxisWithLabel;
         }
         xaxis.current.name = SVs.xlabel;
-        xaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayXAxisTickLabels });
+        xaxis.current.defaultTicks.setAttribute({
+          drawLabels: SVs.displayXAxisTickLabels,
+        });
         if (xaxis.current.hasLabel) {
-          let position = 'rt';
+          let position = "rt";
           let offset = [5, 10];
-          let anchorx = 'right'
+          let anchorx = "right";
           if (SVs.xlabelPosition === "left") {
-            position = 'lft';
-            anchorx = 'left';
+            position = "lft";
+            anchorx = "left";
             offset = [-5, 10];
           }
           xaxis.current.label.visProp.position = position;
@@ -321,10 +330,10 @@ export default React.memo(function Graph(props) {
           xaxis.current.label.fullUpdate();
         }
       } else {
-        createXAxis(board)
+        createXAxis(board);
       }
     } else if (xaxis.current) {
-      board.removeObject(xaxis.current)
+      board.removeObject(xaxis.current);
       xaxis.current = null;
     }
 
@@ -337,17 +346,19 @@ export default React.memo(function Graph(props) {
           previousYaxisWithLabel.current = yaxisWithLabel;
         }
         yaxis.current.name = SVs.ylabel;
-        yaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayYAxisTickLabels });
+        yaxis.current.defaultTicks.setAttribute({
+          drawLabels: SVs.displayYAxisTickLabels,
+        });
         if (yaxis.current.hasLabel) {
-          let position = 'rt';
+          let position = "rt";
           let offset = [-10, -5];
-          let anchorx = 'right';
+          let anchorx = "right";
           if (SVs.ylabelPosition === "bottom") {
-            position = 'lft';
+            position = "lft";
             offset[1] = 5;
           }
           if (SVs.ylabelAlignment === "right") {
-            anchorx = 'left';
+            anchorx = "left";
             offset[0] = 10;
           }
           yaxis.current.label.visProp.position = position;
@@ -379,13 +390,15 @@ export default React.memo(function Graph(props) {
     let currentDimensions = {
       width: parseFloat(sizeToCSS(SVs.width)),
       aspectRatio: SVs.aspectRatio,
-    }
+    };
 
-    if ((currentDimensions.width !== previousDimensions.current.width ||
-      currentDimensions.aspectRatio !== previousDimensions.current.aspectRatio)
-      && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.aspectRatio)
+    if (
+      (currentDimensions.width !== previousDimensions.current.width ||
+        currentDimensions.aspectRatio !==
+          previousDimensions.current.aspectRatio) &&
+      Number.isFinite(currentDimensions.width) &&
+      Number.isFinite(currentDimensions.aspectRatio)
     ) {
-
       // resizingBoard.current = true;
       // board.resizeContainer(currentDimensions.width, currentDimensions.height);
       // resizingBoard.current = false;
@@ -395,7 +408,6 @@ export default React.memo(function Graph(props) {
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
 
     if (boundingbox.some((v, i) => v !== previousBoundingbox.current[i])) {
-
       settingBoundingBox.current = true;
       board.setBoundingBox(boundingbox);
       settingBoundingBox.current = false;
@@ -407,21 +419,15 @@ export default React.memo(function Graph(props) {
       }
 
       previousBoundingbox.current = boundingbox;
-
     }
-
-
   }
-
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <div style={outerStyle}>
         <a name={id} />
         <div id={id} className="jxgbox" style={divStyle} />
-        <BoardContext.Provider value={board}>
-          {children}
-        </BoardContext.Provider>
+        <BoardContext.Provider value={board}>{children}</BoardContext.Provider>
       </div>
     </VisibilitySensor>
   );
@@ -429,15 +435,15 @@ export default React.memo(function Graph(props) {
   function createYAxis(theBoard) {
     let yaxisOptions = { highlight: false, fixed: true };
     if (SVs.ylabel) {
-      let position = 'rt';
+      let position = "rt";
       let offset = [-10, -5];
-      let anchorx = 'right';
+      let anchorx = "right";
       if (SVs.ylabelPosition === "bottom") {
-        position = 'lft';
+        position = "lft";
         offset[1] = 5;
       }
       if (SVs.ylabelAlignment === "right") {
-        anchorx = 'left';
+        anchorx = "left";
         offset[0] = 10;
       }
       yaxisOptions.name = SVs.ylabel;
@@ -447,7 +453,7 @@ export default React.memo(function Graph(props) {
         offset,
         anchorx,
         strokeColor: "var(--canvastext)",
-        highlight: false
+        highlight: false,
       };
       if (SVs.ylabelHasLatex) {
         yaxisOptions.label.useMathJax = true;
@@ -471,7 +477,7 @@ export default React.memo(function Graph(props) {
       strokeOpacity: 0.5,
       // minorTicks: 4,
       precision: 4,
-      drawLabels: SVs.displayYAxisTickLabels
+      drawLabels: SVs.displayYAxisTickLabels,
     };
     if (SVs.yTickScaleFactor !== null) {
       let yTickScaleFactor = me.fromAst(SVs.yTickScaleFactor);
@@ -499,14 +505,23 @@ export default React.memo(function Graph(props) {
 
     theBoard.suspendUpdate();
 
-    yaxis.current = theBoard.create('axis', [[0, 0], [0, 1]], yaxisOptions);
-
+    yaxis.current = theBoard.create(
+      "axis",
+      [
+        [0, 0],
+        [0, 1],
+      ],
+      yaxisOptions,
+    );
 
     // change default ticks function to decreasing starting tick size
     yaxis.current.defaultTicks.ticksFunction = function () {
       var delta, b, dist;
 
-      b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
+      b = this.getLowerAndUpperBounds(
+        this.getZeroCoordinates(),
+        "ticksdistance",
+      );
       dist = b.upper - b.lower;
 
       // only change from JSXgraph: 0.6 * dist became 0.2 * dist
@@ -515,7 +530,6 @@ export default React.memo(function Graph(props) {
         delta *= 0.5;
       }
       return delta;
-
     };
 
     // hack JSXgraph tick function so that
@@ -523,10 +537,17 @@ export default React.memo(function Graph(props) {
     // otherwise have 4 minor ticks
     // (Other changes are simply to account for fact that
     // don't have access to Mat and Type)
-    yaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
-      var tickPosition, eps2 = 1E-6, deltas,
+    yaxis.current.defaultTicks.generateEquidistantTicks = function (
+      coordsZero,
+      bounds,
+    ) {
+      var tickPosition,
+        eps2 = 1e-6,
+        deltas,
         // Distance between two major ticks in user coordinates
-        ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta), ev_it = true, ev_mt = 4;
+        ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta,
+        ev_it = true,
+        ev_mt = 4;
       this.visProp.minorticks = 4;
 
       // Calculate X and Y distance between two major ticks
@@ -534,23 +555,23 @@ export default React.memo(function Graph(props) {
 
       // adjust ticks distance
       ticksDelta *= this.visProp.scale;
-      if (ev_it && this.minTicksDistance > 1E-6) {
+      if (ev_it && this.minTicksDistance > 1e-6) {
         ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
 
         // Only change from JSXgraph function:
         // check if ticksDelta is 2*10^n for some integer n
         let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
-        if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
+        if (Math.abs(ticksDelta / mag - 2) < 1e-14) {
           ev_mt = 3;
           this.visProp.minorticks = 3;
         }
-        ticksDelta /= (ev_mt + 1);
+        ticksDelta /= ev_mt + 1;
       } else if (!ev_it) {
-        ticksDelta /= (ev_mt + 1);
+        ticksDelta /= ev_mt + 1;
       }
       this.ticksDelta = ticksDelta;
 
-      if (ticksDelta < 1E-6) {
+      if (ticksDelta < 1e-6) {
         return;
       }
 
@@ -562,12 +583,17 @@ export default React.memo(function Graph(props) {
       while (tickPosition <= bounds.upper + eps2) {
         // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
         if (tickPosition >= bounds.lower - eps2) {
-          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          this.processTickPosition(
+            coordsZero,
+            tickPosition,
+            ticksDelta,
+            deltas,
+          );
         }
         tickPosition += ticksDelta;
 
         // Emergency out
-        if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
+        if (bounds.upper - tickPosition > ticksDelta * 10000) {
           break;
         }
       }
@@ -577,30 +603,34 @@ export default React.memo(function Graph(props) {
       while (tickPosition >= bounds.lower - eps2) {
         // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
         if (tickPosition <= bounds.upper + eps2) {
-          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          this.processTickPosition(
+            coordsZero,
+            tickPosition,
+            ticksDelta,
+            deltas,
+          );
         }
         tickPosition -= ticksDelta;
 
         // Emergency out
-        if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
+        if (tickPosition - bounds.lower > ticksDelta * 10000) {
           break;
         }
       }
     };
 
     theBoard.unsuspendUpdate();
-
   }
 
   function createXAxis(theBoard) {
     let xaxisOptions = { highlight: false, fixed: true };
     if (SVs.xlabel) {
-      let position = 'rt';
+      let position = "rt";
       let offset = [5, 10];
-      let anchorx = 'right';
+      let anchorx = "right";
       if (SVs.xlabelPosition === "left") {
-        position = 'lft';
-        anchorx = 'left';
+        position = "lft";
+        anchorx = "left";
         offset = [-5, 10];
       }
       xaxisOptions.name = SVs.xlabel;
@@ -610,7 +640,7 @@ export default React.memo(function Graph(props) {
         offset,
         anchorx,
         strokeColor: "var(--canvastext)",
-        highlight: false
+        highlight: false,
       };
       if (SVs.xlabelHasLatex) {
         xaxisOptions.label.useMathJax = true;
@@ -631,7 +661,7 @@ export default React.memo(function Graph(props) {
       strokeOpacity: 0.5,
       // minorTicks: 4,
       precision: 4,
-      drawLabels: SVs.displayXAxisTickLabels
+      drawLabels: SVs.displayXAxisTickLabels,
     };
     if (SVs.xTickScaleFactor !== null) {
       let xTickScaleFactor = me.fromAst(SVs.xTickScaleFactor);
@@ -662,13 +692,23 @@ export default React.memo(function Graph(props) {
 
     theBoard.suspendUpdate();
 
-    xaxis.current = theBoard.create('axis', [[0, 0], [1, 0]], xaxisOptions);
+    xaxis.current = theBoard.create(
+      "axis",
+      [
+        [0, 0],
+        [1, 0],
+      ],
+      xaxisOptions,
+    );
 
     // change default ticks function to decreasing starting tick size
     xaxis.current.defaultTicks.ticksFunction = function () {
       var delta, b, dist;
 
-      b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
+      b = this.getLowerAndUpperBounds(
+        this.getZeroCoordinates(),
+        "ticksdistance",
+      );
       dist = b.upper - b.lower;
 
       // only change from JSXgraph: 0.6 * dist became 0.2 * dist
@@ -677,7 +717,6 @@ export default React.memo(function Graph(props) {
         delta *= 0.5;
       }
       return delta;
-
     };
 
     // hack JSXgraph tick function so that
@@ -685,14 +724,26 @@ export default React.memo(function Graph(props) {
     // otherwise have 4 minor ticks
     // (Other changes are simply to account for fact that
     // don't have access to Mat and Type)
-    xaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
-
+    xaxis.current.defaultTicks.generateEquidistantTicks = function (
+      coordsZero,
+      bounds,
+    ) {
       // First change from JSXgraph: increase minTickDistance for larger numbers
-      this.minTicksDistance = 2 * Math.max(2.5, Math.log10(Math.abs(bounds.lower)), Math.log10(Math.abs(bounds.upper)));
+      this.minTicksDistance =
+        2 *
+        Math.max(
+          2.5,
+          Math.log10(Math.abs(bounds.lower)),
+          Math.log10(Math.abs(bounds.upper)),
+        );
 
-      var tickPosition, eps2 = 1E-6, deltas,
+      var tickPosition,
+        eps2 = 1e-6,
+        deltas,
         // Distance between two major ticks in user coordinates
-        ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta), ev_it = true, ev_mt = 4;
+        ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta,
+        ev_it = true,
+        ev_mt = 4;
       this.visProp.minorticks = 4;
 
       // Calculate X and Y distance between two major ticks
@@ -700,23 +751,23 @@ export default React.memo(function Graph(props) {
 
       // adjust ticks distance
       ticksDelta *= this.visProp.scale;
-      if (ev_it && this.minTicksDistance > 1E-6) {
+      if (ev_it && this.minTicksDistance > 1e-6) {
         ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
 
         // Second change from JSXgraph function:
         // check if ticksDelta is 2*10^n for some integer n
         let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
-        if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
+        if (Math.abs(ticksDelta / mag - 2) < 1e-14) {
           ev_mt = 3;
           this.visProp.minorticks = 3;
         }
-        ticksDelta /= (ev_mt + 1);
+        ticksDelta /= ev_mt + 1;
       } else if (!ev_it) {
-        ticksDelta /= (ev_mt + 1);
+        ticksDelta /= ev_mt + 1;
       }
       this.ticksDelta = ticksDelta;
 
-      if (ticksDelta < 1E-6) {
+      if (ticksDelta < 1e-6) {
         return;
       }
 
@@ -728,12 +779,17 @@ export default React.memo(function Graph(props) {
       while (tickPosition <= bounds.upper + eps2) {
         // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
         if (tickPosition >= bounds.lower - eps2) {
-          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          this.processTickPosition(
+            coordsZero,
+            tickPosition,
+            ticksDelta,
+            deltas,
+          );
         }
         tickPosition += ticksDelta;
 
         // Emergency out
-        if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
+        if (bounds.upper - tickPosition > ticksDelta * 10000) {
           break;
         }
       }
@@ -743,12 +799,17 @@ export default React.memo(function Graph(props) {
       while (tickPosition >= bounds.lower - eps2) {
         // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
         if (tickPosition <= bounds.upper + eps2) {
-          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          this.processTickPosition(
+            coordsZero,
+            tickPosition,
+            ticksDelta,
+            deltas,
+          );
         }
         tickPosition -= ticksDelta;
 
         // Emergency out
-        if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
+        if (tickPosition - bounds.lower > ticksDelta * 10000) {
           break;
         }
       }
@@ -759,7 +820,9 @@ export default React.memo(function Graph(props) {
 
   function addNavigationButtons() {
     // not sure why getElementById doesn't work
-    let navigationBar = document.querySelector('#' + cesc(id) + `_navigationbar`);
+    let navigationBar = document.querySelector(
+      "#" + cesc(id) + `_navigationbar`,
+    );
 
     // code modified from abstract.js and env.js of JSXGraph
 
@@ -768,11 +831,11 @@ export default React.memo(function Graph(props) {
         return fn.apply(board, arguments);
       };
 
-      board['x_internal' + type] = board['x_internal' + type] || [];
-      board['x_internal' + type].push(el);
+      board["x_internal" + type] = board["x_internal" + type] || [];
+      board["x_internal" + type].push(el);
 
       obj.addEventListener(type, el, false);
-    }
+    };
 
     let cancelbubble = function (e) {
       if (!e) {
@@ -785,48 +848,58 @@ export default React.memo(function Graph(props) {
       } else {
         e.cancelBubble = true;
       }
-    }
+    };
 
     let createButton = function (label, handler) {
       var button;
 
-      button = document.createElement('span');
+      button = document.createElement("span");
       navigationBar.appendChild(button);
-      button.setAttribute('style', 'color: var(--canvastext); opacity: 0.7');
+      button.setAttribute("style", "color: var(--canvastext); opacity: 0.7");
       let text_node = document.createTextNode(label);
       button.appendChild(text_node);
 
       // Style settings are superseded by adding the CSS class below
-      button.style.paddingLeft = '7px';
-      button.style.paddingRight = '7px';
+      button.style.paddingLeft = "7px";
+      button.style.paddingRight = "7px";
 
-      if (button.classList !== undefined) { // classList not available in IE 9
-        button.classList.add('JXG_navigation_button');
+      if (button.classList !== undefined) {
+        // classList not available in IE 9
+        button.classList.add("JXG_navigation_button");
       }
 
-      addEvent(button, 'click', function (e) { (handler.bind(board))(); return false; }, board);
+      addEvent(
+        button,
+        "click",
+        function (e) {
+          handler.bind(board)();
+          return false;
+        },
+        board,
+      );
       // prevent the click from bubbling down to the board
-      addEvent(button, 'mouseup', cancelbubble);
-      addEvent(button, 'mousedown', cancelbubble);
-      addEvent(button, 'touchend', cancelbubble);
-      addEvent(button, 'touchstart', cancelbubble);
+      addEvent(button, "mouseup", cancelbubble);
+      addEvent(button, "mousedown", cancelbubble);
+      addEvent(button, "touchend", cancelbubble);
+      addEvent(button, "touchstart", cancelbubble);
     };
 
-
     if (board.attr.showzoom) {
-      createButton('\u2013', board.zoomOut);
-      createButton('o', board.zoom100);
-      createButton('+', board.zoomIn);
+      createButton("\u2013", board.zoomOut);
+      createButton("o", board.zoom100);
+      createButton("+", board.zoomIn);
     }
-    createButton('\u2190', board.clickLeftArrow);
-    createButton('\u2193', board.clickUpArrow);
-    createButton('\u2191', board.clickDownArrow);
-    createButton('\u2192', board.clickRightArrow);
+    createButton("\u2190", board.clickLeftArrow);
+    createButton("\u2193", board.clickUpArrow);
+    createButton("\u2191", board.clickDownArrow);
+    createButton("\u2192", board.clickRightArrow);
   }
 
   function removeNavigationButtons() {
     for (let i = 7; i >= 1; i--) {
-      let button = document.querySelector('#' + cesc(id) + `_navigationbar > :first-child`);
+      let button = document.querySelector(
+        "#" + cesc(id) + `_navigationbar > :first-child`,
+      );
       button.remove();
     }
 
@@ -836,11 +909,9 @@ export default React.memo(function Graph(props) {
     board.internaltouchend = [];
     board.internaltouchstart = [];
   }
+});
 
-})
-
-// ticks labels: layer 2 overall 
-
+// ticks labels: layer 2 overall
 
 // NOTE: there can be at most 10 different layer offsets,
 // given that the DoenetML layer is multiplied by 10 and added to these offsets

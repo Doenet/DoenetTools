@@ -1,4 +1,4 @@
-import VectorListComponent from './abstract/VectorListComponent';
+import VectorListComponent from "./abstract/VectorListComponent";
 
 export default class ControlVectors extends VectorListComponent {
   static componentType = "controlVectors";
@@ -12,7 +12,7 @@ export default class ControlVectors extends VectorListComponent {
       defaultValue: "symmetric",
       public: true,
       toLowerCase: true,
-      validValues: ["symmetric", "previous", "next", "both", "none"]
+      validValues: ["symmetric", "previous", "next", "both", "none"],
     };
     attributes.pointNumber = {
       createComponentOfType: "number",
@@ -22,6 +22,4 @@ export default class ControlVectors extends VectorListComponent {
     };
     return attributes;
   }
-
-
 }

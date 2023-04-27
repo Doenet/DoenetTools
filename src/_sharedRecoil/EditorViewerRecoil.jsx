@@ -1,33 +1,38 @@
-import { atom } from 'recoil';
+import { atom } from "recoil";
 
 export const viewerDoenetMLAtom = atom({
-  key: 'viewerDoenetMLAtom',
-  default: '',
+  key: "viewerDoenetMLAtom",
+  default: "",
 });
 
 export const textEditorDoenetMLAtom = atom({
-  key: 'textEditorDoenetMLAtom',
-  default: '',
+  key: "textEditorDoenetMLAtom",
+  default: "",
+});
+
+export const textEditorLastKnownCidAtom = atom({
+  key: "textEditorLastKnownCidAtom",
+  default: "",
 });
 
 export const updateTextEditorDoenetMLAtom = atom({
-  key: 'updateTextEditorDoenetMLAtom',
-  default: '',
+  key: "updateTextEditorDoenetMLAtom",
+  default: "",
 });
 
 // TODO: change to pageId
 //Boolean initialized editor tool start up
 export const editorPageIdInitAtom = atom({
-  key: 'editorPageIdInitAtom',
-  default: '',
+  key: "editorPageIdInitAtom",
+  default: "",
 });
 
 export const refreshNumberAtom = atom({
-  key: 'refreshNumberAtom',
+  key: "refreshNumberAtom",
   default: 0,
 });
 
 export const editorViewerErrorStateAtom = atom({
-  key: 'editorViewerErrorStateAtom',
+  key: "editorViewerErrorStateAtom",
   default: false,
 });

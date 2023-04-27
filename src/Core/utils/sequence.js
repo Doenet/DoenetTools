@@ -1,6 +1,5 @@
-import { findFiniteNumericalValue } from '../utils/math';
-import me from 'math-expressions';
-
+import { findFiniteNumericalValue } from "../utils/math";
+import me from "math-expressions";
 
 export function returnStandardSequenceAttributes() {
   return {
@@ -9,7 +8,7 @@ export function returnStandardSequenceAttributes() {
       createStateVariable: "type",
       defaultPrimitiveValue: "number",
       toLowerCase: true,
-      validValues: ["number", "math", "letters"]
+      validValues: ["number", "math", "letters"],
     },
     from: {
       createComponentOfType: "_componentWithSelectableType",
@@ -25,9 +24,8 @@ export function returnStandardSequenceAttributes() {
     },
     exclude: {
       createComponentOfType: "_componentListWithSelectableType",
-    }
-  }
-
+    },
+  };
 }
 
 export function returnStandardSequenceStateVariableDefinitions() {
@@ -39,7 +37,6 @@ export function returnStandardSequenceStateVariableDefinitions() {
   // uses attributes defined above
   // attributes: type
   // attributeComponents: from, to, length, step, exclude
-
 
   let stateVariableDefinitions = {};
 
@@ -58,7 +55,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
       if (dependencyValues.fromAttr === null) {
         return {
           useEssentialOrDefaultValue: { specifiedFrom: true },
-        }
+        };
       }
       if (dependencyValues.fromAttr.stateValues.value === null) {
         // if have a from child, but its value is null,
@@ -68,19 +65,18 @@ export function returnStandardSequenceStateVariableDefinitions() {
         return {
           setValue: {
             specifiedFrom: NaN,
-          }
-        }
+          },
+        };
       }
       return {
         setValue: {
           specifiedFrom: dependencyValues.fromAttr.stateValues.value,
-        }
-      }
+        },
+      };
     },
   };
 
   stateVariableDefinitions.specifiedTo = {
-
     returnDependencies: () => ({
       toAttr: {
         dependencyType: "attributeComponent",
@@ -97,7 +93,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
           useEssentialOrDefaultValue: {
             specifiedTo: true,
           },
-        }
+        };
       }
       if (dependencyValues.toAttr.stateValues.value === null) {
         // if have a to child, but its value is null,
@@ -107,14 +103,14 @@ export function returnStandardSequenceStateVariableDefinitions() {
         return {
           setValue: {
             specifiedTo: NaN,
-          }
-        }
+          },
+        };
       }
       return {
         setValue: {
           specifiedTo: dependencyValues.toAttr.stateValues.value,
-        }
-      }
+        },
+      };
     },
   };
 
@@ -133,9 +129,9 @@ export function returnStandardSequenceStateVariableDefinitions() {
       if (dependencyValues.lengthAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedLength: true
-          }
-        }
+            specifiedLength: true,
+          },
+        };
       }
       if (dependencyValues.lengthAttr.stateValues.value === null) {
         // if have a length child, but its value is null,
@@ -145,13 +141,16 @@ export function returnStandardSequenceStateVariableDefinitions() {
         return {
           setValue: {
             specifiedLength: NaN,
-          }
-        }
+          },
+        };
       }
-      return { setValue: { specifiedLength: dependencyValues.lengthAttr.stateValues.value } }
+      return {
+        setValue: {
+          specifiedLength: dependencyValues.lengthAttr.stateValues.value,
+        },
+      };
     },
   };
-
 
   stateVariableDefinitions.specifiedStep = {
     returnDependencies: () => ({
@@ -172,9 +171,9 @@ export function returnStandardSequenceStateVariableDefinitions() {
       if (dependencyValues.stepAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedStep: true
-          }
-        }
+            specifiedStep: true,
+          },
+        };
       }
 
       let step = dependencyValues.stepAttr.stateValues.value;
@@ -186,13 +185,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
         return {
           setValue: {
             specifiedStep: NaN,
-          }
-        }
+          },
+        };
       }
       return { setValue: { specifiedStep: step } };
     },
   };
-
 
   stateVariableDefinitions.specifiedExclude = {
     returnDependencies: () => ({
@@ -209,15 +207,14 @@ export function returnStandardSequenceStateVariableDefinitions() {
       if (dependencyValues.excludeAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedExclude: true
-          }
-        }
+            specifiedExclude: true,
+          },
+        };
       }
       return {
         setValue: {
-          specifiedExclude:
-            dependencyValues.excludeAttr.stateValues.values
-        }
+          specifiedExclude: dependencyValues.excludeAttr.stateValues.values,
+        },
       };
     },
   };
@@ -234,7 +231,6 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     definition: function ({ dependencyValues }) {
-
       let capitalRegex = /^[A-Z]*$/;
 
       // base whether lowercase or upper case on from, if it exists, else to
@@ -252,7 +248,6 @@ export function returnStandardSequenceStateVariableDefinitions() {
       return { setValue: { lowercase } };
     },
   };
-
 
   stateVariableDefinitions.validSequence = {
     returnDependencies: () => ({
@@ -282,12 +277,16 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     definition: function ({ dependencyValues }) {
-
       let validSequence = true;
 
       if (dependencyValues.specifiedLength !== null) {
-        if (!Number.isInteger(dependencyValues.specifiedLength) || dependencyValues.specifiedLength < 0) {
-          console.warn("Invalid length of sequence.  Must be a non-negative integer.")
+        if (
+          !Number.isInteger(dependencyValues.specifiedLength) ||
+          dependencyValues.specifiedLength < 0
+        ) {
+          console.warn(
+            "Invalid length of sequence.  Must be a non-negative integer.",
+          );
           validSequence = false;
         }
       }
@@ -295,9 +294,15 @@ export function returnStandardSequenceStateVariableDefinitions() {
       if (dependencyValues.specifiedStep !== null) {
         // step must be number if not math
         if (dependencyValues.type !== "math") {
-          let numericalStep = findFiniteNumericalValue(dependencyValues.specifiedStep);
+          let numericalStep = findFiniteNumericalValue(
+            dependencyValues.specifiedStep,
+          );
           if (!Number.isFinite(numericalStep)) {
-            console.warn("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.type + ".")
+            console.warn(
+              "Invalid step of sequence.  Must be a number for sequence of type " +
+                dependencyValues.type +
+                ".",
+            );
             validSequence = false;
           }
         }
@@ -305,27 +310,30 @@ export function returnStandardSequenceStateVariableDefinitions() {
 
       if (dependencyValues.specifiedFrom !== null) {
         if (dependencyValues.type === "number") {
-          let numericalFrom = findFiniteNumericalValue(dependencyValues.specifiedFrom);
+          let numericalFrom = findFiniteNumericalValue(
+            dependencyValues.specifiedFrom,
+          );
           if (!Number.isFinite(numericalFrom)) {
-            console.warn("Invalid from of number sequence.  Must be a number")
+            console.warn("Invalid from of number sequence.  Must be a number");
             validSequence = false;
           }
         } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
-          console.warn("Invalid from of sequence")
+          console.warn("Invalid from of sequence");
           validSequence = false;
         }
-
       }
 
       if (dependencyValues.specifiedTo !== null) {
         if (dependencyValues.type === "number") {
-          let numericalTo = findFiniteNumericalValue(dependencyValues.specifiedTo);
+          let numericalTo = findFiniteNumericalValue(
+            dependencyValues.specifiedTo,
+          );
           if (!Number.isFinite(numericalTo)) {
-            console.warn("Invalid to of number sequence.  Must be a number")
+            console.warn("Invalid to of number sequence.  Must be a number");
             validSequence = false;
           }
         } else if (Number.isNaN(dependencyValues.specifiedTo)) {
-          console.warn("Invalid to of sequence")
+          console.warn("Invalid to of sequence");
           validSequence = false;
         }
       }
@@ -368,7 +376,6 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     definition: function ({ dependencyValues }) {
-
       let from = dependencyValues.specifiedFrom;
       let to = dependencyValues.specifiedTo;
       let step = dependencyValues.specifiedStep;
@@ -394,7 +401,6 @@ export function returnStandardSequenceStateVariableDefinitions() {
           }
         }
       } else {
-
         // if type is not math, convert step to a number
         if (step !== null) {
           if (step instanceof me.class) {
@@ -402,9 +408,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
           }
         }
 
-
         if (dependencyValues.type === "letters") {
-
           // if from, to, and exclude are strings
           // then convert to numbers
           if (from !== null) {
@@ -427,7 +431,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
             if (from instanceof me.class) {
               from = from.evaluate_to_constant();
             } else {
-              from = Number(from)
+              from = Number(from);
             }
           }
           for (let [index, value] of exclude.entries()) {
@@ -440,15 +444,17 @@ export function returnStandardSequenceStateVariableDefinitions() {
         }
       }
 
-
       if (dependencyValues.validSequence) {
         let results = calculateSequenceParameters({
-          from, to, step, length, type
+          from,
+          to,
+          step,
+          length,
+          type,
         });
         results.exclude = exclude;
 
         return { setValue: results };
-
       }
 
       if (!Number.isInteger(length) || length < 0) {
@@ -460,11 +466,9 @@ export function returnStandardSequenceStateVariableDefinitions() {
   };
 
   return stateVariableDefinitions;
-
 }
 
 export function calculateSequenceParameters({ from, to, step, length, type }) {
-
   // calculate from, length and step from combinatons of from/to/length/step specified
 
   if (from === null) {
@@ -501,9 +505,12 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
       }
       if (length === null) {
         if (type === "math") {
-          length = Math.floor((to.subtract(1).divide(step).evaluate_to_constant() + 1) * (1 + 1E-14));
+          length = Math.floor(
+            (to.subtract(1).divide(step).evaluate_to_constant() + 1) *
+              (1 + 1e-14),
+          );
         } else {
-          length = Math.floor(((to - 1) / step + 1) * (1 + 1E-14))
+          length = Math.floor(((to - 1) / step + 1) * (1 + 1e-14));
         }
       }
 
@@ -516,9 +523,8 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (type === "letters") {
           if (from < 1) {
             // adjust length so that have valid letters
-            length = Math.floor(((to - 1) / step + 1) * (1 + 1E-14))
+            length = Math.floor(((to - 1) / step + 1) * (1 + 1e-14));
             from = to - step * (length - 1);
-
           }
         }
       }
@@ -543,10 +549,12 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (length === null) {
           if (type === "math") {
             step = me.fromAst(1);
-            length = Math.floor((to.subtract(from).add(1).evaluate_to_constant()) * (1 + 1E-14));
+            length = Math.floor(
+              to.subtract(from).add(1).evaluate_to_constant() * (1 + 1e-14),
+            );
           } else {
             step = 1;
-            length = Math.floor((to - from + 1) * (1 + 1E-14));
+            length = Math.floor((to - from + 1) * (1 + 1e-14));
           }
         } else {
           if (type === "math") {
@@ -563,9 +571,12 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (length === null) {
           // from, to, and step, no length
           if (type === "math") {
-            length = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant() * (1 + 1E-14));
+            length = Math.floor(
+              to.subtract(from).divide(step).add(1).evaluate_to_constant() *
+                (1 + 1e-14),
+            );
           } else {
-            length = Math.floor(((to - from) / step + 1) * (1 + 1E-14));
+            length = Math.floor(((to - from) / step + 1) * (1 + 1e-14));
           }
         } else {
           // from, to, step, and length defined
@@ -576,16 +587,23 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
   }
 
   if (!Number.isInteger(length) || length < 0) {
-    console.warn("Invalid length of sequence.  Must be a non-negative integer.")
+    console.warn(
+      "Invalid length of sequence.  Must be a non-negative integer.",
+    );
     length = 0;
   }
 
   return {
-    from, step, length,
-  }
+    from,
+    step,
+    length,
+  };
 }
 
-export function returnSequenceValues({ from, step, length, exclude, type, lowercase, maxNum }, includeOriginalIndex = false) {
+export function returnSequenceValues(
+  { from, step, length, exclude, type, lowercase, maxNum },
+  includeOriginalIndex = false,
+) {
   let sequenceValues = [];
   let nValues = 0;
 
@@ -593,18 +611,27 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
     let value = from;
     if (ind > 0) {
       if (type === "math") {
-        value = value.add(step.multiply(me.fromAst(ind))).expand().simplify();
+        value = value
+          .add(step.multiply(me.fromAst(ind)))
+          .expand()
+          .simplify();
       } else {
         value += step * ind;
       }
     }
 
     if (type === "math") {
-      if (exclude.some(x => x && x.equals(value))) {
+      if (exclude.some((x) => x && x.equals(value))) {
         continue;
       }
     } else if (type === "number") {
-      if (exclude.some(x => Math.abs(x - value) <= 1E-14 * Math.max(Math.abs(x), Math.abs(value)))) {
+      if (
+        exclude.some(
+          (x) =>
+            Math.abs(x - value) <=
+            1e-14 * Math.max(Math.abs(x), Math.abs(value)),
+        )
+      ) {
         continue;
       }
     } else {
@@ -628,14 +655,20 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
     if (nValues === maxNum) {
       break;
     }
-
   }
 
   return sequenceValues;
 }
 
-export function returnSequenceValueForIndex({ index, from, step, length, exclude, type, lowercase }) {
-
+export function returnSequenceValueForIndex({
+  index,
+  from,
+  step,
+  length,
+  exclude,
+  type,
+  lowercase,
+}) {
   // note: if index is excluded or index is out of range, returns null
 
   if (!(index >= 0 && (length === undefined || index < length))) {
@@ -645,18 +678,26 @@ export function returnSequenceValueForIndex({ index, from, step, length, exclude
   let value = from;
   if (index > 0) {
     if (type === "math") {
-      value = value.add(step.multiply(me.fromAst(index))).expand().simplify();
+      value = value
+        .add(step.multiply(me.fromAst(index)))
+        .expand()
+        .simplify();
     } else {
       value += step * index;
     }
   }
 
   if (type === "math") {
-    if (exclude.some(x => x && x.equals(value))) {
+    if (exclude.some((x) => x && x.equals(value))) {
       return null;
     }
   } else if (type === "number") {
-    if (exclude.some(x => Math.abs(x - value) <= 1E-14 * Math.max(Math.abs(x), Math.abs(value)))) {
+    if (
+      exclude.some(
+        (x) =>
+          Math.abs(x - value) <= 1e-14 * Math.max(Math.abs(x), Math.abs(value)),
+      )
+    ) {
       return null;
     }
   } else {
@@ -670,11 +711,9 @@ export function returnSequenceValueForIndex({ index, from, step, length, exclude
   }
 
   return value;
-
 }
 
 export function lettersToNumber(letters) {
-
   try {
     letters = letters.toUpperCase();
   } catch (e) {

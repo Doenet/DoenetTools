@@ -1,8 +1,7 @@
-import React from 'react';
+import React from "react";
 
-export default function Empty(props){
+export default function Empty(props) {
   // console.log(">>>===Empty")
 
-  return <div style={props.style}>
-  </div>
+  return <div style={props.style}></div>;
 }

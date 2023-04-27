@@ -1,16 +1,18 @@
-import readOnlyProxyHandler from './ReadOnlyProxyHandler';
+import readOnlyProxyHandler from "./ReadOnlyProxyHandler";
 
 export default function createStateProxyHandler() {
-
   return {
     get: function (obj, prop) {
       let result = obj[prop];
       if (result !== undefined) {
         if (result.isArray && (result.public || result.trackChanges)) {
-          result = new Proxy(result.value, createArrayProxyHandler({
-            variable: prop,
-            nDimensions: result.nDimensions
-          }));
+          result = new Proxy(
+            result.value,
+            createArrayProxyHandler({
+              variable: prop,
+              nDimensions: result.nDimensions,
+            }),
+          );
         } else {
           result = result.value;
           // if (result !== null && typeof result === 'object' && result.__isReadOnlyProxy !== true) {
@@ -25,12 +27,11 @@ export default function createStateProxyHandler() {
     },
     deleteProperty: function (obj, prop) {
       throw Error("Property " + prop + " is read-only");
-    }
-  }
+    },
+  };
 }
 
 function createArrayProxyHandler({ variable, nDimensions, indicesSoFar = [] }) {
-
   return {
     variable: variable,
     nDimensions: nDimensions,
@@ -43,22 +44,33 @@ function createArrayProxyHandler({ variable, nDimensions, indicesSoFar = [] }) {
 
         // We return a function that will be used instead of the "then"
         // that first applies the array proxy
-        return f => obj.then.bind(obj)(x => f(
-          x !== null && typeof x === "object" ? new Proxy(x, createArrayProxyHandler({
-            variable: this.variable,
-            nDimensions: this.nDimensions,
-            indicesSoFar: this.indicesSoFar,
-          })) : x
-        ))
+        return (f) =>
+          obj.then.bind(obj)((x) =>
+            f(
+              x !== null && typeof x === "object"
+                ? new Proxy(
+                    x,
+                    createArrayProxyHandler({
+                      variable: this.variable,
+                      nDimensions: this.nDimensions,
+                      indicesSoFar: this.indicesSoFar,
+                    }),
+                  )
+                : x,
+            ),
+          );
       }
 
       let result = obj[index];
-      if (result !== null && typeof result === 'object' && nDimensions > 1) {
-        result = new Proxy(result, createArrayProxyHandler({
-          variable: this.variable,
-          nDimensions: this.nDimensions - 1,
-          indicesSoFar: [...this.indicesSoFar, index],
-        }));
+      if (result !== null && typeof result === "object" && nDimensions > 1) {
+        result = new Proxy(
+          result,
+          createArrayProxyHandler({
+            variable: this.variable,
+            nDimensions: this.nDimensions - 1,
+            indicesSoFar: [...this.indicesSoFar, index],
+          }),
+        );
       }
       return result;
     },
@@ -67,6 +79,6 @@ function createArrayProxyHandler({ variable, nDimensions, indicesSoFar = [] }) {
     },
     deleteProperty: function (obj, prop) {
       throw Error("Property " + prop + " is read-only");
-    }
-  }
+    },
+  };
 }

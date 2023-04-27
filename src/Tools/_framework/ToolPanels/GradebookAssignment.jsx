@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Styles,
   Table,
@@ -9,7 +9,7 @@ import {
   studentDataQuery,
   overviewDataQuery,
   overviewData,
-} from './Gradebook';
+} from "./Gradebook";
 
 import {
   atom,
@@ -17,30 +17,30 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   useRecoilCallback,
-} from 'recoil';
+} from "recoil";
 
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { useToast, toastType } from '../Toast';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import { suppressMenusAtom } from '../NewToolRoot';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import axios from 'axios';
-import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
+import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
+import { useToast, toastType } from "../Toast";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import DropdownMenu from "../../../_reactComponents/PanelHeaderComponents/DropdownMenu";
+import { suppressMenusAtom } from "../NewToolRoot";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import axios from "axios";
+import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
 
 export const processGradesAtom = atom({
-  key: 'processGradesAtom',
-  default: 'Assignment Table',
+  key: "processGradesAtom",
+  default: "Assignment Table",
 });
 
 export const headersGradesAtom = atom({
-  key: 'headersGradesAtom',
+  key: "headersGradesAtom",
   default: [],
 });
 
 export const entriesGradesAtom = atom({
-  key: 'entriesGradesAtom',
+  key: "entriesGradesAtom",
   default: [],
 });
 
@@ -48,7 +48,7 @@ const getUserId = (students, name) => {
   for (let userId in students) {
     //console.log(userId, students[userId].firstName);
 
-    if (students[userId].firstName + ' ' + students[userId].lastName == name) {
+    if (students[userId].firstName + " " + students[userId].lastName == name) {
       return userId;
     }
   }
@@ -71,23 +71,23 @@ function UploadChoices({ doenetId, maxAttempts }) {
     ({ set, snapshot }) =>
       async ({ doenetId, addToast }) => {
         const courseId = await snapshot.getPromise(
-          searchParamAtomFamily('courseId'),
+          searchParamAtomFamily("courseId"),
         );
 
         //TODO: switch this to a refersher with sync
         const {
           data: { assignmentAttemptsData },
-        } = await axios.get('/api/loadGradebookAssignmentAttempts.php', {
+        } = await axios.get("/api/loadGradebookAssignmentAttempts.php", {
           params: { courseId, doenetId },
         });
         const {
           data: { gradebookEnrollment },
-        } = await axios.get('/api/loadGradebookEnrollment.php', {
+        } = await axios.get("/api/loadGradebookEnrollment.php", {
           params: { courseId },
         });
         const {
           data: { overview },
-        } = await axios.get('/api/loadGradebookOverview.php', {
+        } = await axios.get("/api/loadGradebookOverview.php", {
           params: { courseId },
         });
 
@@ -96,20 +96,20 @@ function UploadChoices({ doenetId, maxAttempts }) {
         set(overviewDataQuery, overview);
 
         addToast(`Updated scores!`);
-        set(processGradesAtom, 'Assignment Table');
+        set(processGradesAtom, "Assignment Table");
       },
   );
 
-  if (assignments.state !== 'hasValue') {
+  if (assignments.state !== "hasValue") {
     return null;
   }
 
   const totalPointsOrPercent =
     assignments.contents?.[doenetId]?.totalPointsOrPercent;
 
-  if (!headers.includes('Email')) {
+  if (!headers.includes("Email")) {
     addToast("Need a column header named 'Email' ", toastType.ERROR);
-    setProcess('Assignment Table');
+    setProcess("Assignment Table");
     return null;
   }
 
@@ -123,13 +123,12 @@ function UploadChoices({ doenetId, maxAttempts }) {
     return columnPoints == totalPointsOrPercent;
   });
 
-
   if (validColumns.length < 1) {
     addToast(
       `Need a column with an assignment worth ${totalPointsOrPercent} points in the second row`,
       toastType.ERROR,
     );
-    setProcess('Assignment Table');
+    setProcess("Assignment Table");
     return null;
   }
 
@@ -148,12 +147,12 @@ function UploadChoices({ doenetId, maxAttempts }) {
     let email = row[emailColumn];
     let score = row[scoreIndex];
 
-    if (email !== '') {
+    if (email !== "") {
       emails.push(email); //needed for payload
       scores.push(score); //needed for payload
       tableRows.push(
         <tr key={email}>
-          {' '}
+          {" "}
           <td>{name}</td>
           <td>{email}</td>
           <td>{score}</td>
@@ -165,9 +164,9 @@ function UploadChoices({ doenetId, maxAttempts }) {
   let importTable = (
     <table>
       <tr>
-        <th style={{ width: '200px' }}>Student</th>
-        <th style={{ width: '200px' }}>Email</th>
-        <th style={{ width: '50px' }}>Score</th>
+        <th style={{ width: "200px" }}>Student</th>
+        <th style={{ width: "200px" }}>Email</th>
+        <th style={{ width: "50px" }}>Score</th>
       </tr>
 
       {tableRows}
@@ -213,9 +212,9 @@ function UploadChoices({ doenetId, maxAttempts }) {
   {
     attemptNumber ? (
       <div>
-        Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> as{' '}
-        <b>Attempt Number {attemptNumber}</b> to{' '}
-        {Number(maxAttempts) + 1 === attemptNumber ? 'insert' : 'override'}{' '}
+        Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> as{" "}
+        <b>Attempt Number {attemptNumber}</b> to{" "}
+        {Number(maxAttempts) + 1 === attemptNumber ? "insert" : "override"}{" "}
         scores?
       </div>
     ) : null;
@@ -224,8 +223,8 @@ function UploadChoices({ doenetId, maxAttempts }) {
   return (
     <>
       <div>
-        {validColumns.length} column{validColumns.length > 1 ? 's' : null} match{' '}
-        {totalPointsOrPercent} total points{' '}
+        {validColumns.length} column{validColumns.length > 1 ? "s" : null} match{" "}
+        {totalPointsOrPercent} total points{" "}
       </div>
       <div>
         <DropdownMenu
@@ -259,7 +258,7 @@ function UploadChoices({ doenetId, maxAttempts }) {
           value="Cancel"
           onClick={() => {
             addToast(`Override Cancelled`);
-            setProcess('Assignment Table');
+            setProcess("Assignment Table");
           }}
         />
         {attemptNumber ? (
@@ -273,10 +272,10 @@ function UploadChoices({ doenetId, maxAttempts }) {
                 scores,
               };
               axios
-                .post('/api/saveOverrideGrades.php', payload)
+                .post("/api/saveOverrideGrades.php", payload)
                 .catch((e) => {
                   addToast(e, toastType.ERROR);
-                  setProcess('Assignment Table');
+                  setProcess("Assignment Table");
                 })
                 .then(({ data }) => {
                   // TODO: show warning from data.failedEmails
@@ -301,8 +300,8 @@ function UploadChoices({ doenetId, maxAttempts }) {
 
 export default function GradebookAssignmentView() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  let courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let overview = useRecoilValueLoadable(overviewData);
   let students = useRecoilValueLoadable(studentData);
@@ -314,24 +313,24 @@ export default function GradebookAssignmentView() {
   let assignments = useRecoilValueLoadable(assignmentData);
 
   useEffect(() => {
-    if (canViewAndModifyGrades === '1') {
+    if (canViewAndModifyGrades === "1") {
       setSuppressMenus([]);
     } else {
-      setSuppressMenus(['GradeUpload']);
+      setSuppressMenus(["GradeUpload"]);
     }
   }, [canViewAndModifyGrades, setSuppressMenus]);
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0'){
-    return <h1>No Access to view this page.</h1>
+  if (course?.canViewCourse == "0") {
+    return <h1>No Access to view this page.</h1>;
   }
 
   //Wait for attempts and students to load
   if (
-    attempts.state !== 'hasValue' ||
-    students.state !== 'hasValue' ||
-    assignments.state !== 'hasValue'
+    attempts.state !== "hasValue" ||
+    students.state !== "hasValue" ||
+    assignments.state !== "hasValue"
   ) {
     return null;
   }
@@ -346,7 +345,9 @@ export default function GradebookAssignmentView() {
 
   for (let userId in attempts.contents) {
     if (attempts.contents[userId]?.attempts) {
-      let lastAttemptNumber = Math.max(...Object.keys(attempts.contents[userId].attempts).map(Number))
+      let lastAttemptNumber = Math.max(
+        ...Object.keys(attempts.contents[userId].attempts).map(Number),
+      );
 
       if (lastAttemptNumber > maxAttempts) {
         maxAttempts = lastAttemptNumber;
@@ -354,22 +355,22 @@ export default function GradebookAssignmentView() {
     }
   }
 
-  if (process === 'Upload Choice Table') {
+  if (process === "Upload Choice Table") {
     return <UploadChoices doenetId={doenetId} maxAttempts={maxAttempts} />;
   }
 
   assignmentsTable.headers = [];
   assignmentsTable.headers.push({
-    Header: 'Student',
-    Footer: 'Possible Points',
-    accessor: 'student',
+    Header: "Student",
+    Footer: "Possible Points",
+    accessor: "student",
   });
 
   for (let i = 1; i <= maxAttempts; i++) {
     assignmentsTable.headers.push({
-      Header: 'Attempt ' + i,
+      Header: "Attempt " + i,
       Footer: totalPossiblePoints,
-      accessor: 'a' + i,
+      accessor: "a" + i,
       disableFilters: true,
       Cell: (row) => (
         <a
@@ -382,15 +383,15 @@ export default function GradebookAssignmentView() {
             //open("calendar", "fdsa", "f001");
 
             setPageToolView({
-              page: 'course',
-              tool: 'gradebookStudentAssignment',
-              view: '',
+              page: "course",
+              tool: "gradebookStudentAssignment",
+              view: "",
               params: {
                 courseId,
                 doenetId,
                 userId,
                 attemptNumber: i,
-                previousCrumb: 'assignment',
+                previousCrumb: "assignment",
               },
             });
           }}
@@ -402,9 +403,9 @@ export default function GradebookAssignmentView() {
   }
 
   assignmentsTable.headers.push({
-    Header: 'Assignment Total',
+    Header: "Assignment Total",
     Footer: totalPossiblePoints,
-    accessor: 'grade',
+    accessor: "grade",
     disableFilters: true,
   });
 
@@ -415,15 +416,15 @@ export default function GradebookAssignmentView() {
     let lastName = students.contents[userId].lastName;
     let row = {};
 
-    let name = firstName + ' ' + lastName;
-    row['student'] = (
+    let name = firstName + " " + lastName;
+    row["student"] = (
       <a
         onClick={() => {
           setPageToolView({
-            page: 'course',
-            tool: 'gradebookStudentAssignment',
-            view: '',
-            params: { courseId, doenetId, userId, previousCrumb: 'assignment' },
+            page: "course",
+            tool: "gradebookStudentAssignment",
+            view: "",
+            params: { courseId, doenetId, userId, previousCrumb: "assignment" },
           });
         }}
       >
@@ -436,7 +437,7 @@ export default function GradebookAssignmentView() {
       let pointsEarned =
         Math.round(attemptCredit * totalPossiblePoints * 100) / 100;
 
-      row['a' + i] = attemptCredit === undefined ? '' : pointsEarned;
+      row["a" + i] = attemptCredit === undefined ? "" : pointsEarned;
       // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
       // {
       //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
@@ -447,7 +448,7 @@ export default function GradebookAssignmentView() {
     let totalCredit = overview?.contents?.[userId]?.assignments?.[doenetId];
     let totalPointsEarned =
       Math.round(totalCredit * totalPossiblePoints * 100) / 100;
-    row['grade'] = totalCredit ? totalPointsEarned : '0';
+    row["grade"] = totalCredit ? totalPointsEarned : "0";
 
     assignmentsTable.rows.push(row);
   }
@@ -455,10 +456,10 @@ export default function GradebookAssignmentView() {
   //TODO CRITIAL: update to use new table interface and remove the dep on rows
   return (
     <>
-      <div style={{ paddingLeft: '8px' }}>
+      <div style={{ paddingLeft: "8px" }}>
         <b>{label}</b>
       </div>
-      <div style={{ paddingLeft: '8px' }}>
+      <div style={{ paddingLeft: "8px" }}>
         {totalPossiblePoints} Points Possible
       </div>
       <Styles>

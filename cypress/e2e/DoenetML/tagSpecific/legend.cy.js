@@ -1,17 +1,16 @@
-import { cesc } from '../../../../src/_utils/url';
+import { cesc } from "../../../../src/_utils/url";
 
-describe('Legend Tag Tests', function () {
-
+describe("Legend Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
-  })
-
-  it('legend includes unique styles, points separate, closed path not separate', () => {
+  it("legend includes unique styles, points separate, closed path not separate", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <graph>
@@ -30,44 +29,74 @@ describe('Legend Tag Tests', function () {
         <label>This will be unused</label>
       </legend>
     </graph>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperright");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperright");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(4);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        4,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("parabola and circle")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("parabola and circle");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value)
-        .eq("\\(\\left( -3, 2 \\right)\\) and \\(\\left( -5, 6 \\right)\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\left( -3, 2 \\right)\\) and \\(\\left( -5, 6 \\right)\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("vector")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("vector");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(false);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.value).eq("\\(r^2\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.hasLatex).eq(true);
-
-
-    })
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label.value,
+      ).eq("\\(r^2\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label
+          .hasLatex,
+      ).eq(true);
+    });
   });
 
-  it('displayClosedSwatches separates closed path', () => {
+  it("displayClosedSwatches separates closed path", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <graph>
@@ -87,48 +116,85 @@ describe('Legend Tag Tests', function () {
         <label>This will be unused</label>
       </legend>
     </graph>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperright");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperright");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(5);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        5,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("parabola")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("parabola");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value)
-        .eq("\\(\\left( -3, 2 \\right)\\) and \\(\\left( -5, 6 \\right)\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\left( -3, 2 \\right)\\) and \\(\\left( -5, 6 \\right)\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("rectangle")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("circle")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("rectangle");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("circle");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(false);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.value).eq("vector")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label.value,
+      ).eq("vector");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label
+          .hasLatex,
+      ).eq(false);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].label.value).eq("\\(r^2\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].label.hasLatex).eq(true);
-
-
-    })
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].label.value,
+      ).eq("\\(r^2\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].label
+          .hasLatex,
+      ).eq(true);
+    });
   });
 
-  it('legend with dynamical functions', () => {
+  it("legend with dynamical functions", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <mathinput name="n" prefill="2" />
@@ -150,234 +216,400 @@ describe('Legend Tag Tests', function () {
 
     <copy prop="value" target="n" assignNames="n2" />
     <copy prop="value" target="pos" assignNames="pos2" />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
-
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperright");
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(1);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
-
-    })
-
-    cy.get(cesc('#\\/pos_input')).type("upperLeft{enter}");
-
-    cy.get(cesc('#\\/pos2')).should('have.text', 'upperLeft');
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperleft");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperright");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(1);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        1,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+    });
 
-    })
+    cy.get(cesc("#\\/pos_input")).type("upperLeft{enter}");
 
-    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}3{enter}", { force: true });
-
-    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '3')
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperleft");
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(2);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
-
-    })
-
-
-    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}4{enter}", { force: true });
-
-    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '4')
+    cy.get(cesc("#\\/pos2")).should("have.text", "upperLeft");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperleft");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperleft");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(2);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        1,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+    });
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
 
-    })
-
-
-    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}5{enter}", { force: true });
-
-    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '5')
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperleft");
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(3);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("only this")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(false);
-
-    })
-
-    cy.get(cesc('#\\/pos_input')).clear().type("LowerRight{enter}");
-
-    cy.get(cesc('#\\/pos2')).should('have.text', 'LowerRight');
+    cy.get(cesc("#\\/n2") + " .mjx-mrow").should("contain.text", "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("lowerright");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperleft");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(3);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        2,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\int_a^b f(x) \\,dx\\) is it!");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
+    });
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("only this")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(false);
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}4{enter}", {
+      force: true,
+    });
 
-    })
-
-
-    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}8{enter}", { force: true });
-
-    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '8')
-
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("lowerright");
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(4);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("only this")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(false);
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.value).eq("\\(x^2\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.hasLatex).eq(true);
-
-    })
-
-
-    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}1{enter}", { force: true });
-
-    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '1')
-
+    cy.get(cesc("#\\/n2") + " .mjx-mrow").should("contain.text", "4");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("lowerright");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperleft");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(1);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        2,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
 
-    })
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\int_a^b f(x) \\,dx\\) is it!");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
+    });
 
-    cy.get(cesc('#\\/pos_input')).clear().type("lowerleft{enter}");
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}5{enter}", {
+      force: true,
+    });
 
-    cy.get(cesc('#\\/pos2')).should('have.text', 'lowerleft');
-
+    cy.get(cesc("#\\/n2") + " .mjx-mrow").should("contain.text", "5");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("lowerleft");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperleft");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(1);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        3,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
 
-    })
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\int_a^b f(x) \\,dx\\) is it!");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
 
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("only this");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(false);
+    });
 
+    cy.get(cesc("#\\/pos_input")).clear().type("LowerRight{enter}");
 
-    cy.get(cesc('#\\/n') + ' textarea').type("{end}{backspace}10{enter}", { force: true });
-
-    cy.get(cesc('#\\/n2') + ' .mjx-mrow').should('contain.text', '10')
-
+    cy.get(cesc("#\\/pos2")).should("have.text", "LowerRight");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_legend1'].stateValues.position).eq("lowerleft");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("lowerright");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(4);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        3,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("hi")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("\\(\\int_a^b f(x) \\,dx\\) is it!")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\int_a^b f(x) \\,dx\\) is it!");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("only this")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("only this");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(false);
+    });
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.value).eq("\\(x^2\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.hasLatex).eq(true);
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}8{enter}", {
+      force: true,
+    });
 
-    })
+    cy.get(cesc("#\\/n2") + " .mjx-mrow").should("contain.text", "8");
 
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_legend1"].stateValues.position).eq("lowerright");
 
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        4,
+      );
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\int_a^b f(x) \\,dx\\) is it!");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("only this");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(false);
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label.value,
+      ).eq("\\(x^2\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label
+          .hasLatex,
+      ).eq(true);
+    });
+
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc("#\\/n2") + " .mjx-mrow").should("contain.text", "1");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_legend1"].stateValues.position).eq("lowerright");
+
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        1,
+      );
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+    });
+
+    cy.get(cesc("#\\/pos_input")).clear().type("lowerleft{enter}");
+
+    cy.get(cesc("#\\/pos2")).should("have.text", "lowerleft");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_legend1"].stateValues.position).eq("lowerleft");
+
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        1,
+      );
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+    });
+
+    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}10{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc("#\\/n2") + " .mjx-mrow").should("contain.text", "10");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_legend1"].stateValues.position).eq("lowerleft");
+
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        4,
+      );
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("hi");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("\\(\\int_a^b f(x) \\,dx\\) is it!");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(true);
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("only this");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(false);
+
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label.value,
+      ).eq("\\(x^2\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label
+          .hasLatex,
+      ).eq(true);
+    });
   });
 
-  it('legend with forObject', () => {
+  it("legend with forObject", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <setup>
@@ -412,141 +644,302 @@ describe('Legend Tag Tests', function () {
         <label>fourth one</label>
       </legend>
     </graph>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperright");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperright");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(5);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        5,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("targeted function")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineStyle).eq("dashed");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineColor).eq("blue");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineWidth).eq(2);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineOpacity).eq(0.8);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("targeted function");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineStyle,
+      ).eq("dashed");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineColor,
+      ).eq("blue");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineWidth,
+      ).eq(2);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineOpacity,
+      ).eq(0.8);
 
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("first one");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineStyle,
+      ).eq("solid");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineColor,
+      ).eq("cyan");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineWidth,
+      ).eq(3);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineOpacity,
+      ).eq(0.7);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value)
-        .eq("first one")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(false);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineStyle).eq("solid");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineColor).eq("cyan");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineWidth).eq(3);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineOpacity).eq(0.7);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("second one \\(x^2\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].markerStyle,
+      ).eq("square");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].markerColor,
+      ).eq("blue");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].markerSize,
+      ).eq(4);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("second one \\(x^2\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(true);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].markerStyle).eq("square");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].markerColor).eq("blue");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].markerSize).eq(4);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label.value,
+      ).eq("targeted point \\(B\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label
+          .hasLatex,
+      ).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].markerStyle,
+      ).eq("triangle");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].markerColor,
+      ).eq("green");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].markerSize,
+      ).eq(5);
 
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.value).eq("targeted point \\(B\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.hasLatex).eq(true);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].markerStyle).eq("triangle");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].markerColor).eq("green");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].markerSize).eq(5);
-
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].label.value)
-        .eq("third one")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].label.hasLatex).eq(false);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].lineStyle).eq("dotted");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].lineColor).eq("black");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].lineWidth).eq(4);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].lineOpacity).eq(0.6);
-
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].label.value,
+      ).eq("third one");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].label
+          .hasLatex,
+      ).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].lineStyle,
+      ).eq("dotted");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].lineColor,
+      ).eq("black");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].lineWidth,
+      ).eq(4);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].lineOpacity,
+      ).eq(0.6);
     });
 
-    cy.log('change displayClosedSwatches to true')
+    cy.log("change displayClosedSwatches to true");
     cy.get(cesc("#\\/closedSwatches")).click();
 
-
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_legend1'].stateValues.position).eq("upperright");
+      expect(stateVariables["/_legend1"].stateValues.position).eq("upperright");
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(6);
+      expect(stateVariables["/_legend1"].stateValues.legendElements.length).eq(
+        6,
+      );
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("targeted function")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineStyle).eq("dashed");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineColor).eq("blue");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineWidth).eq(2);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineOpacity).eq(0.8);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("targeted function");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label
+          .hasLatex,
+      ).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineStyle,
+      ).eq("dashed");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineColor,
+      ).eq("blue");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineWidth,
+      ).eq(2);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].lineOpacity,
+      ).eq(0.8);
 
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("line");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("first one");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label
+          .hasLatex,
+      ).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineStyle,
+      ).eq("solid");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineColor,
+      ).eq("cyan");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineWidth,
+      ).eq(3);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].lineOpacity,
+      ).eq(0.7);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value)
-        .eq("first one")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.hasLatex).eq(false);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineStyle).eq("solid");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineColor).eq("cyan");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineWidth).eq(3);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].lineOpacity).eq(0.7);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].swatchType,
+      ).eq("rectangle");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label.value,
+      ).eq("second one \\(x^2\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].label
+          .hasLatex,
+      ).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].lineStyle,
+      ).eq("solid");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].lineColor,
+      ).eq("cyan");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].lineWidth,
+      ).eq(3);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].lineOpacity,
+      ).eq(0.7);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].fillColor,
+      ).eq("magenta");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].filled,
+      ).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[2].fillOpacity,
+      ).eq(0.5);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].swatchType).eq("rectangle")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.value).eq("second one \\(x^2\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].label.hasLatex).eq(true);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineStyle).eq("solid");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineColor).eq("cyan");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineWidth).eq(3);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].lineOpacity).eq(0.7);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].fillColor).eq("magenta");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].filled).eq(true);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[2].fillOpacity).eq(0.5);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label.value,
+      ).eq("targeted point \\(B\\)");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].label
+          .hasLatex,
+      ).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].markerStyle,
+      ).eq("triangle");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].markerColor,
+      ).eq("green");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[3].markerSize,
+      ).eq(5);
 
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].label.value,
+      ).eq("third one");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].label
+          .hasLatex,
+      ).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].markerStyle,
+      ).eq("square");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].markerColor,
+      ).eq("blue");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[4].markerSize,
+      ).eq(4);
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.value).eq("targeted point \\(B\\)")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].label.hasLatex).eq(true);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].markerStyle).eq("triangle");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].markerColor).eq("green");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[3].markerSize).eq(5);
-
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].label.value)
-        .eq("third one")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].label.hasLatex).eq(false);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].markerStyle).eq("square");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].markerColor).eq("blue");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[4].markerSize).eq(4);
-
-
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].swatchType).eq("rectangle")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].label.value).eq("fourth one")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].label.hasLatex).eq(false);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineStyle).eq("dashed");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineColor).eq("blue");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineWidth).eq(2);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineOpacity).eq(0.8);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillColor).eq("orange");
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].filled).eq(true);
-      expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillOpacity).eq(0.4);
-
-
-    })
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].swatchType,
+      ).eq("rectangle");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].label.value,
+      ).eq("fourth one");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].label
+          .hasLatex,
+      ).eq(false);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].lineStyle,
+      ).eq("dashed");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].lineColor,
+      ).eq("blue");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].lineWidth,
+      ).eq(2);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].lineOpacity,
+      ).eq(0.8);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].fillColor,
+      ).eq("orange");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].filled,
+      ).eq(true);
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[5].fillOpacity,
+      ).eq(0.4);
+    });
   });
 
-  it('legend with forObject, use names of shadow sources', () => {
+  it("legend with forObject, use names of shadow sources", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <graph>
@@ -568,27 +961,41 @@ describe('Legend Tag Tests', function () {
       </legend> 
     </graph>
   
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a') //wait for page to load
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("point p")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("marker")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("point Q")
-      expect(stateVariables['/_legend2'].stateValues.legendElements[0].swatchType).eq("marker")
-      expect(stateVariables['/_legend2'].stateValues.legendElements[0].label.value).eq("point Q")
-      expect(stateVariables['/_legend2'].stateValues.legendElements[1].swatchType).eq("marker")
-      expect(stateVariables['/_legend2'].stateValues.legendElements[1].label.value).eq("point p")
-
-
-    })
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[0].label.value,
+      ).eq("point p");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend1"].stateValues.legendElements[1].label.value,
+      ).eq("point Q");
+      expect(
+        stateVariables["/_legend2"].stateValues.legendElements[0].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend2"].stateValues.legendElements[0].label.value,
+      ).eq("point Q");
+      expect(
+        stateVariables["/_legend2"].stateValues.legendElements[1].swatchType,
+      ).eq("marker");
+      expect(
+        stateVariables["/_legend2"].stateValues.legendElements[1].label.value,
+      ).eq("point p");
+    });
   });
-
-
 });

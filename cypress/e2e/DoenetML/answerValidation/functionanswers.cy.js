@@ -1,16 +1,16 @@
-import { cesc } from '../../../../src/_utils/url';
+import { cesc } from "../../../../src/_utils/url";
 
-describe('Function answer validation tests', function () {
-
+describe("Function answer validation tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
-  })
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
-  it('simple function of input', () => {
+  it("simple function of input", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <function name="f">cos(2*pi*x)</function>
   
   <p>Enter a number close to an integer:
@@ -21,133 +21,197 @@ describe('Function answer validation tests', function () {
     </award>
   </answer>
   </p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     let partialCredit005 = Math.cos(2 * Math.PI * 0.05);
     let partialCredit01 = Math.cos(2 * Math.PI * 0.1);
     let partialCredit015 = Math.cos(2 * Math.PI * 0.15);
     let partialCredit02 = Math.cos(2 * Math.PI * 0.2);
-    let partialCredit005Percent = Math.round(Math.cos(2 * Math.PI * 0.05) * 100);
+    let partialCredit005Percent = Math.round(
+      Math.cos(2 * Math.PI * 0.05) * 100,
+    );
     let partialCredit01Percent = Math.round(Math.cos(2 * Math.PI * 0.1) * 100);
-    let partialCredit015Percent = Math.round(Math.cos(2 * Math.PI * 0.15) * 100);
+    let partialCredit015Percent = Math.round(
+      Math.cos(2 * Math.PI * 0.15) * 100,
+    );
     let partialCredit02Percent = Math.round(Math.cos(2 * Math.PI * 0.2) * 100);
 
-    cy.get(cesc('#\\/x_submit')).should('be.visible');
+    cy.get(cesc("#\\/x_submit")).should("be.visible");
 
-    cy.log("Submit empty answer")
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_incorrect')).should('be.visible');
+    cy.log("Submit empty answer");
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
-    });
-
-    cy.log("Submit correct answers")
-    cy.get(cesc('#\\/x') + ' textarea').type('7', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_correct')).should('be.visible');
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
-    });
-    cy.get(cesc('#\\/x') + ' textarea').type('{end}{backspace}0', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_correct')).should('be.visible');
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
-    });
-    cy.get(cesc('#\\/x') + ' textarea').type('{end}{backspace}-14', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_correct')).should('be.visible');
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
-    });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}33', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_correct')).should('be.visible');
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
-    });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}-102351', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_correct')).should('be.visible');
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
     });
 
-    cy.log("Submit incorrect answers")
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}9.5', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_incorrect')).should('be.visible');
+    cy.log("Submit correct answers");
+    cy.get(cesc("#\\/x") + " textarea").type("7", { force: true });
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_correct")).should("be.visible");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
     });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}x^2', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_incorrect')).should('be.visible');
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+    cy.get(cesc("#\\/x") + " textarea").type("{end}{backspace}0", {
+      force: true,
     });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}-253.3', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_incorrect')).should('be.visible');
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_correct")).should("be.visible");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
     });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}23.6', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_incorrect')).should('be.visible');
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+    cy.get(cesc("#\\/x") + " textarea").type("{end}{backspace}-14", {
+      force: true,
     });
-
-    cy.log("Submit partially correct answers")
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}11.9', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_partial')).should('have.text', `${partialCredit01Percent} %`)
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_correct")).should("be.visible");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).closeTo(partialCredit01, 1E-12);
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
     });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}73.15', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_partial')).should('have.text', `${partialCredit015Percent} %`)
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}33",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_correct")).should("be.visible");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).closeTo(partialCredit015, 1E-12);
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
     });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}-103.8', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_partial')).should('have.text', `${partialCredit02Percent} %`)
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}-102351",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_correct")).should("be.visible");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).closeTo(partialCredit02, 1E-12);
-    });
-    cy.get(cesc('#\\/x') + ' textarea').type('{ctrl+home}{shift+end}{backspace}-0.05', { force: true });
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_partial')).should('have.text', `${partialCredit005Percent} %`)
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).closeTo(partialCredit005, 1E-12);
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
     });
 
+    cy.log("Submit incorrect answers");
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}9.5",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+    });
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}x^2",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+    });
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}-253.3",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+    });
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}23.6",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+    });
+
+    cy.log("Submit partially correct answers");
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}11.9",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_partial")).should(
+      "have.text",
+      `${partialCredit01Percent} %`,
+    );
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).closeTo(
+        partialCredit01,
+        1e-12,
+      );
+    });
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}73.15",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_partial")).should(
+      "have.text",
+      `${partialCredit015Percent} %`,
+    );
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).closeTo(
+        partialCredit015,
+        1e-12,
+      );
+    });
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}-103.8",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_partial")).should(
+      "have.text",
+      `${partialCredit02Percent} %`,
+    );
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).closeTo(
+        partialCredit02,
+        1e-12,
+      );
+    });
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}-0.05",
+      { force: true },
+    );
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_partial")).should(
+      "have.text",
+      `${partialCredit005Percent} %`,
+    );
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).closeTo(
+        partialCredit005,
+        1e-12,
+      );
+    });
   });
 
-
-  it('function with parameters', () => {
+  it("function with parameters", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
 
   <p>Offset: <mathinput name="offset" prefill="0"/></p>
   <p>Period: <mathinput name="period" prefill="1"/></p>
@@ -161,68 +225,90 @@ describe('Function answer validation tests', function () {
     </award>
   </answer>
   </p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // let offsets = [0, Math.E,];
-    let offsets = [Math.E,];
+    let offsets = [Math.E];
     let periods = [2, Math.PI / 2];
     let magnitudes = [0.5, 2];
 
-    let partialCredit = (o, p, m, x) => Math.max(0, Math.min(1, m * Math.cos(2 * Math.PI * (x - o) / p)));
-    let partialCreditPercent = (o, p, m, x) => Math.round(partialCredit(o, p, m, x) * 100);
+    let partialCredit = (o, p, m, x) =>
+      Math.max(0, Math.min(1, m * Math.cos((2 * Math.PI * (x - o)) / p)));
+    let partialCreditPercent = (o, p, m, x) =>
+      Math.round(partialCredit(o, p, m, x) * 100);
 
-    let numberAnswers = [Math.E, 0, 2 / 3, -Math.PI / 2, -252351.9]
+    let numberAnswers = [Math.E, 0, 2 / 3, -Math.PI / 2, -252351.9];
 
-    cy.get(cesc('#\\/x_submit')).should('be.visible');
+    cy.get(cesc("#\\/x_submit")).should("be.visible");
 
-    cy.log("Submit empty answer")
-    cy.get(cesc('#\\/x_submit')).click();
-    cy.get(cesc('#\\/x_incorrect')).should('be.visible');
+    cy.log("Submit empty answer");
+    cy.get(cesc("#\\/x_submit")).click();
+    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
     });
 
-
     for (let offset of offsets) {
-      cy.get(cesc('#\\/offset') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}${offset}{enter}`, { force: true, delay: 0 });
+      cy.get(cesc("#\\/offset") + " textarea").type(
+        `{ctrl+home}{shift+end}{backspace}${offset}{enter}`,
+        { force: true, delay: 0 },
+      );
       for (let period of periods) {
-        cy.get(cesc('#\\/period') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}${period}{enter}`, { force: true, delay: 0 });
+        cy.get(cesc("#\\/period") + " textarea").type(
+          `{ctrl+home}{shift+end}{backspace}${period}{enter}`,
+          { force: true, delay: 0 },
+        );
         for (let magnitude of magnitudes) {
-          cy.get(cesc('#\\/magnitude') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}${magnitude}{enter}`, { force: true, delay: 0 });
+          cy.get(cesc("#\\/magnitude") + " textarea").type(
+            `{ctrl+home}{shift+end}{backspace}${magnitude}{enter}`,
+            { force: true, delay: 0 },
+          );
 
           let maximals = [offset, offset + 2 * period, offset - 7 * period];
-          let minimals = [offset + 1.5 * period, offset + 5.5 * period, offset - 7.5 * period];
+          let minimals = [
+            offset + 1.5 * period,
+            offset + 5.5 * period,
+            offset - 7.5 * period,
+          ];
 
           cy.log("Submit answers");
           for (let ans of [...maximals, ...minimals, ...numberAnswers]) {
-            cy.get(cesc('#\\/x') + ' textarea').type(`{ctrl+home}{shift+end}{backspace}${ans}`, { force: true, delay: 0 });
-            cy.get(cesc('#\\/x_submit')).click();
+            cy.get(cesc("#\\/x") + " textarea").type(
+              `{ctrl+home}{shift+end}{backspace}${ans}`,
+              { force: true, delay: 0 },
+            );
+            cy.get(cesc("#\\/x_submit")).click();
 
             let credit = partialCredit(offset, period, magnitude, ans);
             if (credit === 1) {
-              cy.get(cesc('#\\/x_correct')).should('be.visible');
+              cy.get(cesc("#\\/x_correct")).should("be.visible");
             } else if (credit === 0) {
-              cy.get(cesc('#\\/x_incorrect')).should('be.visible');
+              cy.get(cesc("#\\/x_incorrect")).should("be.visible");
             } else {
-              let percent = partialCreditPercent(offset, period, magnitude, ans);
-              cy.get(cesc('#\\/x_partial')).should('have.text', `${percent} %`)
+              let percent = partialCreditPercent(
+                offset,
+                period,
+                magnitude,
+                ans,
+              );
+              cy.get(cesc("#\\/x_partial")).should("have.text", `${percent} %`);
 
               cy.window().then(async (win) => {
                 let stateVariables = await win.returnAllStateVariables1();
-                expect(stateVariables['/_answer1'].stateValues.creditAchieved).closeTo(credit, 1E-8);
+                expect(
+                  stateVariables["/_answer1"].stateValues.creditAchieved,
+                ).closeTo(credit, 1e-8);
               });
             }
           }
         }
       }
     }
-
-
   });
-
-
-
 });

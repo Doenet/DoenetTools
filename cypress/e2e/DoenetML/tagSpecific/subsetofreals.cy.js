@@ -1,19 +1,16 @@
-import { cesc } from '../../../../src/_utils/url';
+import { cesc } from "../../../../src/_utils/url";
 
-
-describe('SubsetOfReals Tag Tests', function () {
-
+describe("SubsetOfReals Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/src/Tools/cypressTest/')
-
-  })
-
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
   it("single intervals", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="o1">(4,5)</subsetOfReals></p>
   <p><subsetOfReals name="o2">(5,4)</subsetOfReals></p>
@@ -57,56 +54,131 @@ describe('SubsetOfReals Tag Tests', function () {
 
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/o1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)")
-    cy.get(cesc('#\\/o2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/o5') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o6') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/o7') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o8') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/o1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+    cy.get(cesc("#\\/o2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/o5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/o7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/c1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5]")
-    cy.get(cesc('#\\/c2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c3') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/c4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/c5') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c6') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/c7') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c8') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/c9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5]");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/c4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/c5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/c7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/c9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/oc1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5]")
-    cy.get(cesc('#\\/oc2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/oc5') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc6') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/oc7') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc8') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/oc9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/oc1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5]");
+    cy.get(cesc("#\\/oc2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/oc5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/oc7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/oc9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/co1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5)")
-    cy.get(cesc('#\\/co2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/co5') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co6') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/co7') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co8') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/co9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-
-  })
+    cy.get(cesc("#\\/co1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5)");
+    cy.get(cesc("#\\/co2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/co5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/co7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/co9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+  });
 
   it("single intervals, display as inequality", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals displayMode="inequalities" name="o1">(4,5)</subsetOfReals></p>
   <p><subsetOfReals displayMode="inequalities" name="o2">(5,4)</subsetOfReals></p>
@@ -150,56 +222,131 @@ describe('SubsetOfReals Tag Tests', function () {
 
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/o1') + ' .mjx-mrow').eq(0).should('have.text', "4<x<5")
-    cy.get(cesc('#\\/o2') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/o3') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/o4') + ' .mjx-mrow').eq(0).should('have.text', "x>4")
-    cy.get(cesc('#\\/o5') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/o6') + ' .mjx-mrow').eq(0).should('have.text', "x<5")
-    cy.get(cesc('#\\/o7') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/o8') + ' .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get(cesc('#\\/o9') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
+    cy.get(cesc("#\\/o1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4<x<5");
+    cy.get(cesc("#\\/o2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/o3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/o4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x>4");
+    cy.get(cesc("#\\/o5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/o6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x<5");
+    cy.get(cesc("#\\/o7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/o8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈R");
+    cy.get(cesc("#\\/o9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
 
-    cy.get(cesc('#\\/c1') + ' .mjx-mrow').eq(0).should('have.text', "4≤x≤5")
-    cy.get(cesc('#\\/c2') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/c3') + ' .mjx-mrow').eq(0).should('have.text', "x=5")
-    cy.get(cesc('#\\/c4') + ' .mjx-mrow').eq(0).should('have.text', "x≥4")
-    cy.get(cesc('#\\/c5') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/c6') + ' .mjx-mrow').eq(0).should('have.text', "x≤5")
-    cy.get(cesc('#\\/c7') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/c8') + ' .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get(cesc('#\\/c9') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
+    cy.get(cesc("#\\/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4≤x≤5");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x=5");
+    cy.get(cesc("#\\/c4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x≥4");
+    cy.get(cesc("#\\/c5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/c6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x≤5");
+    cy.get(cesc("#\\/c7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/c8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈R");
+    cy.get(cesc("#\\/c9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
 
-    cy.get(cesc('#\\/oc1') + ' .mjx-mrow').eq(0).should('have.text', "4<x≤5")
-    cy.get(cesc('#\\/oc2') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/oc3') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/oc4') + ' .mjx-mrow').eq(0).should('have.text', "x>4")
-    cy.get(cesc('#\\/oc5') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/oc6') + ' .mjx-mrow').eq(0).should('have.text', "x≤5")
-    cy.get(cesc('#\\/oc7') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/oc8') + ' .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get(cesc('#\\/oc9') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
+    cy.get(cesc("#\\/oc1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4<x≤5");
+    cy.get(cesc("#\\/oc2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/oc3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/oc4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x>4");
+    cy.get(cesc("#\\/oc5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/oc6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x≤5");
+    cy.get(cesc("#\\/oc7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/oc8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈R");
+    cy.get(cesc("#\\/oc9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
 
-    cy.get(cesc('#\\/co1') + ' .mjx-mrow').eq(0).should('have.text', "4≤x<5")
-    cy.get(cesc('#\\/co2') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/co3') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/co4') + ' .mjx-mrow').eq(0).should('have.text', "x≥4")
-    cy.get(cesc('#\\/co5') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/co6') + ' .mjx-mrow').eq(0).should('have.text', "x<5")
-    cy.get(cesc('#\\/co7') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-    cy.get(cesc('#\\/co8') + ' .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get(cesc('#\\/co9') + ' .mjx-mrow').eq(0).should('have.text', "x∈∅")
-
-  })
+    cy.get(cesc("#\\/co1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4≤x<5");
+    cy.get(cesc("#\\/co2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/co3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/co4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x≥4");
+    cy.get(cesc("#\\/co5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/co6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x<5");
+    cy.get(cesc("#\\/co7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+    cy.get(cesc("#\\/co8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈R");
+    cy.get(cesc("#\\/co9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x∈∅");
+  });
 
   it("single intervals, display as inequality, change variable", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals variable="v" displayMode="inequalities" name="o1">(4,5)</subsetOfReals></p>
   <p><subsetOfReals variable="v" displayMode="inequalities" name="o2">(5,4)</subsetOfReals></p>
@@ -243,56 +390,131 @@ describe('SubsetOfReals Tag Tests', function () {
 
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/o1') + ' .mjx-mrow').eq(0).should('have.text', "4<v<5")
-    cy.get(cesc('#\\/o2') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/o3') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/o4') + ' .mjx-mrow').eq(0).should('have.text', "v>4")
-    cy.get(cesc('#\\/o5') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/o6') + ' .mjx-mrow').eq(0).should('have.text', "v<5")
-    cy.get(cesc('#\\/o7') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/o8') + ' .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get(cesc('#\\/o9') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
+    cy.get(cesc("#\\/o1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4<v<5");
+    cy.get(cesc("#\\/o2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/o3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/o4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v>4");
+    cy.get(cesc("#\\/o5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/o6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v<5");
+    cy.get(cesc("#\\/o7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/o8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈R");
+    cy.get(cesc("#\\/o9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
 
-    cy.get(cesc('#\\/c1') + ' .mjx-mrow').eq(0).should('have.text', "4≤v≤5")
-    cy.get(cesc('#\\/c2') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/c3') + ' .mjx-mrow').eq(0).should('have.text', "v=5")
-    cy.get(cesc('#\\/c4') + ' .mjx-mrow').eq(0).should('have.text', "v≥4")
-    cy.get(cesc('#\\/c5') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/c6') + ' .mjx-mrow').eq(0).should('have.text', "v≤5")
-    cy.get(cesc('#\\/c7') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/c8') + ' .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get(cesc('#\\/c9') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
+    cy.get(cesc("#\\/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4≤v≤5");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v=5");
+    cy.get(cesc("#\\/c4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v≥4");
+    cy.get(cesc("#\\/c5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/c6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v≤5");
+    cy.get(cesc("#\\/c7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/c8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈R");
+    cy.get(cesc("#\\/c9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
 
-    cy.get(cesc('#\\/oc1') + ' .mjx-mrow').eq(0).should('have.text', "4<v≤5")
-    cy.get(cesc('#\\/oc2') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/oc3') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/oc4') + ' .mjx-mrow').eq(0).should('have.text', "v>4")
-    cy.get(cesc('#\\/oc5') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/oc6') + ' .mjx-mrow').eq(0).should('have.text', "v≤5")
-    cy.get(cesc('#\\/oc7') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/oc8') + ' .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get(cesc('#\\/oc9') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
+    cy.get(cesc("#\\/oc1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4<v≤5");
+    cy.get(cesc("#\\/oc2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/oc3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/oc4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v>4");
+    cy.get(cesc("#\\/oc5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/oc6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v≤5");
+    cy.get(cesc("#\\/oc7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/oc8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈R");
+    cy.get(cesc("#\\/oc9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
 
-    cy.get(cesc('#\\/co1') + ' .mjx-mrow').eq(0).should('have.text', "4≤v<5")
-    cy.get(cesc('#\\/co2') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/co3') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/co4') + ' .mjx-mrow').eq(0).should('have.text', "v≥4")
-    cy.get(cesc('#\\/co5') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/co6') + ' .mjx-mrow').eq(0).should('have.text', "v<5")
-    cy.get(cesc('#\\/co7') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-    cy.get(cesc('#\\/co8') + ' .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get(cesc('#\\/co9') + ' .mjx-mrow').eq(0).should('have.text', "v∈∅")
-
-  })
+    cy.get(cesc("#\\/co1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4≤v<5");
+    cy.get(cesc("#\\/co2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/co3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/co4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v≥4");
+    cy.get(cesc("#\\/co5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/co6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v<5");
+    cy.get(cesc("#\\/co7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+    cy.get(cesc("#\\/co8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈R");
+    cy.get(cesc("#\\/co9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "v∈∅");
+  });
 
   it("single inequality", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="o1">4 < x < 5</subsetOfReals></p>
   <p><subsetOfReals name="o2">5 < x < 4</subsetOfReals></p>
@@ -343,64 +565,155 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="co11">x < a</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/o1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)")
-    cy.get(cesc('#\\/o2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/o5') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/o6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/o8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/o9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/o1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+    cy.get(cesc("#\\/o2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/o5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/o6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/o8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/o9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/c1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5]")
-    cy.get(cesc('#\\/c2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c3') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/c4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/c5') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/c6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/c8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/c9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/c11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5]");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/c4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/c5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/c6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/c8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/c9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/c11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/oc1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5]")
-    cy.get(cesc('#\\/oc2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/oc5') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/oc6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/oc8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/oc9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/oc11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/oc1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5]");
+    cy.get(cesc("#\\/oc2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/oc5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/oc6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/oc8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/oc9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/oc11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/co1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5)")
-    cy.get(cesc('#\\/co2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/co5') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/co6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/co8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/co9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/co11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-
-  })
+    cy.get(cesc("#\\/co1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5)");
+    cy.get(cesc("#\\/co2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/co5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/co6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/co8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/co9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/co11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+  });
 
   it("single inequality, change variable", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals variable="q" name="o1">4 < q < 5</subsetOfReals></p>
   <p><subsetOfReals variable="q" name="o2">5 < q < 4</subsetOfReals></p>
@@ -451,64 +764,155 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals variable="q" name="co11">q < a</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/o1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)")
-    cy.get(cesc('#\\/o2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/o5') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/o6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/o8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/o9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/o1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+    cy.get(cesc("#\\/o2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/o5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/o6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/o8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/o9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/c1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5]")
-    cy.get(cesc('#\\/c2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c3') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/c4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/c5') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/c6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/c8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/c9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/c11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5]");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/c4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/c5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/c6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/c8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/c9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/c11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/oc1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5]")
-    cy.get(cesc('#\\/oc2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/oc5') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/oc6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/oc8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/oc9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/oc11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/oc1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5]");
+    cy.get(cesc("#\\/oc2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/oc5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/oc6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/oc8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/oc9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/oc11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/co1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5)")
-    cy.get(cesc('#\\/co2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/co5') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/co6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/co8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/co9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/co11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-
-  })
+    cy.get(cesc("#\\/co1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5)");
+    cy.get(cesc("#\\/co2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/co5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/co6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/co8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/co9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/co11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+  });
 
   it("single equality", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="e1">x=5</subsetOfReals></p>
   <p><subsetOfReals name="e2">x=infinity</subsetOfReals></p>
@@ -516,21 +920,32 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="e4">x=a</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/e1') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/e2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/e3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/e4') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-
-  })
+    cy.get(cesc("#\\/e1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/e2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/e3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/e4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+  });
 
   it("single inequality in set notation", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="o1">{q | 4 < q < 5}</subsetOfReals></p>
   <p><subsetOfReals name="o2">{q | 5 < q < 4}</subsetOfReals></p>
@@ -581,64 +996,155 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="co11">{q | q < a}</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/o1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)")
-    cy.get(cesc('#\\/o2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/o5') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/o6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/o8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/o9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/o10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/o1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+    cy.get(cesc("#\\/o2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/o5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/o6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/o8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/o9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/o10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/c1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5]")
-    cy.get(cesc('#\\/c2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c3') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/c4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/c5') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/c6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/c8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/c9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/c10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/c11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5]");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/c4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/c5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/c6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/c8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/c9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/c10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/c11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/oc1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5]")
-    cy.get(cesc('#\\/oc2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc4') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/oc5') + ' .mjx-mrow').eq(0).should('have.text', "(4,∞)")
-    cy.get(cesc('#\\/oc6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/oc8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
-    cy.get(cesc('#\\/oc9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/oc10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/oc11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get(cesc("#\\/oc1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5]");
+    cy.get(cesc("#\\/oc2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/oc5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,∞)");
+    cy.get(cesc("#\\/oc6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/oc8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]");
+    cy.get(cesc("#\\/oc9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/oc10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/oc11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
 
-    cy.get(cesc('#\\/co1') + ' .mjx-mrow').eq(0).should('have.text', "[4,5)")
-    cy.get(cesc('#\\/co2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co4') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/co5') + ' .mjx-mrow').eq(0).should('have.text', "[4,∞)")
-    cy.get(cesc('#\\/co6') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/co8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
-    cy.get(cesc('#\\/co9') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/co10') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/co11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-
-  })
+    cy.get(cesc("#\\/co1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,5)");
+    cy.get(cesc("#\\/co2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/co5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,∞)");
+    cy.get(cesc("#\\/co6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/co8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5)");
+    cy.get(cesc("#\\/co9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/co10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/co11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+  });
 
   it("union and intersections of intervals and singletons", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="u1">(4,5) union (6,7)</subsetOfReals></p>
   <p><subsetOfReals name="u2">(4,5) union (5,6)</subsetOfReals></p>
@@ -679,55 +1185,129 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="i18">[-4,-2) intersect {-4}</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/u1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
-    cy.get(cesc('#\\/u2') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
-    cy.get(cesc('#\\/u3') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u4') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u5') + ' .mjx-mrow').eq(0).should('have.text', "(4,7)")
-    cy.get(cesc('#\\/u6') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
-    cy.get(cesc('#\\/u7') + ' .mjx-mrow').eq(0).should('have.text', "(4,7]")
-    cy.get(cesc('#\\/u8') + ' .mjx-mrow').eq(0).should('have.text', "[4,6)")
-    cy.get(cesc('#\\/u9') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u10') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u11') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
-    cy.get(cesc('#\\/u12') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u13') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u14') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u15') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u16') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u17') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u18') + ' .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+    cy.get(cesc("#\\/u1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(6,7)");
+    cy.get(cesc("#\\/u2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,6)");
+    cy.get(cesc("#\\/u3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7)");
+    cy.get(cesc("#\\/u6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,8)");
+    cy.get(cesc("#\\/u7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/u8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,6)");
+    cy.get(cesc("#\\/u9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)∪{7}");
+    cy.get(cesc("#\\/u12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−4,−2)");
 
-    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i4') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i5') + ' .mjx-mrow').eq(0).should('have.text', "(5,6)")
-    cy.get(cesc('#\\/i6') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i7') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i8') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i9') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i10') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i12') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i13') + ' .mjx-mrow').eq(0).should('have.text', "(2,5)")
-    cy.get(cesc('#\\/i14') + ' .mjx-mrow').eq(0).should('have.text', "[2,5)")
-    cy.get(cesc('#\\/i15') + ' .mjx-mrow').eq(0).should('have.text', "(2,5]")
-    cy.get(cesc('#\\/i16') + ' .mjx-mrow').eq(0).should('have.text', "[2,5]")
-    cy.get(cesc('#\\/i17') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i18') + ' .mjx-mrow').eq(0).should('have.text', "{−4}")
-
-
-  })
+    cy.get(cesc("#\\/i1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/i6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/i14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5)");
+    cy.get(cesc("#\\/i15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5]");
+    cy.get(cesc("#\\/i16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5]");
+    cy.get(cesc("#\\/i17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{−4}");
+  });
 
   it("union and intersections of intervals and singletons, latex format", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals format="latex" name="u1">(4,5) \\cup (6,7)</subsetOfReals></p>
   <p><subsetOfReals format="latex" name="u2">(4,5) \\cup (5,6)</subsetOfReals></p>
@@ -768,54 +1348,129 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals format="latex" name="i18">[-4,-2) \\cap {-4}</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/u1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
-    cy.get(cesc('#\\/u2') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
-    cy.get(cesc('#\\/u3') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u4') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u5') + ' .mjx-mrow').eq(0).should('have.text', "(4,7)")
-    cy.get(cesc('#\\/u6') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
-    cy.get(cesc('#\\/u7') + ' .mjx-mrow').eq(0).should('have.text', "(4,7]")
-    cy.get(cesc('#\\/u8') + ' .mjx-mrow').eq(0).should('have.text', "[4,6)")
-    cy.get(cesc('#\\/u9') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u10') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u11') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
-    cy.get(cesc('#\\/u12') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u13') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u14') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u15') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u16') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u17') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u18') + ' .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+    cy.get(cesc("#\\/u1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(6,7)");
+    cy.get(cesc("#\\/u2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,6)");
+    cy.get(cesc("#\\/u3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7)");
+    cy.get(cesc("#\\/u6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,8)");
+    cy.get(cesc("#\\/u7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/u8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,6)");
+    cy.get(cesc("#\\/u9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)∪{7}");
+    cy.get(cesc("#\\/u12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−4,−2)");
 
-    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i4') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i5') + ' .mjx-mrow').eq(0).should('have.text', "(5,6)")
-    cy.get(cesc('#\\/i6') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i7') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i8') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i9') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i10') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i12') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i13') + ' .mjx-mrow').eq(0).should('have.text', "(2,5)")
-    cy.get(cesc('#\\/i14') + ' .mjx-mrow').eq(0).should('have.text', "[2,5)")
-    cy.get(cesc('#\\/i15') + ' .mjx-mrow').eq(0).should('have.text', "(2,5]")
-    cy.get(cesc('#\\/i16') + ' .mjx-mrow').eq(0).should('have.text', "[2,5]")
-    cy.get(cesc('#\\/i17') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i18') + ' .mjx-mrow').eq(0).should('have.text', "{−4}")
-
-  })
+    cy.get(cesc("#\\/i1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/i6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/i14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5)");
+    cy.get(cesc("#\\/i15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5]");
+    cy.get(cesc("#\\/i16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5]");
+    cy.get(cesc("#\\/i17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{−4}");
+  });
 
   it("x element of union and intersections of intervals and singletons", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="u1">x elementof (4,5) union (6,7)</subsetOfReals></p>
   <p><subsetOfReals name="u2">x elementof (4,5) union (5,6)</subsetOfReals></p>
@@ -856,55 +1511,129 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="i18">x elementof [-4,-2) intersect {-4}</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/u1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
-    cy.get(cesc('#\\/u2') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
-    cy.get(cesc('#\\/u3') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u4') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u5') + ' .mjx-mrow').eq(0).should('have.text', "(4,7)")
-    cy.get(cesc('#\\/u6') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
-    cy.get(cesc('#\\/u7') + ' .mjx-mrow').eq(0).should('have.text', "(4,7]")
-    cy.get(cesc('#\\/u8') + ' .mjx-mrow').eq(0).should('have.text', "[4,6)")
-    cy.get(cesc('#\\/u9') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u10') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u11') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
-    cy.get(cesc('#\\/u12') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u13') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u14') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u15') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u16') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u17') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u18') + ' .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+    cy.get(cesc("#\\/u1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(6,7)");
+    cy.get(cesc("#\\/u2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,6)");
+    cy.get(cesc("#\\/u3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7)");
+    cy.get(cesc("#\\/u6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,8)");
+    cy.get(cesc("#\\/u7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/u8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,6)");
+    cy.get(cesc("#\\/u9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)∪{7}");
+    cy.get(cesc("#\\/u12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−4,−2)");
 
-    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i4') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i5') + ' .mjx-mrow').eq(0).should('have.text', "(5,6)")
-    cy.get(cesc('#\\/i6') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i7') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i8') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i9') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i10') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i12') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i13') + ' .mjx-mrow').eq(0).should('have.text', "(2,5)")
-    cy.get(cesc('#\\/i14') + ' .mjx-mrow').eq(0).should('have.text', "[2,5)")
-    cy.get(cesc('#\\/i15') + ' .mjx-mrow').eq(0).should('have.text', "(2,5]")
-    cy.get(cesc('#\\/i16') + ' .mjx-mrow').eq(0).should('have.text', "[2,5]")
-    cy.get(cesc('#\\/i17') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i18') + ' .mjx-mrow').eq(0).should('have.text', "{−4}")
-
-
-  })
+    cy.get(cesc("#\\/i1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/i6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/i14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5)");
+    cy.get(cesc("#\\/i15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5]");
+    cy.get(cesc("#\\/i16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5]");
+    cy.get(cesc("#\\/i17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{−4}");
+  });
 
   it("union and intersections of intervals and singletons contains element x", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="u1">(4,5) union (6,7) containselement x</subsetOfReals></p>
   <p><subsetOfReals name="u2">(4,5) union (5,6) containselement x</subsetOfReals></p>
@@ -945,55 +1674,129 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="i18">[-4,-2) intersect {-4} containselement x</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/u1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
-    cy.get(cesc('#\\/u2') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
-    cy.get(cesc('#\\/u3') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u4') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u5') + ' .mjx-mrow').eq(0).should('have.text', "(4,7)")
-    cy.get(cesc('#\\/u6') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
-    cy.get(cesc('#\\/u7') + ' .mjx-mrow').eq(0).should('have.text', "(4,7]")
-    cy.get(cesc('#\\/u8') + ' .mjx-mrow').eq(0).should('have.text', "[4,6)")
-    cy.get(cesc('#\\/u9') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u10') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u11') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
-    cy.get(cesc('#\\/u12') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u13') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u14') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u15') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u16') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u17') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u18') + ' .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+    cy.get(cesc("#\\/u1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(6,7)");
+    cy.get(cesc("#\\/u2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,6)");
+    cy.get(cesc("#\\/u3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7)");
+    cy.get(cesc("#\\/u6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,8)");
+    cy.get(cesc("#\\/u7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/u8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,6)");
+    cy.get(cesc("#\\/u9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)∪{7}");
+    cy.get(cesc("#\\/u12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−4,−2)");
 
-    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i4') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i5') + ' .mjx-mrow').eq(0).should('have.text', "(5,6)")
-    cy.get(cesc('#\\/i6') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i7') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i8') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i9') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i10') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i12') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i13') + ' .mjx-mrow').eq(0).should('have.text', "(2,5)")
-    cy.get(cesc('#\\/i14') + ' .mjx-mrow').eq(0).should('have.text', "[2,5)")
-    cy.get(cesc('#\\/i15') + ' .mjx-mrow').eq(0).should('have.text', "(2,5]")
-    cy.get(cesc('#\\/i16') + ' .mjx-mrow').eq(0).should('have.text', "[2,5]")
-    cy.get(cesc('#\\/i17') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i18') + ' .mjx-mrow').eq(0).should('have.text', "{−4}")
-
-
-  })
+    cy.get(cesc("#\\/i1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/i6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/i14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5)");
+    cy.get(cesc("#\\/i15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5]");
+    cy.get(cesc("#\\/i16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5]");
+    cy.get(cesc("#\\/i17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{−4}");
+  });
 
   it("x in union and intersections of intervals and singletons, latex format", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals format="latex" name="u1">x \\in (4,5) \\cup (6,7)</subsetOfReals></p>
   <p><subsetOfReals format="latex" name="u2">x \\in (4,5) \\cup (5,6)</subsetOfReals></p>
@@ -1034,54 +1837,129 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals format="latex" name="i18">x \\in [-4,-2) \\cap {-4}</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/u1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
-    cy.get(cesc('#\\/u2') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
-    cy.get(cesc('#\\/u3') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u4') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u5') + ' .mjx-mrow').eq(0).should('have.text', "(4,7)")
-    cy.get(cesc('#\\/u6') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
-    cy.get(cesc('#\\/u7') + ' .mjx-mrow').eq(0).should('have.text', "(4,7]")
-    cy.get(cesc('#\\/u8') + ' .mjx-mrow').eq(0).should('have.text', "[4,6)")
-    cy.get(cesc('#\\/u9') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u10') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u11') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
-    cy.get(cesc('#\\/u12') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u13') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u14') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u15') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u16') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u17') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u18') + ' .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+    cy.get(cesc("#\\/u1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(6,7)");
+    cy.get(cesc("#\\/u2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,6)");
+    cy.get(cesc("#\\/u3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7)");
+    cy.get(cesc("#\\/u6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,8)");
+    cy.get(cesc("#\\/u7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/u8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,6)");
+    cy.get(cesc("#\\/u9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)∪{7}");
+    cy.get(cesc("#\\/u12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−4,−2)");
 
-    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i4') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i5') + ' .mjx-mrow').eq(0).should('have.text', "(5,6)")
-    cy.get(cesc('#\\/i6') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i7') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i8') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i9') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i10') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i12') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i13') + ' .mjx-mrow').eq(0).should('have.text', "(2,5)")
-    cy.get(cesc('#\\/i14') + ' .mjx-mrow').eq(0).should('have.text', "[2,5)")
-    cy.get(cesc('#\\/i15') + ' .mjx-mrow').eq(0).should('have.text', "(2,5]")
-    cy.get(cesc('#\\/i16') + ' .mjx-mrow').eq(0).should('have.text', "[2,5]")
-    cy.get(cesc('#\\/i17') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i18') + ' .mjx-mrow').eq(0).should('have.text', "{−4}")
-
-  })
+    cy.get(cesc("#\\/i1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/i6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/i14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5)");
+    cy.get(cesc("#\\/i15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5]");
+    cy.get(cesc("#\\/i16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5]");
+    cy.get(cesc("#\\/i17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{−4}");
+  });
 
   it("union and intersections of intervals and singletons ni x, latex format", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals format="latex" name="u1">(4,5) \\cup (6,7) \\ni x</subsetOfReals></p>
   <p><subsetOfReals format="latex" name="u2">(4,5) \\cup (5,6) \\ni x</subsetOfReals></p>
@@ -1122,54 +2000,129 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals format="latex" name="i18">[-4,-2) \\cap {-4} \\ni x</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/u1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
-    cy.get(cesc('#\\/u2') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
-    cy.get(cesc('#\\/u3') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u4') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u5') + ' .mjx-mrow').eq(0).should('have.text', "(4,7)")
-    cy.get(cesc('#\\/u6') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
-    cy.get(cesc('#\\/u7') + ' .mjx-mrow').eq(0).should('have.text', "(4,7]")
-    cy.get(cesc('#\\/u8') + ' .mjx-mrow').eq(0).should('have.text', "[4,6)")
-    cy.get(cesc('#\\/u9') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u10') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/u11') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
-    cy.get(cesc('#\\/u12') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/u13') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u14') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u15') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u16') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u17') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/u18') + ' .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+    cy.get(cesc("#\\/u1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(6,7)");
+    cy.get(cesc("#\\/u2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,6)");
+    cy.get(cesc("#\\/u3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7)");
+    cy.get(cesc("#\\/u6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,8)");
+    cy.get(cesc("#\\/u7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/u8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,6)");
+    cy.get(cesc("#\\/u9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/u11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)∪{7}");
+    cy.get(cesc("#\\/u12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/u13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/u18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−4,−2)");
 
-    cy.get(cesc('#\\/i1') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i4') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i5') + ' .mjx-mrow').eq(0).should('have.text', "(5,6)")
-    cy.get(cesc('#\\/i6') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i7') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/i8') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i9') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/i10') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i12') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i13') + ' .mjx-mrow').eq(0).should('have.text', "(2,5)")
-    cy.get(cesc('#\\/i14') + ' .mjx-mrow').eq(0).should('have.text', "[2,5)")
-    cy.get(cesc('#\\/i15') + ' .mjx-mrow').eq(0).should('have.text', "(2,5]")
-    cy.get(cesc('#\\/i16') + ' .mjx-mrow').eq(0).should('have.text', "[2,5]")
-    cy.get(cesc('#\\/i17') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/i18') + ' .mjx-mrow').eq(0).should('have.text', "{−4}")
-
-  })
+    cy.get(cesc("#\\/i1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/i6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/i8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/i10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/i14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5)");
+    cy.get(cesc("#\\/i15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5]");
+    cy.get(cesc("#\\/i16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5]");
+    cy.get(cesc("#\\/i17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/i18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{−4}");
+  });
 
   it("ands and ors with inequalities", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="o1">(4 < x < 5) or (6 < x < 7)</subsetOfReals></p>
   <p><subsetOfReals name="o2">(4 < x < 5) or (5 < x < 6)</subsetOfReals></p>
@@ -1210,55 +2163,129 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="a18">(x != 5) and (4 < x < 10)</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/o1') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
-    cy.get(cesc('#\\/o2') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
-    cy.get(cesc('#\\/o3') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/o4') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/o5') + ' .mjx-mrow').eq(0).should('have.text', "(4,7)")
-    cy.get(cesc('#\\/o6') + ' .mjx-mrow').eq(0).should('have.text', "(4,8)")
-    cy.get(cesc('#\\/o7') + ' .mjx-mrow').eq(0).should('have.text', "(4,7]")
-    cy.get(cesc('#\\/o8') + ' .mjx-mrow').eq(0).should('have.text', "[4,6)")
-    cy.get(cesc('#\\/o9') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/o10') + ' .mjx-mrow').eq(0).should('have.text', "(4,6]")
-    cy.get(cesc('#\\/o11') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
-    cy.get(cesc('#\\/o12') + ' .mjx-mrow').eq(0).should('have.text', "(4,6)")
-    cy.get(cesc('#\\/o13') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o14') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o15') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o16') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o17') + ' .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get(cesc('#\\/o18') + ' .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get(cesc("#\\/o1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(6,7)");
+    cy.get(cesc("#\\/o2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,6)");
+    cy.get(cesc("#\\/o3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/o4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/o5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7)");
+    cy.get(cesc("#\\/o6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,8)");
+    cy.get(cesc("#\\/o7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/o8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[4,6)");
+    cy.get(cesc("#\\/o9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/o10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6]");
+    cy.get(cesc("#\\/o11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)∪{7}");
+    cy.get(cesc("#\\/o12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,6)");
+    cy.get(cesc("#\\/o13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
+    cy.get(cesc("#\\/o18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "R");
 
-    cy.get(cesc('#\\/a1') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a2') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a3') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a4') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/a5') + ' .mjx-mrow').eq(0).should('have.text', "(5,6)")
-    cy.get(cesc('#\\/a6') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/a7') + ' .mjx-mrow').eq(0).should('have.text', "(5,7)")
-    cy.get(cesc('#\\/a8') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a9') + ' .mjx-mrow').eq(0).should('have.text', "{5}")
-    cy.get(cesc('#\\/a10') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a11') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a12') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a13') + ' .mjx-mrow').eq(0).should('have.text', "(2,5)")
-    cy.get(cesc('#\\/a14') + ' .mjx-mrow').eq(0).should('have.text', "[2,5)")
-    cy.get(cesc('#\\/a15') + ' .mjx-mrow').eq(0).should('have.text', "(2,5]")
-    cy.get(cesc('#\\/a16') + ' .mjx-mrow').eq(0).should('have.text', "[2,5]")
-    cy.get(cesc('#\\/a17') + ' .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get(cesc('#\\/a18') + ' .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,10)")
-
-
-  })
+    cy.get(cesc("#\\/a1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/a5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc("#\\/a6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/a7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,7)");
+    cy.get(cesc("#\\/a8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "{5}");
+    cy.get(cesc("#\\/a10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a13") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/a14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5)");
+    cy.get(cesc("#\\/a15") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5]");
+    cy.get(cesc("#\\/a16") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2,5]");
+    cy.get(cesc("#\\/a17") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "∅");
+    cy.get(cesc("#\\/a18") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)∪(5,10)");
+  });
 
   it("complements of intervals and singletons", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p><subsetOfReals name="c1">(4,5)^c</subsetOfReals></p>
   <p><subsetOfReals name="c2">(4,5)^C</subsetOfReals></p>
@@ -1274,29 +2301,56 @@ describe('SubsetOfReals Tag Tests', function () {
   <p><subsetOfReals name="c12">(4,6)^c or (5,7)^c</subsetOfReals></p>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/c1') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4]∪[5,∞)")
-    cy.get(cesc('#\\/c2') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4]∪[5,∞)")
-    cy.get(cesc('#\\/c3') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4]∪(5,∞)")
-    cy.get(cesc('#\\/c4') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4]∪(5,∞)")
-    cy.get(cesc('#\\/c5') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4)∪[5,∞)")
-    cy.get(cesc('#\\/c6') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4)∪[5,∞)")
-    cy.get(cesc('#\\/c7') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4)∪(5,∞)")
-    cy.get(cesc('#\\/c8') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4)∪(5,∞)")
-    cy.get(cesc('#\\/c9') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4)∪(4,∞)")
-    cy.get(cesc('#\\/c10') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4)∪(4,∞)")
-    cy.get(cesc('#\\/c11') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,4]∪{5}∪[6,∞)")
-    cy.get(cesc('#\\/c12') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,5]∪[6,∞)")
-
-  })
+    cy.get(cesc("#\\/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4]∪[5,∞)");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4]∪[5,∞)");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4]∪(5,∞)");
+    cy.get(cesc("#\\/c4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4]∪(5,∞)");
+    cy.get(cesc("#\\/c5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4)∪[5,∞)");
+    cy.get(cesc("#\\/c6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4)∪[5,∞)");
+    cy.get(cesc("#\\/c7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4)∪(5,∞)");
+    cy.get(cesc("#\\/c8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4)∪(5,∞)");
+    cy.get(cesc("#\\/c9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4)∪(4,∞)");
+    cy.get(cesc("#\\/c10") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4)∪(4,∞)");
+    cy.get(cesc("#\\/c11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,4]∪{5}∪[6,∞)");
+    cy.get(cesc("#\\/c12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,5]∪[6,∞)");
+  });
 
   it("dynamic subsets", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p>Variable: <mathinput name="variable" prefill="x" /></p>
   <p>Input: <mathinput name="input" prefill="x > 1" /></p>
@@ -1308,55 +2362,100 @@ describe('SubsetOfReals Tag Tests', function () {
   <p>Result: <subsetOfReals name="result" variable="$variable" displayMode="$displayMode">$input</subsetOfReals></p>
   
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "(1,∞)")
-
-    cy.get(cesc(`#\\/displayMode_choice${2}_input`)).click();
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "x>1")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "x>1")
-
-    cy.get(cesc('#\\/variable') + ' textarea').type('{end}{backspace}y{enter}', { force: true })
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "y∈∅")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "y∈∅")
-
-    cy.get(cesc('#\\/input') + ' textarea').type('{home}{rightArrow}{backspace}y{enter}', { force: true })
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "y>1")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "y>1")
-
-    cy.get(cesc(`#\\/displayMode_choice${1}_input`)).click();
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "(1,∞)")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "(1,∞)")
-
-    cy.get(cesc('#\\/input') + ' textarea').type('{end}{leftArrow}{backspace}\\ne{enter}{enter}', { force: true })
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "(−∞,1)∪(1,∞)")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "(−∞,1)∪(1,∞)")
-
-    cy.get(cesc('#\\/input') + ' textarea').type('{ctrl+home}{shift+end}{backspace}(y>1)\\and(y<3){enter}', { force: true })
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "(1,3)")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "(1,3)")
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,∞)");
 
     cy.get(cesc(`#\\/displayMode_choice${2}_input`)).click();
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "1<y<3")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "1<y<3")
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should("contain.text", "x>1");
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x>1");
 
-    cy.get(cesc('#\\/input') + ' textarea').type('{end}\\or(y>6){enter}', { force: true })
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "(1<y<3)∨(y>6)")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "(1<y<3)∨(y>6)")
+    cy.get(cesc("#\\/variable") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should("contain.text", "y∈∅");
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y∈∅");
+
+    cy.get(cesc("#\\/input") + " textarea").type(
+      "{home}{rightArrow}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should("contain.text", "y>1");
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y>1");
 
     cy.get(cesc(`#\\/displayMode_choice${1}_input`)).click();
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').should('contain.text', "(1,3)∪(6,∞)")
-    cy.get(cesc('#\\/result') + ' .mjx-mrow').eq(0).should('have.text', "(1,3)∪(6,∞)")
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should("contain.text", "(1,∞)");
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,∞)");
 
+    cy.get(cesc("#\\/input") + " textarea").type(
+      "{end}{leftArrow}{backspace}\\ne{enter}{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should(
+      "contain.text",
+      "(−∞,1)∪(1,∞)",
+    );
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,1)∪(1,∞)");
 
-  })
+    cy.get(cesc("#\\/input") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}(y>1)\\and(y<3){enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should("contain.text", "(1,3)");
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,3)");
+
+    cy.get(cesc(`#\\/displayMode_choice${2}_input`)).click();
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should("contain.text", "1<y<3");
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1<y<3");
+
+    cy.get(cesc("#\\/input") + " textarea").type("{end}\\or(y>6){enter}", {
+      force: true,
+    });
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should(
+      "contain.text",
+      "(1<y<3)∨(y>6)",
+    );
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1<y<3)∨(y>6)");
+
+    cy.get(cesc(`#\\/displayMode_choice${1}_input`)).click();
+    cy.get(cesc("#\\/result") + " .mjx-mrow").should(
+      "contain.text",
+      "(1,3)∪(6,∞)",
+    );
+    cy.get(cesc("#\\/result") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,3)∪(6,∞)");
+  });
 
   it("modifying copies of subsets", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <p>Enter subset: <mathinput name="input0" prefill="(0,1)" /></p>
   <p>Subset 1: <subsetOfReals name="s1">$input0</subsetOfReals></p>
@@ -1378,130 +2477,226 @@ describe('SubsetOfReals Tag Tests', function () {
   <p>Modify subset 8: <mathinput name="input8" bindValueTo="$s8" /></p>
   <p>Modify subset 9: <mathinput name="input9" bindValueTo="$s9" /></p>
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     function checkDisplay(str, str0) {
       if (str0 === undefined) {
         str0 = str;
       }
 
+      cy.get(cesc("#\\/s1") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s2") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s3") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s4") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s5") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s6") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s7") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s8") + " .mjx-mrow").should("contain.text", str);
+      cy.get(cesc("#\\/s9") + " .mjx-mrow").should("contain.text", str);
 
-      cy.get(cesc('#\\/s1') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s2') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s3') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s4') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s5') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s6') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s7') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s8') + ' .mjx-mrow').should('contain.text', str)
-      cy.get(cesc('#\\/s9') + ' .mjx-mrow').should('contain.text', str)
+      cy.get(cesc("#\\/input0") + " .mq-editable-field").should(
+        "contain.text",
+        str0,
+      );
+      cy.get(cesc("#\\/input1") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input2") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input3") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input4") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input5") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input6") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input7") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input8") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
+      cy.get(cesc("#\\/input9") + " .mq-editable-field").should(
+        "contain.text",
+        str,
+      );
 
-      cy.get(cesc('#\\/input0') + ' .mq-editable-field').should('contain.text', str0)
-      cy.get(cesc('#\\/input1') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input2') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input3') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input4') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input5') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input6') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input7') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input8') + ' .mq-editable-field').should('contain.text', str)
-      cy.get(cesc('#\\/input9') + ' .mq-editable-field').should('contain.text', str)
-
-      cy.get(cesc('#\\/s1') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s2') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s3') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s4') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s5') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s6') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s7') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s8') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc('#\\/s9') + ' .mjx-mrow').eq(0).should('have.text', str)
-      cy.get(cesc(`#\\/input0`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str0)
-      })
-      cy.get(cesc(`#\\/input1`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input2`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input3`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input4`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input5`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input6`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input7`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input8`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
-      cy.get(cesc(`#\\/input9`) + ` .mq-editable-field`).invoke('text').then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
-      })
+      cy.get(cesc("#\\/s1") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s2") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s3") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s4") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s5") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s6") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s7") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s8") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc("#\\/s9") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", str);
+      cy.get(cesc(`#\\/input0`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str0);
+        });
+      cy.get(cesc(`#\\/input1`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input2`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input3`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input4`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input5`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input6`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input7`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input8`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
+      cy.get(cesc(`#\\/input9`) + ` .mq-editable-field`)
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(str);
+        });
     }
 
+    checkDisplay("(0,1)");
 
-    checkDisplay("(0,1)")
+    cy.get(cesc("#\\/input0") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}x>=3{enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input0") + " textarea").type("{ctrl+home}{shift+end}{backspace}x>=3{enter}", { force: true })
+    checkDisplay("[3,∞)", "x≥3");
 
-    checkDisplay("[3,∞)", "x≥3")
+    cy.get(cesc("#\\/input1") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}{{}q\\mid q=5}{enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input1") + " textarea").type("{ctrl+home}{shift+end}{backspace}{{}q\\mid q=5}{enter}", { force: true })
+    checkDisplay("{5}");
 
-    checkDisplay("{5}")
+    cy.get(cesc("#\\/input2") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}[-\\infty, \\pi){enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input2") + " textarea").type("{ctrl+home}{shift+end}{backspace}[-\\infty, \\pi){enter}", { force: true })
+    checkDisplay("(−∞,3.141592654)");
 
-    checkDisplay("(−∞,3.141592654)")
+    cy.get(cesc("#\\/input3") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}(-\\infty,\\infty){enter}",
+      { force: true },
+    );
 
+    checkDisplay("R");
 
-    cy.get(cesc("#\\/input3") + " textarea").type("{ctrl+home}{shift+end}{backspace}(-\\infty,\\infty){enter}", { force: true })
+    cy.get(cesc("#\\/input4") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}x\\in \\emptyset {enter}",
+      { force: true },
+    );
 
-    checkDisplay("R")
+    checkDisplay("∅");
 
+    cy.get(cesc("#\\/input5") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}x\\notin [9, \\infty){enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input4") + " textarea").type("{ctrl+home}{shift+end}{backspace}x\\in \\emptyset {enter}", { force: true })
+    checkDisplay("(−∞,9)");
 
-    checkDisplay("∅")
+    cy.get(cesc("#\\/input6") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}{7}\\ni x{enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input5") + " textarea").type("{ctrl+home}{shift+end}{backspace}x\\notin [9, \\infty){enter}", { force: true })
+    checkDisplay("{7}");
 
-    checkDisplay("(−∞,9)")
+    cy.get(cesc("#\\/input7") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}(-\\infty, -2) \\notni x{enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input6") + " textarea").type("{ctrl+home}{shift+end}{backspace}{7}\\ni x{enter}", { force: true })
+    checkDisplay("[−2,∞)");
 
-    checkDisplay("{7}")
+    cy.get(cesc("#\\/input8") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}{{}1}^c{rightArrow} \\cap {{}v\\mid v>=1}{enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input7") + " textarea").type("{ctrl+home}{shift+end}{backspace}(-\\infty, -2) \\notni x{enter}", { force: true })
+    checkDisplay("(1,∞)");
 
-    checkDisplay("[−2,∞)")
+    cy.get(cesc("#\\/input9") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}x\\ne -6{enter}",
+      { force: true },
+    );
 
-    cy.get(cesc("#\\/input8") + " textarea").type("{ctrl+home}{shift+end}{backspace}{{}1}^c{rightArrow} \\cap {{}v\\mid v>=1}{enter}", { force: true })
-
-    checkDisplay("(1,∞)")
-
-    cy.get(cesc("#\\/input9") + " textarea").type("{ctrl+home}{shift+end}{backspace}x\\ne -6{enter}", { force: true })
-
-    checkDisplay("(−∞,−6)∪(−6,∞)")
-
-  })
+    checkDisplay("(−∞,−6)∪(−6,∞)");
+  });
 
   it("union of subset with numbers", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
   <text>a</text>
   <number name="x1">-9</number>
   <number name="x2">-6</number>
@@ -1513,17 +2708,18 @@ describe('SubsetOfReals Tag Tests', function () {
   <subsetOfReals name="Sclosed">$S union $x1 union $x2 union $x3 union $x4</subsetOfReals>
 
 
-  `}, "*");
+  `,
+        },
+        "*",
+      );
     });
-    cy.get(cesc('#\\/_text1')).should('have.text', 'a'); // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc('#\\/S') + ' .mjx-mrow').eq(0).should('have.text', "(−9,−6)∪(−1,8)")
-    cy.get(cesc('#\\/Sclosed') + ' .mjx-mrow').eq(0).should('have.text', "[−9,−6]∪[−1,8]")
-
-  })
-
-})
-
-
-
-
+    cy.get(cesc("#\\/S") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−9,−6)∪(−1,8)");
+    cy.get(cesc("#\\/Sclosed") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−9,−6]∪[−1,8]");
+  });
+});

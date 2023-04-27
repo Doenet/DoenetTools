@@ -1,22 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import {
   redirect,
   useLoaderData,
   useNavigate,
   useOutletContext,
-} from 'react-router';
-import styled from 'styled-components';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import PageViewer from '../../../Viewer/PageViewer';
+} from "react-router";
+import styled from "styled-components";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import PageViewer from "../../../Viewer/PageViewer";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
-} from '../../../_sharedRecoil/PageViewerRecoil';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-import { Form, Link } from 'react-router-dom';
-import { Avatar } from '@chakra-ui/react';
-import { pageToolViewAtom } from '../NewToolRoot';
+} from "../../../_sharedRecoil/PageViewerRecoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
+import { Form, Link } from "react-router-dom";
+import { Avatar } from "@chakra-ui/react";
+import { pageToolViewAtom } from "../NewToolRoot";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -59,7 +59,7 @@ export async function loader({ params }) {
     doenetML,
     signedIn,
     label: data.label,
-    fullName: data.firstName + ' ' + data.lastName,
+    fullName: data.firstName + " " + data.lastName,
     courseId: data.courseId,
     doenetId: params.doenetId,
     pageDoenetId: data.pageDoenetId,
@@ -171,11 +171,11 @@ export function PortfolioActivityViewer() {
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
 
-  let navigateTo = useRef('');
+  let navigateTo = useRef("");
 
-  if (navigateTo.current != '') {
+  if (navigateTo.current != "") {
     const newHref = navigateTo.current;
-    navigateTo.current = '';
+    navigateTo.current = "";
     location.href = newHref;
   }
 
@@ -204,7 +204,7 @@ export function PortfolioActivityViewer() {
               </HeaderSectionLeft>
               <HeaderSectionLeft>
                 <AvatarLink to={`/publicportfolio/${courseId}`}>
-                  <Avatar size="sm" name={fullName} />{' '}
+                  <Avatar size="sm" name={fullName} />{" "}
                   <Byline>By {fullName}</Byline>
                 </AvatarLink>
               </HeaderSectionLeft>
@@ -216,9 +216,9 @@ export function PortfolioActivityViewer() {
                   onClick={() => {
                     navigateTo.current = `/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
                     setRecoilPageToolView({
-                      page: 'public',
-                      tool: '',
-                      view: '',
+                      page: "public",
+                      tool: "",
+                      view: "",
                       params: { doenetId, pageId: pageDoenetId },
                     });
                   }}
@@ -239,9 +239,9 @@ export function PortfolioActivityViewer() {
                           await response.json();
                         navigateTo.current = `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`;
                         setRecoilPageToolView({
-                          page: 'portfolioeditor',
-                          tool: 'editor',
-                          view: '',
+                          page: "portfolioeditor",
+                          tool: "editor",
+                          view: "",
                           params: {
                             doenetId: nextActivityDoenetId,
                             pageId: nextPageDoenetId,
@@ -260,11 +260,11 @@ export function PortfolioActivityViewer() {
                   size="medium"
                   value="Sign In To Remix"
                   onClick={() => {
-                    navigateTo.current = '/signin';
+                    navigateTo.current = "/signin";
                     setRecoilPageToolView({
-                      page: 'signin',
-                      tool: '',
-                      view: '',
+                      page: "signin",
+                      tool: "",
+                      view: "",
                       params: {},
                     });
                   }}

@@ -1,4 +1,4 @@
-import Curve from '../Curve';
+import Curve from "../Curve";
 
 export default class EquilibriumCurve extends Curve {
   static componentType = "equilibriumCurve";
@@ -25,50 +25,55 @@ export default class EquilibriumCurve extends Curve {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions({ numerics }) {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
-
+    let stateVariableDefinitions = super.returnStateVariableDefinitions({
+      numerics,
+    });
 
     stateVariableDefinitions.dashed = {
       forRenderer: true,
       returnDependencies: () => ({
         stable: {
           dependencyType: "stateVariable",
-          variableName: "stable"
-        }
+          variableName: "stable",
+        },
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { dashed: !dependencyValues.stable }
-        }
+          setValue: { dashed: !dependencyValues.stable },
+        };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setDependency: "stable",
-            desiredValue: !desiredStateVariableValues.dashed
-          }]
-        }
-      }
-
-    }
+          instructions: [
+            {
+              setDependency: "stable",
+              desiredValue: !desiredStateVariableValues.dashed,
+            },
+          ],
+        };
+      },
+    };
 
     return stateVariableDefinitions;
+  }
 
-  };
-
-  async switchCurve({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
+  async switchCurve({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "stable",
-          value: !this.stateValues.stable,
-        }],
+        updateInstructions: [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "stable",
+            value: !this.stateValues.stable,
+          },
+        ],
         actionId,
         sourceInformation,
         skipRendererUpdate,
@@ -79,17 +84,12 @@ export default class EquilibriumCurve extends Curve {
             componentType: this.componentType,
           },
           result: {
-            stable: !this.stateValues.stable
-          }
-        }
+            stable: !this.stateValues.stable,
+          },
+        },
       });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
-
   }
-
-
-
-
 }

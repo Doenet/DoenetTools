@@ -1,4 +1,4 @@
-import MathComponent from './Math';
+import MathComponent from "./Math";
 
 export default class Coords extends MathComponent {
   static componentType = "coords";
@@ -10,9 +10,7 @@ export default class Coords extends MathComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.createVectors = {
@@ -21,11 +19,10 @@ export default class Coords extends MathComponent {
         createComponentOfType: "boolean",
       },
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { createVectors: true } })
-    }
+      definition: () => ({ setValue: { createVectors: true } }),
+    };
 
     return stateVariableDefinitions;
-
   }
 
   // TODO: do we want to give warnings or errors if value is not in form of a vector?

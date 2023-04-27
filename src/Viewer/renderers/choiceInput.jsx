@@ -1,16 +1,12 @@
-import React, { useRef, useState } from 'react';
-import useDoenetRender from '../useDoenetRenderer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useRef, useState } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faLevelDownAlt,
   faTimes,
   faCloud,
-} from '@fortawesome/free-solid-svg-icons';
-import { rendererState } from '../useDoenetRenderer';
-import { useSetRecoilState } from 'recoil';
-import styled from 'styled-components';
-import './choiceInput.css';
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Box,
@@ -20,7 +16,11 @@ import {
   RadioGroup,
   Stack,
   Text,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
+import { rendererState } from "../useDoenetRenderer";
+import { useSetRecoilState } from "recoil";
+import styled from "styled-components";
+import "./choiceInput.css";
 
 // Moved most of checkWorkStyle styling into Button
 // const Button = styled.button`
@@ -38,10 +38,10 @@ import {
 //   border-radius: var(--mainBorderRadius);
 //   margin: 0px 4px 4px 0px;
 
-//   &:hover {
-//     background-color: var(--lightBlue);
-//     color: black;
-//   };
+// &:hover {
+//   background-color: var(--lightBlue);
+//   color: black;
+// }
 // `;
 
 export default React.memo(function ChoiceInput(props) {
@@ -57,7 +57,7 @@ export default React.memo(function ChoiceInput(props) {
     callAction,
   } = useDoenetRender(props);
 
-  ChoiceInput.baseStateVariable = 'selectedIndices';
+  ChoiceInput.baseStateVariable = "selectedIndices";
 
   const [rendererSelectedIndices, setRendererSelectedIndices] = useState(
     SVs.selectedIndices,
@@ -78,14 +78,14 @@ export default React.memo(function ChoiceInput(props) {
     selectedIndicesWhenSetState.current = null;
   }
 
-  let validationState = 'unvalidated';
+  let validationState = "unvalidated";
   if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
     if (SVs.creditAchieved === 1) {
-      validationState = 'correct';
+      validationState = "correct";
     } else if (SVs.creditAchieved === 0) {
-      validationState = 'incorrect';
+      validationState = "incorrect";
     } else {
-      validationState = 'partialcorrect';
+      validationState = "partialcorrect";
     }
   }
 
@@ -148,24 +148,24 @@ export default React.memo(function ChoiceInput(props) {
   let disabled = SVs.disabled;
 
   if (SVs.inline) {
-    // let checkWorkStyle = {
-    //   cursor: 'pointer',
-    //   padding: '1px 6px 1px 6px',
-    //   width: '24px',
-    // };
+    let checkWorkStyle = {
+      cursor: "pointer",
+      padding: "1px 6px 1px 6px",
+      width: "24px",
+    };
 
     //Assume we don't have a check work button
     let checkWorkButton = null;
     if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-      if (validationState === 'unvalidated') {
+      if (validationState === "unvalidated") {
         if (disabled) {
           checkWorkStyle.backgroundColor = getComputedStyle(
             document.documentElement,
-          ).getPropertyValue('--mainGray');
+          ).getPropertyValue("--mainGray");
         }
         checkWorkButton = (
           <Button
-            id={id + '_submit'}
+            id={id + "_submit"}
             disabled={disabled}
             tabIndex="0"
             // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
@@ -176,7 +176,7 @@ export default React.memo(function ChoiceInput(props) {
               })
             }
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 callAction({
                   action: actions.submitAnswer,
                 });
@@ -196,25 +196,25 @@ export default React.memo(function ChoiceInput(props) {
         );
       } else {
         if (SVs.showCorrectness) {
-          if (validationState === 'correct') {
+          if (validationState === "correct") {
             checkWorkStyle.backgroundColor = getComputedStyle(
               document.documentElement,
-            ).getPropertyValue('--mainGreen');
+            ).getPropertyValue("--mainGreen");
             checkWorkButton = (
-              <Button id={id + '_correct'} style={checkWorkStyle}>
+              <Button id={id + "_correct"} style={checkWorkStyle}>
                 <FontAwesomeIcon icon={faCheck} />
               </Button>
             );
-          } else if (validationState === 'partialcorrect') {
+          } else if (validationState === "partialcorrect") {
             //partial credit
 
             let percent = Math.round(SVs.creditAchieved * 100);
             let partialCreditContents = `${percent} %`;
-            checkWorkStyle.width = '44px';
+            checkWorkStyle.width = "44px";
 
-            checkWorkStyle.backgroundColor = '#efab34';
+            checkWorkStyle.backgroundColor = "#efab34";
             checkWorkButton = (
-              <Button id={id + '_partial'} style={checkWorkStyle}>
+              <Button id={id + "_partial"} style={checkWorkStyle}>
                 {partialCreditContents}
               </Button>
             );
@@ -222,19 +222,19 @@ export default React.memo(function ChoiceInput(props) {
             //incorrect
             checkWorkStyle.backgroundColor = getComputedStyle(
               document.documentElement,
-            ).getPropertyValue('--mainRed');
+            ).getPropertyValue("--mainRed");
             checkWorkButton = (
-              <Button id={id + '_incorrect'} style={checkWorkStyle}>
+              <Button id={id + "_incorrect"} style={checkWorkStyle}>
                 <FontAwesomeIcon icon={faTimes} />
               </Button>
             );
           }
         } else {
           // showCorrectness is false
-          checkWorkStyle.backgroundColor = 'rgb(74, 3, 217)';
-          checkWorkStyle.padding = '1px 8px 1px 4px'; // To center the faCloud icon
+          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+          checkWorkStyle.padding = "1px 8px 1px 4px"; // To center the faCloud icon
           checkWorkButton = (
-            <Button id={id + '_saved'} style={checkWorkStyle}>
+            <Button id={id + "_saved"} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faCloud} />
             </Button>
           );
@@ -279,11 +279,11 @@ export default React.memo(function ChoiceInput(props) {
 
     let value = rendererSelectedIndices;
     if (value === undefined) {
-      value = '';
+      value = "";
     } else if (!SVs.selectMultiple) {
       value = value[0];
       if (value === undefined) {
-        value = '';
+        value = "";
       }
     }
 
@@ -309,17 +309,17 @@ export default React.memo(function ChoiceInput(props) {
     );
   } else {
     let checkWorkStyle = {
-      height: '24px',
-      display: 'inline-block',
-      padding: '1px 6px 1px 6px',
-      cursor: 'pointer',
+      height: "24px",
+      display: "inline-block",
+      padding: "1px 6px 1px 6px",
+      cursor: "pointer",
       // fontWeight: "bold",
     };
 
     let checkworkComponent = null;
 
     if (SVs.includeCheckWork && !SVs.suppressCheckwork) {
-      if (validationState === 'unvalidated') {
+      if (validationState === "unvalidated") {
         let checkWorkText = SVs.submitLabel;
         if (!SVs.showCorrectness) {
           checkWorkText = SVs.submitLabelNoCorrectness;
@@ -327,11 +327,11 @@ export default React.memo(function ChoiceInput(props) {
         if (disabled) {
           checkWorkStyle.backgroundColor = getComputedStyle(
             document.documentElement,
-          ).getPropertyValue('--mainGray');
+          ).getPropertyValue("--mainGray");
         }
         checkworkComponent = (
           <Button
-            id={id + '_submit'}
+            id={id + "_submit"}
             tabIndex="0"
             disabled={disabled}
             style={checkWorkStyle}
@@ -341,7 +341,7 @@ export default React.memo(function ChoiceInput(props) {
               })
             }
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 callAction({
                   action: actions.submitAnswer,
                 });
@@ -363,41 +363,41 @@ export default React.memo(function ChoiceInput(props) {
         );
       } else {
         if (SVs.showCorrectness) {
-          if (validationState === 'correct') {
+          if (validationState === "correct") {
             checkWorkStyle.backgroundColor = getComputedStyle(
               document.documentElement,
-            ).getPropertyValue('--mainGreen');
+            ).getPropertyValue("--mainGreen");
             checkworkComponent = (
-              <Button id={id + '_correct'} style={checkWorkStyle}>
+              <Button id={id + "_correct"} style={checkWorkStyle}>
                 <FontAwesomeIcon icon={faCheck} />
                 &nbsp; Correct
               </Button>
             );
-          } else if (validationState === 'incorrect') {
+          } else if (validationState === "incorrect") {
             checkWorkStyle.backgroundColor = getComputedStyle(
               document.documentElement,
-            ).getPropertyValue('--mainRed');
+            ).getPropertyValue("--mainRed");
             checkworkComponent = (
-              <Button id={id + '_incorrect'} style={checkWorkStyle}>
+              <Button id={id + "_incorrect"} style={checkWorkStyle}>
                 <FontAwesomeIcon icon={faTimes} />
                 &nbsp; Incorrect
               </Button>
             );
-          } else if (validationState === 'partialcorrect') {
-            checkWorkStyle.backgroundColor = '#efab34';
+          } else if (validationState === "partialcorrect") {
+            checkWorkStyle.backgroundColor = "#efab34";
             let percent = Math.round(SVs.creditAchieved * 100);
             let partialCreditContents = `${percent}% Correct`;
 
             checkworkComponent = (
-              <Button id={id + '_partial'} style={checkWorkStyle}>
+              <Button id={id + "_partial"} style={checkWorkStyle}>
                 {partialCreditContents}
               </Button>
             );
           }
         } else {
-          checkWorkStyle.backgroundColor = 'rgb(74, 3, 217)';
+          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkworkComponent = (
-            <Button id={id + '_saved'} style={checkWorkStyle}>
+            <Button id={id + "_saved"} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faCloud} />
               &nbsp; Response Saved
             </Button>
@@ -431,13 +431,13 @@ export default React.memo(function ChoiceInput(props) {
 
     let inputKey = id;
     let listStyle = {
-      listStyleType: 'none',
+      listStyleType: "none",
     };
 
-    let keyBeginning = inputKey + '_choice';
-    let inputType = 'radio';
+    let keyBeginning = inputKey + "_choice";
+    let inputType = "radio";
     if (SVs.selectMultiple) {
-      inputType = 'checkbox';
+      inputType = "checkbox";
     }
 
     let svData = SVs;
@@ -448,131 +448,81 @@ export default React.memo(function ChoiceInput(props) {
         if (svData.choicesHidden[i]) {
           return null;
         }
-        if (inputType == 'radio') {
+        if (inputType == "radio") {
           // selectMultiple="false"
           let radioDisabled = disabled || svData.choicesDisabled[i];
-          let containerClassName = 'radio-container';
-          let radioClassName = 'radio-checkmark';
+          let containerClassName = "radio-container";
+          let radioClassName = "radio-checkmark";
           if (radioDisabled) {
-            containerClassName += ' radio-container-disabled';
-            radioClassName += ' radio-checkmark-disabled';
+            containerClassName += " radio-container-disabled";
+            radioClassName += " radio-checkmark-disabled";
           }
           return (
-            // <label
-            //   className={containerClassName}
-            //   key={inputKey + '_choice' + (i + 1)}
-            // >
-            //   <input
-            //     type="radio"
-            //     id={keyBeginning + (i + 1) + '_input'}
-            //     name={inputKey}
-            //     value={i + 1}
-            //     checked={rendererSelectedIndices.includes(i + 1)}
-            //     onChange={onChangeHandler}
-            //     disabled={radioDisabled}
-            //   />
-            //   <span className={radioClassName} />
-            //   <label
-            //     htmlFor={keyBeginning + (i + 1) + '_input'}
-            //     style={{ marginLeft: '2px' }}
-            //   >
-            //     {child}
-            //   </label>
-            // </label>
-            // <label
-            //   className={containerClassName}
-            //   key={inputKey + '_choice' + (i + 1)}
-            // >
-            <Radio
-              // type="radio"
-              id={keyBeginning + (i + 1) + '_input'}
-              name={inputKey}
-              value={i + 1}
-              checked={rendererSelectedIndices.includes(i + 1)}
-              onChange={onChangeHandler}
-              disabled={radioDisabled}
+            <label
+              className={containerClassName}
+              key={inputKey + "_choice" + (i + 1)}
             >
-              {/* <span className={radioClassName} />
+              <input
+                type="radio"
+                id={keyBeginning + (i + 1) + "_input"}
+                name={inputKey}
+                value={i + 1}
+                checked={rendererSelectedIndices.includes(i + 1)}
+                onChange={onChangeHandler}
+                disabled={radioDisabled}
+              />
+              <span className={radioClassName} />
               <label
-                htmlFor={keyBeginning + (i + 1) + '_input'}
-                style={{ marginLeft: '2px' }}
-              > */}
-              {child}
-              {/* </label> */}
-            </Radio>
-            // </label>
+                htmlFor={keyBeginning + (i + 1) + "_input"}
+                style={{ marginLeft: "2px" }}
+              >
+                {child}
+              </label>
+            </label>
           );
-        } else if (inputType == 'checkbox') {
+        } else if (inputType == "checkbox") {
           // selectMultiple="true"
           let checkboxDisabled = disabled || svData.choicesDisabled[i];
-          let containerClassName = 'checkbox-container';
-          let checkboxClassName = 'checkbox-checkmark';
+          let containerClassName = "checkbox-container";
+          let checkboxClassName = "checkbox-checkmark";
           if (checkboxDisabled) {
-            containerClassName += ' checkbox-container-disabled';
-            checkboxClassName += ' checkbox-checkmark-disabled';
+            containerClassName += " checkbox-container-disabled";
+            checkboxClassName += " checkbox-checkmark-disabled";
           }
           return (
-            // <label
-            //   className={containerClassName}
-            //   key={inputKey + '_choice' + (i + 1)}
-            // >
-            //   <input
-            //     type="checkbox"
-            //     id={keyBeginning + (i + 1) + '_input'}
-            //     name={inputKey}
-            //     value={i + 1}
-            //     checked={rendererSelectedIndices.includes(i + 1)}
-            //     onChange={onChangeHandler}
-            //     disabled={disabled || svData.choicesDisabled[i]}
-            //   />
-            //   <span className={checkboxClassName} />
-            //   <label
-            //     htmlFor={keyBeginning + (i + 1) + '_input'}
-            //     style={{ marginLeft: '2px' }}
-            //   >
-            //     {child}
-            //   </label>
-            // </label>
-            // <label
-            //   className={containerClassName}
-            //   key={inputKey + '_choice' + (i + 1)}
-            // >
-            <Checkbox
-              // type="checkbox"
-              id={keyBeginning + (i + 1) + '_input'}
-              name={inputKey}
-              value={i + 1}
-              checked={rendererSelectedIndices.includes(i + 1)}
-              onChange={onChangeHandler}
-              disabled={disabled || svData.choicesDisabled[i]}
+            <label
+              className={containerClassName}
+              key={inputKey + "_choice" + (i + 1)}
             >
-              {/* <span className={checkboxClassName} /> */}
-              {/* <label
-                htmlFor={keyBeginning + (i + 1) + '_input'}
-                style={{ marginLeft: '2px' }}
-              > */}
-              {child}
-              {/* </label> */}
-            </Checkbox>
-            // </label>
+              <input
+                type="checkbox"
+                id={keyBeginning + (i + 1) + "_input"}
+                name={inputKey}
+                value={i + 1}
+                checked={rendererSelectedIndices.includes(i + 1)}
+                onChange={onChangeHandler}
+                disabled={disabled || svData.choicesDisabled[i]}
+              />
+              <span className={checkboxClassName} />
+              <label
+                htmlFor={keyBeginning + (i + 1) + "_input"}
+                style={{ marginLeft: "2px" }}
+              >
+                {child}
+              </label>
+            </label>
           );
         }
       });
 
     return (
-      <Box>
-        {/* <ol id={inputKey} style={listStyle}>
+      <React.Fragment>
+        <ol id={inputKey} style={listStyle}>
           <a name={id} />
           {choiceDoenetTags}
         </ol>
-        {checkworkComponent} */}
-        <RadioGroup id={inputKey}>
-          {/* <a name={id} /> */}
-          {choiceDoenetTags}
-        </RadioGroup>
         {checkworkComponent}
-        {/* //{' '} */}
-      </Box>
+      </React.Fragment>
     );
   }
 });

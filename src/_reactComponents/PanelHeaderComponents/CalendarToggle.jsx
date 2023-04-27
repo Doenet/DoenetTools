@@ -1,12 +1,12 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarPlus,
   faCalendarTimes,
   faCode,
-} from '@fortawesome/free-solid-svg-icons';
-import React, { useRef } from 'react';
-import styled from 'styled-components';
-import { doenetMainBlue } from './theme';
+} from "@fortawesome/free-solid-svg-icons";
+import React, { useRef } from "react";
+import styled from "styled-components";
+import { doenetMainBlue } from "./theme";
 
 const Button = styled.button`
   height: 24px;
@@ -19,7 +19,7 @@ const Button = styled.button`
 
 export default function CalendarButton(props) {
   const icon = props.checked ? faCalendarPlus : faCalendarTimes;
-  const color = props.checked ? doenetMainBlue : 'var(--mainGray)';
+  const color = props.checked ? doenetMainBlue : "var(--mainGray)";
   const buttonRef = useRef(null);
 
   return (

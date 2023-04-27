@@ -12,9 +12,9 @@ Note: you can pass any additional properties if you wish, these props will be pa
 */
 
 import React, { useState, useEffect } from "react";
-import { useSpring, animated } from '@react-spring/web';
+import { useSpring, animated } from "@react-spring/web";
 import styled from "styled-components";
-import { doenetComponentForegroundActive } from './temp/theme'
+import { doenetComponentForegroundActive } from "./temp/theme";
 
 // PARAMETERS
 const LABELCOLOR = "var(--mainBlue)";
@@ -44,31 +44,31 @@ const labelStyles = {
     WebkitUserSelect: "none" /* Chrome, Safari, and Opera */,
     WebkitTouchCallout: "none" /* Disable Android and iOS callouts*/,
     config: {
-      tension: 400
-    }
+      tension: 400,
+    },
   },
   empty: {
     color: LABELCOLOR,
     position: "absolute",
     top: "0.75em",
-    fontSize: "1em"
+    fontSize: "1em",
   },
   inactive: {
     color: LABELCOLOR,
     position: "absolute",
     top: "0.75em",
-    fontSize: "1em"
+    fontSize: "1em",
   },
   notEmpty: {
     color: LABELCOLOR,
     top: "0.3em",
-    fontSize: "0.7em"
+    fontSize: "0.7em",
   },
   active: {
     color: "var(--mainGray)",
     top: "0.3em",
     fontSize: "0.7em",
-  }
+  },
 };
 
 const inputStyles = {
@@ -79,16 +79,16 @@ const inputStyles = {
     backgroundColor: BACKGROUNDCOLOR,
     borderRadius: "0.33em",
     outline: "0",
-    width: "calc(100% - 1em)"
+    width: "calc(100% - 1em)",
   },
   inactive: {
     color: "var(--canvastext)",
-    backgroundColor: BACKGROUNDCOLOR
+    backgroundColor: BACKGROUNDCOLOR,
   },
   active: {
     color: "var(--mainGray)",
-    backgroundColor: FOCUSBACKGROUNDCOLOR
-  }
+    backgroundColor: FOCUSBACKGROUNDCOLOR,
+  },
 };
 
 const AnimatedLabel = animated.label;
@@ -111,7 +111,7 @@ const LengthIndicator = styled.p`
   right: 1em;
   color: ${LABELCOLOR};
   font-family: sans-serif;
-`
+`;
 
 export default function Textinput(props) {
   // props
@@ -139,9 +139,17 @@ export default function Textinput(props) {
   }, []);
 
   // allow specifying resize property for textarea
-  let inputStylesWithResize = { ...inputStyles, baseline: { ...inputStyles.baseline, resize: props.resize || (area ? "both" : "none") }}
+  let inputStylesWithResize = {
+    ...inputStyles,
+    baseline: {
+      ...inputStyles.baseline,
+      resize: props.resize || (area ? "both" : "none"),
+    },
+  };
 
-  const [inputStyle, setInputStyle] = useSpring(() => inputStylesWithResize.baseline);
+  const [inputStyle, setInputStyle] = useSpring(
+    () => inputStylesWithResize.baseline,
+  );
 
   // Section: event handlers
   function handleFocus(e) {
@@ -155,7 +163,7 @@ export default function Textinput(props) {
     setInputStyle(inputStyles.inactive);
     if (!value) {
       setLabelStyle(labelStyles.inactive);
-    }else{
+    } else {
       setLabelStyle(labelStyles.notEmpty);
     }
   }
@@ -178,7 +186,7 @@ export default function Textinput(props) {
         <AnimatedTextarea
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onChange={e => {
+          onChange={(e) => {
             setValue(e.target.value);
             props.onChange(e);
           }}
@@ -197,10 +205,7 @@ export default function Textinput(props) {
   }
 
   return (
-    <StyledInputContainer
-      {...props}
-      key={id + "-doenet-textinput-container"}
-    >
+    <StyledInputContainer {...props} key={id + "-doenet-textinput-container"}>
       <AnimatedLabel
         key={id + "-doenet-textinput-label"}
         style={labelStyle}
@@ -211,7 +216,7 @@ export default function Textinput(props) {
       <AnimatedInput
         onFocus={handleFocus}
         onBlur={handleBlur}
-        onChange={e => {
+        onChange={(e) => {
           setValue(e.target.value);
           props.onChange(e);
         }}

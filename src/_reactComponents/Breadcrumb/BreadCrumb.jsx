@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { faTh } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useCallback, useEffect, useRef } from "react";
+import { faTh } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   folderDictionary,
   fetchCoursesQuery,
   clearDriveAndItemSelections,
-} from '../Drive/NewDrive'; //TODO: Migrate to parent component
+} from "../Drive/NewDrive"; //TODO: Migrate to parent component
 import {
   useRecoilValue,
   atomFamily,
   selectorFamily,
   useSetRecoilState,
   useRecoilValueLoadable,
-} from 'recoil';
-import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
-import styled from 'styled-components';
+} from "recoil";
+import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
+import styled from "styled-components";
 
 // import { assignmentData, studentData } from "../../Tools/_framework/ToolPanels/Gradebook"
 
@@ -57,7 +57,7 @@ const BreadcrumbSpan = styled.span`
     outline-offset: 2px;
   }
   &::after {
-    content: ' ';
+    content: " ";
     width: 0;
     height: 0;
     border-top: 50px solid transparent;
@@ -70,7 +70,7 @@ const BreadcrumbSpan = styled.span`
     z-index: 2;
   }
   &::before {
-    content: ' ';
+    content: " ";
     width: 0;
     height: 0;
     border-top: 50px solid transparent;
@@ -83,13 +83,12 @@ const BreadcrumbSpan = styled.span`
     left: 100%;
     z-index: 1;
   }
-  
 `;
 
 const breadcrumbItemAtomFamily = atomFamily({
-  key: 'breadcrumbItemAtomFamily',
+  key: "breadcrumbItemAtomFamily",
   default: selectorFamily({
-    key: 'breadcrumbItemAtomFamily/Default',
+    key: "breadcrumbItemAtomFamily/Default",
     get:
       ({ driveId, folderId }) =>
       ({ get }) => {
@@ -104,14 +103,14 @@ const breadcrumbItemAtomFamily = atomFamily({
           }
 
           items.push({
-            type: 'Folder',
+            type: "Folder",
             folderId: folderInfo.folderInfo.itemId,
             label: folderInfo.folderInfo.label,
           });
           folderId = folderInfo.folderInfo.parentFolderId;
         }
         const drivesInfo = get(fetchCoursesQuery);
-        let driveObj = { type: 'Drive', folderId: driveId };
+        let driveObj = { type: "Drive", folderId: driveId };
         for (let drive of drivesInfo.driveIdsAndLabels) {
           if (drive.driveId === driveId) {
             driveObj.label = drive.label;
@@ -124,8 +123,19 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId, attemptNumber, source, assignments, students}) {
-  const [driveId, parentFolderId] = path.split(':');
+export default function BreadCrumb({
+  path,
+  tool,
+  tool2,
+  doenetId,
+  label,
+  userId,
+  attemptNumber,
+  source,
+  assignments,
+  students,
+}) {
+  const [driveId, parentFolderId] = path.split(":");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
 
@@ -147,26 +157,29 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
     //   console.log("width", width-40);
     // }
     var width = 0;
-    if (returnToCourseChooserRef.current != null){
+    if (returnToCourseChooserRef.current != null) {
       width = returnToCourseChooserRef.current.offsetWidth;
       if (returnToDashboardRef.current != null) {
-      width = returnToCourseChooserRef.current.offsetWidth + returnToDashboardRef.current.offsetWidth;
-      if (returnToToolHeadRef.current != null) {
-        width += returnToToolHeadRef.current.offsetWidth;
-        // if (tool){
-        //   let folders = [...items];
-        //   folders.pop(); //First one is already covered with returnToToolHead
-        //   [...folders].reverse().map((item) => (item.label = useRef(null)));}
-        if (childrenRef.current != null) {
-          width += childrenRef.current.offsetWidth;
-          if (returnToToolHead2Ref.current != null) {
-            width += returnToToolHead2Ref.current.offsetWidth;
-            if (returnToIndividualViewRef.current != null) {
-              width += returnToIndividualViewRef.current.offsetWidth;
-              if (returnToMixedViewRef.current != null) {
-                width += returnToMixedViewRef.current.offsetWidth;
-                if (returnToAttemptViewRef.current != null) {
-                  width += returnToAttemptViewRef.current.offsetWidth;
+        width =
+          returnToCourseChooserRef.current.offsetWidth +
+          returnToDashboardRef.current.offsetWidth;
+        if (returnToToolHeadRef.current != null) {
+          width += returnToToolHeadRef.current.offsetWidth;
+          // if (tool){
+          //   let folders = [...items];
+          //   folders.pop(); //First one is already covered with returnToToolHead
+          //   [...folders].reverse().map((item) => (item.label = useRef(null)));}
+          if (childrenRef.current != null) {
+            width += childrenRef.current.offsetWidth;
+            if (returnToToolHead2Ref.current != null) {
+              width += returnToToolHead2Ref.current.offsetWidth;
+              if (returnToIndividualViewRef.current != null) {
+                width += returnToIndividualViewRef.current.offsetWidth;
+                if (returnToMixedViewRef.current != null) {
+                  width += returnToMixedViewRef.current.offsetWidth;
+                  if (returnToAttemptViewRef.current != null) {
+                    width += returnToAttemptViewRef.current.offsetWidth;
+                  }
                 }
               }
             }
@@ -174,10 +187,8 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
         }
       }
     }
-    }
-    console.log("width", width)
+    console.log("width", width);
   }, []);
-
 
   //TODO reivew for multi drive
   const items = useRecoilValue(
@@ -192,9 +203,9 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
       clearSelections();
       setPageToolView((was) => ({
         // ...was,
-        page:was.page,
-        tool:'navigation',
-        view:was.view,
+        page: was.page,
+        tool: "navigation",
+        view: was.view,
         params: {
           path: `${driveId}:${folderId}:${folderId}:Folder`,
         },
@@ -212,76 +223,72 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
 
   let returnToToolHead = null;
 
-  if (tool){
-    let toolName = '';
+  if (tool) {
+    let toolName = "";
     let params = {
       path: `${driveId}:${driveId}:${driveId}:Drive`,
-    }
-    if (tool === 'Content'){
-      toolName = 'navigation';
-    }else if (tool === 'Enrollment'){
-      toolName = 'enrollment';
-      params = {driveId}
-    }else if (tool === 'Gradebook'){
-      toolName = 'gradebook';
-      params = {driveId}
-    }else if (tool === 'CourseChooser'){
-      toolName = 'courseChooser';
-      params = {}
+    };
+    if (tool === "Content") {
+      toolName = "navigation";
+    } else if (tool === "Enrollment") {
+      toolName = "enrollment";
+      params = { driveId };
+    } else if (tool === "Gradebook") {
+      toolName = "gradebook";
+      params = { driveId };
+    } else if (tool === "CourseChooser") {
+      toolName = "courseChooser";
+      params = {};
     }
 
-    
-    returnToToolHead = 
-      (
-        <BreadcrumbItem 
-        // ref={returnToToolHeadRef}
+    returnToToolHead = (
+      <BreadcrumbItem
+      // ref={returnToToolHeadRef}
+      >
+        <BreadcrumbSpan
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setPageToolView((was) => ({
+                page: was.page,
+                tool: toolName,
+                view: was.view,
+                params,
+              }));
+            }
+          }}
+          onClick={() => {
+            setPageToolView((was) => ({
+              page: was.page,
+              tool: toolName,
+              view: was.view,
+              params,
+            }));
+          }}
         >
-          <BreadcrumbSpan
-            role="button"
-            tabIndex="0"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                setPageToolView((was) => ({ 
-                  page:was.page,
-                  tool:toolName,
-                  view:was.view,
-                  params,}));
-              }
-            }}
-            onClick={() => {
-              setPageToolView((was) => ({ 
-                page:was.page,
-                tool:toolName,
-                view:was.view,
-                params,}));
-            }}
-          >
-            {tool}
-          </BreadcrumbSpan>
-        </BreadcrumbItem>
-        
-      )
-    
+          {tool}
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    );
   }
 
   const returnToCourseChooser = (
-    <BreadcrumbItem 
-    ref={returnToCourseChooserRef}
-    >
+    <BreadcrumbItem ref={returnToCourseChooserRef}>
       <BreadcrumbSpan
         role="button"
         tabIndex="0"
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             setPageToolView({
-              page: 'course',
-              tool: 'courseChooser',
-              view: '',
+              page: "course",
+              tool: "courseChooser",
+              view: "",
             });
           }
         }}
         onClick={() => {
-          setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
+          setPageToolView({ page: "course", tool: "courseChooser", view: "" });
         }}
       >
         <FontAwesomeIcon icon={faTh} />
@@ -289,36 +296,41 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
     </BreadcrumbItem>
   );
 
-  if (tool === 'CourseChooser'){
-    return <Breadcrumb>{returnToCourseChooser} 
-    {/* <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan></BreadcrumbItem> */}
-    </Breadcrumb>
+  if (tool === "CourseChooser") {
+    return (
+      <Breadcrumb>
+        {returnToCourseChooser}
+        {/* <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan></BreadcrumbItem> */}
+      </Breadcrumb>
+    );
   }
 
   const returnToDashboard = (
-    <BreadcrumbItem ref = {returnToDashboardRef}>
+    <BreadcrumbItem ref={returnToDashboardRef}>
       <BreadcrumbSpan
         role="button"
         tabIndex="0"
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            setPageToolView((was) => ({ 
-              page:was.page,
-              tool:'dashboard',
-              view:'',
+          if (e.key === "Enter") {
+            setPageToolView((was) => ({
+              page: was.page,
+              tool: "dashboard",
+              view: "",
               params: {
                 path: `${driveId}:${driveId}:${driveId}:Drive`,
-              },}));
+              },
+            }));
           }
         }}
         onClick={() => {
-          setPageToolView((was) => ({ 
-            page:was.page,
-            tool:'dashboard',
-            view:'',
+          setPageToolView((was) => ({
+            page: was.page,
+            tool: "dashboard",
+            view: "",
             params: {
               path: `${driveId}:${driveId}:${driveId}:Drive`,
-            },}));
+            },
+          }));
         }}
       >
         {courseTitle}
@@ -328,239 +340,263 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
 
   let children = null;
 
-  if (tool){
+  if (tool) {
     let folders = [...items];
     folders.pop(); //First one is already covered with returnToToolHead
     // [...folders].reverse().map((item) => (item.label = useRef(null)));
     children = [...folders].reverse().map((item) => (
-    <BreadcrumbItem key={item.folderId}>
-      <BreadcrumbSpan 
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+      <BreadcrumbItem key={item.folderId}>
+        <BreadcrumbSpan
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              goToFolder(driveId, item.folderId);
+            }
+          }}
+          onClick={() => {
             goToFolder(driveId, item.folderId);
-          }
-        }}
-        onClick={() => {
-          goToFolder(driveId, item.folderId);
-        }}
-      >
-        {item.label}
-      </BreadcrumbSpan>
-    </BreadcrumbItem>
-  ));
-      }
-
- 
-    let returnToToolHead2 = null;
-    let tool2name = '';
-    let params2 = {};
-
-    if (tool2 === 'Assignment'){
-      tool2name = 'assignment';
-      params2 = {doenetId}
-    }else if (tool2 === 'Editor'){
-      tool2name = 'editor';
-      params2 = {doenetId,path}
-    }
-    if (tool2){
-      returnToToolHead2 = 
-      (
-        <BreadcrumbItem 
-        ref={returnToToolHead2Ref}
+          }}
         >
-          <BreadcrumbSpan
-            role="button"
-            tabIndex="0"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                setPageToolView((was) => ({ 
-                  page:was.page,
-                  tool:tool2name,
-                  view:'',
-                  params:params2,}));
-              }
-            }}
-            onClick={() => {
-              setPageToolView((was) => ({ 
-                page:was.page,
-                tool:tool2name,
-                view:'',
-                params:params2,}));
-            }}
-          >
-            {label}
-          </BreadcrumbSpan>
-        </BreadcrumbItem>
-        
-      )
-        }
-    
-
-  let returnToAssignmentView = null
-
-  if (tool === 'Gradebook' && doenetId !== null && doenetId !== '' && assignments.state === 'hasValue'){
-    returnToAssignmentView = (
-      <BreadcrumbItem key={doenetId} 
-      ref={returnToIndividualViewRef}
-      >
-      <BreadcrumbSpan
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            setPageToolView(() => ({ 
-              page:'course',
-              tool:'gradebookAssignment',
-              view:'',
-              params:{ driveId, doenetId },}));
-          }
-        }}
-        onClick={() => {
-          setPageToolView(() => ({ 
-            page:'course',
-            tool:'gradebookAssignment',
-            view:'',
-            params:{ driveId, doenetId },}));
-        }}
-      >
-        {assignments.contents[doenetId]}
-      </BreadcrumbSpan>
-    </BreadcrumbItem>
-    )
+          {item.label}
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    ));
   }
 
-  let returnToStudentView = null
+  let returnToToolHead2 = null;
+  let tool2name = "";
+  let params2 = {};
 
-  if (tool === 'Gradebook' && userId !== null && userId !== '' && students.state === 'hasValue'){
+  if (tool2 === "Assignment") {
+    tool2name = "assignment";
+    params2 = { doenetId };
+  } else if (tool2 === "Editor") {
+    tool2name = "editor";
+    params2 = { doenetId, path };
+  }
+  if (tool2) {
+    returnToToolHead2 = (
+      <BreadcrumbItem ref={returnToToolHead2Ref}>
+        <BreadcrumbSpan
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setPageToolView((was) => ({
+                page: was.page,
+                tool: tool2name,
+                view: "",
+                params: params2,
+              }));
+            }
+          }}
+          onClick={() => {
+            setPageToolView((was) => ({
+              page: was.page,
+              tool: tool2name,
+              view: "",
+              params: params2,
+            }));
+          }}
+        >
+          {label}
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    );
+  }
+
+  let returnToAssignmentView = null;
+
+  if (
+    tool === "Gradebook" &&
+    doenetId !== null &&
+    doenetId !== "" &&
+    assignments.state === "hasValue"
+  ) {
+    returnToAssignmentView = (
+      <BreadcrumbItem key={doenetId} ref={returnToIndividualViewRef}>
+        <BreadcrumbSpan
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setPageToolView(() => ({
+                page: "course",
+                tool: "gradebookAssignment",
+                view: "",
+                params: { driveId, doenetId },
+              }));
+            }
+          }}
+          onClick={() => {
+            setPageToolView(() => ({
+              page: "course",
+              tool: "gradebookAssignment",
+              view: "",
+              params: { driveId, doenetId },
+            }));
+          }}
+        >
+          {assignments.contents[doenetId]}
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    );
+  }
+
+  let returnToStudentView = null;
+
+  if (
+    tool === "Gradebook" &&
+    userId !== null &&
+    userId !== "" &&
+    students.state === "hasValue"
+  ) {
     // console.log(">>>> bc userid: ", userId)
     returnToStudentView = (
-      <BreadcrumbItem key={userId+"*"} 
-      ref={returnToIndividualViewRef}
-      >
-      <BreadcrumbSpan
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            setPageToolView(() => ({ 
-              page:'course',
-              tool:'gradebookStudent',
-              view:'',
-              params:{ driveId, userId },}));
-          }
-        }}
-        onClick={() => {
-          setPageToolView(() => ({ 
-            page:'course',
-            tool:'gradebookStudent',
-            view:'',
-            params:{ driveId, userId },}));
-        }}
-      >
-        {students.contents[userId].firstName + " " + students.contents[userId].lastName}
-      </BreadcrumbSpan>
-    </BreadcrumbItem>
-    )
+      <BreadcrumbItem key={userId + "*"} ref={returnToIndividualViewRef}>
+        <BreadcrumbSpan
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setPageToolView(() => ({
+                page: "course",
+                tool: "gradebookStudent",
+                view: "",
+                params: { driveId, userId },
+              }));
+            }
+          }}
+          onClick={() => {
+            setPageToolView(() => ({
+              page: "course",
+              tool: "gradebookStudent",
+              view: "",
+              params: { driveId, userId },
+            }));
+          }}
+        >
+          {students.contents[userId].firstName +
+            " " +
+            students.contents[userId].lastName}
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    );
   }
 
-  let returnToAttemptView = null
+  let returnToAttemptView = null;
 
-  if (tool === 'Gradebook' && doenetId !== null && doenetId !== '' && userId !== null && userId !== '' && attemptNumber !== null && attemptNumber !== ''){
-    console.log(">>>>", {doenetId, userId, attemptNumber, })
-    
+  if (
+    tool === "Gradebook" &&
+    doenetId !== null &&
+    doenetId !== "" &&
+    userId !== null &&
+    userId !== "" &&
+    attemptNumber !== null &&
+    attemptNumber !== ""
+  ) {
+    console.log(">>>>", { doenetId, userId, attemptNumber });
+
     returnToAttemptView = (
-    <BreadcrumbItem key={userId+"_"+attemptNumber} 
-    ref={returnToAttemptViewRef}
-    >
-      <BreadcrumbSpan
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            setPageToolView(() => ({ 
-              page:'course',
-              tool:'gradebookAttempt',
-              view:'',
-              params:{ driveId, doenetId, userId, attemptNumber, source },}));
-          }
-        }}
-        onClick={() => {
-          setPageToolView(() => ({ 
-            page:'course',
-            tool:'gradebookAttempt',
-            view:'',
-            params:{ driveId, doenetId, userId, attemptNumber, source },}));
-        }}
+      <BreadcrumbItem
+        key={userId + "_" + attemptNumber}
+        ref={returnToAttemptViewRef}
       >
-        {"Attempt " + attemptNumber}
-      </BreadcrumbSpan>
-    </BreadcrumbItem>
-    )
+        <BreadcrumbSpan
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setPageToolView(() => ({
+                page: "course",
+                tool: "gradebookAttempt",
+                view: "",
+                params: { driveId, doenetId, userId, attemptNumber, source },
+              }));
+            }
+          }}
+          onClick={() => {
+            setPageToolView(() => ({
+              page: "course",
+              tool: "gradebookAttempt",
+              view: "",
+              params: { driveId, doenetId, userId, attemptNumber, source },
+            }));
+          }}
+        >
+          {"Attempt " + attemptNumber}
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    );
   }
 
+  let returnToIndividualView = null;
 
-  let returnToIndividualView = null
-
-  if(source === null || source === ''){
-    if(returnToAssignmentView){
-      returnToIndividualView = returnToAssignmentView
+  if (source === null || source === "") {
+    if (returnToAssignmentView) {
+      returnToIndividualView = returnToAssignmentView;
+    } else {
+      returnToIndividualView = returnToStudentView;
     }
-    else{
-      returnToIndividualView = returnToStudentView
-    }
-  }else if (source === 'assignment'){
-    returnToIndividualView = returnToAssignmentView
-  }else if (source === 'student'){
-    returnToIndividualView = returnToStudentView
+  } else if (source === "assignment") {
+    returnToIndividualView = returnToAssignmentView;
+  } else if (source === "student") {
+    returnToIndividualView = returnToStudentView;
   }
 
+  let returnToMixedView = null;
 
-  let returnToMixedView = null
-
-  if (tool === 'Gradebook' && doenetId !== null && doenetId !== '' && userId !== null && userId !== '' && students.state === 'hasValue' && assignments.state === 'hasValue'){
-    
+  if (
+    tool === "Gradebook" &&
+    doenetId !== null &&
+    doenetId !== "" &&
+    userId !== null &&
+    userId !== "" &&
+    students.state === "hasValue" &&
+    assignments.state === "hasValue"
+  ) {
     returnToMixedView = (
-    <BreadcrumbItem key={userId+"_"+doenetId} 
-    ref={returnToMixedViewRef}
-    >
-      <BreadcrumbSpan
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            setPageToolView(() => ({ 
-              page:'course',
-              tool:'gradebookStudentAssignment',
-              view:'',
-              params:{ driveId, doenetId, userId, source },}));
-          }
-        }}
-        onClick={() => {
-          setPageToolView(() => ({ 
-            page:'course',
-            tool:'gradebookStudentAssignment',
-            view:'',
-            params:{ driveId, doenetId, userId, source},}));
-        }}
-      >
-        {source === 'student' ? assignments.contents[doenetId] : students.contents[userId].firstName + " " + students.contents[userId].lastName}
-      </BreadcrumbSpan>
-    </BreadcrumbItem>
-    )
+      <BreadcrumbItem key={userId + "_" + doenetId} ref={returnToMixedViewRef}>
+        <BreadcrumbSpan
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setPageToolView(() => ({
+                page: "course",
+                tool: "gradebookStudentAssignment",
+                view: "",
+                params: { driveId, doenetId, userId, source },
+              }));
+            }
+          }}
+          onClick={() => {
+            setPageToolView(() => ({
+              page: "course",
+              tool: "gradebookStudentAssignment",
+              view: "",
+              params: { driveId, doenetId, userId, source },
+            }));
+          }}
+        >
+          {source === "student"
+            ? assignments.contents[doenetId]
+            : students.contents[userId].firstName +
+              " " +
+              students.contents[userId].lastName}
+        </BreadcrumbSpan>
+      </BreadcrumbItem>
+    );
   }
-
 
   return (
-    
-      <Breadcrumb 
-      // ref={breadcrumbRef}
-      >
-      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children} {returnToToolHead2} {returnToIndividualView} {returnToMixedView} {returnToAttemptView}
+    <Breadcrumb
+    // ref={breadcrumbRef}
+    >
+      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children}{" "}
+      {returnToToolHead2} {returnToIndividualView} {returnToMixedView}{" "}
+      {returnToAttemptView}
     </Breadcrumb>
- 
-      
-    
   );
 }

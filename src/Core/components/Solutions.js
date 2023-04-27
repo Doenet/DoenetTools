@@ -1,4 +1,4 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export class Solution extends BlockComponent {
   constructor(args) {
@@ -9,7 +9,6 @@ export class Solution extends BlockComponent {
       closeSolution: this.closeSolution.bind(this),
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
-
   }
   static componentType = "solution";
   static rendererType = "solution";
@@ -17,54 +16,47 @@ export class Solution extends BlockComponent {
 
   static sendToRendererEvenIfHidden = true;
 
-
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.hide = {
-      createComponentOfType: "boolean"
-    }
+      createComponentOfType: "boolean",
+    };
     return attributes;
   }
-
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
     let wrapWithContainer = function ({ matchedChildren }) {
-
       return {
         success: true,
-        newChildren: [{
-          componentType: "_solutionContainer",
-          children: matchedChildren
-        }],
-      }
-
-    }
+        newChildren: [
+          {
+            componentType: "_solutionContainer",
+            children: matchedChildren,
+          },
+        ],
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: wrapWithContainer
+      replacementFunction: wrapWithContainer,
     });
 
     return sugarInstructions;
-
   }
-
 
   static returnChildGroups() {
-
-    return [{
-      group: "inlinesBlocks",
-      componentTypes: ["_inline", "_block"]
-    }]
-
+    return [
+      {
+        group: "inlinesBlocks",
+        componentTypes: ["_inline", "_block"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.hide = {
       public: true,
@@ -78,53 +70,57 @@ export class Solution extends BlockComponent {
         hideAttr: {
           dependencyType: "attributeComponent",
           attributeName: "hide",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         displayMode: {
           dependencyType: "flag",
-          flagName: "solutionDisplayMode"
+          flagName: "solutionDisplayMode",
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "none") {
-          return { setValue: { hide: true } }
+          return { setValue: { hide: true } };
         } else if (dependencyValues.hideAttr !== null) {
           return {
             setValue: {
-              hide: dependencyValues.hideAttr.stateValues.value
-            }
-          }
+              hide: dependencyValues.hideAttr.stateValues.value,
+            },
+          };
         } else {
           return {
             useEssentialOrDefaultValue: {
-              hide: true
-            }
-          }
+              hide: true,
+            },
+          };
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.displayMode === "none") {
-          return { success: false }
+          return { success: false };
         } else if (dependencyValues.hideAttr !== null) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "hideAttr",
-              desiredValue: desiredStateVariableValues.hide,
-              variableIndex: 0
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "hideAttr",
+                desiredValue: desiredStateVariableValues.hide,
+                variableIndex: 0,
+              },
+            ],
+          };
         } else {
           return {
             success: true,
-            instructions: [{
-              setSetVariable: "hide",
-              value: desiredStateVariableValues.hide
-            }]
-          }
+            instructions: [
+              {
+                setSetVariable: "hide",
+                value: desiredStateVariableValues.hide,
+              },
+            ],
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.open = {
       public: true,
@@ -137,58 +133,60 @@ export class Solution extends BlockComponent {
       returnDependencies: () => ({
         displayMode: {
           dependencyType: "flag",
-          flagName: "solutionDisplayMode"
-        }
+          flagName: "solutionDisplayMode",
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "displayed") {
-          return { setValue: { open: true } }
+          return { setValue: { open: true } };
         } else if (dependencyValues.displayMode === "none") {
-          return { setValue: { open: false } }
+          return { setValue: { open: false } };
         } else {
           return {
             useEssentialOrDefaultValue: {
-              open: true
-            }
-          }
+              open: true,
+            },
+          };
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.displayMode === "displayed" ||
+        if (
+          dependencyValues.displayMode === "displayed" ||
           dependencyValues.displayMode === "none"
         ) {
           // will always be open if displaymode is displayed
           // or always closed if displaymode is none
-          return { success: false }
+          return { success: false };
         }
 
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "open",
-            value: desiredStateVariableValues.open
-          }]
-        }
-      }
-    }
-
+          instructions: [
+            {
+              setEssentialValue: "open",
+              value: desiredStateVariableValues.open,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.canBeClosed = {
       forRenderer: true,
       returnDependencies: () => ({
         displayMode: {
           dependencyType: "flag",
-          flagName: "solutionDisplayMode"
-        }
+          flagName: "solutionDisplayMode",
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "button") {
-          return { setValue: { canBeClosed: true } }
+          return { setValue: { canBeClosed: true } };
         } else {
-          return { setValue: { canBeClosed: false } }
+          return { setValue: { canBeClosed: false } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.message = {
       public: true,
@@ -201,47 +199,53 @@ export class Solution extends BlockComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          message: true
-        }
+          message: true,
+        },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "message",
-            value: desiredStateVariableValues.message
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "message",
+              value: desiredStateVariableValues.message,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.sectionName = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { sectionName: "Solution" } })
-    }
+      definition: () => ({ setValue: { sectionName: "Solution" } }),
+    };
 
     return stateVariableDefinitions;
-
   }
 
+  async revealSolution({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    let { allowView, message, scoredComponent } =
+      await this.coreFunctions.recordSolutionView();
 
-  async revealSolution({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
-    let { allowView, message, scoredComponent } = await this.coreFunctions.recordSolutionView();
-
-
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "open",
-      value: allowView
-    }, {
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "message",
-      value: message
-    }];
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: allowView,
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "message",
+        value: message,
+      },
+    ];
 
     let event;
 
@@ -250,7 +254,7 @@ export class Solution extends BlockComponent {
         updateType: "updateValue",
         componentName: scoredComponent,
         stateVariable: "viewedSolution",
-        value: true
+        value: true,
       });
 
       event = {
@@ -259,7 +263,7 @@ export class Solution extends BlockComponent {
           componentName: this.componentName,
           componentType: this.componentType,
         },
-      }
+      };
     }
 
     return await this.coreFunctions.performUpdate({
@@ -269,19 +273,23 @@ export class Solution extends BlockComponent {
       skipRendererUpdate,
       event,
       overrideReadOnly: true,
-    })
-
+    });
   }
 
-  async closeSolution({ actionId, sourceInformation = {}, skipRendererUpdate = false, }) {
-
+  async closeSolution({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     return await this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "open",
-        value: false
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "open",
+          value: false,
+        },
+      ],
       overrideReadOnly: true,
       actionId,
       sourceInformation,
@@ -292,9 +300,8 @@ export class Solution extends BlockComponent {
           componentName: this.componentName,
           componentType: this.componentType,
         },
-      }
-    })
-
+      },
+    });
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -304,25 +311,22 @@ export class Solution extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
 
-
   static includeBlankStringChildren = true;
-
 }
 
 export class GivenAnswer extends Solution {
   static componentType = "givenAnswer";
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.sectionName.definition = () => ({
-      setValue: { sectionName: "Answer" }
+      setValue: { sectionName: "Answer" },
     });
 
     return stateVariableDefinitions;
