@@ -17,16 +17,7 @@ try {
     //required unless data is passed in application/x-www-form-urlencoded or multipart/form-data
     $_POST = json_decode(file_get_contents('php://input'), true);
 
-    if (!array_key_exists('doenetId', $_POST)) {
-        $success = false;
-        $message = 'Missing doenetId';
-    } elseif (!array_key_exists('label', $_POST)) {
-        $success = false;
-        $message = 'Missing label';
-    } elseif (!array_key_exists('imagePath', $_POST)) {
-        $success = false;
-        $message = 'Missing imagePath';
-    } 
+    Base_Model::checkForRequiredInputs($_POST, ['doenetId', 'label', 'imagePath']);
 
     $portfolioCourseId = '';
 

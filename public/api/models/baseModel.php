@@ -51,5 +51,24 @@ class Base_Model {
             throw new Exception("Unexpected error, only expected one row from this query.");
         }
     }
+
+    /**
+     * Validate that a list of keys are present in a given associative array.
+     * 
+     * Can be used to validate any of the standard PHP input arrays like
+     * $_POST, $_GET, $_REQUEST, $_COOKIE.
+     * 
+     * Inputs:
+     * $inputArray     Assumed to be input from a user to be validated, needs
+     *                 to be an associatve array
+     * $requiredKeys   A list of keys that are required to be present. 
+     */
+    public static function checkForRequiredInputs($inputArray, $requiredKeys) {
+        foreach($requiredKeys as $key) {
+            if (!array_key_exists($key, $inputArray)) {
+                throw new Exception("Missing required field '$key'.");
+            }
+        }
+    }
 }
 ?>
