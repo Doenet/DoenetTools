@@ -739,66 +739,6 @@ describe("Regular Polygon Tag Tests", function () {
       .should("have.text", "(0,1)");
   });
 
-  it("two vertices, first vertex constrained to grid, allow flexible motion", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-  <graph>
-    <point name="P">(1,3)
-      <constraints>
-         <constrainToGrid dx="3" dy="2" ignoreGraphBounds />
-      </constraints>
-    </point>
-    <point name="Q">(6,5)</point>
-    <regularPolygon nSides="5" vertices="$P $Q" name="p" allowFlexibleMotion />
-  </graph>
-  <p name="pvert">First two vertices: $p.vertex1{assignNames="v1"} $p.vertex2{assignNames="v2" displaySmallAsZero}</p>
-  `,
-        },
-        "*",
-      );
-    });
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(0,4)");
-    cy.get(cesc2("#/v2") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(6,5)");
-
-    cy.log("move pentagon");
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-
-      let numericalVertices =
-        stateVariables["/p"].stateValues.numericalVertices;
-
-      let dx = -7;
-      let dy = -5;
-
-      let pointCoords = numericalVertices.map((v) => [v[0] + dx, v[1] + dy]);
-
-      await win.callAction1({
-        actionName: "movePolygon",
-        componentName: "/p",
-        args: {
-          pointCoords,
-        },
-      });
-    });
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow").should("contain.text", "(−6,0)");
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(−6,0)");
-    cy.get(cesc2("#/v2") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(−1,0)");
-  });
-
   it("center and vertex, vertex constrained to grid", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -860,67 +800,6 @@ describe("Regular Polygon Tag Tests", function () {
       .should("have.text", "(0,1)");
   });
 
-  it("center and vertex, vertex constrained to grid, allow flexible motion", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-  <graph>
-    <point name="P">(1,3)
-      <constraints>
-         <constrainToGrid dx="3" dy="2" ignoreGraphBounds />
-      </constraints>
-    </point>
-    <point name="Q">(6,5)</point>
-    <regularPolygon nSides="5" vertices="$P" center="$Q" name="p" allowFlexibleMotion />
-  </graph>
-  <p name="pvert">First vertex: $p.vertex1{assignNames="v1"}</p>
-  <p name="pcenter">Center: $p.center{assignNames="c" displaySmallAsZero}</p>
-  `,
-        },
-        "*",
-      );
-    });
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(0,4)");
-    cy.get(cesc2("#/c") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(6,5)");
-
-    cy.log("move pentagon");
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-
-      let numericalVertices =
-        stateVariables["/p"].stateValues.numericalVertices;
-
-      let dx = -7;
-      let dy = -5;
-
-      let pointCoords = numericalVertices.map((v) => [v[0] + dx, v[1] + dy]);
-
-      await win.callAction1({
-        actionName: "movePolygon",
-        componentName: "/p",
-        args: {
-          pointCoords,
-        },
-      });
-    });
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow").should("contain.text", "(−6,0)");
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(−6,0)");
-    cy.get(cesc2("#/c") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(−1,0)");
-  });
-
   it("center and vertex, center constrained to grid", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -977,67 +856,6 @@ describe("Regular Polygon Tag Tests", function () {
     cy.get(cesc2("#/v1") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(−5,−1)");
-    cy.get(cesc2("#/c") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(0,2)");
-  });
-
-  it("center and vertex, center constrained to grid, allow flexible motion", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-  <graph>
-    <point name="P">(1,3)</point>
-    <point name="Q">(6,5)
-      <constraints>
-        <constrainToGrid dx="3" dy="2" ignoreGraphBounds />
-      </constraints>
-    </point>
-    <regularPolygon nSides="5" vertices="$P" center="$Q" name="p" allowFlexibleMotion />
-  </graph>
-  <p name="pvert">First vertex: $p.vertex1{assignNames="v1"}</p>
-  <p name="pcenter">Center: $p.center{assignNames="c"}</p>
-  `,
-        },
-        "*",
-      );
-    });
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(1,3)");
-    cy.get(cesc2("#/c") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(6,6)");
-
-    cy.log("move pentagon");
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-
-      let numericalVertices =
-        stateVariables["/p"].stateValues.numericalVertices;
-
-      let dx = -7;
-      let dy = -5;
-
-      let pointCoords = numericalVertices.map((v) => [v[0] + dx, v[1] + dy]);
-
-      await win.callAction1({
-        actionName: "movePolygon",
-        componentName: "/p",
-        args: {
-          pointCoords,
-        },
-      });
-    });
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow").should("contain.text", "(−6,−2)");
-
-    cy.get(cesc2("#/v1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(−6,−2)");
     cy.get(cesc2("#/c") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(0,2)");

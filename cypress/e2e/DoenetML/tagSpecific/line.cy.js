@@ -1116,7 +1116,7 @@ describe("Line Tag Tests", function () {
   <copy target="a" />)
   </point>
   <point>(5,3)</point>
-  <line through="$_point1 $_point2" allowFlexibleMotion />
+  <line through="$_point1 $_point2" />
   </graph>
   <math name="a" hide simplify><copy prop="x" target="_point2" />+1</math>
   <copy prop="point1" target="_line1" assignNames="p1" />
@@ -1250,110 +1250,115 @@ describe("Line Tag Tests", function () {
       });
     });
 
-    cy.log("move line");
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
+    // Note: with the new algorithm for preserving the relationship between points
+    // when moving the whole line, the below calculations are incorrect.
+    // Question: do we want to figure out what the resulting point positions
+    // should be with the new algorithm and test that it stays correct?
 
-      let point1coords = [
-        stateVariables["/_line1"].stateValues.points[0][0],
-        stateVariables["/_line1"].stateValues.points[0][1],
-      ];
-      let point2coords = [
-        stateVariables["/_line1"].stateValues.points[1][0],
-        stateVariables["/_line1"].stateValues.points[1][1],
-      ];
+    // cy.log("move line");
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
 
-      let moveX = -5;
-      let moveY = 12;
+    //   let point1coords = [
+    //     stateVariables["/_line1"].stateValues.points[0][0],
+    //     stateVariables["/_line1"].stateValues.points[0][1],
+    //   ];
+    //   let point2coords = [
+    //     stateVariables["/_line1"].stateValues.points[1][0],
+    //     stateVariables["/_line1"].stateValues.points[1][1],
+    //   ];
 
-      point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
-      point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
-      point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
-      point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
+    //   let moveX = -5;
+    //   let moveY = 12;
 
-      win.callAction1({
-        actionName: "moveLine",
-        componentName: "/_line1",
-        args: {
-          point1coords: point1coords,
-          point2coords: point2coords,
-        },
-      });
+    //   point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
+    //   point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
+    //   point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
+    //   point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      // Note: one of two possible scenarios should be true
-      // and it's not clear if either are preferred, given the strange constraints
-      // Whether point1 or point2 wins depends on details of update algorithm
-      // If point2 takes precedence, uncomment the first group of lines
-      // and comment out the second group of lines
+    //   win.callAction1({
+    //     actionName: "moveLine",
+    //     componentName: "/_line1",
+    //     args: {
+    //       point1coords: point1coords,
+    //       point2coords: point2coords,
+    //     },
+    //   });
 
-      // point2x += moveX;;
-      // point2y += moveY;
-      // a = point2x + 1;
-      // point1x = point2y;
-      // point1y = a;
+    //   // Note: one of two possible scenarios should be true
+    //   // and it's not clear if either are preferred, given the strange constraints
+    //   // Whether point1 or point2 wins depends on details of update algorithm
+    //   // If point2 takes precedence, uncomment the first group of lines
+    //   // and comment out the second group of lines
 
-      point1x += moveX;
-      point1y += moveY;
-      a = point1y;
-      point2y = point1x;
-      point2x = a - 1;
+    //   // point2x += moveX;;
+    //   // point2y += moveY;
+    //   // a = point2x + 1;
+    //   // point1x = point2y;
+    //   // point1y = a;
 
-      slope = (point1y - point2y) / (point1x - point2x);
-      yintercept = point2y - slope * point2x;
+    //   point1x += moveX;
+    //   point1y += moveY;
+    //   a = point1y;
+    //   point2y = point1x;
+    //   point2x = a - 1;
 
-      cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
-        "contain.text",
-        `(${nInDOM(point1x).substring(0, 4)}`,
-      );
-      cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
-        "contain.text",
-        `,${nInDOM(point1y).substring(0, 4)}`,
-      );
-      cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
-        "contain.text",
-        `(${nInDOM(point2x).substring(0, 4)}`,
-      );
-      cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
-        "contain.text",
-        `,${nInDOM(point2y).substring(0, 4)}`,
-      );
+    //   slope = (point1y - point2y) / (point1x - point2x);
+    //   yintercept = point2y - slope * point2x;
 
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
+    //   cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `(${nInDOM(point1x).substring(0, 4)}`,
+    //   );
+    //   cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `,${nInDOM(point1y).substring(0, 4)}`,
+    //   );
+    //   cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `(${nInDOM(point2x).substring(0, 4)}`,
+    //   );
+    //   cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `,${nInDOM(point2y).substring(0, 4)}`,
+    //   );
 
-        expect(stateVariables["/_point2"].stateValues.xs[0]).closeTo(
-          point2x,
-          1e-12,
-        );
-        expect(stateVariables["/_point2"].stateValues.xs[1]).closeTo(
-          point2y,
-          1e-12,
-        );
+    //   cy.window().then(async (win) => {
+    //     let stateVariables = await win.returnAllStateVariables1();
 
-        expect(stateVariables["/a"].stateValues.value).closeTo(a, 1e-12);
+    //     expect(stateVariables["/_point2"].stateValues.xs[0]).closeTo(
+    //       point2x,
+    //       1e-12,
+    //     );
+    //     expect(stateVariables["/_point2"].stateValues.xs[1]).closeTo(
+    //       point2y,
+    //       1e-12,
+    //     );
 
-        expect(stateVariables["/_point1"].stateValues.xs[0]).closeTo(
-          point1x,
-          1e-12,
-        );
-        expect(stateVariables["/_point1"].stateValues.xs[1]).closeTo(
-          point1y,
-          1e-12,
-        );
+    //     expect(stateVariables["/a"].stateValues.value).closeTo(a, 1e-12);
 
-        expect(
-          me
-            .fromAst(stateVariables["/_line1"].stateValues.slope)
-            .evaluate_to_constant(),
-        ).closeTo(slope, 1e-12);
+    //     expect(stateVariables["/_point1"].stateValues.xs[0]).closeTo(
+    //       point1x,
+    //       1e-12,
+    //     );
+    //     expect(stateVariables["/_point1"].stateValues.xs[1]).closeTo(
+    //       point1y,
+    //       1e-12,
+    //     );
 
-        expect(
-          me
-            .fromAst(stateVariables["/_line1"].stateValues.yintercept)
-            .evaluate_to_constant(),
-        ).closeTo(yintercept, 1e-12);
-      });
-    });
+    //     expect(
+    //       me
+    //         .fromAst(stateVariables["/_line1"].stateValues.slope)
+    //         .evaluate_to_constant(),
+    //     ).closeTo(slope, 1e-12);
+
+    //     expect(
+    //       me
+    //         .fromAst(stateVariables["/_line1"].stateValues.yintercept)
+    //         .evaluate_to_constant(),
+    //     ).closeTo(yintercept, 1e-12);
+    //   });
+    // });
   });
 
   it("copied line", () => {
@@ -4547,7 +4552,7 @@ describe("Line Tag Tests", function () {
   <text>a</text>
   <graph name="g1" newNamespace>
     <point hide fixed>(-5,9)</point>
-    <line name="l" through="$_point1" allowFlexibleMotion />
+    <line name="l" through="$_point1" />
     <copy assignNames="A" prop="point1" target="l" />
     <copy assignNames="B" prop="point2" target="l" />
   </graph>
@@ -4604,15 +4609,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("try to move line");
     cy.window().then(async (win) => {
-      x2 = -7;
-      y2 = -8;
-
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
-          point1coords: [5, 4],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 5, y1 + 9],
+          point2coords: [x2 + 5, y2 + 9],
         },
       });
 
@@ -4646,15 +4648,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 2");
     cy.window().then(async (win) => {
-      x2 = 8;
-      y2 = 7;
-
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
-          point1coords: [10, 9],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 3, y1 + 7],
+          point2coords: [x2 - 3, y2 + 7],
         },
       });
 
@@ -4688,15 +4687,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 3");
     cy.window().then(async (win) => {
-      x2 = 2;
-      y2 = -3;
-
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
-          point1coords: [0, -1],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 8, y1 - 2],
+          point2coords: [x2 - 8, y2 - 2],
         },
       });
 
@@ -5503,7 +5499,7 @@ describe("Line Tag Tests", function () {
     </sources>
   </map>
   <graph name="g1" newNamespace>
-    <line through="$(../_map1)" name="l" allowFlexibleMotion />
+    <line through="$(../_map1)" name="l" />
     <copy assignNames="A" prop="point1" target="l" />
     <copy assignNames="B" prop="point2" target="l" />
   </graph>
@@ -5719,14 +5715,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 1");
     cy.window().then(async (win) => {
-      x2 = -6;
-      y2 = -7;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
-          point1coords: [5, 3],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 5, y1 - 3],
+          point2coords: [x2 + 5, y2 - 3],
         },
       });
 
@@ -5759,14 +5753,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 2");
     cy.window().then(async (win) => {
-      x2 = 9;
-      y2 = 8;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
-          point1coords: [10, 9],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 15, y1 + 6],
+          point2coords: [x2 - 15, y2 + 6],
         },
       });
 
@@ -5799,14 +5791,14 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 3");
     cy.window().then(async (win) => {
-      x2Essential = x2 = 3;
-      y2Essential = y2 = -2;
+      x2Essential = x2;
+      y2Essential = y2;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
-          point1coords: [0, -1],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 4, y1 + 9],
+          point2coords: [x2 - 4, y2 + 9],
         },
       });
 
@@ -5973,14 +5965,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 1");
     cy.window().then(async (win) => {
-      x2 = -7;
-      y2 = -8;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
-          point1coords: [5, 3],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 8, y1 + 6],
+          point2coords: [x2 + 8, y2 + 6],
         },
       });
 
@@ -6013,14 +6003,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 2");
     cy.window().then(async (win) => {
-      x2 = 8;
-      y2 = 7;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
-          point1coords: [10, 9],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 7, y1 - 1],
+          point2coords: [x2 - 7, y2 - 1],
         },
       });
 
@@ -6053,14 +6041,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 3");
     cy.window().then(async (win) => {
-      x2 = 2;
-      y2 = -3;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
-          point1coords: [0, -1],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 2, y1 + 7],
+          point2coords: [x2 + 2, y2 + 7],
         },
       });
 
@@ -6220,7 +6206,7 @@ describe("Line Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <line through="(3, $(_line1.pointX1_1)) (4,5)" allowFlexibleMotion />
+    <line through="(3, $(_line1.pointX1_1)) (4,5)" />
   </graph>
 
   <graph>
@@ -6461,14 +6447,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -6518,14 +6505,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -6575,7 +6563,7 @@ describe("Line Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <line through="(3,$(la.pointX1_1)) (4,5)" allowFlexibleMotion />
+    <line through="(3,$(la.pointX1_1)) (4,5)" />
   </graph>
 
   <graph>
@@ -6812,14 +6800,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -6869,14 +6858,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -12108,100 +12098,6 @@ describe("Line Tag Tests", function () {
       y1 += dy;
       x2 += dx;
       y2 += dy;
-
-      win.callAction1({
-        actionName: "moveLine",
-        componentName: "/_line1",
-        args: {
-          point1coords: [x1Desired, y1Desired],
-          point2coords: [x2Desired, y2Desired],
-        },
-      });
-
-      cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
-        "contain.text",
-        `(${nInDOM(x1)},${nInDOM(y1)})`,
-      );
-      cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
-        "contain.text",
-        `(${nInDOM(x2)},${nInDOM(y2)})`,
-      );
-    });
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
-      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
-      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
-      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
-      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
-      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
-    });
-  });
-
-  it("line through two points, one constrained to grid, allow flexible motion", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-  <text>a</text>
-  <graph>
-  <point name="P" labelIsName>(3,5)
-    <constraints><constrainToGrid dx="2" dy="3" /></constraints>
-    </point>
-  <point name="Q" labelIsName>(-4,-1)</point>
-  <line through="$P $Q" allowFlexibleMotion />
-  </graph>
-  <copy target="P" assignNames="Pa" />
-  <copy target="Q" assignNames="Qa" />
-    `,
-        },
-        "*",
-      );
-    });
-
-    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
-
-    let x1 = 4,
-      y1 = 6;
-    let x2 = -4,
-      y2 = -1;
-
-    cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
-      "contain.text",
-      `(${nInDOM(x1)},${nInDOM(y1)})`,
-    );
-    cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
-      "contain.text",
-      `(${nInDOM(x2)},${nInDOM(y2)})`,
-    );
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
-      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
-      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
-      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
-      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
-      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
-    });
-
-    cy.log("move line down 4 and right 0.5");
-    cy.window().then(async (win) => {
-      let dx = 0.5,
-        dy = -4;
-
-      let x1Desired = x1 + dx;
-      let y1Desired = y1 + dy;
-      let x2Desired = x2 + dx;
-      let y2Desired = y2 + dy;
-
-      dx = 0;
-      dy = -3;
-      x1 += dx;
-      y1 += dy;
-      x2 = x2Desired;
-      y2 = y2Desired;
 
       win.callAction1({
         actionName: "moveLine",

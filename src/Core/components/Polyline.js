@@ -33,13 +33,6 @@ export default class Polyline extends GraphicalComponent {
       createComponentOfType: "_pointListComponent",
     };
 
-    attributes.allowFlexibleMotion = {
-      createComponentOfType: "boolean",
-      createStateVariable: "allowFlexibleMotion",
-      defaultValue: false,
-      public: true,
-    };
-
     return attributes;
   }
 
@@ -667,102 +660,98 @@ export default class Polyline extends GraphicalComponent {
       });
     }
 
-    // unless allowFlexibleMotion is set,
     // we will attempt to preserve the relationship among all the vertices
     // so that we have a rigid translation
     // when the whole polyline is moved.
     // This procedure may preserve the rigid translation
     // even if a subset of the vertices are constrained.
-    if (!(await this.stateValues.allowFlexibleMotion)) {
-      if (nVerticesMoved > 1) {
-        // whole polyline dragged
+    if (nVerticesMoved > 1) {
+      // whole polyline dragged
 
-        let numericalVertices = pointCoords;
-        let resultingNumericalVertices = await this.stateValues
-          .numericalVertices;
-        let nVertices = await this.stateValues.nVertices;
+      let numericalVertices = pointCoords;
+      let resultingNumericalVertices = await this.stateValues.numericalVertices;
+      let nVertices = await this.stateValues.nVertices;
 
-        let verticesChanged = [];
-        let nVerticesChanged = 0;
+      let verticesChanged = [];
+      let nVerticesChanged = 0;
 
-        for (let [ind, vrtx] of numericalVertices.entries()) {
-          if (!vrtx.every((v, i) => v === resultingNumericalVertices[ind][i])) {
-            verticesChanged.push(ind);
-            nVerticesChanged++;
+      for (let [ind, vrtx] of numericalVertices.entries()) {
+        if (!vrtx.every((v, i) => v === resultingNumericalVertices[ind][i])) {
+          verticesChanged.push(ind);
+          nVerticesChanged++;
+        }
+      }
+
+      if (nVerticesChanged > 0 && nVerticesChanged < nVertices) {
+        // A subset of points were altered from the requested location.
+        // Check to see if the relationship among them is preserved
+
+        let changedInd1 = verticesChanged[0];
+        let relationshipPreserved = true;
+
+        let orig1 = numericalVertices[changedInd1];
+        let changed1 = resultingNumericalVertices[changedInd1];
+        let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+        if (nVerticesChanged > 1) {
+          let tol = 1e-6;
+
+          for (let ind of verticesChanged.slice(1)) {
+            let orig2 = numericalVertices[ind];
+            let changed2 = resultingNumericalVertices[ind];
+            let changevec2 = orig2.map((v, i) => v - changed2[i]);
+
+            if (
+              !changevec1.every((v, i) => Math.abs(v - changevec2[i]) < tol)
+            ) {
+              relationshipPreserved = false;
+              break;
+            }
           }
         }
 
-        if (nVerticesChanged > 0 && nVerticesChanged < nVertices) {
-          // A subset of points were altered from the requested location.
-          // Check to see if the relationship among them is preserved
+        if (relationshipPreserved) {
+          // All the vertices that were altered from their requested location
+          // were altered in a way consistent with a rigid translation.
+          // Attempt to move the remaining vertices to achieve a rigid translation
+          // of the whole polyline.
+          let newNumericalVertices = [];
 
-          let changedInd1 = verticesChanged[0];
-          let relationshipPreserved = true;
-
-          let orig1 = numericalVertices[changedInd1];
-          let changed1 = resultingNumericalVertices[changedInd1];
-          let changevec1 = orig1.map((v, i) => v - changed1[i]);
-
-          if (nVerticesChanged > 1) {
-            let tol = 1e-6;
-
-            for (let ind of verticesChanged.slice(1)) {
-              let orig2 = numericalVertices[ind];
-              let changed2 = resultingNumericalVertices[ind];
-              let changevec2 = orig2.map((v, i) => v - changed2[i]);
-
-              if (
-                !changevec1.every((v, i) => Math.abs(v - changevec2[i]) < tol)
-              ) {
-                relationshipPreserved = false;
-                break;
-              }
+          for (let i = 0; i < nVertices; i++) {
+            if (verticesChanged.includes(i)) {
+              newNumericalVertices.push(resultingNumericalVertices[i]);
+            } else {
+              newNumericalVertices.push(
+                numericalVertices[i].map((v, j) => v - changevec1[j]),
+              );
             }
           }
 
-          if (relationshipPreserved) {
-            // All the vertices that were altered from their requested location
-            // were altered in a way consistent with a rigid translation.
-            // Attempt to move the remaining vertices to achieve a rigid translation
-            // of the whole polyline.
-            let newNumericalVertices = [];
-
-            for (let i = 0; i < nVertices; i++) {
-              if (verticesChanged.includes(i)) {
-                newNumericalVertices.push(resultingNumericalVertices[i]);
-              } else {
-                newNumericalVertices.push(
-                  numericalVertices[i].map((v, j) => v - changevec1[j]),
-                );
-              }
-            }
-
-            let newVertexComponents = {};
-            for (let ind in newNumericalVertices) {
-              newVertexComponents[ind + ",0"] = me.fromAst(
-                newNumericalVertices[ind][0],
-              );
-              newVertexComponents[ind + ",1"] = me.fromAst(
-                newNumericalVertices[ind][1],
-              );
-            }
-
-            let newInstructions = [
-              {
-                updateType: "updateValue",
-                componentName: this.componentName,
-                stateVariable: "vertices",
-                value: newVertexComponents,
-              },
-            ];
-            return await this.coreFunctions.performUpdate({
-              updateInstructions: newInstructions,
-              transient,
-              actionId,
-              sourceInformation,
-              skipRendererUpdate,
-            });
+          let newVertexComponents = {};
+          for (let ind in newNumericalVertices) {
+            newVertexComponents[ind + ",0"] = me.fromAst(
+              newNumericalVertices[ind][0],
+            );
+            newVertexComponents[ind + ",1"] = me.fromAst(
+              newNumericalVertices[ind][1],
+            );
           }
+
+          let newInstructions = [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "vertices",
+              value: newVertexComponents,
+            },
+          ];
+          return await this.coreFunctions.performUpdate({
+            updateInstructions: newInstructions,
+            transient,
+            actionId,
+            sourceInformation,
+            skipRendererUpdate,
+          });
         }
       }
     }

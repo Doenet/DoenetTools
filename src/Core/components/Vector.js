@@ -98,13 +98,6 @@ export default class Vector extends GraphicalComponent {
       public: true,
     };
 
-    attributes.allowFlexibleMotion = {
-      createComponentOfType: "boolean",
-      createStateVariable: "allowFlexibleMotion",
-      defaultValue: false,
-      public: true,
-    };
-
     return attributes;
   }
 
@@ -2364,78 +2357,74 @@ export default class Vector extends GraphicalComponent {
       });
     }
 
-    // unless allowFlexibleMotion is set
     // we attempt to keep the vector displacement fixed
     // even if one of the points defining it is constrained
-    if (!(await this.stateValues.allowFlexibleMotion)) {
-      // if dragged the whole vector that is based on tail and head,
-      // address case where only one point is constrained
-      // to make vector just translate in this case
 
-      if (
-        tailcoords !== undefined &&
-        headcoords !== undefined &&
-        (await this.stateValues.basedOnTail) &&
-        (await this.stateValues.basedOnHead)
-      ) {
-        let numericalPoints = [tailcoords, headcoords];
-        let resultingNumericalPoints = await this.stateValues
-          .numericalEndpoints;
+    // if dragged the whole vector that is based on tail and head,
+    // address case where only one point is constrained
+    // to make vector just translate in this case
+    if (
+      tailcoords !== undefined &&
+      headcoords !== undefined &&
+      (await this.stateValues.basedOnTail) &&
+      (await this.stateValues.basedOnHead)
+    ) {
+      let numericalPoints = [tailcoords, headcoords];
+      let resultingNumericalPoints = await this.stateValues.numericalEndpoints;
 
-        let pointsChanged = [];
-        let nPointsChanged = 0;
+      let pointsChanged = [];
+      let nPointsChanged = 0;
 
-        for (let [ind, pt] of numericalPoints.entries()) {
-          if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
-            pointsChanged.push(ind);
-            nPointsChanged++;
+      for (let [ind, pt] of numericalPoints.entries()) {
+        if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
+          pointsChanged.push(ind);
+          nPointsChanged++;
+        }
+      }
+
+      if (nPointsChanged === 1) {
+        // one point was altered from the requested location.
+
+        let changedInd = pointsChanged[0];
+
+        let orig1 = numericalPoints[changedInd];
+        let changed1 = resultingNumericalPoints[changedInd];
+        let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+        let newNumericalPoints = [];
+
+        for (let i = 0; i < 2; i++) {
+          if (i === changedInd) {
+            newNumericalPoints.push(resultingNumericalPoints[i]);
+          } else {
+            newNumericalPoints.push(
+              numericalPoints[i].map((v, j) => v - changevec1[j]),
+            );
           }
         }
 
-        if (nPointsChanged === 1) {
-          // one point was altered from the requested location.
+        let newInstructions = [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "tail",
+            value: newNumericalPoints[0].map((x) => me.fromAst(x)),
+          },
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "head",
+            value: newNumericalPoints[1].map((x) => me.fromAst(x)),
+          },
+        ];
 
-          let changedInd = pointsChanged[0];
-
-          let orig1 = numericalPoints[changedInd];
-          let changed1 = resultingNumericalPoints[changedInd];
-          let changevec1 = orig1.map((v, i) => v - changed1[i]);
-
-          let newNumericalPoints = [];
-
-          for (let i = 0; i < 2; i++) {
-            if (i === changedInd) {
-              newNumericalPoints.push(resultingNumericalPoints[i]);
-            } else {
-              newNumericalPoints.push(
-                numericalPoints[i].map((v, j) => v - changevec1[j]),
-              );
-            }
-          }
-
-          let newInstructions = [
-            {
-              updateType: "updateValue",
-              componentName: this.componentName,
-              stateVariable: "tail",
-              value: newNumericalPoints[0].map((x) => me.fromAst(x)),
-            },
-            {
-              updateType: "updateValue",
-              componentName: this.componentName,
-              stateVariable: "head",
-              value: newNumericalPoints[1].map((x) => me.fromAst(x)),
-            },
-          ];
-
-          return await this.coreFunctions.performUpdate({
-            updateInstructions: newInstructions,
-            transient,
-            actionId,
-            sourceInformation,
-            skipRendererUpdate,
-          });
-        }
+        return await this.coreFunctions.performUpdate({
+          updateInstructions: newInstructions,
+          transient,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
+        });
       }
     }
 
