@@ -397,6 +397,49 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
   );
 }
 
+//This is separate as <Editable> wasn't updating when defaultValue was changed
+function EditableLabel() {
+  const { activityData } = useLoaderData();
+  const [label, setLabel] = useState(activityData.label);
+  const fetcher = useFetcher();
+
+  let lastActivityDataLabel = useRef(activityData.label);
+
+  //Update when something else updates the label
+  if (activityData.label != lastActivityDataLabel.current) {
+    if (label != activityData.label) {
+      setLabel(activityData.label);
+    }
+  }
+  lastActivityDataLabel.current = activityData.label;
+
+  return (
+    <Editable
+      mt="4px"
+      value={label}
+      textAlign="center"
+      onChange={(value) => {
+        setLabel(value);
+      }}
+      onSubmit={(value) => {
+        let submitValue = value;
+        //Label can't be blank
+        if (submitValue == "") {
+          submitValue = "Untitled";
+        }
+        setLabel(submitValue);
+        fetcher.submit(
+          { _action: "update label", label: submitValue },
+          { method: "post" },
+        );
+      }}
+    >
+      <EditablePreview />
+      <EditableInput width="400px" />
+    </Editable>
+  );
+}
+
 export function PortfolioActivityEditor() {
   const { doenetML, pageId, activityData } = useLoaderData();
   const {
@@ -409,8 +452,6 @@ export function PortfolioActivityEditor() {
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   // console.log("activityData", activityData);
   // console.log("pageId", pageId);
-
-  const fetcher = useFetcher();
 
   let editorRef = useRef(null);
 
@@ -516,20 +557,7 @@ export function PortfolioActivityEditor() {
               </Tooltip>
               Variant Control
             </Box>
-            <Editable
-              mt="4px"
-              defaultValue={activityData.label}
-              textAlign="center"
-              onSubmit={(value) => {
-                fetcher.submit(
-                  { _action: "update label", label: value },
-                  { method: "post" },
-                );
-              }}
-            >
-              <EditablePreview />
-              <EditableInput width="400px" />
-            </Editable>
+            <EditableLabel />
             <Tooltip hasArrow label="Open Controls cmd+u">
               <Button
                 mt="4px"
