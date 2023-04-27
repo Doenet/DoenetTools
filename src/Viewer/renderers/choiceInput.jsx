@@ -14,6 +14,7 @@ import {
   CheckboxGroup,
   Radio,
   RadioGroup,
+  Select,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -291,8 +292,11 @@ export default React.memo(function ChoiceInput(props) {
     return (
       <React.Fragment>
         <a name={id} />
-        <select
-          className="custom-select"
+        <Select
+          // className="custom-select"
+          margin="0"
+          maxWidth="200px"
+          size="sm"
           id={id}
           onChange={onChangeHandler}
           value={value}
@@ -303,7 +307,7 @@ export default React.memo(function ChoiceInput(props) {
             {SVs.placeHolder}
           </option>
           {optionsList}
-        </select>
+        </Select>
         {checkWorkButton}
       </React.Fragment>
     );
@@ -458,27 +462,28 @@ export default React.memo(function ChoiceInput(props) {
             radioClassName += " radio-checkmark-disabled";
           }
           return (
-            <label
-              className={containerClassName}
-              key={inputKey + "_choice" + (i + 1)}
+            // <label
+            //   className={containerClassName}
+            //   key={inputKey + "_choice" + (i + 1)}
+            // >
+            <Radio
+              type="radio"
+              id={keyBeginning + (i + 1) + "_input"}
+              name={inputKey}
+              value={i + 1}
+              checked={rendererSelectedIndices.includes(i + 1)}
+              onChange={onChangeHandler}
+              disabled={radioDisabled}
             >
-              <input
-                type="radio"
-                id={keyBeginning + (i + 1) + "_input"}
-                name={inputKey}
-                value={i + 1}
-                checked={rendererSelectedIndices.includes(i + 1)}
-                onChange={onChangeHandler}
-                disabled={radioDisabled}
-              />
-              <span className={radioClassName} />
-              <label
+              {/* <span className={radioClassName} /> */}
+              {/* <label
                 htmlFor={keyBeginning + (i + 1) + "_input"}
                 style={{ marginLeft: "2px" }}
-              >
-                {child}
-              </label>
-            </label>
+              > */}
+              {child}
+              {/* </label> */}
+            </Radio>
+            // </label>
           );
         } else if (inputType == "checkbox") {
           // selectMultiple="true"
@@ -490,37 +495,38 @@ export default React.memo(function ChoiceInput(props) {
             checkboxClassName += " checkbox-checkmark-disabled";
           }
           return (
-            <label
-              className={containerClassName}
-              key={inputKey + "_choice" + (i + 1)}
+            // <label
+            //   className={containerClassName}
+            //   key={inputKey + "_choice" + (i + 1)}
+            // >
+            <Checkbox
+              type="checkbox"
+              id={keyBeginning + (i + 1) + "_input"}
+              name={inputKey}
+              value={i + 1}
+              checked={rendererSelectedIndices.includes(i + 1)}
+              onChange={onChangeHandler}
+              disabled={disabled || svData.choicesDisabled[i]}
             >
-              <input
-                type="checkbox"
-                id={keyBeginning + (i + 1) + "_input"}
-                name={inputKey}
-                value={i + 1}
-                checked={rendererSelectedIndices.includes(i + 1)}
-                onChange={onChangeHandler}
-                disabled={disabled || svData.choicesDisabled[i]}
-              />
-              <span className={checkboxClassName} />
-              <label
+              {/* <span className={checkboxClassName} /> */}
+              {/* <label
                 htmlFor={keyBeginning + (i + 1) + "_input"}
                 style={{ marginLeft: "2px" }}
-              >
-                {child}
-              </label>
-            </label>
+              > */}
+              {child}
+              {/* </label> */}
+            </Checkbox>
+            // </label>
           );
         }
       });
 
     return (
       <React.Fragment>
-        <ol id={inputKey} style={listStyle}>
+        <Stack id={inputKey} style={listStyle}>
           <a name={id} />
           {choiceDoenetTags}
-        </ol>
+        </Stack>
         {checkworkComponent}
       </React.Fragment>
     );
