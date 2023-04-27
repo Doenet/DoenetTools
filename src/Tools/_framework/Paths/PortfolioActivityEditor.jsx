@@ -68,10 +68,17 @@ import { useDropzone } from "react-dropzone";
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
+
+  //Don't let label be blank
+  let label = formObj.label;
+  if (label == "") {
+    label = "Untitled";
+  }
+
   // console.log("formObj", formObj, params.doenetId);
   if (formObj._action == "update label") {
     let response = await fetch(
-      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${formObj.label}`,
+      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
     );
     let respObj = await response.json();
   }
@@ -81,7 +88,7 @@ export async function action({ params, request }) {
     let response = await axios.post(
       "/api/updatePortfolioActivitySettings.php",
       {
-        label: formObj.label,
+        label,
         imagePath: formObj.imagePath,
         public: formObj.public,
         doenetId: params.doenetId,
@@ -396,7 +403,6 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
     </Drawer>
   );
 }
-
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableLabel() {
   const { activityData } = useLoaderData();
@@ -423,11 +429,7 @@ function EditableLabel() {
       }}
       onSubmit={(value) => {
         let submitValue = value;
-        //Label can't be blank
-        if (submitValue == "") {
-          submitValue = "Untitled";
-        }
-        setLabel(submitValue);
+
         fetcher.submit(
           { _action: "update label", label: submitValue },
           { method: "post" },
@@ -452,6 +454,8 @@ export function PortfolioActivityEditor() {
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   // console.log("activityData", activityData);
   // console.log("pageId", pageId);
+
+  const fetcher = useFetcher();
 
   let editorRef = useRef(null);
 
