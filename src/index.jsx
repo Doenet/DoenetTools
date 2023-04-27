@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 // import type { StyleFunctionProps } from '@chakra-ui/styled-system';
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { RecoilRoot } from "recoil";
-import { createRoot } from "react-dom/client";
 
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
@@ -45,7 +42,6 @@ import {
   action as portfolioActivityViewerAction,
   PortfolioActivityViewer,
 } from "./Tools/_framework/Paths/PortfolioActivityViewer";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
@@ -83,6 +79,18 @@ const theme = extendTheme({
     },
   },
   components: {
+    Flex: {
+      variants: {
+        keyboardSection: {
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "no-wrap",
+          /* flex-basis: 27%; */
+          flexGrow: "1",
+          width: "600px",
+        },
+      },
+    },
     Button: {
       baseStyle: {
         fontWeight: "normal",
@@ -121,18 +129,19 @@ const theme = extendTheme({
         link: {
           color: "solidLightBlue",
         },
+        // Math keyboard button variants:
         transition: {
-          bg: "var(--mainBlue)",
+          bg: "doenet.mainBlue",
           color: "white",
         },
         letterTransition: {
-          flexBasis: "14%",
-          bg: "var(--mainBlue)",
+          flexBasis: "15%",
+          bg: "doenet.mainBlue",
           color: "white",
         },
         letterTransition2: {
           flexBasis: "9.5%",
-          bg: "var(--mainBlue)",
+          bg: "doenet.mainBlue",
           color: "white",
         },
       },
@@ -298,6 +307,8 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
-    <RouterProvider router={router} />
+    <ChakraProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ChakraProvider>
   </RecoilRoot>,
 );
