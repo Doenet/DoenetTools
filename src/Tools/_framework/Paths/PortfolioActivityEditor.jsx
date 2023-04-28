@@ -57,7 +57,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { BsPlayBtnFill } from "react-icons/bs";
+import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline } from "react-icons/md";
 import { FaCog, FaFileImage } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
@@ -128,12 +128,12 @@ export async function loader({ params }) {
   }
 
   //TODO: get the doenetML of the pageId.
-  let doenetML = `<graph>
-  <point name='p'/>
-</graph>
-<p>$p.x</p>`;
-  // let doenetML =
-  //   "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
+  //   let doenetML = `<graph>
+  //   <point name='p'/>
+  // </graph>
+  // <p>$p.x</p>`;
+  let doenetML =
+    "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph /><graph /><graph /><graph /><graph />";
 
   const supportingFileResp = await axios.get(
     "/api/loadSupportingFileInfo.php",
@@ -400,7 +400,6 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
           <Center>
             <Icon as={FaCog} mr="14px" />
             <Text>Activity Controls</Text>
-            <Icon as={FaCog} ml="14px" />
           </Center>
         </DrawerHeader>
 
@@ -531,16 +530,16 @@ export function PortfolioActivityEditor() {
 
       <Grid
         minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header header header header header"
-      "leftGutter viewer middleGutter textEditor rightGutter "
+        templateAreas={`"header header header"
+      "leftGutter centerContent rightGutter"
       `}
+        // "viewer middleGutter textEditor"
         templateRows="40px auto"
-        templateColumns="minmax(10px,auto) minmax(500px,800px) 10px minmax(350px,800px) minmax(10px,auto)"
-        // templateColumns="minmax(10px,auto) minmax(500px,800px) minmax(10px,auto) minmax(350px,600px) minmax(10px,auto)"
+        templateColumns="minmax(10px,.1fr) minmax(800px,1fr) minmax(10px,.1fr)"
+        // templateColumns="minmax(10px,auto) minmax(500px,.7fr) 10px minmax(350px,.3fr) minmax(10px,auto)"
         position="relative"
       >
         <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="middleGutter" background="doenet.lightBlue"></GridItem>
         <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem
           area="header"
@@ -602,100 +601,126 @@ export function PortfolioActivityEditor() {
             </Tooltip>
           </Flex>
         </GridItem>
+        <GridItem area="centerContent">
+          <Grid
+            width="100%"
+            minHeight="calc(100vh - 40px)" //40px header height
+            templateAreas={`"viewer middleGutter textEditor"`}
+            templateColumns=".3fr 10px .7fr"
+          >
+            <GridItem
+              area="middleGutter"
+              background="doenet.lightBlue"
+              h="calc(100vh - 40px)"
+              zIndex="500"
+              width="100%"
+              paddingTop="10px"
+            >
+              <Center
+                position="sticky"
+                cursor="col-resize"
+                h="calc(100vh - 40px)"
+                top="50px"
+              >
+                <Icon as={BsGripVertical} />
+              </Center>
+            </GridItem>
 
-        <GridItem
-          area="viewer"
-          placeSelf="center"
-          minHeight="100%"
-          width="100%"
-          background="doenet.lightBlue"
-        >
-          <Box
-            minHeight="calc(100vh - 100px)"
-            background="var(--canvas)"
-            borderWidth="1px"
-            borderStyle="solid"
-            borderColor="doenet.mediumGray"
-            margin="10px 0px 10px 0px" //Only need when there is an outline
-            padding="20px 5px 20px 5px"
-            flexGrow={1}
-            overflow="scroll"
-            marginBottom="50vh"
-          >
-            <PageViewer
-              key={`HPpageViewer`}
-              doenetML={viewerDoenetML}
-              // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
-              flags={{
-                showCorrectness: true,
-                solutionDisplayMode: true,
-                showFeedback: true,
-                showHints: true,
-                autoSubmit: false,
-                allowLoadState: false,
-                allowSaveState: false,
-                allowLocalState: false,
-                allowSaveSubmissions: false,
-                allowSaveEvents: false,
-              }}
-              // doenetId={doenetId}
-              attemptNumber={1}
-              generatedVariantCallback={variantCallback} //TODO:Replace
-              requestedVariantIndex={variantInfo.index}
-              // setIsInErrorState={setIsInErrorState}
-              pageIsActive={true}
-            />
-          </Box>
-        </GridItem>
-        <GridItem
-          area="textEditor"
-          maxWidth="800px"
-          background="doenet.lightBlue"
-          height="100%"
-          alignSelf="start"
-          paddingTop="10px"
-        >
-          <Box
-            position="sticky"
-            top="50px"
-            boxSizing="border-box"
-            background="doenet.canvas"
-            height="calc(100vh - 100px)"
-            overflowY="scroll"
-            borderWidth="1px"
-            borderStyle="solid"
-            borderColor="doenet.mediumGray"
-          >
-            <CodeMirror
-              key="codemirror"
-              // readOnly={false}
-              editorRef={editorRef}
-              // setInternalValue={updateInternalValue}
-              setInternalValue={textEditorDoenetML.current}
-              // value={editorDoenetML}
-              // value="starter value"
-              onBeforeChange={(value) => {
-                textEditorDoenetML.current = value;
-                // setTextEditorDoenetML(value);
-                // console.log(value);
-                //   setEditorDoenetML(value);
-                //   // Debounce save to server at 3 seconds
-                //   clearTimeout(timeout.current);
-                //   timeout.current = setTimeout(function () {
-                //     saveDraft({
-                //       pageId: initializedPageId,
-                //       courseId,
-                //       backup: backupOldDraft.current,
-                //     }).then(({ success }) => {
-                //       if (success) {
-                //         backupOldDraft.current = false;
-                //       }
-                //     });
-                //     timeout.current = null;
-                //   }, 3000); //3 seconds
-              }}
-            />
-          </Box>
+            <GridItem
+              width="100%"
+              area="viewer"
+              placeSelf="center"
+              minHeight="100%"
+              background="doenet.lightBlue"
+            >
+              <Box
+                minHeight="calc(100vh - 100px)"
+                background="var(--canvas)"
+                borderWidth="1px"
+                borderStyle="solid"
+                borderColor="doenet.mediumGray"
+                margin="10px 0px 10px 0px" //Only need when there is an outline
+                padding="20px 5px 20px 5px"
+                flexGrow={1}
+                overflow="scroll"
+                marginBottom="50vh"
+              >
+                <PageViewer
+                  key={`HPpageViewer`}
+                  doenetML={viewerDoenetML}
+                  // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
+                  flags={{
+                    showCorrectness: true,
+                    solutionDisplayMode: true,
+                    showFeedback: true,
+                    showHints: true,
+                    autoSubmit: false,
+                    allowLoadState: false,
+                    allowSaveState: false,
+                    allowLocalState: false,
+                    allowSaveSubmissions: false,
+                    allowSaveEvents: false,
+                  }}
+                  // doenetId={doenetId}
+                  attemptNumber={1}
+                  generatedVariantCallback={variantCallback} //TODO:Replace
+                  requestedVariantIndex={variantInfo.index}
+                  // setIsInErrorState={setIsInErrorState}
+                  pageIsActive={true}
+                />
+              </Box>
+            </GridItem>
+            <GridItem
+              width="100%"
+              area="textEditor"
+              background="doenet.lightBlue"
+              height="100%"
+              alignSelf="start"
+              paddingTop="10px"
+            >
+              <Box
+                position="sticky"
+                top="50px"
+                boxSizing="border-box"
+                background="doenet.canvas"
+                height="calc(100vh - 100px)"
+                overflowY="scroll"
+                borderWidth="1px"
+                borderStyle="solid"
+                borderColor="doenet.mediumGray"
+              >
+                <CodeMirror
+                  key="codemirror"
+                  // readOnly={false}
+                  editorRef={editorRef}
+                  // setInternalValue={updateInternalValue}
+                  setInternalValue={textEditorDoenetML.current}
+                  // value={editorDoenetML}
+                  // value="starter value"
+                  onBeforeChange={(value) => {
+                    textEditorDoenetML.current = value;
+                    // setTextEditorDoenetML(value);
+                    // console.log(value);
+                    //   setEditorDoenetML(value);
+                    //   // Debounce save to server at 3 seconds
+                    //   clearTimeout(timeout.current);
+                    //   timeout.current = setTimeout(function () {
+                    //     saveDraft({
+                    //       pageId: initializedPageId,
+                    //       courseId,
+                    //       backup: backupOldDraft.current,
+                    //     }).then(({ success }) => {
+                    //       if (success) {
+                    //         backupOldDraft.current = false;
+                    //       }
+                    //     });
+                    //     timeout.current = null;
+                    //   }, 3000); //3 seconds
+                  }}
+                />
+              </Box>
+            </GridItem>
+          </Grid>
         </GridItem>
       </Grid>
     </>
