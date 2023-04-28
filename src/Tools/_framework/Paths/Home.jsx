@@ -29,8 +29,7 @@ import axios from "axios";
 // import RouterLogo from '../RouterLogo';
 
 export async function loader() {
-  const response = await axios.get("/api/loadPromotedContent.php");
-  const data = await response.json();
+  const data = (await axios.get("/api/loadPromotedContent.php")).data;
   return data;
 }
 
