@@ -5,6 +5,7 @@ import { useRouteError } from "react-router";
 
 export default function ErrorPanel() {
   const error = useRouteError();
+  console.log(error);
   const responseCode = error?.respose?.status;
   const message =
     error?.response?.data?.message ||

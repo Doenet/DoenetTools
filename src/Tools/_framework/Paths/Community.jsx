@@ -80,24 +80,21 @@ export async function loader({ request }) {
   const q = url.searchParams.get("q");
   if (q) {
     //Show search results
-    const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
-    const respObj = await response.json();
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
-    const { isAdmin } = await isAdminResponse.json();
+    const respObj = (await axios.get(`/api/searchPublicActivities.php?q=${q}`))
+      .data;
+    const { isAdmin } = (await axios.get(`/api/checkForCommunityAdmin.php`))
+      .data;
     let carouselGroups = [];
     if (isAdmin) {
-      const carouselDataGroups = await fetch(
-        `/api/loadPromotedContentGroups.php`,
-      );
-      const responseGroups = await carouselDataGroups.json();
-      carouselGroups = responseGroups.carouselGroups;
+      carouselGroups = (await fetch(`/api/loadPromotedContentGroups.php`)).data
+        ?.carouselGroups;
     }
     return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
-    const { isAdmin } = await isAdminResponse.json();
-    const response = await fetch("/api/loadPromotedContent.php");
-    const { carouselData } = await response.json();
+    const { isAdmin } = (await axios.get(`/api/checkForCommunityAdmin.php`))
+      .data;
+    const { carouselData } = (await axios.get("/api/loadPromotedContent.php"))
+      .data;
     return { carouselData, isAdmin };
   }
 }
