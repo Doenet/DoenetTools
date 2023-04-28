@@ -529,13 +529,15 @@ export function PortfolioActivityEditor() {
       />
 
       <Grid
+        background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
         templateAreas={`"header header header"
       "leftGutter centerContent rightGutter"
       `}
         // "viewer middleGutter textEditor"
         templateRows="40px auto"
-        templateColumns="minmax(10px,.1fr) minmax(800px,1fr) minmax(10px,.1fr)"
+        templateColumns=".06fr 1fr .06fr"
+        // templateColumns=".1fr minmax(800px,1fr) .1fr"
         // templateColumns="minmax(10px,auto) minmax(500px,.7fr) 10px minmax(350px,.3fr) minmax(10px,auto)"
         position="relative"
       >
@@ -606,23 +608,26 @@ export function PortfolioActivityEditor() {
             width="100%"
             minHeight="calc(100vh - 40px)" //40px header height
             templateAreas={`"viewer middleGutter textEditor"`}
-            templateColumns=".3fr 10px .7fr"
+            templateColumns=".01fr 10px .99fr"
           >
             <GridItem
               area="middleGutter"
               background="doenet.lightBlue"
               h="calc(100vh - 40px)"
-              zIndex="500"
+              // zIndex="500"
               width="100%"
               paddingTop="10px"
+              alignSelf="start"
+              position="relative"
             >
               <Center
-                position="sticky"
                 cursor="col-resize"
                 h="calc(100vh - 40px)"
                 top="50px"
+                position="fixed"
+                width="10px"
               >
-                <Icon as={BsGripVertical} />
+                <Icon ml="0" as={BsGripVertical} />
               </Center>
             </GridItem>
 
@@ -631,7 +636,8 @@ export function PortfolioActivityEditor() {
               area="viewer"
               placeSelf="center"
               minHeight="100%"
-              background="doenet.lightBlue"
+              maxWidth="850px"
+              // background="doenet.lightBlue"
             >
               <Box
                 minHeight="calc(100vh - 100px)"
