@@ -116,7 +116,7 @@ const theme = extendTheme({
           },
         },
         outline: {
-          borderColor: "#2D5994",
+          borderColor: "doenet.mainBlue",
           _hover: {
             bg: "solidLightBlue",
           },
@@ -130,6 +130,13 @@ const theme = extendTheme({
           color: "solidLightBlue",
         },
         // Math keyboard button variants:
+        letterButton: {
+          borderColor: "#2D5994",
+          flexBasis: "9.5%",
+          _hover: {
+            bg: "solidLightBlue",
+          },
+        },
         transition: {
           bg: "doenet.mainBlue",
           color: "white",

@@ -34,6 +34,7 @@ import {
 // import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/theme';
 
 import { useRef } from "react";
+import { setUpVariantSeedAndRng } from "../../../Core/utils/variants";
 
 const Panel = styled.div`
   height: 240px;
@@ -271,11 +272,7 @@ export default function VirtualKeyboard() {
         flexWrap="wrap"
         justifyContent="space-evenly"
       >
-        <Button
-          flexBasis="9.5%"
-          variant="outline"
-          onClick={() => callback("write Q")}
-        >
+        <Button variant="letterButton" onClick={() => callback("write Q")}>
           Q
         </Button>
         <Button
