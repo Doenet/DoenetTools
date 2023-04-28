@@ -70,7 +70,7 @@ export async function action({ params, request }) {
   let formObj = Object.fromEntries(formData);
 
   //Don't let label be blank
-  let label = formObj.label;
+  let label = formObj.label.trim();
   if (label == "") {
     label = "Untitled";
   }
@@ -135,12 +135,42 @@ export async function loader({ params }) {
   // let doenetML =
   //   "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph />";
 
+  const supportingFileResp = await axios.get(
+    "/api/loadSupportingFileInfo.php",
+    {
+      params: { doenetId: params.doenetId },
+    },
+  );
+  let supportingFiles = supportingFileResp.data?.supportingFiles;
+
   return {
     activityData,
     pageId,
     doenetML,
     doenetId: params.doenetId,
+    supportingFiles,
   };
+}
+
+function SupportFiles({ onClose }) {
+  const { supportingFiles } = useLoaderData();
+  console.log("SupportFiles supportingFiles", supportingFiles);
+
+  //Filter by cid so no duplicates (on upload)
+
+  return (
+    <Box>
+      {supportingFiles.map((file, i) => {
+        return (
+          <Image
+            key={`file${i}`}
+            src={`/media/${file.fileName}`}
+            // alt={file.description}
+          />
+        );
+      })}
+    </Box>
+  );
 }
 
 function GeneralControls({ onClose }) {
@@ -205,6 +235,8 @@ function GeneralControls({ onClose }) {
         // uploadData.append('file',file);
         uploadData.append("file", image);
         uploadData.append("doenetId", doenetId);
+        uploadData.append("isActivityThumbnail", "1");
+
         axios.post("/api/upload.php", uploadData).then(({ data }) => {
           // console.log("RESPONSE data>",data)
 
@@ -388,7 +420,7 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
                 <p>Pages & Orders</p>
               </TabPanel>
               <TabPanel>
-                <p>Support Files</p>
+                <SupportFiles onClose={onClose} />
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -449,8 +481,6 @@ export function PortfolioActivityEditor() {
   // console.log("activityData", activityData);
   // console.log("pageId", pageId);
 
-  const fetcher = useFetcher();
-
   let editorRef = useRef(null);
 
   useEffect(() => {
@@ -505,7 +535,8 @@ export function PortfolioActivityEditor() {
       "leftGutter viewer middleGutter textEditor rightGutter "
       `}
         templateRows="40px auto"
-        templateColumns="minmax(10px,auto) minmax(500px,800px) minmax(10px,auto) minmax(350px,600px) minmax(10px,auto)"
+        templateColumns="minmax(10px,auto) minmax(500px,800px) 10px minmax(350px,800px) minmax(10px,auto)"
+        // templateColumns="minmax(10px,auto) minmax(500px,800px) minmax(10px,auto) minmax(350px,600px) minmax(10px,auto)"
         position="relative"
       >
         <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
@@ -618,7 +649,7 @@ export function PortfolioActivityEditor() {
         </GridItem>
         <GridItem
           area="textEditor"
-          maxWidth="600px"
+          maxWidth="800px"
           background="doenet.lightBlue"
           height="100%"
           alignSelf="start"
