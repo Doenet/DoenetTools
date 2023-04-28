@@ -5,9 +5,10 @@ import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
 import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
 import { MoveToGroupMenuItem } from "./Community";
+import axios from "axios";
 
 export async function loader() {
-  const response = await fetch(`/api/getAllRecentPublicActivites.php`);
+  const response = await axios.get(`/api/getAllRecentPublicActivites.php`);
   const data = await response.json();
   const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
   const { isAdmin } = await isAdminResponse.json();
