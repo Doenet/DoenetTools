@@ -226,11 +226,12 @@ function GeneralControls({ onClose }) {
     <>
       <Form method="post">
         <TableContainer
-          borderWidth="1px"
-          borderStyle="solid"
-          borderColor="doenet.grey"
           p="10px"
-          borderRadius="lg"
+          maxWidth="540px"
+          // borderWidth="1px"
+          // borderStyle="solid"
+          // borderColor="doenet.grey"
+          // borderRadius="lg"
         >
           <Table variant="simple">
             <Thead>
@@ -240,33 +241,33 @@ function GeneralControls({ onClose }) {
               </Tr>
             </Thead>
             <Tbody>
-              <Tr key="drop" {...getRootProps()}>
-                {isDragActive ? (
-                  <Td colSpan={2}>
+              <Tr>
+                <Td>
+                  <Flex>
+                    <Text>Image</Text>
+                  </Flex>
+                </Td>
+                <Td>
+                  <Box key="drop" {...getRootProps()}>
                     <input {...getInputProps()} />
-                    <VStack
-                      spacing={4}
-                      p="24px"
-                      border="2px dashed #949494"
-                      borderRadius="lg"
-                      width="556px"
-                    >
-                      <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
-                      <Text color="#949494" fontSize="24pt">
-                        Drop Image Here
-                      </Text>
-                    </VStack>
-                  </Td>
-                ) : (
-                  <>
-                    <Td>
-                      <input {...getInputProps()} />
-                      <Flex>
-                        <Text>Image</Text>
-                      </Flex>
-                    </Td>
-                    <Td>
-                      <input {...getInputProps()} />
+                    {isDragActive ? (
+                      <VStack
+                        spacing={4}
+                        p="24px"
+                        border="2px dashed #949494"
+                        borderRadius="lg"
+                        width="90%"
+                      >
+                        <Icon
+                          fontSize="24pt"
+                          color="#949494"
+                          as={FaFileImage}
+                        />
+                        <Text color="#949494" fontSize="24pt">
+                          Drop Image Here
+                        </Text>
+                      </VStack>
+                    ) : (
                       <Card width="180px" height="120px" p="0" m="0">
                         <Image
                           height="120px"
@@ -277,9 +278,9 @@ function GeneralControls({ onClose }) {
                           objectFit="cover"
                         />
                       </Card>
-                    </Td>
-                  </>
-                )}
+                    )}
+                  </Box>
+                </Td>
               </Tr>
 
               <Tr>
@@ -290,7 +291,8 @@ function GeneralControls({ onClose }) {
                   <Input
                     name="label"
                     size="sm"
-                    width="392px"
+                    // width="392px"
+                    width="100%"
                     placeholder="Activity 1"
                     data-test="Activity Label"
                     defaultValue={label}
@@ -357,7 +359,7 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
       placement="right"
       onClose={onClose}
       finalFocusRef={finalFocusRef}
-      size="md"
+      size="lg"
     >
       <DrawerOverlay />
       <DrawerContent>
@@ -391,14 +393,6 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
             </TabPanels>
           </Tabs>
         </DrawerBody>
-        {/* <DrawerFooter>
-          <Button mr={3} onClick={onClose} background="doenet.mainRed">
-            Cancel
-          </Button>
-          <Button colorScheme="blue" onClick={onClose}>
-            Update
-          </Button>
-        </DrawerFooter> */}
       </DrawerContent>
     </Drawer>
   );
