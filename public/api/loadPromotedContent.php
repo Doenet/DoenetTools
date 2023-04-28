@@ -13,6 +13,7 @@ $userId = $jwtArray['userId'];
 
 $response_arr;
 try {
+    throw new Exception("Pretend carousel data failed to load");
     $isAdmin = userIsAdmin($userId, $conn);
 
     $sql = 

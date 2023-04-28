@@ -142,6 +142,11 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: caroselLoader,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPanel />
+          </ChakraProvider>
+        ),
         element: (
           // <DarkmodeController>
           <MathJaxContext
