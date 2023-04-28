@@ -18,7 +18,11 @@ import {
   loader as siteLoader,
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
-import { loader as caroselLoader, Home } from "./Tools/_framework/Paths/Home";
+import {
+  loader as caroselLoader,
+  Home,
+  HomepageCarousel,
+} from "./Tools/_framework/Paths/Home";
 import {
   loader as portfolioActivitySettingsLoader,
   action as portfolioActivitySettingsAction,
@@ -141,12 +145,6 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        loader: caroselLoader,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPanel />
-          </ChakraProvider>
-        ),
         element: (
           // <DarkmodeController>
           <MathJaxContext
@@ -160,6 +158,18 @@ const router = createBrowserRouter([
           </MathJaxContext>
           // </DarkmodeController>
         ),
+        children: [
+          {
+            path: "/",
+            element: <HomepageCarousel />,
+            loader: caroselLoader,
+            errorElement: (
+              <ChakraProvider theme={theme}>
+                <ErrorPanel />
+              </ChakraProvider>
+            ),
+          },
+        ],
       },
       {
         path: "community",

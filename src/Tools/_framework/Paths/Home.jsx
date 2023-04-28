@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
+import { Outlet, useLoaderData, useOutletContext } from "react-router";
 import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 // import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
@@ -24,13 +24,20 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
+import axios from "axios";
 // import { Link } from 'react-router-dom';
 // import RouterLogo from '../RouterLogo';
 
 export async function loader() {
-  const response = await fetch("/api/loadPromotedContent.php");
+  const response = await axios.get("/api/loadPromotedContent.php");
   const data = await response.json();
   return data;
+}
+
+export function HomepageCarousel() {
+  const loaderData = useLoaderData();
+  const favorites = loaderData?.carouselData?.Homepage;
+  return <Carousel title="Doenet Team Favorites" data={favorites} />;
 }
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
@@ -140,8 +147,6 @@ function Heading(props) {
 
 export function Home() {
   let context = useOutletContext();
-  const loaderData = useLoaderData();
-  const favorites = loaderData?.carouselData?.Homepage;
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -274,17 +279,13 @@ export function Home() {
         bg={grayColor}
         p="60px 10px"
       >
-        <Carousel title="Doenet Team Favorites" data={favorites} />
+        <Outlet />
       </Flex>
       <Heading
         heading="Learn"
         subheading="Designed for the In-Person Classroom"
       />
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        bg={blueColor}
-      >
+      <Flex justifyContent="center" alignItems="center" bg={blueColor}>
         <Flex
           flexDirection="column"
           justifyContent="center"
