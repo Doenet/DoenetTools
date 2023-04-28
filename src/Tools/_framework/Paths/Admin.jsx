@@ -8,17 +8,14 @@ import { MoveToGroupMenuItem } from "./Community";
 import axios from "axios";
 
 export async function loader() {
-  const response = await axios.get(`/api/getAllRecentPublicActivites.php`);
-  const data = await response.json();
-  const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
-  const { isAdmin } = await isAdminResponse.json();
+  const data = (await axios.get(`/api/getAllRecentPublicActivites.php`)).data;
+  const { isAdmin } = (await axios.get(`/api/checkForCommunityAdmin.php`)).data;
   let carouselGroups = [];
   if (isAdmin) {
-    const carouselDataGroups = await fetch(
-      `/api/loadPromotedContentGroups.php`,
-    );
-    const responseGroups = await carouselDataGroups.json();
-    carouselGroups = responseGroups.carouselGroups;
+    const carouselDataGroups = (
+      await axios.get(`/api/loadPromotedContentGroups.php`)
+    ).data;
+    carouselGroups = carouselDataGroups.carouselGroups;
   }
 
   return {
