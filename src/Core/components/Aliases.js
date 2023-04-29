@@ -5,6 +5,7 @@ import MathComponent from "./Math";
 import Label from "./Label";
 import MathList from "./MathList";
 import { Div } from "./Divisions";
+import { DisplayDoenetML } from "./Verbatim";
 
 export class Columns extends TextComponent {
   static componentType = "columns";
@@ -59,6 +60,10 @@ export class Introduction extends Div {
 
 export class Conclusion extends Div {
   static componentType = "conclusion";
+}
+
+export class Code extends DisplayDoenetML {
+  static componentType = "code";
 }
 
 export class Topic extends TextComponent {
