@@ -551,8 +551,12 @@ export function PortfolioActivityEditor() {
           width="100%"
           zIndex="500"
         >
-          <Flex justifyContent="space-between">
-            <Box>
+          <Grid
+            templateAreas={`"leftControls label rightControls"`}
+            templateColumns="1fr 400px 1fr"
+            width="100%"
+          >
+            <GridItem area="leftControls">
               <ButtonGroup
                 size="sm"
                 ml="10px"
@@ -586,22 +590,30 @@ export function PortfolioActivityEditor() {
                 </Button>
               </Tooltip>
               Variant Control
-            </Box>
-            <EditableLabel />
-            <Tooltip hasArrow label="Open Controls cmd+u">
-              <Button
-                mt="4px"
-                mr="10px"
-                size="sm"
-                variant="outline"
-                leftIcon={<FaCog />}
-                onClick={controlsOnOpen}
-                ref={controlsBtnRef}
-              >
-                Controls
-              </Button>
-            </Tooltip>
-          </Flex>
+            </GridItem>
+            <GridItem area="label">
+              <EditableLabel />
+            </GridItem>
+            <GridItem
+              area="rightControls"
+              display="flex"
+              justifyContent="flex-end"
+            >
+              <Tooltip hasArrow label="Open Controls cmd+u">
+                <Button
+                  mt="4px"
+                  mr="10px"
+                  size="sm"
+                  variant="outline"
+                  leftIcon={<FaCog />}
+                  onClick={controlsOnOpen}
+                  ref={controlsBtnRef}
+                >
+                  Controls
+                </Button>
+              </Tooltip>
+            </GridItem>
+          </Grid>
         </GridItem>
         <GridItem area="centerContent">
           <Grid
