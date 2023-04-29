@@ -36,10 +36,12 @@ import {
   Flex,
   Grid,
   GridItem,
+  HStack,
   Icon,
   IconButton,
   Image,
   Input,
+  Progress,
   Tab,
   TabList,
   TabPanel,
@@ -58,8 +60,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
-import { MdModeEditOutline } from "react-icons/md";
-import { FaCog, FaFileImage } from "react-icons/fa";
+import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
+import { FaCog, FaFileCsv, FaFileImage } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
@@ -109,11 +111,10 @@ export async function action({ params, request }) {
 }
 
 export async function loader({ params }) {
-  const response = await fetch(
-    `/api/getPortfolioEditorData.php?doenetId=${params.doenetId}`,
-  );
-  const data = await response.json();
-
+  const response = await axios.get("/api/getPortfolioEditorData.php", {
+    params: { doenetId: params.doenetId },
+  });
+  let data = response.data;
   const activityData = { ...data.activity };
 
   let pageId = params.pageId;
@@ -141,35 +142,285 @@ export async function loader({ params }) {
       params: { doenetId: params.doenetId },
     },
   );
-  let supportingFiles = supportingFileResp.data?.supportingFiles;
+
+  let supportingFileData = supportingFileResp.data;
 
   return {
     activityData,
     pageId,
     doenetML,
     doenetId: params.doenetId,
-    supportingFiles,
+    supportingFileData,
   };
 }
+function formatBytes(bytes) {
+  var marker = 1024; // Change to 1000 if required
+  var decimal = 1; // Change as required
+  var kiloBytes = marker;
+  var megaBytes = marker * marker;
+  var gigaBytes = marker * marker * marker;
+  var teraBytes = marker * marker * marker * marker;
 
-function SupportFiles({ onClose }) {
-  const { supportingFiles } = useLoaderData();
-  console.log("SupportFiles supportingFiles", supportingFiles);
+  if (bytes < kiloBytes) return bytes + " Bytes";
+  else if (bytes < megaBytes)
+    return (bytes / kiloBytes).toFixed(decimal) + " KB";
+  else if (bytes < gigaBytes)
+    return (bytes / megaBytes).toFixed(decimal) + " MB";
+  else if (bytes < teraBytes)
+    return (bytes / gigaBytes).toFixed(decimal) + " GB";
+  else return (bytes / teraBytes).toFixed(decimal) + " TB";
+}
+
+function SupportFilesControls({ onClose }) {
+  const { supportingFileData, activityData } = useLoaderData();
+  const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
+    supportingFileData;
+  const { doenetId } = activityData;
+
+  let numberOfFilesUploading = useRef(0);
+  let [uploadProgress, setUploadProgress] = useState([]); // {fileName,size,progressPercent}
+
+  console.log({ uploadProgress });
+  let typesAllowed = ["text/csv", "image/jpeg", "image/png"];
+
+  const onDrop = useCallback((files) => {
+    let success = true;
+    let sizeOfUpload = 0;
+    files.map((file) => {
+      if (!typesAllowed.includes(file.type)) {
+        // addToast(
+        //   `File '${file.name}' of type '${file.type}' is not allowed. No files uploaded.`,
+        //   toastType.ERROR,
+        // );
+        success = false;
+      }
+      sizeOfUpload += file.size;
+    });
+    // let uploadText = formatBytes(sizeOfUpload);
+    // let overage = formatBytes(sizeOfUpload - userQuotaBytesAvailable);
+    if (sizeOfUpload > userQuotaBytesAvailable) {
+      // addToast(
+      //   `Upload size ${uploadText} exceeds quota by ${overage}. No files uploaded.`,
+      //   toastType.ERROR,
+      // );
+      success = false;
+    }
+    //Only upload one batch at a time
+    if (numberOfFilesUploading.current > 0) {
+      // addToast(
+      //   `Already uploading files.  Please wait before sending more.`,
+      //   toastType.ERROR,
+      // );
+      success = false;
+    }
+
+    //Only upload if less than 1MB
+    files.map((file) => {
+      if (file.size >= 1000000) {
+        // addToast(
+        //   `File '${file.name}' is larger than 1MB. No files uploaded.`,
+        //   toastType.ERROR,
+        // );
+        success = false;
+      }
+    });
+
+    //If file sizes are over quota or any files aren't right type then abort
+    if (!success) {
+      return;
+    }
+
+    numberOfFilesUploading.current = files.length;
+
+    files.map((file) => {
+      let initialFileInfo = {
+        fileName: file.name,
+        size: file.size,
+        progressPercent: 0,
+      };
+      setUploadProgress((was) => [...was, initialFileInfo]);
+    });
+
+    //Upload files
+    files.map((file, fileIndex) => {
+      // console.log('file',file)
+      //TODO: Show loading  image
+      const reader = new FileReader();
+      reader.readAsDataURL(file); //This one could be used with image source to preview image
+      // reader.readAsArrayBuffer(file);
+
+      reader.onabort = () => {};
+      reader.onerror = () => {};
+      reader.onload = () => {
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+        uploadData.append("doenetId", doenetId);
+        axios
+          .post("/api/upload.php", uploadData, {
+            onUploadProgress: (progressEvent) => {
+              const totalLength = progressEvent.lengthComputable
+                ? progressEvent.total
+                : progressEvent.target.getResponseHeader("content-length") ||
+                  progressEvent.target.getResponseHeader(
+                    "x-decompressed-content-length",
+                  );
+              if (totalLength !== null) {
+                // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
+                // console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
+                let progressPercent = Math.round(
+                  (progressEvent.loaded * 100) / totalLength,
+                );
+                setUploadProgress((was) => {
+                  let newArray = [...was];
+                  newArray[fileIndex].progressPercent = progressPercent;
+                  return newArray;
+                });
+              }
+            },
+          })
+          .then(({ data }) => {
+            // console.log("data",file.name,fileIndex,data)
+            // console.log("RESPONSE data>",data)
+
+            //test if all uploads are finished then clear it out
+            numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
+            if (numberOfFilesUploading.current < 1) {
+              setUploadProgress([]);
+            }
+            let {
+              success,
+              fileName,
+              cid,
+              asFileName,
+              width,
+              height,
+              msg,
+              userQuotaBytesAvailable,
+            } = data;
+            // console.log(">>data",data)
+            // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
+            if (msg) {
+              if (success) {
+                // addToast(msg, toastType.INFO);
+              } else {
+                // addToast(msg, toastType.ERROR);
+              }
+            }
+            // if (success) {
+            // setSupportFileInfo((was) => {
+            //   let newObj = { ...was };
+            //   let newSupportingFiles = [...was.supportingFiles];
+            //   newSupportingFiles.push({
+            //     cid,
+            //     fileName,
+            //     fileType: file.type,
+            //     width,
+            //     height,
+            //     description: "",
+            //     asFileName,
+            //   });
+            //   newObj.supportingFiles = newSupportingFiles;
+            //   newObj["userQuotaBytesAvailable"] = userQuotaBytesAvailable;
+            //   return newObj;
+            // });
+            // }
+          });
+      };
+    });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   //Filter by cid so no duplicates (on upload)
 
   return (
-    <Box>
-      {supportingFiles.map((file, i) => {
-        return (
-          <Image
-            key={`file${i}`}
-            src={`/media/${file.fileName}`}
-            // alt={file.description}
+    <>
+      <Tooltip
+        hasArrow
+        label={`${formatBytes(userQuotaBytesAvailable)}/${formatBytes(
+          quotaBytes,
+        )} Available`}
+      >
+        <Box>
+          <Text>Account Space Available</Text>
+          {/* Note: I wish we could change this color */}
+          <Progress
+            colorScheme="blue"
+            value={(userQuotaBytesAvailable / quotaBytes) * 100}
           />
-        );
-      })}
-    </Box>
+        </Box>
+      </Tooltip>
+
+      <Center key="drop" {...getRootProps()}>
+        <input {...getInputProps()} />
+
+        {isDragActive ? (
+          <VStack
+            m={2}
+            spacing={4}
+            p="24px"
+            borderWidth="2px"
+            borderStyle="dashed"
+            borderColor="doenet.mediumGray"
+            borderRadius="lg"
+            width="90%"
+            // background="blue.200"
+          >
+            <HStack>
+              <Icon
+                fontSize="24pt"
+                color="doenet.mediumGray"
+                as={MdOutlineCloudUpload}
+              />
+            </HStack>
+            <Text color="doenet.mediumGray" fontSize="24pt">
+              Drop Files
+            </Text>
+          </VStack>
+        ) : (
+          <VStack
+            m={2}
+            spacing={4}
+            p="24px"
+            borderWidth="2px"
+            borderStyle="dashed"
+            borderColor="doenet.mediumGray"
+            borderRadius="lg"
+            width="90%"
+            // background="blue.200"
+          >
+            <HStack>
+              <Icon
+                fontSize="24pt"
+                color="doenet.mediumGray"
+                as={FaFileImage}
+              />
+              <Icon
+                fontSize="24pt"
+                color="doenet.mediumGray"
+                as={FaFileImage}
+              />
+              <Icon fontSize="24pt" color="doenet.mediumGray" as={FaFileCsv} />
+            </HStack>
+            <Text color="doenet.mediumGray" fontSize="24pt">
+              Drop JPG, PNG or CSV Files Here
+            </Text>
+          </VStack>
+        )}
+      </Center>
+
+      <Box>
+        {supportingFiles.map((file, i) => {
+          return (
+            <Image
+              key={`file${i}`}
+              src={`/media/${file.fileName}`}
+              // alt={file.description}
+            />
+          );
+        })}
+      </Box>
+    </>
   );
 }
 
@@ -419,7 +670,7 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
                 <p>Pages & Orders</p>
               </TabPanel>
               <TabPanel>
-                <SupportFiles onClose={onClose} />
+                <SupportFilesControls onClose={onClose} />
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -468,6 +719,13 @@ function EditableLabel() {
 }
 
 export function PortfolioActivityEditor() {
+  return (
+    <Box w="672px" p="10px">
+      <SupportFilesControls />
+    </Box>
+  );
+}
+export function PortfolioActivityEditor2() {
   const { doenetML, pageId, activityData } = useLoaderData();
   const {
     isOpen: controlsAreOpen,
