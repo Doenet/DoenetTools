@@ -342,7 +342,7 @@ function GeneralControls({ onClose }) {
                     name="public"
                     value="on"
                     // isChecked={isPublic}
-                    defaultChecked={isPublic}
+                    defaultChecked={isPublic == "1"}
                     // defaultChecked={data.public == '1'}
                     onChange={(e) => {
                       // setIsPublic(e.target.checked);
