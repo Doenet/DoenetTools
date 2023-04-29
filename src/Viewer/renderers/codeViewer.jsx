@@ -30,7 +30,7 @@ export default React.memo(function CodeViewer(props) {
     return null;
   }
   let viewerHeight = { ...SVs.height };
-  viewerHeight.size = viewerHeight.size - 30;
+  viewerHeight.size = viewerHeight.size - 40;
 
   let viewerWidth = { ...SVs.width };
   viewerWidth.size = viewerWidth.size - 4;
@@ -51,9 +51,11 @@ export default React.memo(function CodeViewer(props) {
         width: sizeToCSS(SVs.width),
         height: sizeToCSS(SVs.height),
         maxWidth: "100%",
-        padding: "12px",
+        // padding: "12px",
         // border: "1px solid black",
         // overflowY: "scroll"
+        boxSizing: "border-box",
+        paddingLeft: "10px",
       }}
     >
       <div style={{ height: "28px" }}>
@@ -61,6 +63,7 @@ export default React.memo(function CodeViewer(props) {
           onClick={() => callAction({ action: actions.updateComponents })}
           value="update"
           id={id + "_updateButton"}
+          style={{ marginTop: "10px" }}
         ></Button>
       </div>
       <div
@@ -69,6 +72,9 @@ export default React.memo(function CodeViewer(props) {
           width: sizeToCSS(viewerWidth),
           maxWidth: "100%",
           height: sizeToCSS(viewerHeight),
+          paddingRight: "10px",
+          marginTop: "10px",
+          boxSizing: "border-box",
         }}
         id={id + "_content"}
       >
@@ -77,9 +83,14 @@ export default React.memo(function CodeViewer(props) {
     </div>
   );
 
+  let outerStyle = {};
+  if (!SVs.hasCodeEditorParent) {
+    outerStyle = { margin: "12px 0" };
+  }
+
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <div style={{ margin: "12px 0" }}>
+      <div style={outerStyle}>
         <a name={id} />
         <div
           style={surroundingBoxStyle}
