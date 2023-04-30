@@ -76,7 +76,7 @@
     "react-copy-to-clipboard": "^5.0.3",
     "react-datetime": "^3.2.0",
     "react-dom": "^18.2.0",
-    "react-dropzone": "^11.4.2",
+    "react-dropzone": "^14.2.3",
     "react-icons": "^4.8.0",
     "react-is": "^18.2.0",
     "react-mathquill": "^1.0.3",

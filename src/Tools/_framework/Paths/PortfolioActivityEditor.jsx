@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Outlet,
+  // Outlet,
   redirect,
   useLoaderData,
-  useNavigate,
-  useOutletContext,
+  // useNavigate,
+  // useOutletContext,
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import styled from "styled-components";
+// import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 import {
@@ -17,17 +17,22 @@ import {
 } from "../../../_sharedRecoil/PageViewerRecoil";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   ButtonGroup,
   Card,
+  CardBody,
   Center,
   Checkbox,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
+  // DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Editable,
@@ -38,7 +43,7 @@ import {
   GridItem,
   HStack,
   Icon,
-  IconButton,
+  // IconButton,
   Image,
   Input,
   Progress,
@@ -59,20 +64,22 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
+import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
 import { FaCog, FaFileCsv, FaFileImage } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
+  // console.log({ formObj });
 
   //Don't let label be blank
-  let label = formObj.label.trim();
+  let label = formObj?.label?.trim();
   if (label == "") {
     label = "Untitled";
   }
@@ -96,6 +103,24 @@ export async function action({ params, request }) {
         doenetId: params.doenetId,
       },
     );
+  }
+  if (formObj._action == "update description") {
+    let { data } = await axios.get("/api/updateFileDescription.php", {
+      params: {
+        doenetId: formObj.doenetId,
+        cid: formObj.cid,
+        description: formObj.description,
+      },
+    });
+  }
+  if (formObj._action == "remove file") {
+    let resp = await axios.get("/api/deleteFile.php", {
+      params: { doenetId: formObj.doenetId, cid: formObj.cid },
+    });
+  }
+
+  if (formObj._action == "noop") {
+    // console.log("noop");
   }
 
   return true;
@@ -172,167 +197,53 @@ function formatBytes(bytes) {
 }
 
 function SupportFilesControls({ onClose }) {
-  const { supportingFileData, activityData } = useLoaderData();
+  const { supportingFileData, doenetId } = useLoaderData();
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
     supportingFileData;
-  const { doenetId } = activityData;
 
-  let numberOfFilesUploading = useRef(0);
-  let [uploadProgress, setUploadProgress] = useState([]); // {fileName,size,progressPercent}
+  const fetcher = useFetcher();
 
-  console.log({ uploadProgress });
-  let typesAllowed = ["text/csv", "image/jpeg", "image/png"];
+  let [serverUploadError, setServerUploadError] = useState(null);
+  let [serverUploadSuccess, setServerUploadSuccess] = useState(false);
+  let [infoMessage, setInfoMessage] = useState("");
 
-  const onDrop = useCallback((files) => {
-    let success = true;
-    let sizeOfUpload = 0;
-    files.map((file) => {
-      if (!typesAllowed.includes(file.type)) {
-        // addToast(
-        //   `File '${file.name}' of type '${file.type}' is not allowed. No files uploaded.`,
-        //   toastType.ERROR,
-        // );
-        success = false;
-      }
-      sizeOfUpload += file.size;
-    });
-    // let uploadText = formatBytes(sizeOfUpload);
-    // let overage = formatBytes(sizeOfUpload - userQuotaBytesAvailable);
-    if (sizeOfUpload > userQuotaBytesAvailable) {
-      // addToast(
-      //   `Upload size ${uploadText} exceeds quota by ${overage}. No files uploaded.`,
-      //   toastType.ERROR,
-      // );
-      success = false;
-    }
-    //Only upload one batch at a time
-    if (numberOfFilesUploading.current > 0) {
-      // addToast(
-      //   `Already uploading files.  Please wait before sending more.`,
-      //   toastType.ERROR,
-      // );
-      success = false;
-    }
-
-    //Only upload if less than 1MB
-    files.map((file) => {
-      if (file.size >= 1000000) {
-        // addToast(
-        //   `File '${file.name}' is larger than 1MB. No files uploaded.`,
-        //   toastType.ERROR,
-        // );
-        success = false;
-      }
-    });
-
-    //If file sizes are over quota or any files aren't right type then abort
-    if (!success) {
-      return;
-    }
-
-    numberOfFilesUploading.current = files.length;
-
-    files.map((file) => {
-      let initialFileInfo = {
-        fileName: file.name,
-        size: file.size,
-        progressPercent: 0,
-      };
-      setUploadProgress((was) => [...was, initialFileInfo]);
-    });
-
-    //Upload files
-    files.map((file, fileIndex) => {
-      // console.log('file',file)
-      //TODO: Show loading  image
+  const onDrop = useCallback(async (acceptedFiles) => {
+    acceptedFiles.forEach((file) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file); //This one could be used with image source to preview image
-      // reader.readAsArrayBuffer(file);
 
-      reader.onabort = () => {};
-      reader.onerror = () => {};
-      reader.onload = () => {
+      reader.onabort = () => console.log("file reading was aborted");
+      reader.onerror = () => console.log("file reading has failed");
+      reader.onload = async () => {
         const uploadData = new FormData();
         uploadData.append("file", file);
         uploadData.append("doenetId", doenetId);
-        axios
-          .post("/api/upload.php", uploadData, {
-            onUploadProgress: (progressEvent) => {
-              const totalLength = progressEvent.lengthComputable
-                ? progressEvent.total
-                : progressEvent.target.getResponseHeader("content-length") ||
-                  progressEvent.target.getResponseHeader(
-                    "x-decompressed-content-length",
-                  );
-              if (totalLength !== null) {
-                // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
-                // console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
-                let progressPercent = Math.round(
-                  (progressEvent.loaded * 100) / totalLength,
-                );
-                setUploadProgress((was) => {
-                  let newArray = [...was];
-                  newArray[fileIndex].progressPercent = progressPercent;
-                  return newArray;
-                });
-              }
-            },
-          })
-          .then(({ data }) => {
-            // console.log("data",file.name,fileIndex,data)
-            // console.log("RESPONSE data>",data)
+        let resp = await axios.post("/api/supportFileUpload.php", uploadData);
 
-            //test if all uploads are finished then clear it out
-            numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
-            if (numberOfFilesUploading.current < 1) {
-              setUploadProgress([]);
-            }
-            let {
-              success,
-              fileName,
-              cid,
-              asFileName,
-              width,
-              height,
-              msg,
-              userQuotaBytesAvailable,
-            } = data;
-            // console.log(">>data",data)
-            // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
-            if (msg) {
-              if (success) {
-                // addToast(msg, toastType.INFO);
-              } else {
-                // addToast(msg, toastType.ERROR);
-              }
-            }
-            // if (success) {
-            // setSupportFileInfo((was) => {
-            //   let newObj = { ...was };
-            //   let newSupportingFiles = [...was.supportingFiles];
-            //   newSupportingFiles.push({
-            //     cid,
-            //     fileName,
-            //     fileType: file.type,
-            //     width,
-            //     height,
-            //     description: "",
-            //     asFileName,
-            //   });
-            //   newObj.supportingFiles = newSupportingFiles;
-            //   newObj["userQuotaBytesAvailable"] = userQuotaBytesAvailable;
-            //   return newObj;
-            // });
-            // }
-          });
+        if (resp.data.success) {
+          setServerUploadSuccess(true);
+          setServerUploadError("");
+        } else {
+          setServerUploadSuccess(false);
+          setServerUploadError(resp.data.msg);
+        }
+
+        fetcher.submit({ _action: "noop" }, { method: "post" });
       };
+      reader.readAsDataURL(file); //This one could be used with image source to preview image
     });
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { fileRejections, getRootProps, getInputProps, isDragActive } =
+    useDropzone({
+      onDrop,
+      maxFiles: 1,
+      maxSize: 1048576,
+      accept: ".csv,.jpg,.png",
+    });
 
-  //Filter by cid so no duplicates (on upload)
-
+  if (fileRejections.length > 0 && serverUploadSuccess) {
+    setServerUploadSuccess(false);
+  }
   return (
     <>
       <Tooltip
@@ -409,14 +320,214 @@ function SupportFilesControls({ onClose }) {
         )}
       </Center>
 
-      <Box>
+      {serverUploadSuccess && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>File Uploaded Successfully</AlertTitle>
+        </Alert>
+      )}
+      {serverUploadError && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>{serverUploadError}</AlertTitle>
+        </Alert>
+      )}
+      {infoMessage != "" && (
+        <Alert status="info">
+          <AlertIcon />
+          <AlertTitle>{infoMessage}</AlertTitle>
+        </Alert>
+      )}
+      {fileRejections.map((rejectObj, i) => {
+        return (
+          <Alert key={`Alert${i}`} status="error">
+            <AlertIcon />
+            <AlertTitle>
+              File &apos;{rejectObj.file.name}&apos; not uploaded
+            </AlertTitle>
+            <AlertDescription>{rejectObj.errors[0].message}</AlertDescription>
+          </Alert>
+        );
+      })}
+
+      <Box h="425px" w="100%" overflowY="scroll">
+        {/* <Box h="415px" overflowY="scroll"> */}
         {supportingFiles.map((file, i) => {
+          const doenetMLCode = `<image source='/media/${file.fileName}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+          //Only allow to copy doenetML if they entered a description
+          if (file.description == "") {
+            return (
+              <Card
+                key={`file${i}`}
+                width="100%"
+                height="100px"
+                p="0"
+                mt="5px"
+                mb="5px"
+                data-test="Support File Card Alt text"
+                // background="doenet.mainGray"
+              >
+                <HStack>
+                  <Image
+                    height="100px"
+                    maxWidth="100px"
+                    src={`/media/${file.fileName}`}
+                    alt="Support File Image"
+                    objectFit="cover"
+                    borderLeftRadius="md"
+                  />
+
+                  <CardBody p="2px">
+                    <VStack spacing="2px" align="flex-start">
+                      <Text
+                        height="26px"
+                        lineHeight="1.1"
+                        fontSize="md"
+                        fontWeight="700"
+                        noOfLines={1}
+                        textAlign="left"
+                      >
+                        {file.asFileName}
+                      </Text>
+                      <Text>Please enter a description for this file</Text>
+
+                      <Input
+                        placeholder="Enter Description Here"
+                        onBlur={(e) => {
+                          fetcher.submit(
+                            {
+                              _action: "update description",
+                              doenetId,
+                              cid: file.cid,
+                              description: e.target.value,
+                            },
+                            { method: "post" },
+                          );
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            fetcher.submit(
+                              {
+                                _action: "update description",
+                                doenetId,
+                                cid: file.cid,
+                                description: e.target.value,
+                              },
+                              { method: "post" },
+                            );
+                          }
+                        }}
+                      />
+                    </VStack>
+                  </CardBody>
+                </HStack>
+              </Card>
+              // <div key={`file${i}`}>{file.asFileName}Needs a alt text</div>
+            );
+          }
           return (
-            <Image
+            <Card
               key={`file${i}`}
-              src={`/media/${file.fileName}`}
-              // alt={file.description}
-            />
+              width="100%"
+              height="100px"
+              p="0"
+              mt="5px"
+              mb="5px"
+              data-test="Support File Card"
+            >
+              <HStack>
+                <Image
+                  height="100px"
+                  maxWidth="100px"
+                  src={`/media/${file.fileName}`}
+                  alt="Support File Image"
+                  objectFit="cover"
+                  borderLeftRadius="md"
+                />
+
+                <CardBody p="2px">
+                  <Grid
+                    templateAreas={`"information rightControls"`}
+                    templateColumns="1fr 120px"
+                    width="100%"
+                  >
+                    <GridItem area="information">
+                      <VStack spacing="2px" height="50px" align="flex-start">
+                        {/* TODO: Make this editable */}
+                        {/* <Editable
+                          mt="4px"
+                          value={label}
+                          textAlign="center"
+                          onChange={(value) => {
+                            setLabel(value);
+                          }}
+                          onSubmit={(value) => {
+                            let submitValue = value;
+
+                            fetcher.submit(
+                              { _action: "update label", label: submitValue },
+                              { method: "post" },
+                            );
+                          }}
+                        >
+                          <EditablePreview />
+                          <EditableInput width="400px" />
+                        </Editable> */}
+                        <Text
+                          height="26px"
+                          // lineHeight="1.1"
+                          fontSize="md"
+                          fontWeight="700"
+                          noOfLines={1}
+                          textAlign="left"
+                        >
+                          {file.description}
+                        </Text>
+                        <Text>
+                          {file.fileType} {file.width} x {file.height}
+                        </Text>
+                      </VStack>
+                    </GridItem>
+                    <GridItem area="rightControls">
+                      <VStack spacing="15px" align="flex-end" p="4px">
+                        <CopyToClipboard
+                          onCopy={() => {
+                            setInfoMessage(
+                              "DoenetML Code copied to the clipboard",
+                            );
+                            setTimeout(() => setInfoMessage(""), 5000);
+                          }}
+                          text={doenetMLCode}
+                        >
+                          <Button size="sm" leftIcon={<BsClipboardPlus />}>
+                            Copy Code
+                          </Button>
+                        </CopyToClipboard>
+                        <Button
+                          background="doenet.mainRed"
+                          size="sm"
+                          onClick={() => {
+                            setInfoMessage("Removing Image...");
+                            fetcher.submit(
+                              {
+                                _action: "remove file",
+                                doenetId,
+                                cid: file.cid,
+                              },
+                              { method: "post" },
+                            );
+                            //TODO: Clear this with a return value once it's removed
+                            setTimeout(() => setInfoMessage(""), 5000);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </VStack>
+                    </GridItem>
+                  </Grid>
+                </CardBody>
+              </HStack>
+            </Card>
           );
         })}
       </Box>
@@ -488,16 +599,18 @@ function GeneralControls({ onClose }) {
         uploadData.append("doenetId", doenetId);
         uploadData.append("isActivityThumbnail", "1");
 
-        axios.post("/api/upload.php", uploadData).then(({ data }) => {
-          // console.log("RESPONSE data>",data)
+        axios
+          .post("/api/supportFileUpload.php", uploadData)
+          .then(({ data }) => {
+            // console.log("RESPONSE data>",data)
 
-          //uploads are finished clear it out
-          numberOfFilesUploading.current = 0;
-          let { success, cid } = data;
-          if (success) {
-            setImagePath(`/media/${cid}.jpg`);
-          }
-        });
+            //uploads are finished clear it out
+            numberOfFilesUploading.current = 0;
+            let { success, cid } = data;
+            if (success) {
+              setImagePath(`/media/${cid}.jpg`);
+            }
+          });
       };
     },
     [doenetId],
@@ -718,14 +831,14 @@ function EditableLabel() {
   );
 }
 
-export function PortfolioActivityEditor() {
+export function PortfolioActivityEditor2() {
   return (
     <Box w="672px" p="10px">
       <SupportFilesControls />
     </Box>
   );
 }
-export function PortfolioActivityEditor2() {
+export function PortfolioActivityEditor() {
   const { doenetML, pageId, activityData } = useLoaderData();
   const {
     isOpen: controlsAreOpen,
