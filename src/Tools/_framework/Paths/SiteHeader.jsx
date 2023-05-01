@@ -1,4 +1,14 @@
-import { Box, Center, Grid, GridItem, Icon, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Grid,
+  GridItem,
+  Icon,
+  Tab,
+  TabList,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
 import React, { useRef } from "react";
 import { Outlet, useLoaderData, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
@@ -129,9 +139,10 @@ export function SiteHeader(props) {
           m="0"
           backgroundColor="#fff"
           color="#000"
+          height="40px"
         >
           <Grid
-            height="40px"
+            height="38px"
             position="fixed"
             top="0"
             zIndex="1200"
@@ -152,7 +163,14 @@ export function SiteHeader(props) {
               </Branding>
             </GridItem>
             <GridItem area="menus">
-              <BarMenu>
+              <Tabs>
+                <TabList>
+                  <Tab>One</Tab>
+                  <Tab>Two</Tab>
+                  <Tab>Three</Tab>
+                </TabList>
+              </Tabs>
+              {/* <BarMenu>
                 <MenuItem dataTest="Home" to="/">
                   Home
                 </MenuItem>
@@ -169,7 +187,7 @@ export function SiteHeader(props) {
                     </MenuItem>
                     <MenuItem
                       dataTest="My Courses"
-                      to="course"
+                      // to="course"
                       onClick={() => {
                         navigateTo.current = "/course";
                         setRecoilPageToolView({
@@ -185,7 +203,7 @@ export function SiteHeader(props) {
                   </>
                 ) : null}
                 {isAdmin ? <MenuItem to={`/admin`}>Admin</MenuItem> : null}
-              </BarMenu>
+              </BarMenu> */}
             </GridItem>
             <GridItem area="rightHeader">
               {data.signedIn ? (
@@ -210,6 +228,7 @@ export function SiteHeader(props) {
           </Grid>
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="scroll">
+          <Box>test</Box>
           <Outlet context={{ signedIn: data.signedIn }} />
         </GridItem>
       </Grid>
