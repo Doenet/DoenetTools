@@ -1,16 +1,30 @@
 import React, { useState, useRef, useEffect } from "react";
-import useDoenetRenderer from "../useDoenetRenderer";
+import useDoenetRenderer, { rendererState } from "../useDoenetRenderer";
 import { sizeToCSS } from "./utils/css";
 import CodeMirror from "../../Tools/_framework/CodeMirror";
 import VisibilitySensor from "react-visibility-sensor-v2";
+import { useSetRecoilState } from "recoil";
 
 export default React.memo(function CodeEditor(props) {
-  let { name, id, SVs, children, actions, callAction } =
-    useDoenetRenderer(props);
+  let {
+    name,
+    id,
+    SVs,
+    children,
+    actions,
+    ignoreUpdate,
+    rendererName,
+    callAction,
+  } = useDoenetRenderer(props);
+
+  CodeEditor.baseStateVariable = "immediateValue";
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
+
   let currentValue = useRef(SVs.immediateValue);
   let updateValueTimer = useRef(null);
   let editorRef = useRef(null);
-  let updateInternalValue = useRef(SVs.immediateValue);
+  let updateInternalValueTo = useRef(SVs.immediateValue);
 
   let componentHeight = { ...SVs.height };
   let editorHeight = { ...SVs.height };
@@ -33,7 +47,10 @@ export default React.memo(function CodeEditor(props) {
       });
       if (updateValueTimer.current !== null) {
         clearTimeout(updateValueTimer.current);
-        callAction({ action: actions.updateValue });
+        callAction({
+          action: actions.updateValue,
+          baseVariableValue: currentValue.current,
+        });
       }
     };
   }, []);
@@ -53,9 +70,9 @@ export default React.memo(function CodeEditor(props) {
   // cm.getScrollInfo() → {left, top, width, height, clientWidth, clientHeight}
   // Get an {left, top, width, height, clientWidth, clientHeight} object that represents the current scroll position, the size of the scrollable area, and the size of the visible area (minus scrollbars).
 
-  if (SVs.immediateValue !== currentValue.current) {
+  if (!ignoreUpdate && SVs.immediateValue !== currentValue.current) {
     currentValue.current = SVs.immediateValue;
-    updateInternalValue.current = SVs.immediateValue;
+    updateInternalValueTo.current = SVs.immediateValue;
   }
 
   let viewer = null;
@@ -81,39 +98,60 @@ export default React.memo(function CodeEditor(props) {
     );
   }
 
+  let paddingBottom = { ...editorHeight };
+  paddingBottom.size /= 2;
+  paddingBottom = sizeToCSS(paddingBottom);
+
   let editor = (
     <div key={editorKey} id={editorKey} style={editorStyle}>
       <CodeMirror
         // key = {codemirrorKey}
         editorRef={editorRef}
-        setInternalValue={updateInternalValue.current}
+        setInternalValueTo={updateInternalValueTo.current}
         //TODO: read only isn't working <codeeditor disabled />
         readOnly={SVs.disabled}
         onBlur={() => {
           clearTimeout(updateValueTimer.current);
-          callAction({ action: actions.updateValue });
+          callAction({
+            action: actions.updateValue,
+            baseVariableValue: currentValue.current,
+          });
           updateValueTimer.current = null;
         }}
         onFocus={() => {
           // console.log(">>codeEditor FOCUS!!!!!")
         }}
         onBeforeChange={(value) => {
-          currentValue.current = value;
-          callAction({
-            action: actions.updateImmediateValue,
-            args: { text: value },
-          });
+          if (currentValue.current !== value) {
+            currentValue.current = value;
 
-          // Debounce update value at 3 seconds
-          clearTimeout(updateValueTimer.current);
+            setRendererState((was) => {
+              let newObj = { ...was };
+              newObj.ignoreUpdate = true;
+              return newObj;
+            });
 
-          //TODO: when you try to leave the page before it saved you will lose work
-          //so prompt the user on page leave
-          updateValueTimer.current = setTimeout(function () {
-            callAction({ action: actions.updateValue });
-            updateValueTimer.current = null;
-          }, 3000); //3 seconds
+            callAction({
+              action: actions.updateImmediateValue,
+              args: { text: value },
+              baseVariableValue: value,
+            });
+
+            // Debounce update value at 3 seconds
+            clearTimeout(updateValueTimer.current);
+
+            //TODO: when you try to leave the page before it saved you will lose work
+            //so prompt the user on page leave
+            updateValueTimer.current = setTimeout(function () {
+              callAction({
+                action: actions.updateValue,
+                baseVariableValue: currentValue.current,
+              });
+              updateValueTimer.current = null;
+            }, 3000); //3 seconds
+          }
         }}
+        paddingBottom={paddingBottom}
       />
     </div>
   );

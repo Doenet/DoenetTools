@@ -28,7 +28,7 @@ export default function GuestDoenetMLEditor(props) {
       <CodeMirror
         key="codemirror"
         editorRef={editorRef}
-        setInternalValue={updateInternalValue}
+        setInternalValueTo={updateInternalValue}
         // value={editorDoenetML}
         onBeforeChange={(value) => {
           setEditorDoenetML(value);
