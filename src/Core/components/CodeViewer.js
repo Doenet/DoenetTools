@@ -218,11 +218,6 @@ export default class CodeViewer extends BlockComponent {
           dependencyType: "parentIdentity",
           parentComponentType: "codeEditor",
         },
-        codeSourceFromSectioningParent: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "_sectioningComponent",
-          variableName: "codeSourceForViewer",
-        },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.codeSourceComponentName) {
@@ -233,12 +228,6 @@ export default class CodeViewer extends BlockComponent {
           return {
             setValue: {
               codeSource: dependencyValues.codeEditorParent.componentName,
-            },
-          };
-        } else if (dependencyValues.codeSourceFromSectioningParent) {
-          return {
-            setValue: {
-              codeSource: dependencyValues.codeSourceFromSectioningParent,
             },
           };
         } else {

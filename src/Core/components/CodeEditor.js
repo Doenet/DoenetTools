@@ -182,30 +182,14 @@ export default class CodeEditor extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
-        prefillFromParent: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "_sectioningComponent",
-          variableName: "prefillForEditor",
-        },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         if (!dependencyValues.bindValueTo) {
           return {
             useEssentialOrDefaultValue: {
               value: {
                 variablesToCheck: "value",
-                get defaultValue() {
-                  let val;
-                  if (
-                    usedDefault.prefill &&
-                    typeof dependencyValues.prefillFromParent === "string"
-                  ) {
-                    val = dependencyValues.prefillFromParent;
-                  } else {
-                    val = dependencyValues.prefill;
-                  }
-                  return val;
-                },
+                defaultValue: dependencyValues.prefill,
               },
             },
           };

@@ -168,7 +168,6 @@ import EigenDecomposition from "./components/linearAlgebra/EigenDecomposition";
 import Latex from "./components/Latex";
 import BlockQuote from "./components/BlockQuote";
 import ContentPicker from "./components/ContentPicker";
-import CodeSampleViewer from "./components/CodeSampleViewer";
 
 //Extended
 import * as ComponentSize from "./components/abstract/ComponentSize";
@@ -354,7 +353,6 @@ const componentTypeArray = [
   Latex,
   BlockQuote,
   ContentPicker,
-  CodeSampleViewer,
 
   BaseComponent,
   InlineComponent,
