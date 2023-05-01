@@ -4256,4 +4256,355 @@ describe("Polyline Tag Tests", function () {
       "C is a thin white polyline.",
     );
   });
+
+  it("One vertex constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <point>(3,5)</point>
+    <point>(-4,-1)</point>
+    <point>(5,2)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+      </constraints>
+    </point>
+    <point>(-3,4)</point>
+    <polyline vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
+  </graph>
+  <graph name="g2" newNamespace>
+    <copy target="../g1/pg" assignNames="pg" />
+  </graph>
+  <copy target="g2" assignNames="g3" />
+  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let vertices = [
+      [3, 5],
+      [-4, -1],
+      [6, 4],
+      [-3, 4],
+    ];
+
+    testPolylineCopiedTwice({ vertices });
+
+    cy.log("move individual vertex");
+    cy.window().then(async (win) => {
+      vertices[1] = [4, 7];
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g1/pg",
+        args: {
+          pointCoords: { 1: vertices[1] },
+        },
+      });
+
+      testPolylineCopiedTwice({ vertices });
+    });
+
+    cy.log("move copied polyline up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 4;
+      let moveY = 3;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g2/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = 1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolylineCopiedTwice({ vertices });
+    });
+
+    cy.log("try to move double copied polyline down and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 1;
+      let moveY = -7;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g3/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = -1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolylineCopiedTwice({ vertices });
+    });
+  });
+
+  it("Two vertices constrained to same grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <point>(3,5)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+      </constraints>
+    </point>
+    <point>(-4,-1)</point>
+    <point>(5,2)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+      </constraints>
+    </point>
+    <point>(-3,4)</point>
+    <polyline vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
+  </graph>
+  <graph name="g2" newNamespace>
+    <copy target="../g1/pg" assignNames="pg" />
+  </graph>
+  <copy target="g2" assignNames="g3" />
+  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let vertices = [
+      [3, 4],
+      [-4, -1],
+      [6, 4],
+      [-3, 4],
+    ];
+
+    testPolylineCopiedTwice({ vertices });
+
+    cy.log("move individual vertex");
+    cy.window().then(async (win) => {
+      vertices[1] = [4, 7];
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g1/pg",
+        args: {
+          pointCoords: { 1: vertices[1] },
+        },
+      });
+
+      testPolylineCopiedTwice({ vertices });
+    });
+
+    cy.log("move copied polyline up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 4;
+      let moveY = 3;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g2/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = 1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolylineCopiedTwice({ vertices });
+    });
+
+    cy.log("try to move double copied polyline down and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 1;
+      let moveY = -7;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g3/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = -1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolylineCopiedTwice({ vertices });
+    });
+  });
+
+  it("Three vertices constrained to same grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <point>(3,5)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+      </constraints>
+    </point>
+    <point>(-4,-1)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+      </constraints>
+    </point>
+    <point>(5,2)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+      </constraints>
+    </point>
+    <point>(-3,4)</point>
+    <polyline vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
+  </graph>
+  <graph name="g2" newNamespace>
+    <copy target="../g1/pg" assignNames="pg" />
+  </graph>
+  <copy target="g2" assignNames="g3" />
+  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let vertices = [
+      [3, 4],
+      [-3, 0],
+      [6, 4],
+      [-3, 4],
+    ];
+
+    testPolylineCopiedTwice({ vertices });
+
+    cy.log("move individual vertex");
+    cy.window().then(async (win) => {
+      vertices[1] = [4, 7];
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g1/pg",
+        args: {
+          pointCoords: { 1: vertices[1] },
+        },
+      });
+
+      // adjust for constraint
+      vertices[1] = [3, 8];
+
+      testPolylineCopiedTwice({ vertices });
+    });
+
+    cy.log("move copied polyline up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 4;
+      let moveY = 3;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g2/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = 1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolylineCopiedTwice({ vertices });
+    });
+
+    cy.log("try to move double copied polyline down and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 1;
+      let moveY = -7;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/g3/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = -1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolylineCopiedTwice({ vertices });
+    });
+  });
 });

@@ -1556,21 +1556,23 @@ export default class Ray extends GraphicalComponent {
       }
     }
 
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
     if (transient) {
-      return await this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
         skippable,
         actionId,
         sourceInformation,
-        skipRendererUpdate,
+        skipRendererUpdate: true,
       });
     } else {
-      return await this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
         sourceInformation,
-        skipRendererUpdate,
+        skipRendererUpdate: true,
         event: {
           verb: "interacted",
           object: {
@@ -1584,6 +1586,91 @@ export default class Ray extends GraphicalComponent {
         },
       });
     }
+
+    // we will attempt to keep the slope of the ray fixed
+    // even if one of the points is constrained
+
+    // if dragged the whole ray that is based on endpoint and through point,
+    // address case where only one point is constrained
+    // to make ray just translate in this case
+    if (
+      endpointcoords !== undefined &&
+      throughcoords !== undefined &&
+      (await this.stateValues.basedOnEndpoint) &&
+      (await this.stateValues.basedOnThrough)
+    ) {
+      let numericalPoints = [endpointcoords, throughcoords];
+      let resultingNumericalPoints = [
+        await this.stateValues.numericalEndpoint,
+        await this.stateValues.numericalThroughpoint,
+      ];
+
+      let pointsChanged = [];
+      let nPointsChanged = 0;
+
+      for (let [ind, pt] of numericalPoints.entries()) {
+        if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
+          pointsChanged.push(ind);
+          nPointsChanged++;
+        }
+      }
+
+      if (nPointsChanged === 1) {
+        // One point was altered from the requested location
+        // while the other point stayed at the requested location.
+        // We interpret this as one point being constrained and the second one being free
+        // and we move the second point to keep their relative position fixed.
+
+        let changedInd = pointsChanged[0];
+
+        let orig1 = numericalPoints[changedInd];
+        let changed1 = resultingNumericalPoints[changedInd];
+        let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+        let newNumericalPoints = [];
+
+        for (let i = 0; i < 2; i++) {
+          if (i === changedInd) {
+            newNumericalPoints.push(resultingNumericalPoints[i]);
+          } else {
+            newNumericalPoints.push(
+              numericalPoints[i].map((v, j) => v - changevec1[j]),
+            );
+          }
+        }
+
+        let newInstructions = [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "endpoint",
+            value: newNumericalPoints[0].map((x) => me.fromAst(x)),
+          },
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "through",
+            value: newNumericalPoints[1].map((x) => me.fromAst(x)),
+          },
+        ];
+
+        return await this.coreFunctions.performUpdate({
+          updateInstructions: newInstructions,
+          transient,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
+        });
+      }
+    }
+
+    // if no modifications were made, still need to update renderers
+    // as original update was performed with skipping renderer update
+    return await this.coreFunctions.updateRenderers({
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
   }
 
   async rayClicked({
