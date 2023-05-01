@@ -1273,4 +1273,79 @@ describe("Code Editor Tag Tests", function () {
     cy.get(cesc("#\\/pv")).should("have.text", "value: hello");
     cy.get(cesc("#\\/piv")).should("have.text", "immediate value: hello");
   });
+
+  it("bind value to", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><codeEditor name="ce" bindValueTo="$ti" /></p>
+
+    <p><textinput name="ti" expanded prefill="Hello!" /></p>
+
+    <p name="pv">value: $ce</p>
+    <p name="piv">immediate value: $ce.immediateValue</p>
+    <p name="pv2">value: $ti</p>
+    <p name="piv2">immediate value: $ti.immediateValue</p>
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/piv")).should("have.text", "immediate value: Hello!");
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!");
+    cy.get(cesc2("#/piv2")).should("have.text", "immediate value: Hello!");
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!");
+
+    cy.get(cesc2("#/ti_input")).type("{ctrl+end}{enter}Selam!", { delay: 0 });
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!");
+
+    cy.get(cesc2("#/piv")).should("have.text", "immediate value: Hello!");
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!");
+
+    cy.get(cesc2("#/ti_input")).blur();
+
+    cy.get(cesc2("#/piv")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!\nSelam!");
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!\nSelam!");
+
+    cy.get(cesc("#\\/ce") + " .cm-content").type("{ctrl+end}{enter}Kaixo!", {
+      delay: 0,
+    });
+    cy.get(cesc2("#/piv")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!\nKaixo!",
+    );
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!\nSelam!");
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!\nSelam!");
+
+    cy.get(cesc("#\\/ce") + " .cm-content").blur();
+
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!\nKaixo!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!\nSelam!\nKaixo!");
+    cy.get(cesc2("#/piv")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!\nKaixo!",
+    );
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!\nSelam!\nKaixo!");
+  });
 });
