@@ -994,131 +994,198 @@ export function PortfolioActivityEditor() {
           </Grid>
         </GridItem>
         <GridItem area="centerContent">
-          <Grid
-            width="100%"
-            minHeight="calc(100vh - 40px)" //40px header height
-            templateAreas={`"viewer middleGutter textEditor"`}
-            templateColumns=".01fr 10px .99fr"
-          >
-            <GridItem
-              area="middleGutter"
-              background="doenet.lightBlue"
-              h="calc(100vh - 40px)"
-              // zIndex="500"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-              position="relative"
-            >
-              <Center
-                cursor="col-resize"
-                h="calc(100vh - 40px)"
-                top="50px"
-                position="fixed"
-                width="10px"
-              >
-                <Icon ml="0" as={BsGripVertical} />
-              </Center>
-            </GridItem>
-
-            <GridItem
-              width="100%"
-              area="viewer"
-              placeSelf="center"
-              minHeight="100%"
-              maxWidth="850px"
-              // background="doenet.lightBlue"
-            >
-              <Box
-                minHeight="calc(100vh - 100px)"
-                background="var(--canvas)"
-                borderWidth="1px"
-                borderStyle="solid"
-                borderColor="doenet.mediumGray"
-                margin="10px 0px 10px 0px" //Only need when there is an outline
-                padding="20px 5px 20px 5px"
-                flexGrow={1}
-                overflow="scroll"
-                marginBottom="50vh"
-              >
-                <PageViewer
-                  key={`HPpageViewer`}
-                  doenetML={viewerDoenetML}
-                  // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
-                  flags={{
-                    showCorrectness: true,
-                    solutionDisplayMode: true,
-                    showFeedback: true,
-                    showHints: true,
-                    autoSubmit: false,
-                    allowLoadState: false,
-                    allowSaveState: false,
-                    allowLocalState: false,
-                    allowSaveSubmissions: false,
-                    allowSaveEvents: false,
-                  }}
-                  // doenetId={doenetId}
-                  attemptNumber={1}
-                  generatedVariantCallback={variantCallback} //TODO:Replace
-                  requestedVariantIndex={variantInfo.index}
-                  // setIsInErrorState={setIsInErrorState}
-                  pageIsActive={true}
-                />
-              </Box>
-            </GridItem>
-            <GridItem
-              width="100%"
-              area="textEditor"
-              background="doenet.lightBlue"
-              height="100%"
-              alignSelf="start"
-              paddingTop="10px"
-            >
-              <Box
-                position="sticky"
-                top="50px"
-                boxSizing="border-box"
-                background="doenet.canvas"
-                height="calc(100vh - 100px)"
-                overflowY="scroll"
-                borderWidth="1px"
-                borderStyle="solid"
-                borderColor="doenet.mediumGray"
-              >
-                <CodeMirror
-                  key="codemirror"
-                  // readOnly={false}
-                  editorRef={editorRef}
-                  // setInternalValue={updateInternalValue}
-                  setInternalValue={textEditorDoenetML.current}
-                  // value={editorDoenetML}
-                  // value="starter value"
-                  onBeforeChange={(value) => {
-                    textEditorDoenetML.current = value;
-                    // setTextEditorDoenetML(value);
-                    // console.log(value);
-                    //   setEditorDoenetML(value);
-                    //   // Debounce save to server at 3 seconds
-                    //   clearTimeout(timeout.current);
-                    //   timeout.current = setTimeout(function () {
-                    //     saveDraft({
-                    //       pageId: initializedPageId,
-                    //       courseId,
-                    //       backup: backupOldDraft.current,
-                    //     }).then(({ success }) => {
-                    //       if (success) {
-                    //         backupOldDraft.current = false;
-                    //       }
-                    //     });
-                    //     timeout.current = null;
-                    //   }, 3000); //3 seconds
-                  }}
-                />
-              </Box>
-            </GridItem>
-          </Grid>
+          <ResizeableSideBySide
+            left={
+              <PageViewer
+                key={`HPpageViewer`}
+                doenetML={viewerDoenetML}
+                // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
+                flags={{
+                  showCorrectness: true,
+                  solutionDisplayMode: true,
+                  showFeedback: true,
+                  showHints: true,
+                  autoSubmit: false,
+                  allowLoadState: false,
+                  allowSaveState: false,
+                  allowLocalState: false,
+                  allowSaveSubmissions: false,
+                  allowSaveEvents: false,
+                }}
+                // doenetId={doenetId}
+                attemptNumber={1}
+                generatedVariantCallback={variantCallback} //TODO:Replace
+                requestedVariantIndex={variantInfo.index}
+                // setIsInErrorState={setIsInErrorState}
+                pageIsActive={true}
+              />
+            }
+            right={
+              <CodeMirror
+                key="codemirror"
+                // readOnly={false}
+                editorRef={editorRef}
+                // setInternalValue={updateInternalValue}
+                setInternalValue={textEditorDoenetML.current}
+                // value={editorDoenetML}
+                // value="starter value"
+                onBeforeChange={(value) => {
+                  textEditorDoenetML.current = value;
+                  // setTextEditorDoenetML(value);
+                  // console.log(value);
+                  //   setEditorDoenetML(value);
+                  //   // Debounce save to server at 3 seconds
+                  //   clearTimeout(timeout.current);
+                  //   timeout.current = setTimeout(function () {
+                  //     saveDraft({
+                  //       pageId: initializedPageId,
+                  //       courseId,
+                  //       backup: backupOldDraft.current,
+                  //     }).then(({ success }) => {
+                  //       if (success) {
+                  //         backupOldDraft.current = false;
+                  //       }
+                  //     });
+                  //     timeout.current = null;
+                  //   }, 3000); //3 seconds
+                }}
+              />
+            }
+          />
         </GridItem>
       </Grid>
     </>
   );
 }
+
+const clamp = (
+  value,
+  min = Number.POSITIVE_INFINITY,
+  max = Number.NEGATIVE_INFINITY,
+) => {
+  return Math.min(Math.max(value, min), max);
+};
+
+const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
+  const wrapperRef = useRef();
+
+  useEffect(() => {
+    wrapperRef.current.handleClicked = false;
+    wrapperRef.current.handleDragged = false;
+  }, []);
+
+  const onMouseDown = (event) => {
+    event.preventDefault();
+    wrapperRef.current.handleClicked = true;
+  };
+
+  const onMouseMove = (event) => {
+    //TODO: minimum movment calc
+    if (wrapperRef.current.handleClicked) {
+      event.preventDefault();
+      wrapperRef.current.handleDragged = true;
+
+      let proportion = clamp(
+        (event.clientX - wrapperRef.current.offsetLeft) /
+          wrapperRef.current.clientWidth,
+        0.18,
+        1,
+      );
+
+      //using a ref to save without react refresh
+      wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
+        1 - proportion
+      }fr`;
+      wrapperRef.current.proportion = proportion;
+    }
+  };
+
+  const onMouseUp = () => {
+    if (wrapperRef.current.handleClicked) {
+      wrapperRef.current.handleClicked = false;
+      if (wrapperRef.current.handleDragged) {
+        wrapperRef.current.handleDragged = false;
+      }
+    }
+  };
+
+  return (
+    <Grid
+      width="100%"
+      minHeight="calc(100vh - 40px)" //40px header height
+      templateAreas={`"viewer middleGutter textEditor"`}
+      templateColumns={`.5fr ${centerWidth} .5fr`}
+      overflow="hidden"
+      onMouseUp={onMouseUp}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseUp}
+      ref={wrapperRef}
+    >
+      <GridItem
+        area="viewer"
+        width="100%"
+        placeSelf="center"
+        minHeight="100%"
+        maxWidth="850px"
+        // background="doenet.lightBlue"
+        overflow="hidden"
+      >
+        <Box
+          minHeight="calc(100vh - 100px)"
+          background="var(--canvas)"
+          borderWidth="1px"
+          borderStyle="solid"
+          borderColor="doenet.mediumGray"
+          margin="10px 0px 10px 0px" //Only need when there is an outline
+          padding="20px 5px 20px 5px"
+          flexGrow={1}
+          overflow="scroll"
+          marginBottom="50vh"
+        >
+          {left}
+        </Box>
+      </GridItem>
+      <GridItem
+        area="middleGutter"
+        background="doenet.lightBlue"
+        width="100%"
+        paddingTop="10px"
+        alignSelf="start"
+        position="relative"
+      >
+        <Center
+          cursor="col-resize"
+          h="calc(100vh - 100px)"
+          top="50px"
+          position="fixed"
+          width="10px"
+          onMouseDown={onMouseDown}
+          data-test="contentPanelDragHandle"
+        >
+          <Icon ml="0" as={BsGripVertical} />
+        </Center>
+      </GridItem>
+      <GridItem
+        area="textEditor"
+        width="100%"
+        background="doenet.lightBlue"
+        alignSelf="start"
+        paddingTop="10px"
+        position="sticky"
+      >
+        <Box
+          top="50px"
+          boxSizing="border-box"
+          background="doenet.canvas"
+          height="calc(100vh - 100px)"
+          overflowY="scroll"
+          borderWidth="1px"
+          borderStyle="solid"
+          borderColor="doenet.mediumGray"
+        >
+          {right}
+        </Box>
+      </GridItem>
+    </Grid>
+  );
+};
