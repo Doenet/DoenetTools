@@ -40,7 +40,7 @@ export default React.memo(function CodeViewer(props) {
     maxWidth: "100%",
   };
 
-  if (!SVs.hasCodeEditorParent) {
+  if (SVs.locationFromParent !== "bottom") {
     surroundingBoxStyle.border = "var(--mainBorder)";
     surroundingBoxStyle.borderRadius = "var(--mainBorderRadius)";
   }
@@ -84,7 +84,7 @@ export default React.memo(function CodeViewer(props) {
   );
 
   let outerStyle = {};
-  if (!SVs.hasCodeEditorParent) {
+  if (SVs.locationFromParent !== "bottom") {
     outerStyle = { margin: "12px 0" };
   }
 

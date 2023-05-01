@@ -28,7 +28,7 @@ export default React.memo(function CodeEditor(props) {
 
   let componentHeight = { ...SVs.height };
   let editorHeight = { ...SVs.height };
-  if (SVs.showResults) {
+  if (SVs.showResults && SVs.resultsLocation === "bottom") {
     editorHeight.size *= 1 - SVs.viewerRatio;
   }
 
@@ -90,12 +90,16 @@ export default React.memo(function CodeEditor(props) {
   };
 
   if (SVs.showResults) {
-    viewer = (
-      <>
-        <hr style={{ width: sizeToCSS(componentWidth), maxWidth: "100%" }} />
-        <div>{children}</div>
-      </>
-    );
+    if (SVs.resultsLocation === "bottom") {
+      viewer = (
+        <>
+          <hr style={{ width: sizeToCSS(componentWidth), maxWidth: "100%" }} />
+          <div>{children}</div>
+        </>
+      );
+    } else {
+      viewer = <div>{children}</div>;
+    }
   }
 
   let paddingBottom = { ...editorHeight };
@@ -156,27 +160,89 @@ export default React.memo(function CodeEditor(props) {
     </div>
   );
 
+  let editorWithViewer = editor;
+
+  if (SVs.showResults && SVs.resultsLocation === "bottom") {
+    editorWithViewer = (
+      <>
+        {editor}
+        {viewer}
+      </>
+    );
+  }
+
+  editorWithViewer = (
+    <div style={{ margin: "12px 0" }}>
+      <a name={id} />
+      <div
+        style={{
+          padding: "0",
+          border: "var(--mainBorder)",
+          borderRadius: "var(--mainBorderRadius)",
+          height: sizeToCSS(componentHeight),
+          width: sizeToCSS(componentWidth),
+          maxWidth: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+        id={id}
+      >
+        {editorWithViewer}
+      </div>
+    </div>
+  );
+
+  if (SVs.showResults) {
+    if (SVs.resultsLocation === "left") {
+      editorWithViewer = (
+        <div style={{ display: "flex", maxWidth: "100%", margin: "12px 0" }}>
+          <div
+            style={{
+              maxWidth: "50%",
+              paddingRight: "15px",
+              boxSizing: "border-box",
+            }}
+          >
+            {viewer}
+          </div>
+          <div
+            style={{
+              maxWidth: "50%",
+              boxSizing: "border-box",
+            }}
+          >
+            {editorWithViewer}
+          </div>
+        </div>
+      );
+    } else if (SVs.resultsLocation === "right") {
+      editorWithViewer = (
+        <div style={{ display: "flex", maxWidth: "100%", margin: "12px 0" }}>
+          <div
+            style={{
+              maxWidth: "50%",
+              paddingRight: "15px",
+              boxSizing: "border-box",
+            }}
+          >
+            {editorWithViewer}
+          </div>
+          <div
+            style={{
+              maxWidth: "50%",
+              boxSizing: "border-box",
+            }}
+          >
+            {viewer}
+          </div>
+        </div>
+      );
+    }
+  }
+
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <div style={{ margin: "12px 0" }}>
-        <a name={id} />
-        <div
-          style={{
-            padding: "0",
-            border: "var(--mainBorder)",
-            borderRadius: "var(--mainBorderRadius)",
-            height: sizeToCSS(componentHeight),
-            width: sizeToCSS(componentWidth),
-            maxWidth: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
-          id={id}
-        >
-          {editor}
-          {viewer}
-        </div>
-      </div>
+      {editorWithViewer}
     </VisibilitySensor>
   );
 });

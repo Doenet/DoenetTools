@@ -66,6 +66,16 @@ export default class CodeEditor extends BlockComponent {
       public: true,
     };
 
+    attributes.resultsLocation = {
+      createComponentOfType: "text",
+      createStateVariable: "resultsLocation",
+      defaultValue: "bottom",
+      forRenderer: true,
+      public: true,
+      toLowerCase: true,
+      validValues: ["bottom", "left", "right"],
+    };
+
     attributes.renderedName = {
       createPrimitiveOfType: "string",
     };
@@ -152,12 +162,19 @@ export default class CodeEditor extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "viewerRatio",
         },
+        resultsLocation: {
+          dependencyType: "stateVariable",
+          variableName: "resultsLocation",
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.height.isAbsolute) {
           throw Error("Codeeditor relative height not implemented");
         }
-        let size = dependencyValues.height.size * dependencyValues.viewerRatio;
+        let size = dependencyValues.height.size;
+        if (dependencyValues.resultsLocation === "bottom") {
+          size *= dependencyValues.viewerRatio;
+        }
         let viewerHeight = { size, isAbsolute: true };
         return { setValue: { viewerHeight } };
       },
