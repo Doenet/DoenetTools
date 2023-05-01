@@ -115,6 +115,7 @@ export default function DoenetMLEditor() {
             timeout.current = null;
           }, 3000); //3 seconds
         }}
+        paddingBottom="50vh"
       />
     </div>
   );

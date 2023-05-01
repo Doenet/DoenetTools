@@ -37,6 +37,7 @@ export default function CodeMirror({
   readOnly,
   onBlur,
   onFocus,
+  paddingBottom,
 }) {
   if (readOnly === undefined) {
     readOnly = false;
@@ -327,10 +328,16 @@ export default function CodeMirror({
     }
   }, [editorConfig, matchTag, doenetExtensions]);
 
+  let divStyle = {};
+
+  if (paddingBottom) {
+    divStyle.paddingBottom = paddingBottom;
+  }
+
   //should rewrite using compartments once a more formal config component is established
   return (
     <>
-      <div ref={parent} style={{ paddingBottom: "50vh" }}></div>
+      <div ref={parent} style={divStyle}></div>
     </>
   );
 }

@@ -81,6 +81,10 @@ export default React.memo(function CodeEditor(props) {
     );
   }
 
+  let paddingBottom = { ...editorHeight };
+  paddingBottom.size /= 2;
+  paddingBottom = sizeToCSS(paddingBottom);
+
   let editor = (
     <div key={editorKey} id={editorKey} style={editorStyle}>
       <CodeMirror
@@ -114,6 +118,7 @@ export default React.memo(function CodeEditor(props) {
             updateValueTimer.current = null;
           }, 3000); //3 seconds
         }}
+        paddingBottom={paddingBottom}
       />
     </div>
   );
