@@ -366,12 +366,10 @@ export default function PageViewer(props) {
     componentName,
     rendererType,
   }) {
-    if (
-      coreCreated.current ||
-      !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore?.(
-        action.actionName,
-      )
-    ) {
+    let ignoreActionsWithoutCore =
+      rendererClasses.current[rendererType]?.ignoreActionsWithoutCore ||
+      rendererClasses.current[rendererType]?.type?.ignoreActionsWithoutCore;
+    if (coreCreated.current || !ignoreActionsWithoutCore?.(action.actionName)) {
       let actionId = nanoid();
       args = { ...args };
       args.actionId = actionId;
@@ -530,7 +528,8 @@ export default function PageViewer(props) {
             childrenInstructions,
             sourceOfUpdate: instruction.sourceOfUpdate,
             baseStateVariable:
-              rendererClasses.current[rendererType]?.baseStateVariable,
+              rendererClasses.current[rendererType]?.baseStateVariable ||
+              rendererClasses.current[rendererType]?.type?.baseStateVariable,
             actionId,
           });
         }
