@@ -85,7 +85,7 @@ export function Carousel({ title = "", data = [] }) {
           textAlign: "center",
         }}
       >
-        <Text fontSize="18px" fontWeight="700">
+        <Text fontSize="18px" fontWeight="700" color="black">
           {title}
         </Text>
         <br />
