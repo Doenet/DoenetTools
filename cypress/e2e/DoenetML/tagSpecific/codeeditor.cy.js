@@ -117,8 +117,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
@@ -320,8 +319,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
@@ -575,8 +573,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
 
       cy.get(cesc("#\\/px")).should(
@@ -1222,8 +1219,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
       cy.get(contentAnchor).should("have.text", "hello there");
