@@ -89,7 +89,7 @@ export default React.memo(function ContentPicker(props) {
     return null;
   }
 
-  let pickers = [];
+  let options = [];
 
   if (SVs.separateByTopic) {
     for (let topic in SVs.childrenByTopic) {
@@ -103,69 +103,57 @@ export default React.memo(function ContentPicker(props) {
         );
       });
 
-      let value = rendererSelectedIndices[0];
-
-      if (value === undefined || !childIndices.includes(value)) {
-        value == "";
-      }
-
-      pickers.push(
-        <p key={topic}>
-          <label>
-            {topic}:{" "}
-            <select
-              className="custom-select"
-              id={id + topic}
-              onChange={(e) => onChangeHandler(e)}
-              value={value}
-              disabled={SVs.disabled}
-            >
-              <option hidden={true} value=""></option>
-              {optionsList}
-            </select>
-          </label>
-        </p>,
+      options.push(
+        <optgroup label={topic} key={topic}>
+          {optionsList}
+        </optgroup>,
       );
     }
   } else {
-    let optionsList = SVs.childInfo.map(function (obj, ind) {
+    options = SVs.childInfo.map(function (obj, ind) {
       return (
         <option key={ind + 1} value={ind + 1}>
           {obj.title}
         </option>
       );
     });
-
-    let value = rendererSelectedIndices[0];
-
-    if (value === undefined) {
-      value == "";
-    }
-
-    pickers.push(
-      <p>
-        <label>
-          {SVs.label}:{" "}
-          <select
-            className="custom-select"
-            id={id + "select"}
-            onChange={(e) => onChangeHandler(e)}
-            value={value}
-            disabled={SVs.disabled}
-          >
-            <option hidden={true} value=""></option>
-            {optionsList}
-          </select>
-        </label>
-      </p>,
-    );
   }
+
+  let value = rendererSelectedIndices[0];
+
+  if (value === undefined) {
+    value == "";
+  }
+
+  let label = null;
+
+  if (SVs.label) {
+    label = SVs.label + ": ";
+  }
+
+  let picker = (
+    <p>
+      <label>
+        {label}
+        <select
+          className="custom-select"
+          id={id + "select"}
+          onChange={(e) => onChangeHandler(e)}
+          value={value}
+          disabled={SVs.disabled}
+        >
+          <option hidden={true} value=""></option>
+          {options}
+        </select>
+      </label>
+    </p>
+  );
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <section id={id}>
         <a name={id} />
-        {pickers}
+        {picker}
         {children}
       </section>
     </VisibilitySensor>
