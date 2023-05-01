@@ -1,4 +1,4 @@
-import { Box, Center, Icon, Text } from "@chakra-ui/react";
+import { Box, Center, Grid, GridItem, Icon, Text } from "@chakra-ui/react";
 import React, { useRef } from "react";
 import { Outlet, useLoaderData, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
@@ -103,114 +103,116 @@ export function SiteHeader(props) {
     location.href = newHref;
   }
 
-  let signInButton = (
-    <Button
-      dataTest="Nav to course"
-      size="medium"
-      value="My Courses"
-      onClick={() => {
-        navigateTo.current = "/course";
-        setRecoilPageToolView({
-          page: "course",
-          tool: "",
-          view: "",
-          params: {},
-        });
-      }}
-    />
-  );
-  if (!data.signedIn) {
-    signInButton = (
-      <Button
-        dataTest="Nav to signin"
-        size="medium"
-        value="Sign In"
-        onClick={() => {
-          navigateTo.current = "/signin";
-          setRecoilPageToolView({
-            page: "signin",
-            tool: "",
-            view: "",
-            params: {},
-          });
-        }}
-      />
-    );
-  }
+  // onClick={() => {
+  //   navigateTo.current = "/settings";
+  //   setRecoilPageToolView({
+  //     page: "settings",
+  //     tool: "",
+  //     view: "",
+  //     params: {},
+  //   });
+  // }}
 
   return (
     <>
-      <Box
-        display="grid"
+      <Grid
+        templateAreas={`"siteHeader" 
+        "main"`}
         gridTemplateRows="40px auto"
         width="100vw"
         height="100vh"
       >
-        <Box
+        <GridItem
+          area="siteHeader"
           as="header"
-          gridRow="1 / 2"
+          width="100vw"
+          m="0"
           backgroundColor="#fff"
           color="#000"
-          height="40px"
-          position="fixed"
-          top="0"
-          width="100%"
-          margin="0"
-          display="flex"
-          justifyContent="space-between"
-          borderBottom="1px solid var(--mainGray)"
-          zIndex="1200"
         >
-          {data.signedIn ? (
-            <Center columnGap="6px">
-              <RouterLogo />
-              <Text>Doenet</Text>
-              <Icon
-                ml="10px"
-                cursor="pointer"
-                fontSize="16pt"
-                as={FaCog}
-                onClick={() => {
-                  navigateTo.current = "/settings";
-                  setRecoilPageToolView({
-                    page: "settings",
-                    tool: "",
-                    view: "",
-                    params: {},
-                  });
-                }}
-              />
-            </Center>
-          ) : (
-            <Branding>
-              <RouterLogo />
-              <Text>Doenet</Text>
-            </Branding>
-          )}
-          <BarMenu>
-            <MenuItem dataTest="Home" to="/">
-              Home
-            </MenuItem>
-            <MenuItem dataTest="Community" to="community">
-              Community
-            </MenuItem>
-            {data.signedIn ? (
-              <MenuItem
-                dataTest="Portfolio"
-                to={`portfolio/${data.portfolioCourseId}`}
-              >
-                Portfolio
-              </MenuItem>
-            ) : null}
-            {isAdmin ? <MenuItem to={`/admin`}>Admin</MenuItem> : null}
-          </BarMenu>
-          <SignInButtonContainer>{signInButton}</SignInButtonContainer>
-        </Box>
-
-        <Box as="main" gridRow="2 / 3" margin="0" overflowY="scroll">
+          <Grid
+            height="40px"
+            position="fixed"
+            top="0"
+            zIndex="1200"
+            borderBottom="1px solid var(--mainGray)"
+            paddingBottom="1px"
+            width="100%"
+            margin="0"
+            display="flex"
+            justifyContent="space-between"
+            templateAreas={`"leftHeader menus rightHeader" 
+        "main"`}
+            gridTemplateColumns="1f auto 1f"
+          >
+            <GridItem area="leftHeader">
+              <Branding>
+                <RouterLogo />
+                <Text>Doenet</Text>
+              </Branding>
+            </GridItem>
+            <GridItem area="menus">
+              <BarMenu>
+                <MenuItem dataTest="Home" to="/">
+                  Home
+                </MenuItem>
+                <MenuItem dataTest="Community" to="community">
+                  Community
+                </MenuItem>
+                {data.signedIn ? (
+                  <>
+                    <MenuItem
+                      dataTest="Portfolio"
+                      to={`portfolio/${data.portfolioCourseId}`}
+                    >
+                      Portfolio
+                    </MenuItem>
+                    <MenuItem
+                      dataTest="My Courses"
+                      to="course"
+                      onClick={() => {
+                        navigateTo.current = "/course";
+                        setRecoilPageToolView({
+                          page: "course",
+                          tool: "",
+                          view: "",
+                          params: {},
+                        });
+                      }}
+                    >
+                      My Courses
+                    </MenuItem>
+                  </>
+                ) : null}
+                {isAdmin ? <MenuItem to={`/admin`}>Admin</MenuItem> : null}
+              </BarMenu>
+            </GridItem>
+            <GridItem area="rightHeader">
+              {data.signedIn ? (
+                <Box>Avatar Menu</Box>
+              ) : (
+                <Button
+                  dataTest="Nav to signin"
+                  size="medium"
+                  value="Sign In"
+                  onClick={() => {
+                    navigateTo.current = "/signin";
+                    setRecoilPageToolView({
+                      page: "signin",
+                      tool: "",
+                      view: "",
+                      params: {},
+                    });
+                  }}
+                />
+              )}
+            </GridItem>
+          </Grid>
+        </GridItem>
+        <GridItem area="main" as="main" margin="0" overflowY="scroll">
           <Outlet context={{ signedIn: data.signedIn }} />
-        </Box>
-      </Box>
+        </GridItem>
+      </Grid>
     </>
   );
 }
