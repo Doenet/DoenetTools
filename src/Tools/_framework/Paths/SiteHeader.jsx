@@ -113,16 +113,6 @@ export function SiteHeader(props) {
     location.href = newHref;
   }
 
-  // onClick={() => {
-  //   navigateTo.current = "/settings";
-  //   setRecoilPageToolView({
-  //     page: "settings",
-  //     tool: "",
-  //     view: "",
-  //     params: {},
-  //   });
-  // }}
-
   return (
     <>
       <Grid
@@ -142,12 +132,12 @@ export function SiteHeader(props) {
           height="40px"
         >
           <Grid
-            height="38px"
+            height="40px"
             position="fixed"
             top="0"
             zIndex="1200"
             borderBottom="1px solid var(--mainGray)"
-            paddingBottom="1px"
+            // paddingBottom="2px"
             width="100%"
             margin="0"
             display="flex"
@@ -163,11 +153,59 @@ export function SiteHeader(props) {
               </Branding>
             </GridItem>
             <GridItem area="menus">
-              <Tabs>
-                <TabList>
-                  <Tab>One</Tab>
-                  <Tab>Two</Tab>
-                  <Tab>Three</Tab>
+              <Tabs borderColor="transparent" textDecoration="none">
+                <TabList height="40px">
+                  <Tab
+                    as={NavLink}
+                    to="/"
+                    _focus={{ boxShadow: "none" }}
+                    datatest="Home"
+                  >
+                    Home
+                  </Tab>
+                  <Tab
+                    as={NavLink}
+                    to="community"
+                    _focus={{ boxShadow: "none" }}
+                    datatest="Community"
+                  >
+                    Community
+                  </Tab>
+                  {data.signedIn && (
+                    <>
+                      <Tab
+                        as={NavLink}
+                        to={`portfolio/${data.portfolioCourseId}`}
+                        _focus={{ boxShadow: "none" }}
+                        datatest="Portfolio"
+                      >
+                        Portfolio
+                      </Tab>
+                      <Tab
+                        onClick={() => {
+                          navigateTo.current = "/course";
+                          setRecoilPageToolView({
+                            page: "course",
+                            tool: "",
+                            view: "",
+                            params: {},
+                          });
+                        }}
+                      >
+                        My Courses
+                      </Tab>
+                      {isAdmin && (
+                        <Tab
+                          as={NavLink}
+                          to="admin"
+                          _focus={{ boxShadow: "none" }}
+                          datatest="Admin"
+                        >
+                          Admin
+                        </Tab>
+                      )}
+                    </>
+                  )}
                 </TabList>
               </Tabs>
               {/* <BarMenu>
@@ -228,7 +266,7 @@ export function SiteHeader(props) {
           </Grid>
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="scroll">
-          <Box>test</Box>
+          {/* <Box>test</Box> */}
           <Outlet context={{ signedIn: data.signedIn }} />
         </GridItem>
       </Grid>
