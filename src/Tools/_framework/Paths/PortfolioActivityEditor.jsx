@@ -204,7 +204,7 @@ function SupportFilesControls({ onClose }) {
   const fetcher = useFetcher();
 
   let [serverUploadError, setServerUploadError] = useState(null);
-  let [serverUploadSuccess, setServerUploadSuccess] = useState(false);
+  let [serverUploadSuccess, setServerUploadSuccess] = useState(false); //Quote not true/false
   let [infoMessage, setInfoMessage] = useState("");
 
   const onDrop = useCallback(async (acceptedFiles) => {
@@ -323,7 +323,9 @@ function SupportFilesControls({ onClose }) {
       {serverUploadSuccess && (
         <Alert status="success">
           <AlertIcon />
-          <AlertTitle>File Uploaded Successfully</AlertTitle>
+          <AlertTitle>
+            File &quot;fileName&quot; Uploaded Successfully
+          </AlertTitle>
         </Alert>
       )}
       {serverUploadError && (
@@ -396,7 +398,7 @@ function SupportFilesControls({ onClose }) {
                       >
                         {file.asFileName}
                       </Text>
-                      <Text>Please enter a description for this file</Text>
+                      <Text>Description required to use file</Text>
 
                       <Input
                         placeholder="Enter Description Here"
