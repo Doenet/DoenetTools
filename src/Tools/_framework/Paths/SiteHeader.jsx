@@ -1,9 +1,11 @@
 import {
   Box,
+  Button,
   Center,
+  // Center,
   Grid,
   GridItem,
-  Icon,
+  // Icon,
   Tab,
   TabList,
   Tabs,
@@ -13,7 +15,7 @@ import React, { useRef } from "react";
 import { Outlet, useLoaderData, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
@@ -45,9 +47,9 @@ export async function loader() {
   return { signedIn, portfolioCourseId, isAdmin };
 }
 
-const SignInButtonContainer = styled.div`
-  margin: auto 10px auto 0px;
-`;
+// const SignInButtonContainer = styled.div`
+//   margin: auto 10px auto 0px;
+// `;
 
 const Branding = styled.span`
   margin: 4px 0px 4px 10px;
@@ -59,43 +61,43 @@ const Branding = styled.span`
   font-size: 16px;
 `;
 
-const StyledMenuItem = styled(NavLink)`
-  padding: 8px;
-  color: black;
-  cursor: pointer;
-  text-decoration: none;
-  &.active {
-    color: var(--mainBlue);
-    border-bottom: 2px solid var(--mainBlue);
-  }
-`;
+// const StyledMenuItem = styled(NavLink)`
+//   padding: 8px;
+//   color: black;
+//   cursor: pointer;
+//   text-decoration: none;
+//   &.active {
+//     color: var(--mainBlue);
+//     border-bottom: 2px solid var(--mainBlue);
+//   }
+// `;
 
-const BarMenu = styled.div`
-  margin: 0px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  column-gap: 20px;
-`;
+// const BarMenu = styled.div`
+//   margin: 0px;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   font-size: 16px;
+//   column-gap: 20px;
+// `;
 
-function MenuItem({ to, children, dataTest }) {
-  return (
-    <StyledMenuItem
-      to={to}
-      data-test={dataTest}
-      className={({ isActive, isPending }) =>
-        location.pathname === "/" || isActive
-          ? "active"
-          : isPending
-          ? "pending"
-          : ""
-      }
-    >
-      {children}
-    </StyledMenuItem>
-  );
-}
+// function MenuItem({ to, children, dataTest }) {
+//   return (
+//     <StyledMenuItem
+//       to={to}
+//       data-test={dataTest}
+//       className={({ isActive, isPending }) =>
+//         location.pathname === "/" || isActive
+//           ? "active"
+//           : isPending
+//           ? "pending"
+//           : ""
+//       }
+//     >
+//       {children}
+//     </StyledMenuItem>
+//   );
+// }
 
 export function SiteHeader(props) {
   let data = useLoaderData();
@@ -208,59 +210,30 @@ export function SiteHeader(props) {
                   )}
                 </TabList>
               </Tabs>
-              {/* <BarMenu>
-                <MenuItem dataTest="Home" to="/">
-                  Home
-                </MenuItem>
-                <MenuItem dataTest="Community" to="community">
-                  Community
-                </MenuItem>
-                {data.signedIn ? (
-                  <>
-                    <MenuItem
-                      dataTest="Portfolio"
-                      to={`portfolio/${data.portfolioCourseId}`}
-                    >
-                      Portfolio
-                    </MenuItem>
-                    <MenuItem
-                      dataTest="My Courses"
-                      // to="course"
-                      onClick={() => {
-                        navigateTo.current = "/course";
-                        setRecoilPageToolView({
-                          page: "course",
-                          tool: "",
-                          view: "",
-                          params: {},
-                        });
-                      }}
-                    >
-                      My Courses
-                    </MenuItem>
-                  </>
-                ) : null}
-                {isAdmin ? <MenuItem to={`/admin`}>Admin</MenuItem> : null}
-              </BarMenu> */}
             </GridItem>
             <GridItem area="rightHeader">
               {data.signedIn ? (
                 <Box>Avatar Menu</Box>
               ) : (
-                <Button
-                  dataTest="Nav to signin"
-                  size="medium"
-                  value="Sign In"
-                  onClick={() => {
-                    navigateTo.current = "/signin";
-                    setRecoilPageToolView({
-                      page: "signin",
-                      tool: "",
-                      view: "",
-                      params: {},
-                    });
-                  }}
-                />
+                <Center h="40px" mr="10px">
+                  <Button
+                    dataTest="Nav to signin"
+                    size="sm"
+                    // variant="ghost"
+                    variant="outline"
+                    onClick={() => {
+                      navigateTo.current = "/signin";
+                      setRecoilPageToolView({
+                        page: "signin",
+                        tool: "",
+                        view: "",
+                        params: {},
+                      });
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                </Center>
               )}
             </GridItem>
           </Grid>
