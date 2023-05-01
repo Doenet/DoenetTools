@@ -32,7 +32,7 @@ const editorConfigStateAtom = atom({
 });
 
 export default function CodeMirror({
-  setInternalValue,
+  setInternalValueTo,
   onBeforeChange,
   readOnly,
   onBlur,
@@ -243,23 +243,23 @@ export default function CodeMirror({
   );
 
   const state = EditorState.create({
-    doc: setInternalValue,
+    doc: setInternalValueTo,
     extensions: doenetExtensions,
   });
 
   useEffect(() => {
     if (view.current !== null && parent.current !== null) {
-      // console.log(">>>changing setInternalValue to",setInternalValue)
+      // console.log(">>>changing setInternalValueTo to", setInternalValueTo);
       let tr = view.current.state.update({
         changes: {
           from: 0,
           to: view.current.state.doc.length,
-          insert: setInternalValue,
+          insert: setInternalValueTo,
         },
       });
       view.current.dispatch(tr);
     }
-  }, [setInternalValue]);
+  }, [setInternalValueTo]);
 
   useEffect(() => {
     if (view.current === null && parent.current !== null) {
@@ -303,7 +303,7 @@ export default function CodeMirror({
     //annoying that editorConfig is a dependency, but no real way around it
   }, [
     doenetExtensions,
-    setInternalValue,
+    setInternalValueTo,
     matchTag,
     readOnly,
     editorConfig.matchTag,

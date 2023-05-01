@@ -94,7 +94,7 @@ export default function DoenetMLEditor() {
         key="codemirror"
         readOnly={readOnly}
         editorRef={editorRef}
-        setInternalValue={updateInternalValue}
+        setInternalValueTo={updateInternalValue}
         // value={editorDoenetML}
         onBeforeChange={(value) => {
           setEditorDoenetML(value);

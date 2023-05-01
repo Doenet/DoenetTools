@@ -10,7 +10,7 @@ export default React.memo(function CodeEditor(props) {
   let currentValue = useRef(SVs.immediateValue);
   let updateValueTimer = useRef(null);
   let editorRef = useRef(null);
-  let updateInternalValue = useRef(SVs.immediateValue);
+  let updateInternalValueTo = useRef(SVs.immediateValue);
 
   let componentHeight = { ...SVs.height };
   let editorHeight = { ...SVs.height };
@@ -55,7 +55,7 @@ export default React.memo(function CodeEditor(props) {
 
   if (SVs.immediateValue !== currentValue.current) {
     currentValue.current = SVs.immediateValue;
-    updateInternalValue.current = SVs.immediateValue;
+    updateInternalValueTo.current = SVs.immediateValue;
   }
 
   let viewer = null;
@@ -86,7 +86,7 @@ export default React.memo(function CodeEditor(props) {
       <CodeMirror
         // key = {codemirrorKey}
         editorRef={editorRef}
-        setInternalValue={updateInternalValue.current}
+        setInternalValueTo={updateInternalValueTo.current}
         //TODO: read only isn't working <codeeditor disabled />
         readOnly={SVs.disabled}
         onBlur={() => {
