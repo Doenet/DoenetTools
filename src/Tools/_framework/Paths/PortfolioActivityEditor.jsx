@@ -353,7 +353,14 @@ function SupportFilesControls({ onClose }) {
       <Box h="425px" w="100%" overflowY="scroll">
         {/* <Box h="415px" overflowY="scroll"> */}
         {supportingFiles.map((file, i) => {
-          const doenetMLCode = `<image source='/media/${file.fileName}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+          let previewImagePath = `/media/${file.fileName}`;
+
+          let doenetMLCode = `<image source='/media/${file.fileName}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+
+          if (file.fileType == "text/csv") {
+            previewImagePath = "/activity_default.jpg";
+            doenetMLCode = `CSV Code HERE`;
+          }
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {
             return (
@@ -371,7 +378,7 @@ function SupportFilesControls({ onClose }) {
                   <Image
                     height="100px"
                     maxWidth="100px"
-                    src={`/media/${file.fileName}`}
+                    src={previewImagePath}
                     alt="Support File Image"
                     objectFit="cover"
                     borderLeftRadius="md"
@@ -439,7 +446,7 @@ function SupportFilesControls({ onClose }) {
                 <Image
                   height="100px"
                   maxWidth="100px"
-                  src={`/media/${file.fileName}`}
+                  src={previewImagePath}
                   alt="Support File Image"
                   objectFit="cover"
                   borderLeftRadius="md"
