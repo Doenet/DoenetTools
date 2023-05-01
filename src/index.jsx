@@ -57,12 +57,15 @@ const theme = extendTheme({
       fontFamily: "Jost",
     },
   },
+  initialColorMode: "light",
+  useSystemColorMode: true,
   colors: {
     doenet: {
       mainBlue: "#1a5a99",
       lightBlue: "#b8d2ea",
       solidLightBlue: "#8fb8de",
       mainGray: "#e3e3e3",
+      lightGray: "#e7e7e7",
       donutBody: "#eea177",
       donutTopping: "#6d4445",
       mainRed: "#c1292e",
@@ -135,17 +138,17 @@ const router = createBrowserRouter([
         path: "/",
         loader: caroselLoader,
         element: (
-          <DarkmodeController>
+          // <DarkmodeController>
             <MathJaxContext
               version={2}
               config={mathjaxConfig}
               onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
             >
-              <ChakraProvider theme={theme}>
+              {/* <ChakraProvider theme={theme}> */}
                 <Home />
-              </ChakraProvider>
+              {/* </ChakraProvider> */}
             </MathJaxContext>
-          </DarkmodeController>
+          // </DarkmodeController>
         ),
       },
       {
