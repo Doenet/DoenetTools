@@ -102,21 +102,23 @@ export default React.memo(function CodeEditor(props) {
           // console.log(">>codeEditor FOCUS!!!!!")
         }}
         onBeforeChange={(value) => {
-          currentValue.current = value;
-          callAction({
-            action: actions.updateImmediateValue,
-            args: { text: value },
-          });
+          if (currentValue.current !== value) {
+            currentValue.current = value;
+            callAction({
+              action: actions.updateImmediateValue,
+              args: { text: value },
+            });
 
-          // Debounce update value at 3 seconds
-          clearTimeout(updateValueTimer.current);
+            // Debounce update value at 3 seconds
+            clearTimeout(updateValueTimer.current);
 
-          //TODO: when you try to leave the page before it saved you will lose work
-          //so prompt the user on page leave
-          updateValueTimer.current = setTimeout(function () {
-            callAction({ action: actions.updateValue });
-            updateValueTimer.current = null;
-          }, 3000); //3 seconds
+            //TODO: when you try to leave the page before it saved you will lose work
+            //so prompt the user on page leave
+            updateValueTimer.current = setTimeout(function () {
+              callAction({ action: actions.updateValue });
+              updateValueTimer.current = null;
+            }, 3000); //3 seconds
+          }
         }}
         paddingBottom={paddingBottom}
       />
