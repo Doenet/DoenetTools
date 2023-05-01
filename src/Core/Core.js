@@ -188,8 +188,13 @@ export default class Core {
       });
   }
 
-  async finishCoreConstruction({ cids, fullSerializedComponents }) {
+  async finishCoreConstruction({
+    cids,
+    fullSerializedComponents,
+    allDoenetMLs,
+  }) {
     this.cid = cids[0];
+    this.allDoenetMLs = allDoenetMLs;
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -3679,14 +3684,12 @@ export default class Core {
                     defaultValue: valueFromTarget,
                   },
                 },
-                alwaysShadow: [primaryStateVariableForDefinition],
               };
             }
             return {
               setValue: {
                 [primaryStateVariableForDefinition]: valueFromTarget,
               },
-              alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         } else {
@@ -3698,7 +3701,6 @@ export default class Core {
                     defaultValue: dependencyValues.targetVariable,
                   },
                 },
-                alwaysShadow: [primaryStateVariableForDefinition],
               };
             }
             return {
@@ -3706,7 +3708,6 @@ export default class Core {
                 [primaryStateVariableForDefinition]:
                   dependencyValues.targetVariable,
               },
-              alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         }
@@ -3940,7 +3941,6 @@ export default class Core {
 
           let result = {
             setValue: { [varName]: newEntries },
-            alwaysShadow: [varName],
           };
 
           // TODO: how do we make it do this just once?
@@ -4028,9 +4028,7 @@ export default class Core {
           return dependencies;
         };
         stateDef.definition = function ({ dependencyValues, usedDefault }) {
-          let result = {
-            alwaysShadow: [varName],
-          };
+          let result = {};
 
           // TODO: how do we make it do this just once?
           if ("targetVariableComponentType" in dependencyValues) {
@@ -11674,7 +11672,11 @@ export default class Core {
         range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd;
     }
 
-    let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);
+    let doenetMLId = range.doenetMLId || 0;
+    let componentDoenetML = this.allDoenetMLs[doenetMLId].slice(
+      startInd - 1,
+      endInd,
+    );
 
     if (displayOnlyChildren) {
       // remove any leading linebreak
@@ -11696,6 +11698,11 @@ export default class Core {
           Math.min(a, c.trim().length > 1 ? c.search(/\S|$/) : Infinity),
         Infinity,
       );
+
+    // check first line if didn't get a number of spaces from remaining lines
+    if (minSpaces === Infinity && lines[0].trim().length > 1) {
+      minSpaces = lines[0].search(/\S|$/);
+    }
 
     if (Number.isFinite(minSpaces) && minSpaces > 0) {
       lines = lines.map((s) => {
