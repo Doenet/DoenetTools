@@ -227,9 +227,9 @@ export function SiteHeader(props) {
                         </Text>
                         <Text>{email}</Text>
                         <ButtonGroup size="sm" isAttached variant="outline">
-                          <Button>Light</Button>
-                          <Button>Dark</Button>
-                          <Button>Auto</Button>
+                          <Button leftIcon={<FaSun />}>Light</Button>
+                          <Button leftIcon={<FaMoon />}>Dark</Button>
+                          {/* <Button>Auto</Button> */}
                         </ButtonGroup>
                       </VStack>
                       <MenuItem as="a" href="/signout">
