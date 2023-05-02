@@ -12,28 +12,17 @@ include_once './models/baseModel.php';
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$success = TRUE;
-$message = "";
+$response_arr = [];
+try {
+	Base_Model::checkForRequiredInputs($_REQUEST, ["courseId"]);
 
+	// if (array_key_exists('driveId', get_defined_vars())) {
+	$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
-
-// if (array_key_exists('driveId', get_defined_vars())) {
-$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
-
-if ($courseId == "") {
-	$success = false;
-	$message = "Internal Error: missing courseId";
-}
-
-if ($success){
 	$permissions = permissionsAndSettingsForOneCourseFunction( $conn, $userId, $courseId );
 
-function nullishCoalesce(&$value, $default) {
-	return isset($value) ? $value : $default;
-}
-
-$containingDoenetIds = [];
-$activityDoenetIds = [];
+	$containingDoenetIds = [];
+	$activityDoenetIds = [];
 	//Can the user View Unassigned Content?
 	if ($permissions["canViewUnassignedContent"] == '1'){
 		//Yes then all items and json
@@ -179,23 +168,25 @@ $activityDoenetIds = [];
 
 		// }
 	}else{
-		$success = false;
-		$message = "You need permission to access this course.";
+		throw new Exception("You need permission to access this course.");
 	}
+ 	http_response_code(200);
+	$response_arr = array(
+		"success" => true,
+		"items" => $items
+	);
+} catch (Exception $ex) {
+	// TODO - make this return error codes when the client is confirmed to have error handling code
+ 	//http_response_code(400);
+ 	http_response_code(200);
+	$response_arr = array(
+		"success"=>false,
+		"message"=>$ex->getMessage()
+	);
+} finally {
+	// make it json format
+	echo json_encode($response_arr);
+
+	$conn->close();
 }
-
-
-$response_arr = array(
-  "success"=>$success,
-  "message"=>$message,
-	"items"=>$items,
-  );
-
- http_response_code(200);
-
- // make it json format
- echo json_encode($response_arr);
-
-$conn->close();
-
 ?>
