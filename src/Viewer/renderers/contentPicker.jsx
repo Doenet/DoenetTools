@@ -137,7 +137,7 @@ export default React.memo(function ContentPicker(props) {
         {label}
         <select
           className="custom-select"
-          id={id + "select"}
+          id={id + "-select"}
           onChange={(e) => onChangeHandler(e)}
           value={value}
           disabled={SVs.disabled}
