@@ -238,7 +238,8 @@ function SupportFilesControls({ onClose }) {
       onDrop,
       maxFiles: 1,
       maxSize: 1048576,
-      accept: ".csv,.jpg,.png",
+      accept: ".jpg,.png",
+      // accept: ".csv,.jpg,.png",
     });
 
   if (fileRejections.length > 0 && serverUploadSuccess) {
@@ -311,10 +312,11 @@ function SupportFilesControls({ onClose }) {
                 color="doenet.mediumGray"
                 as={FaFileImage}
               />
-              <Icon fontSize="24pt" color="doenet.mediumGray" as={FaFileCsv} />
+              {/* <Icon fontSize="24pt" color="doenet.mediumGray" as={FaFileCsv} /> */}
             </HStack>
             <Text color="doenet.mediumGray" fontSize="24pt">
-              Drop JPG, PNG or CSV Files Here
+              Drop JPG or PNG Files Here
+              {/* Drop JPG, PNG or CSV Files Here */}
             </Text>
           </VStack>
         )}
