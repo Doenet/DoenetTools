@@ -18,6 +18,8 @@ export default class Template extends CompositeComponent {
 
   static createsVariants = true;
 
+  static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+
   static keepChildrenSerialized({ serializedComponent }) {
     if (serializedComponent.children === undefined) {
       return [];
@@ -87,9 +89,17 @@ export default class Template extends CompositeComponent {
     };
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
-      returnDependencies: () => ({}),
+      returnDependencies: () => ({
+        rendered: {
+          dependencyType: "stateVariable",
+          variableName: "rendered",
+        },
+      }),
       definition: function () {
         return { setValue: { readyToExpandWhenResolved: true } };
+      },
+      markStale() {
+        return { updateReplacements: true };
       },
     };
 
@@ -192,16 +202,12 @@ export default class Template extends CompositeComponent {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    alwaysCreateReplacements,
     flags,
   }) {
-    // console.log(`create serialized replacements for ${component.componentName}`)
-    // console.log(await component.stateValues.rendered);
-
     // evaluate nComponentsSpecified so get error if specify nComponents without createComponentOfType
     await component.stateValues.nComponentsSpecified;
 
-    if (!((await component.stateValues.rendered) || alwaysCreateReplacements)) {
+    if (!(await component.stateValues.rendered)) {
       return { replacements: [] };
     } else {
       let replacements = deepClone(
@@ -267,6 +273,59 @@ export default class Template extends CompositeComponent {
       // console.log(JSON.parse(JSON.stringify(verificationResult.replacements)))
 
       return { replacements: verificationResult.replacements };
+    }
+  }
+
+  static async calculateReplacementChanges({
+    component,
+    componentInfoObjects,
+    flags,
+  }) {
+    if (!(await component.stateValues.rendered)) {
+      if (
+        component.replacements.length > 0 &&
+        component.replacementsToWithhold === 0
+      ) {
+        let replacementsToWithhold = component.replacements.length;
+        let replacementInstruction = {
+          changeType: "changeReplacementsToWithhold",
+          replacementsToWithhold,
+        };
+        return [replacementInstruction];
+      } else {
+        return [];
+      }
+    } else {
+      if (component.replacements.length > 0) {
+        if (component.replacementsToWithhold > 0) {
+          let replacementInstruction = {
+            changeType: "changeReplacementsToWithhold",
+            replacementsToWithhold: 0,
+          };
+          return [replacementInstruction];
+        } else {
+          return [];
+        }
+      } else {
+        let createResult = await this.createSerializedReplacements({
+          component,
+          componentInfoObjects,
+          flags,
+        });
+
+        let replacements = createResult.replacements;
+
+        let replacementInstruction = {
+          changeType: "add",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: 0,
+          numberReplacementsToReplace: 0,
+          serializedReplacements: replacements,
+          replacementsToWithhold: 0,
+        };
+
+        return [replacementInstruction];
+      }
     }
   }
 
