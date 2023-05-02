@@ -1,29 +1,29 @@
 import React, { useRef, useState, useEffect } from "react";
 import {
-  Box,
   Button,
   Center,
   Grid,
   GridItem,
-  Flex,
-  Tab,
-  TabList,
-  Tabs,
   Text,
   Icon,
   useColorMode,
   useColorModeValue,
   HStack,
   Spinner,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
 } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
-import { Link, NavLink } from "react-router-dom";
-import styled from "styled-components";
+import { NavLink } from "react-router-dom";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
-import { FaCog, FaMoon, FaSun } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
+import axios from "axios";
 
 export async function loader() {
   //Check if signedIn
@@ -33,21 +33,27 @@ export async function loader() {
     signedIn = false;
   }
   let portfolioCourseId = null;
+  let firstName = "";
+  let lastName = "";
+  let email = "";
   let isAdmin = false;
   if (signedIn) {
     //Check on portfolio courseId
-    const response = await fetch("/api/getPorfolioCourseId.php");
-
-    const data = await response.json();
+    const response = await axios.get("/api/getPorfolioCourseId.php");
+    let { data } = response;
     portfolioCourseId = data.portfolioCourseId;
-    if (data.portfolioCourseId == "") {
+    firstName = data.firstName;
+    lastName = data.lastName;
+    email = data.email;
+
+    if (portfolioCourseId == "") {
       portfolioCourseId = "not_created";
     }
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const isAdminJson = await isAdminResponse.json();
     isAdmin = isAdminJson.isAdmin;
   }
-  return { signedIn, portfolioCourseId, isAdmin };
+  return { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email };
 }
 
 function NavLinkTab({ to, children, datatest }) {
@@ -88,13 +94,14 @@ function NavLinkTab({ to, children, datatest }) {
 }
 
 export function SiteHeader(props) {
-  let data = useLoaderData();
-  const isAdmin = data?.isAdmin;
+  let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
+    useLoaderData();
+
   const { colorMode, toggleColorMode } = useColorMode();
   let location = useLocation();
 
   // const navColor = useColorModeValue("#ffffff", "gray.800");
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -105,6 +112,7 @@ export function SiteHeader(props) {
     const newHref = navigateTo.current;
     navigateTo.current = "";
     location.href = newHref;
+    navigate(newHref);
   }
 
   return (
@@ -169,15 +177,16 @@ export function SiteHeader(props) {
                 <NavLinkTab to="community" datatest="Community">
                   Community
                 </NavLinkTab>
-                {data.signedIn && (
+                {signedIn && (
                   <>
                     <NavLinkTab
-                      to={`portfolio/${data.portfolioCourseId}`}
+                      to={`portfolio/${portfolioCourseId}`}
                       datatest="Portfolio"
                     >
                       Portfolio
                     </NavLinkTab>
                     <Center
+                      cursor="pointer"
                       fontSize="md"
                       onClick={() => {
                         navigateTo.current = "/course";
@@ -199,53 +208,24 @@ export function SiteHeader(props) {
                   </>
                 )}
               </HStack>
-
-              {/* {data.signedIn && (
-                    <>
-                      <Tab
-                        as={NavLink}
-                        to={`portfolio/${data.portfolioCourseId}`}
-                        _focus={{ boxShadow: "none" }}
-                        datatest="Portfolio"
-                        className={({ isActive, isDisabled }) =>
-                          `${isActive ? "active" : ""} ${
-                            isDisabled ? "disabled" : ""
-                          }`
-                        }
-                      >
-                        Portfolio
-                      </Tab>
-                      <Tab
-                        onClick={() => {
-                          navigateTo.current = "/course";
-                          setRecoilPageToolView({
-                            page: "course",
-                            tool: "",
-                            view: "",
-                            params: {},
-                          });
-                        }}
-                      >
-                        My Courses
-                      </Tab>
-                      {isAdmin && (
-                        <Tab
-                          as={NavLink}
-                          to="admin"
-                          _focus={{ boxShadow: "none" }}
-                          datatest="Admin"
-                        >
-                          Admin
-                        </Tab>
-                      )}
-                    </>
-                  )}
-                </TabList>
-              </Tabs> */}
             </GridItem>
             <GridItem area="rightHeader">
-              {data.signedIn ? (
-                <Box>Avatar Menu</Box>
+              {signedIn ? (
+                <Center h="40px" mr="10px">
+                  <Menu>
+                    <MenuButton>
+                      <Avatar size="sm" name={`${firstName} ${lastName}`} />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem as="a" href="#" zIndex="2000">
+                        Link 1
+                      </MenuItem>
+                      <MenuItem as="a" href="#">
+                        Link 2
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Center>
               ) : (
                 <Center h="40px" mr="10px">
                   <Button
@@ -272,7 +252,7 @@ export function SiteHeader(props) {
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="scroll">
           {/* <Box>test</Box> */}
-          <Outlet context={{ signedIn: data.signedIn }} />
+          <Outlet context={{ signedIn }} />
         </GridItem>
       </Grid>
     </>
