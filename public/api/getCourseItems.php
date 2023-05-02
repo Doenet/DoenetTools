@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 include "permissionsAndSettingsForOneCourseFunction.php";
+include_once './models/baseModel.php';
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -36,126 +37,91 @@ $activityDoenetIds = [];
 	//Can the user View Unassigned Content?
 	if ($permissions["canViewUnassignedContent"] == '1'){
 		//Yes then all items and json
-		$sql = "
+		$rows = Base_Model::queryFetchAssoc($conn, 
+		"
 			SELECT * from assignment_detail
 			WHERE courseId='$courseId'
-		";
-
+		");
 		//TODO: Emilio and Kevin Discuss default behavior on undefine server keys
-		$result = $conn->query($sql);
+
 		$items = [];
-		if ($result->num_rows > 0) {
-			while($row = $result->fetch_assoc()){
-				$item = array(
-					"doenetId"=>$row['doenetId'],
-					"type"=>$row['type'],
-					"parentDoenetId"=>$row['parentDoenetId'],
-					"label"=>$row['label'],
-					"creationDate"=>$row['creationDate'],
-					"isAssigned"=>$row['isAssigned'] == '1' ? true : false,
-					"isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
-					"isPublic"=>$row['isPublic'] == '1' ? true : false,
-					"userCanViewSource"=>$row['userCanViewSource'] == '1' ? true : false,
-					"assignedDate" => $row['assignedDate'],
-          "pinnedAfterDate" => $row['pinnedAfterDate'],
-          "pinnedUntilDate" => $row['pinnedUntilDate'],
-          "dueDate" => $row['dueDate'],
-          "timeLimit" => $row['timeLimit'],
-          "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
-          "attemptAggregation" => $row['attemptAggregation'],
-          "totalPointsOrPercent" => $row['totalPointsOrPercent'],
-          "gradeCategory" => $row['gradeCategory'],
-          "individualize" => nullishCoalesce($row['individualize'], "0") == '1' ? true : false,
-          "showSolution" => nullishCoalesce($row['showSolution'], "1") == '1' ? true : false,
-          "showSolutionInGradebook" => nullishCoalesce($row['showSolutionInGradebook'], '1') == '1' ? true : false,
-          "showFeedback" => nullishCoalesce($row['showFeedback'], '1') == '1' ? true : false,
-          "showHints" => nullishCoalesce($row['showHints'], '1') == '1' ? true : false,
-          "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
-          "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
-          "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
-          "showFinishButton" => nullishCoalesce($row['showFinishButton'], '0') == '1' ? true : false,
-          "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
-          "autoSubmit" => nullishCoalesce($row['autoSubmit'], '0') == '1' ? true : false,
-          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '1') == '1' ? true : false,
-					
-				);
+        foreach($rows as $row) {
+			$item = $row;
 
-				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
-					array_push($containingDoenetIds,$row['doenetId']);
-				}
-				if ($row['type'] == 'activity' ){
-					array_push($activityDoenetIds,$row['doenetId']);
-				}
-				
-				$json = json_decode($row['json'],true);
-				// var_dump($json);
-				$item = array_merge($json,$item);
-				
-
-				$item['isOpen'] = false; 
-				$item['isSelected'] = false;
-
-				array_push($items,$item);
+			if ($row['type'] == 'activity' || $row['type'] == 'bank'){
+				array_push($containingDoenetIds,$row['doenetId']);
 			}
-			foreach($containingDoenetIds as $containingDoenetId){
-				$sql = "
-				SELECT 
-				doenetId,
-				containingDoenetId,
-				label
-				FROM pages
-				WHERE containingDoenetId = '$containingDoenetId'
-				AND isDeleted = '0'
-				";
-				$result = $conn->query($sql);
-				if ($result->num_rows > 0) {
-					while($row = $result->fetch_assoc()){
-						$item = array(
-							"type"=>"page",
-							"doenetId"=>$row['doenetId'],
-							"containingDoenetId"=>$row['containingDoenetId'],
-							"label"=>$row['label']
-						);
-						$item['isSelected'] = false; //Note: no isOpen
-						array_push($items,$item);
-
-					}
-				}
-
+			if ($row['type'] == 'activity' ){
+				array_push($activityDoenetIds,$row['doenetId']);
 			}
-			//page links
-			foreach($activityDoenetIds as $activityDoenetId){
-				$sql = "
-				SELECT 
-				doenetId,
-				containingDoenetId,
-				parentDoenetId,
-				sourceCollectionDoenetId,
-				sourcePageDoenetId,
-				timeOfLastUpdate,
-				label
-				FROM link_pages
-				WHERE containingDoenetId = '$activityDoenetId'
-				";
-				$result = $conn->query($sql);
-				if ($result->num_rows > 0) {
-					while($row = $result->fetch_assoc()){
-						$item = array(
-							"type"=>"pageLink",
-							"doenetId"=>$row['doenetId'],
-							"containingDoenetId"=>$row['containingDoenetId'],
-							"parentDoenetId"=>$row['parentDoenetId'],
-							"sourceCollectionDoenetId"=>$row['sourceCollectionDoenetId'],
-							"sourcePageDoenetId"=>$row['sourcePageDoenetId'],
-							"timeOfLastUpdate"=>$row['timeOfLastUpdate'],
-							"label"=>$row['label']
-						);
-						$item['isSelected'] = false; //Note: no isOpen
-						array_push($items,$item);
+			
+			$json = json_decode($row['json'],true);
+			// var_dump($json);
+			$item = array_merge($json,$item);
+			
 
-					}
+			$item['isOpen'] = false; 
+			$item['isSelected'] = false;
+
+			array_push($items,$item);
+		}
+		foreach($containingDoenetIds as $containingDoenetId){
+			$sql = "
+			SELECT 
+			doenetId,
+			containingDoenetId,
+			label
+			FROM pages
+			WHERE containingDoenetId = '$containingDoenetId'
+			AND isDeleted = '0'
+			";
+			$result = $conn->query($sql);
+			if ($result->num_rows > 0) {
+				while($row = $result->fetch_assoc()){
+					$item = array(
+						"type"=>"page",
+						"doenetId"=>$row['doenetId'],
+						"containingDoenetId"=>$row['containingDoenetId'],
+						"label"=>$row['label']
+					);
+					$item['isSelected'] = false; //Note: no isOpen
+					array_push($items,$item);
+
 				}
+			}
 
+		}
+		//page links
+		foreach($activityDoenetIds as $activityDoenetId){
+			$sql = "
+			SELECT 
+			doenetId,
+			containingDoenetId,
+			parentDoenetId,
+			sourceCollectionDoenetId,
+			sourcePageDoenetId,
+			timeOfLastUpdate,
+			label
+			FROM link_pages
+			WHERE containingDoenetId = '$activityDoenetId'
+			";
+			$result = $conn->query($sql);
+			if ($result->num_rows > 0) {
+				while($row = $result->fetch_assoc()){
+					$item = array(
+						"type"=>"pageLink",
+						"doenetId"=>$row['doenetId'],
+						"containingDoenetId"=>$row['containingDoenetId'],
+						"parentDoenetId"=>$row['parentDoenetId'],
+						"sourceCollectionDoenetId"=>$row['sourceCollectionDoenetId'],
+						"sourcePageDoenetId"=>$row['sourcePageDoenetId'],
+						"timeOfLastUpdate"=>$row['timeOfLastUpdate'],
+						"label"=>$row['label']
+					);
+					$item['isSelected'] = false; //Note: no isOpen
+					array_push($items,$item);
+
+				}
 			}
 		}
 
@@ -168,87 +134,50 @@ $activityDoenetIds = [];
 			AND userId = '$userId'
 		";
 
-		$result = $conn->query($sql);
 		$items = [];
-		if ($result->num_rows > 0) {
-			while($row = $result->fetch_assoc()){
-				$item = array(
-					"doenetId"=>$row['doenetId'],
-					"type"=>$row['type'],
-					"parentDoenetId"=>$row['parentDoenetId'],
-					"label"=>$row['label'],
-					"creationDate"=>$row['creationDate'],
-					"isAssigned"=>$row['isAssigned'] == '1' ? true : false,
-					"isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
-					"isPublic"=>$row['isPublic'] == '1' ? true : false,
-					"assignedDate" => $row['assignedDate'],
-					"pinnedAfterDate" => $row['pinnedAfterDate'],
-					"pinnedUntilDate" => $row['pinnedUntilDate'],
-					"dueDate" => $row['dueDate'],
-					"timeLimit" => $row['timeLimit'],
-					"numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
-					"attemptAggregation" => $row['attemptAggregation'],
-					"totalPointsOrPercent" => $row['totalPointsOrPercent'],
-					"gradeCategory" => $row['gradeCategory'],
-					"individualize" => $row['individualize'] == '1' ? true : false,
-					"showSolution" => $row['showSolution'] == '1' ? true : false,
-					"showSolutionInGradebook" => $row['showSolutionInGradebook'] == '1' ? true : false,
-					"showFeedback" => $row['showFeedback'] == '1' ? true : false,
-					"showHints" => $row['showHints'] == '1' ? true : false,
-					"showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
-					"showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
-					"paginate" => $row['paginate'] == '1' ? true : false,
-					"showFinishButton" => $row['showFinishButton'] == '1' ? true : false,
-					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
-					"autoSubmit" => $row['autoSubmit'] == '1' ? true : false,
-          "canViewAfterCompleted" => nullishCoalesce($row['canViewAfterCompleted'], '1') == '1' ? true : false,
-          "completed" => nullishCoalesce($row['completed'], '0') == '1' ? true : false,
-					"completedDate" => $row['completedDate'],
-
-				);
-
+        foreach($rows as $row) {
+			$item = $row;
 				
-				$json = json_decode($row['json'],true);
-				// var_dump($json);
-				$item = array_merge($json,$item);
-				
-				if ($row['type'] == 'activity'){
-					array_push($containingDoenetIds,$row['doenetId']);
-					unset($item['draftCid']);
-				}
-				
-				$item['isOpen'] = false; 
-				$item['isSelected'] = false;
-
-				array_push($items,$item);
+			$json = json_decode($row['json'],true);
+			// var_dump($json);
+			$item = array_merge($json,$item);
+			
+			if ($row['type'] == 'activity'){
+				array_push($containingDoenetIds,$row['doenetId']);
+				unset($item['draftCid']);
 			}
-			// foreach($containingDoenetIds as $containingDoenetId){
-			// 	$sql = "
-			// 	SELECT 
-			// 	doenetId,
-			// 	containingDoenetId,
-			// 	label
-			// 	FROM pages
-			// 	WHERE containingDoenetId = '$containingDoenetId'
-			// 	AND isDeleted = '0'
-			// 	";
-			// 	$result = $conn->query($sql);
-			// 	if ($result->num_rows > 0) {
-			// 		while($row = $result->fetch_assoc()){
-			// 			$item = array(
-			// 				"type"=>"page",
-			// 				"doenetId"=>$row['doenetId'],
-			// 				"containingDoenetId"=>$row['containingDoenetId'],
-			// 				"label"=>$row['label']
-			// 			);
-			// 			$item['isSelected'] = false; //Note: no isOpen
-			// 			array_push($items,$item);
+			
+			$item['isOpen'] = false; 
+			$item['isSelected'] = false;
 
-			// 		}
-			// 	}
-
-			// }
+			array_push($items,$item);
 		}
+		// foreach($containingDoenetIds as $containingDoenetId){
+		// 	$sql = "
+		// 	SELECT 
+		// 	doenetId,
+		// 	containingDoenetId,
+		// 	label
+		// 	FROM pages
+		// 	WHERE containingDoenetId = '$containingDoenetId'
+		// 	AND isDeleted = '0'
+		// 	";
+		// 	$result = $conn->query($sql);
+		// 	if ($result->num_rows > 0) {
+		// 		while($row = $result->fetch_assoc()){
+		// 			$item = array(
+		// 				"type"=>"page",
+		// 				"doenetId"=>$row['doenetId'],
+		// 				"containingDoenetId"=>$row['containingDoenetId'],
+		// 				"label"=>$row['label']
+		// 			);
+		// 			$item['isSelected'] = false; //Note: no isOpen
+		// 			array_push($items,$item);
+
+		// 		}
+		// 	}
+
+		// }
 	}else{
 		$success = false;
 		$message = "You need permission to access this course.";

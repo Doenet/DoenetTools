@@ -19,7 +19,7 @@ create or replace view assignment_detail as
 		a.attemptAggregation,
 		a.totalPointsOrPercent,
 		a.gradeCategory,
-		a.individualize,
+		coalesce(a.individualize, 0) as individualize,
 		a.showSolution,
 		a.showSolutionInGradebook,
 		a.showFeedback,
@@ -27,9 +27,9 @@ create or replace view assignment_detail as
 		a.showCorrectness,
 		a.showCreditAchievedMenu,
 		a.paginate,
-		a.showFinishButton,
-		a.proctorMakesAvailable,
-		a.autoSubmit,
+		coalesce(a.showFinishButton, 0) as showFinishButton,
+		coalesce(a.proctorMakesAvailable, 0) as proctorMakesAvailable,
+		coalesce(a.autoSubmit, 0) as autoSubmit,
 		a.canViewAfterCompleted
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -39,7 +39,7 @@ create or replace view assignment_detail as
 
 create or replace view assigned_assignment_detail as 
     select ad.*, 
-		ua.completed,
+		coalesce(ua.completed, 0) as completed,
 		ua.completedDate
     from assignment_detail ad
 	LEFT JOIN user_assignment AS ua
