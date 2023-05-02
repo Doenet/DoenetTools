@@ -33,7 +33,9 @@ describe("Code Editor Tag Tests", function () {
     });
 
     cy.log("type text in editor");
-    cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("Hello!");
+    cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("Hello!", {
+      delay: 0,
+    });
 
     cy.get(cesc("#\\/_p1")).should("have.text", "Hello!");
     cy.get(cesc("#\\/_p2")).should("have.text", "");
@@ -60,7 +62,10 @@ describe("Code Editor Tag Tests", function () {
     });
 
     cy.log("type more in editor");
-    cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{enter}More here.");
+    cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+      "{enter}More here.",
+      { delay: 0 },
+    );
 
     cy.get(cesc("#\\/_p1")).should("have.text", "Hello!\nMore here.");
     cy.get(cesc("#\\/_p2")).should("have.text", "Hello!");
@@ -112,8 +117,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
@@ -131,7 +135,9 @@ describe("Code Editor Tag Tests", function () {
       });
 
       cy.log("type text in editor");
-      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>");
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>", {
+        delay: 0,
+      });
 
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "");
@@ -190,6 +196,7 @@ describe("Code Editor Tag Tests", function () {
       cy.log("type more content");
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
         "{ctrl+end}{enter}<p><math simplify>1+1</math></p>",
+        { delay: 0 },
       );
 
       cy.get(cesc("#\\/_p1")).should(
@@ -312,8 +319,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
@@ -339,7 +345,9 @@ describe("Code Editor Tag Tests", function () {
       });
 
       cy.log("type text in editor");
-      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>");
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>", {
+        delay: 0,
+      });
 
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "");
@@ -420,6 +428,7 @@ describe("Code Editor Tag Tests", function () {
       cy.log("type more content");
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
         "{ctrl+end}{enter}<p><math simplify>1+1</math></p>",
+        { delay: 0 },
       );
 
       cy.get(cesc("#\\/_p1")).should(
@@ -564,8 +573,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
 
       cy.get(cesc("#\\/px")).should(
@@ -1211,8 +1219,7 @@ describe("Code Editor Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let viewerName =
-        stateVariables["/_codeeditor1"].stateValues.viewerChild[0]
-          .componentName;
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
       cy.get(contentAnchor).should("have.text", "hello there");
@@ -1241,7 +1248,7 @@ describe("Code Editor Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/ce") + " .cm-content").type("hello");
+    cy.get(cesc("#\\/ce") + " .cm-content").type("hello", { delay: 0 });
 
     cy.get(cesc("#\\/piv")).should("have.text", "immediate value: hello");
     cy.get(cesc("#\\/pv")).should("have.text", "value: ");
@@ -1261,5 +1268,80 @@ describe("Code Editor Tag Tests", function () {
 
     cy.get(cesc("#\\/pv")).should("have.text", "value: hello");
     cy.get(cesc("#\\/piv")).should("have.text", "immediate value: hello");
+  });
+
+  it("bind value to", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><codeEditor name="ce" bindValueTo="$ti" /></p>
+
+    <p><textinput name="ti" expanded prefill="Hello!" /></p>
+
+    <p name="pv">value: $ce</p>
+    <p name="piv">immediate value: $ce.immediateValue</p>
+    <p name="pv2">value: $ti</p>
+    <p name="piv2">immediate value: $ti.immediateValue</p>
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/piv")).should("have.text", "immediate value: Hello!");
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!");
+    cy.get(cesc2("#/piv2")).should("have.text", "immediate value: Hello!");
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!");
+
+    cy.get(cesc2("#/ti_input")).type("{ctrl+end}{enter}Selam!", { delay: 0 });
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!");
+
+    cy.get(cesc2("#/piv")).should("have.text", "immediate value: Hello!");
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!");
+
+    cy.get(cesc2("#/ti_input")).blur();
+
+    cy.get(cesc2("#/piv")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!\nSelam!");
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!\nSelam!");
+
+    cy.get(cesc("#\\/ce") + " .cm-content").type("{ctrl+end}{enter}Kaixo!", {
+      delay: 0,
+    });
+    cy.get(cesc2("#/piv")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!\nKaixo!",
+    );
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!\nSelam!");
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!\nSelam!");
+
+    cy.get(cesc("#\\/ce") + " .cm-content").blur();
+
+    cy.get(cesc2("#/piv2")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!\nKaixo!",
+    );
+    cy.get(cesc2("#/pv2")).should("have.text", "value: Hello!\nSelam!\nKaixo!");
+    cy.get(cesc2("#/piv")).should(
+      "have.text",
+      "immediate value: Hello!\nSelam!\nKaixo!",
+    );
+    cy.get(cesc2("#/pv")).should("have.text", "value: Hello!\nSelam!\nKaixo!");
   });
 });
