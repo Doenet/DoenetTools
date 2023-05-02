@@ -37,43 +37,8 @@ $activityDoenetIds = [];
 	if ($permissions["canViewUnassignedContent"] == '1'){
 		//Yes then all items and json
 		$sql = "
-		SELECT cc.type,
-		cc.doenetId,
-		cc.parentDoenetId,
-		cc.label,
-		cc.creationDate,
-		cc.isAssigned,
-		cc.isGloballyAssigned,
-		cc.isPublic,
-		cc.userCanViewSource,
-		CAST(cc.jsonDefinition as CHAR) AS json,
-		a.assignedDate AS assignedDate,
-		a.dueDate AS dueDate,
-		a.pinnedAfterDate As pinnedAfterDate,
-		a.pinnedUntilDate As pinnedUntilDate,
-		a.timeLimit AS timeLimit,
-		a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
-		a.attemptAggregation AS attemptAggregation,
-		a.totalPointsOrPercent AS totalPointsOrPercent,
-		a.gradeCategory AS gradeCategory,
-		a.individualize AS individualize,
-		a.showSolution AS showSolution,
-		a.showSolutionInGradebook AS showSolutionInGradebook,
-		a.showFeedback AS showFeedback,
-		a.showHints AS showHints,
-		a.showCorrectness AS showCorrectness,
-		a.showCreditAchievedMenu AS showCreditAchievedMenu,
-		a.paginate AS paginate,
-		a.showFinishButton AS showFinishButton,
-		a.proctorMakesAvailable AS proctorMakesAvailable,
-		a.autoSubmit AS autoSubmit,
-		a.canViewAfterCompleted
-		FROM course_content AS cc
-		LEFT JOIN assignment AS a
-		ON a.doenetId = cc.doenetId
-		WHERE cc.courseId='$courseId'
-		AND cc.isDeleted = '0'
-		ORDER BY cc.sortOrder
+			SELECT * from assignment_detail
+			WHERE courseId='$courseId'
 		";
 
 		//TODO: Emilio and Kevin Discuss default behavior on undefine server keys
@@ -196,50 +161,11 @@ $activityDoenetIds = [];
 
 	}else if($permissions != false){
 		//TODO: check that user is in the course
+
 		$sql = "
-		SELECT cc.type,
-		cc.doenetId,
-		cc.parentDoenetId,
-		cc.label,
-		cc.creationDate,
-		cc.isAssigned,
-		cc.isGloballyAssigned,
-		cc.isPublic,
-		CAST(cc.jsonDefinition as CHAR) AS json,
-		a.assignedDate AS assignedDate,
-		a.dueDate AS dueDate,
-		a.pinnedAfterDate As pinnedAfterDate,
-		a.pinnedUntilDate As pinnedUntilDate,
-		a.timeLimit AS timeLimit,
-		a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
-		a.attemptAggregation AS attemptAggregation,
-		a.totalPointsOrPercent AS totalPointsOrPercent,
-		a.gradeCategory AS gradeCategory,
-		a.individualize AS individualize,
-		a.showSolution AS showSolution,
-		a.showSolutionInGradebook AS showSolutionInGradebook,
-		a.showFeedback AS showFeedback,
-		a.showHints AS showHints,
-		a.showCorrectness AS showCorrectness,
-		a.showCreditAchievedMenu AS showCreditAchievedMenu,
-		a.paginate AS paginate,
-		a.showFinishButton AS showFinishButton,
-		a.proctorMakesAvailable AS proctorMakesAvailable,
-		a.autoSubmit AS autoSubmit,
-		a.canViewAfterCompleted,
-		ua.completed,
-		ua.completedDate
-		FROM course_content AS cc
-		LEFT JOIN assignment AS a
-		ON a.doenetId = cc.doenetId
-		LEFT JOIN user_assignment AS ua
-		ON a.doenetId = ua.doenetId AND ua.userId = '$userId'
-		WHERE cc.courseId='$courseId'
-		AND cc.isDeleted = '0'
-		AND cc.isAssigned=1
-		AND (cc.type = 'activity' OR cc.type = 'section')
-		AND (ua.isUnassigned = 0 OR cc.isGloballyAssigned = 1)
-		ORDER BY cc.sortOrder
+			SELECT * from assigned_assignment_detail
+			WHERE courseId='$courseId'
+			AND userId = '$userId'
 		";
 
 		$result = $conn->query($sql);
