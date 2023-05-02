@@ -48,6 +48,24 @@ export async function loader() {
   return { signedIn, portfolioCourseId, isAdmin };
 }
 
+function MenuItem({ to, children, dataTest }) {
+  return (
+    <StyledMenuItem
+      to={to}
+      data-test={dataTest}
+      className={({ isActive, isPending }) =>
+        location.pathname === "/" || isActive
+          ? "active"
+          : isPending
+          ? "pending"
+          : ""
+      }
+    >
+      {children}
+    </StyledMenuItem>
+  );
+}
+
 export function SiteHeader(props) {
   let data = useLoaderData();
   const isAdmin = data?.isAdmin;
@@ -129,22 +147,25 @@ export function SiteHeader(props) {
                   height="40px"
                   // display={{ base: "none", md: "flex" }}
                 >
-                  <Tab
-                    as={NavLink}
-                    to="/"
-                    _focus={{ boxShadow: "none" }}
-                    datatest="Home"
-                  >
-                    Home
-                  </Tab>
-                  <Tab
-                    as={NavLink}
-                    to="community"
-                    _focus={{ boxShadow: "none" }}
-                    datatest="Community"
-                  >
-                    Community
-                  </Tab>
+                  <NavLink to="/" end>
+                    {({ isActive, isPending }) => {
+                      if (isActive) {
+                        return <Tab>Home A</Tab>;
+                      } else {
+                        return <Tab>Home NA</Tab>;
+                      }
+                    }}
+                  </NavLink>
+                  <NavLink to="community" end>
+                    {({ isActive, isPending }) => {
+                      if (isActive) {
+                        return <Tab>C A</Tab>;
+                      } else {
+                        return <Tab>C NA</Tab>;
+                      }
+                    }}
+                  </NavLink>
+
                   {data.signedIn && (
                     <>
                       <Tab
@@ -152,6 +173,11 @@ export function SiteHeader(props) {
                         to={`portfolio/${data.portfolioCourseId}`}
                         _focus={{ boxShadow: "none" }}
                         datatest="Portfolio"
+                        className={({ isActive, isDisabled }) =>
+                          `${isActive ? "active" : ""} ${
+                            isDisabled ? "disabled" : ""
+                          }`
+                        }
                       >
                         Portfolio
                       </Tab>
