@@ -78,7 +78,7 @@ export default React.memo(function ExampleBrowser(props) {
   ));
 
   let labelPicker = (
-    <div style={{ width: "25%" }}>
+    <div style={{ width: "25%" }} data-test="labelPicker">
       <div
         style={{
           marginTop: "12px",
@@ -118,6 +118,7 @@ export default React.memo(function ExampleBrowser(props) {
         marginTop: "12px",
         marginLeft: "5%",
       }}
+      data-test="descriptionAndVideo"
     >
       <div>
         <h4>
@@ -135,7 +136,9 @@ export default React.memo(function ExampleBrowser(props) {
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <div id={id}>
         <a name={id} />
-        <div style={{ display: "flex" }}>Filter by: {initials}</div>
+        <div style={{ display: "flex" }} data-test="initials">
+          Filter by: {initials}
+        </div>
         <div style={{ display: "flex" }}>
           {labelPicker}
           {descriptionAndVideo}

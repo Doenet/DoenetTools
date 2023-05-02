@@ -191,7 +191,7 @@ export class ExampleBrowser extends BlockComponent {
             defaultValue:
               dependencyValues.itemsByInitial[
                 dependencyValues.allInitials[0]
-              ][0]?.ind || null,
+              ]?.[0]?.ind || 0,
           },
         },
       }),
