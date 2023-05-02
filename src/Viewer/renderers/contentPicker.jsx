@@ -142,7 +142,6 @@ export default React.memo(function ContentPicker(props) {
           value={value}
           disabled={SVs.disabled}
         >
-          <option hidden={true} value=""></option>
           {options}
         </select>
       </label>

@@ -153,7 +153,7 @@ export default class ContentPicker extends BlockComponent {
 
     stateVariableDefinitions.selectedIndices = {
       hasEssential: true,
-      defaultValue: [],
+      defaultValue: [1],
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({
