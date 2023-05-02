@@ -13,6 +13,8 @@ import {
   Icon,
   useColorMode,
   useColorModeValue,
+  HStack,
+  Spinner,
 } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { Link, NavLink } from "react-router-dom";
@@ -48,21 +50,40 @@ export async function loader() {
   return { signedIn, portfolioCourseId, isAdmin };
 }
 
-function MenuItem({ to, children, dataTest }) {
+function NavLinkTab({ to, children, datatest }) {
+  // TODO: use end only when path is "/"
   return (
-    <StyledMenuItem
-      to={to}
-      data-test={dataTest}
-      className={({ isActive, isPending }) =>
-        location.pathname === "/" || isActive
-          ? "active"
-          : isPending
-          ? "pending"
-          : ""
-      }
-    >
-      {children}
-    </StyledMenuItem>
+    <NavLink to={to} end datatest={datatest}>
+      {({ isActive, isPending }) => {
+        // let spinner = null;
+        // if (isPending) {
+        //   spinner = <Spinner size="sm" />;
+        // }
+        let color = "doenet.canvastext";
+        let borderBottomStyle = "none";
+        let borderBottomWidth = "0px";
+        if (isActive) {
+          color = "doenet.mainBlue";
+          borderBottomWidth = "2px";
+          borderBottomStyle = "solid";
+        }
+
+        return (
+          <Center
+            h="40px"
+            borderBottomStyle={borderBottomStyle}
+            borderBottomWidth={borderBottomWidth}
+            borderBottomColor={color}
+            p="3px"
+          >
+            <Text fontSize="md" color={color}>
+              {children}
+            </Text>
+            {/* {spinner} */}
+          </Center>
+        );
+      }}
+    </NavLink>
   );
 }
 
@@ -70,10 +91,9 @@ export function SiteHeader(props) {
   let data = useLoaderData();
   const isAdmin = data?.isAdmin;
   const { colorMode, toggleColorMode } = useColorMode();
-  const [activeTab, setActiveTab] = useState(0);
   let location = useLocation();
 
-  const navColor = useColorModeValue("#ffffff", "gray.800");
+  // const navColor = useColorModeValue("#ffffff", "gray.800");
   // const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
@@ -142,31 +162,45 @@ export function SiteHeader(props) {
               </Center>
             </GridItem>
             <GridItem area="menus">
-              <Tabs borderColor="transparent" textDecoration="none">
-                <TabList
-                  height="40px"
-                  // display={{ base: "none", md: "flex" }}
-                >
-                  <NavLink to="/" end>
-                    {({ isActive, isPending }) => {
-                      if (isActive) {
-                        return <Tab>Home A</Tab>;
-                      } else {
-                        return <Tab>Home NA</Tab>;
-                      }
-                    }}
-                  </NavLink>
-                  <NavLink to="community" end>
-                    {({ isActive, isPending }) => {
-                      if (isActive) {
-                        return <Tab>C A</Tab>;
-                      } else {
-                        return <Tab>C NA</Tab>;
-                      }
-                    }}
-                  </NavLink>
+              <HStack spacing={3}>
+                <NavLinkTab to="/" datatest="Home">
+                  Home
+                </NavLinkTab>
+                <NavLinkTab to="community" datatest="Community">
+                  Community
+                </NavLinkTab>
+                {data.signedIn && (
+                  <>
+                    <NavLinkTab
+                      to={`portfolio/${data.portfolioCourseId}`}
+                      datatest="Portfolio"
+                    >
+                      Portfolio
+                    </NavLinkTab>
+                    <Center
+                      fontSize="md"
+                      onClick={() => {
+                        navigateTo.current = "/course";
+                        setRecoilPageToolView({
+                          page: "course",
+                          tool: "",
+                          view: "",
+                          params: {},
+                        });
+                      }}
+                    >
+                      My Courses
+                    </Center>
+                    {isAdmin && (
+                      <NavLinkTab to="admin" datatest="Admin">
+                        Admin
+                      </NavLinkTab>
+                    )}
+                  </>
+                )}
+              </HStack>
 
-                  {data.signedIn && (
+              {/* {data.signedIn && (
                     <>
                       <Tab
                         as={NavLink}
@@ -207,7 +241,7 @@ export function SiteHeader(props) {
                     </>
                   )}
                 </TabList>
-              </Tabs>
+              </Tabs> */}
             </GridItem>
             <GridItem area="rightHeader">
               {data.signedIn ? (
@@ -215,7 +249,7 @@ export function SiteHeader(props) {
               ) : (
                 <Center h="40px" mr="10px">
                   <Button
-                    dataTest="Nav to signin"
+                    datatest="Nav to signin"
                     size="sm"
                     // variant="ghost"
                     variant="outline"
