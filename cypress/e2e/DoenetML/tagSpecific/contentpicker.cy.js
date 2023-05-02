@@ -6,6 +6,24 @@ describe("ContentPicker Tag Tests", function () {
     cy.visit("/src/Tools/cypressTest/");
   });
 
+  it("Empty contentPicker", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <contentPicker>
+        </contentPicker>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_contentpicker1")).should("contain.text", "Select:");
+
+    cy.get(cesc2("#/_contentpicker1") + " option").should('have.length', 0)
+  });
+
   it("No attributes", () => {
     cy.window().then(async (win) => {
       win.postMessage(
