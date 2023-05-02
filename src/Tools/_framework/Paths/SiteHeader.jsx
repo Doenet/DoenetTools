@@ -15,6 +15,9 @@ import {
   MenuList,
   MenuItem,
   Avatar,
+  Box,
+  VStack,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
@@ -217,11 +220,20 @@ export function SiteHeader(props) {
                       <Avatar size="sm" name={`${firstName} ${lastName}`} />
                     </MenuButton>
                     <MenuList>
-                      <MenuItem as="a" href="#" zIndex="2000">
-                        Link 1
-                      </MenuItem>
-                      <MenuItem as="a" href="#">
-                        Link 2
+                      <VStack mb="20px">
+                        <Avatar size="xl" name={`${firstName} ${lastName}`} />
+                        <Text>
+                          {firstName} {lastName}
+                        </Text>
+                        <Text>{email}</Text>
+                        <ButtonGroup size="sm" isAttached variant="outline">
+                          <Button>Light</Button>
+                          <Button>Dark</Button>
+                          <Button>Auto</Button>
+                        </ButtonGroup>
+                      </VStack>
+                      <MenuItem as="a" href="/signout">
+                        Sign Out
                       </MenuItem>
                     </MenuList>
                   </Menu>
