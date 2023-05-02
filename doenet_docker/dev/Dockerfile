@@ -21,6 +21,7 @@ RUN apt-get update && \
     libapache2-mod-php \
     php-cli \
     php-xml \
+    php-mysqli \
     php-mbstring 
 
 # prep Docker

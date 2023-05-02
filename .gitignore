@@ -3,6 +3,8 @@ build
 dist_local
 node_modules
 
+# php dependencies
+vendor
 
 # production
 # /dist
