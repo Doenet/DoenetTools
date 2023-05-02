@@ -1,26 +1,27 @@
+import React, { useRef, useState, useEffect } from "react";
 import {
   Box,
   Button,
   Center,
-  // Center,
   Grid,
   GridItem,
-  // Icon,
+  Flex,
   Tab,
   TabList,
   Tabs,
   Text,
+  Icon,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import React, { useRef } from "react";
-import { Outlet, useLoaderData, useNavigate } from "react-router";
-import { NavLink } from "react-router-dom";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
+import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
-import { FaCog } from "react-icons/fa";
+import { FaCog, FaMoon, FaSun } from "react-icons/fa";
 
 export async function loader() {
   //Check if signedIn
@@ -47,61 +48,14 @@ export async function loader() {
   return { signedIn, portfolioCourseId, isAdmin };
 }
 
-// const SignInButtonContainer = styled.div`
-//   margin: auto 10px auto 0px;
-// `;
-
-const Branding = styled.span`
-  margin: 4px 0px 4px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 110px;
-  cursor: default;
-  font-size: 16px;
-`;
-
-// const StyledMenuItem = styled(NavLink)`
-//   padding: 8px;
-//   color: black;
-//   cursor: pointer;
-//   text-decoration: none;
-//   &.active {
-//     color: var(--mainBlue);
-//     border-bottom: 2px solid var(--mainBlue);
-//   }
-// `;
-
-// const BarMenu = styled.div`
-//   margin: 0px;
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   font-size: 16px;
-//   column-gap: 20px;
-// `;
-
-// function MenuItem({ to, children, dataTest }) {
-//   return (
-//     <StyledMenuItem
-//       to={to}
-//       data-test={dataTest}
-//       className={({ isActive, isPending }) =>
-//         location.pathname === "/" || isActive
-//           ? "active"
-//           : isPending
-//           ? "pending"
-//           : ""
-//       }
-//     >
-//       {children}
-//     </StyledMenuItem>
-//   );
-// }
-
 export function SiteHeader(props) {
   let data = useLoaderData();
   const isAdmin = data?.isAdmin;
+  const { colorMode, toggleColorMode } = useColorMode();
+  const [activeTab, setActiveTab] = useState(0);
+  let location = useLocation();
+
+  const navColor = useColorModeValue("#ffffff", "gray.800");
   // const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
@@ -149,10 +103,22 @@ export function SiteHeader(props) {
             gridTemplateColumns="1f auto 1f"
           >
             <GridItem area="leftHeader">
-              <Branding>
+              <Center h="100%">
                 <RouterLogo />
-                <Text>Doenet</Text>
-              </Branding>
+                <Text ml={1}>Doenet</Text>
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  borderRadius={5}
+                  onClick={toggleColorMode}
+                >
+                  <Icon
+                    as={colorMode === "light" ? FaMoon : FaSun}
+                    h={4}
+                    w={4}
+                  />
+                </Button>
+              </Center>
             </GridItem>
             <GridItem area="menus">
               <Tabs borderColor="transparent" textDecoration="none">
