@@ -26,6 +26,15 @@ class Base_Model {
                 while($row = $result->fetch_assoc()){ 
                     $rows[] = $row;
                 }
+                $fieldInfo = $result->fetch_fields();
+                foreach ($fieldInfo as $field) {
+                    if ($field->type == 'TINYINT' && $field->length == 1) {
+                        foreach($rows as $row) {
+                            // "showSolution" => nullishCoalesce($row['showSolution'], "1") == '1' ? true : false,
+                            $row[$field->name] = nullishCoalesce($row[$field->name], "1") == '1' ? true : false;
+                        }
+                    }
+                }
                 return $rows;
             } else {
                 return [];
