@@ -104,6 +104,9 @@ export function SiteHeader(props) {
           >
             <GridItem area="leftHeader">
               <Center h="100%">
+                {/* <Button display={{ base: "flex", md: "none" }}>
+                  TABS HERE
+                </Button> */}
                 <RouterLogo />
                 <Text ml={1}>Doenet</Text>
                 <Button
@@ -122,7 +125,10 @@ export function SiteHeader(props) {
             </GridItem>
             <GridItem area="menus">
               <Tabs borderColor="transparent" textDecoration="none">
-                <TabList height="40px">
+                <TabList
+                  height="40px"
+                  // display={{ base: "none", md: "flex" }}
+                >
                   <Tab
                     as={NavLink}
                     to="/"
