@@ -83,7 +83,7 @@ function NavLinkTab({ to, children, datatest }) {
             borderBottomStyle={borderBottomStyle}
             borderBottomWidth={borderBottomWidth}
             borderBottomColor={color}
-            p="3px"
+            p="4px"
           >
             <Text fontSize="md" color={color}>
               {children}
@@ -161,7 +161,7 @@ export function SiteHeader(props) {
               </Center>
             </GridItem>
             <GridItem area="menus">
-              <HStack spacing={3}>
+              <HStack spacing={8}>
                 <NavLinkTab to="/" datatest="Home">
                   Home
                 </NavLinkTab>
@@ -215,21 +215,21 @@ export function SiteHeader(props) {
                         </Text>
                         <Text>{email}</Text>
                         <ButtonGroup size="sm" isAttached variant="outline">
-                          <Button leftIcon={<FaSun />}>Light</Button>
-                          <Button leftIcon={<FaMoon />}>Dark</Button>
-                          {/* <Button>Auto</Button> */}
-                          {/* <Button
-                  size="xs"
-                  variant="ghost"
-                  borderRadius={5}
-                  onClick={toggleColorMode}
-                >
-                  <Icon
-                    as={colorMode === "light" ? FaMoon : FaSun}
-                    h={4}
-                    w={4}
-                  />
-                </Button> */}
+                          <Button
+                            leftIcon={<FaSun />}
+                            onClick={toggleColorMode}
+                            isDisabled={colorMode == "light"}
+                          >
+                            Light
+                          </Button>
+                          <Button
+                            leftIcon={<FaMoon />}
+                            onClick={toggleColorMode}
+                            isDisabled={colorMode == "dark"}
+                            // cursor="not-allowed"
+                          >
+                            Dark
+                          </Button>
                         </ButtonGroup>
                       </VStack>
                       <MenuItem as="a" href="/signout">
