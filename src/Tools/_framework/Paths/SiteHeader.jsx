@@ -158,18 +158,6 @@ export function SiteHeader(props) {
                 </Button> */}
                 <RouterLogo />
                 <Text ml={1}>Doenet</Text>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  borderRadius={5}
-                  onClick={toggleColorMode}
-                >
-                  <Icon
-                    as={colorMode === "light" ? FaMoon : FaSun}
-                    h={4}
-                    w={4}
-                  />
-                </Button>
               </Center>
             </GridItem>
             <GridItem area="menus">
@@ -230,6 +218,18 @@ export function SiteHeader(props) {
                           <Button leftIcon={<FaSun />}>Light</Button>
                           <Button leftIcon={<FaMoon />}>Dark</Button>
                           {/* <Button>Auto</Button> */}
+                          {/* <Button
+                  size="xs"
+                  variant="ghost"
+                  borderRadius={5}
+                  onClick={toggleColorMode}
+                >
+                  <Icon
+                    as={colorMode === "light" ? FaMoon : FaSun}
+                    h={4}
+                    w={4}
+                  />
+                </Button> */}
                         </ButtonGroup>
                       </VStack>
                       <MenuItem as="a" href="/signout">
