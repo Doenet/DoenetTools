@@ -1974,10 +1974,9 @@ export function applySugar({
   parentParametersFromSugar = {},
   parentAttributes = {},
   componentInfoObjects,
-  parentUniqueId = "",
   isAttributeComponent = false,
 }) {
-  for (let [componentInd, component] of serializedComponents.entries()) {
+  for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
     }
@@ -1988,7 +1987,6 @@ export function applySugar({
     if (!componentClass) {
       throw Error(`Unrecognized component type ${componentType}`);
     }
-    let uniqueId = parentUniqueId + "|" + componentType + componentInd;
 
     let componentAttributes = {};
     // add primitive attributes to componentAttributes
@@ -2003,9 +2001,7 @@ export function applySugar({
       let newParentParametersFromSugar = {};
 
       if (!component.skipSugar) {
-        for (let [sugarInd, sugarInstruction] of componentClass
-          .returnSugarInstructions()
-          .entries()) {
+        for (let sugarInstruction of componentClass.returnSugarInstructions()) {
           // if (component.children.length === 0) {
           //   break;
           // }
@@ -2048,7 +2044,6 @@ export function applySugar({
             parentParametersFromSugar,
             parentAttributes,
             componentAttributes,
-            uniqueId: uniqueId + "|sugar" + sugarInd,
             componentInfoObjects,
             isAttributeComponent,
             createdFromMacro,
@@ -2145,7 +2140,6 @@ export function applySugar({
         parentParametersFromSugar: newParentParametersFromSugar,
         parentAttributes: componentAttributes,
         componentInfoObjects,
-        parentUniqueId: uniqueId,
       });
     }
 
@@ -2158,7 +2152,6 @@ export function applySugar({
             serializedComponents: [attribute.component],
             parentAttributes: componentAttributes,
             componentInfoObjects,
-            parentUniqueId: uniqueId,
             isAttributeComponent: true,
           });
         }
