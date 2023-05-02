@@ -398,7 +398,7 @@ function SupportFilesControls({ onClose }) {
                       >
                         {file.asFileName}
                       </Text>
-                      <Text>Description required to use file</Text>
+                      <Text>Alt Text Description required to use file</Text>
 
                       <Input
                         placeholder="Enter Description Here"
