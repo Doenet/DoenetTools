@@ -55,62 +55,42 @@ try {
 			array_push($items,$item);
 		}
 		foreach($containingDoenetIds as $containingDoenetId){
-			$sql = "
-			SELECT 
-			doenetId,
-			containingDoenetId,
-			label
-			FROM pages
-			WHERE containingDoenetId = '$containingDoenetId'
-			AND isDeleted = '0'
-			";
-			$result = $conn->query($sql);
-			if ($result->num_rows > 0) {
-				while($row = $result->fetch_assoc()){
-					$item = array(
-						"type"=>"page",
-						"doenetId"=>$row['doenetId'],
-						"containingDoenetId"=>$row['containingDoenetId'],
-						"label"=>$row['label']
-					);
-					$item['isSelected'] = false; //Note: no isOpen
-					array_push($items,$item);
-
-				}
+			$rows = Base_Model::queryFetchAssoc($conn, 
+			"
+				SELECT 
+				doenetId,
+				containingDoenetId,
+				label
+				FROM pages
+				WHERE containingDoenetId = '$containingDoenetId'
+				AND isDeleted = '0'
+			");
+        	foreach($rows as $item) {
+				$item["type"] = "page";
+				$item['isSelected'] = false; //Note: no isOpen
+				array_push($items,$item);
 			}
 
 		}
 		//page links
 		foreach($activityDoenetIds as $activityDoenetId){
-			$sql = "
-			SELECT 
-			doenetId,
-			containingDoenetId,
-			parentDoenetId,
-			sourceCollectionDoenetId,
-			sourcePageDoenetId,
-			timeOfLastUpdate,
-			label
-			FROM link_pages
-			WHERE containingDoenetId = '$activityDoenetId'
-			";
-			$result = $conn->query($sql);
-			if ($result->num_rows > 0) {
-				while($row = $result->fetch_assoc()){
-					$item = array(
-						"type"=>"pageLink",
-						"doenetId"=>$row['doenetId'],
-						"containingDoenetId"=>$row['containingDoenetId'],
-						"parentDoenetId"=>$row['parentDoenetId'],
-						"sourceCollectionDoenetId"=>$row['sourceCollectionDoenetId'],
-						"sourcePageDoenetId"=>$row['sourcePageDoenetId'],
-						"timeOfLastUpdate"=>$row['timeOfLastUpdate'],
-						"label"=>$row['label']
-					);
-					$item['isSelected'] = false; //Note: no isOpen
-					array_push($items,$item);
-
-				}
+			$rows = Base_Model::queryFetchAssoc($conn, 
+			"
+				SELECT 
+				doenetId,
+				containingDoenetId,
+				parentDoenetId,
+				sourceCollectionDoenetId,
+				sourcePageDoenetId,
+				timeOfLastUpdate,
+				label
+				FROM link_pages
+				WHERE containingDoenetId = '$activityDoenetId'
+			");
+        	foreach($rows as $item) {
+				$item["type"] = "pageLink";
+				$item['isSelected'] = false; //Note: no isOpen
+				array_push($items,$item);
 			}
 		}
 
