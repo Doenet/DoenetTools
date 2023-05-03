@@ -896,7 +896,7 @@ function PortfolioActivitySettingsDrawer({
         </DrawerHeader>
 
         <DrawerBody>
-          <Tabs isFitted defaultIndex={controlsTabsLastIndex.current}>
+          <Tabs isFixed defaultIndex={controlsTabsLastIndex.current}>
             <TabList>
               <Tab onClick={() => (controlsTabsLastIndex.current = 0)}>
                 General
@@ -908,7 +908,7 @@ function PortfolioActivitySettingsDrawer({
                 Pages & Orders
               </Tab>
             </TabList>
-            <Box overflowY="scroll" height="calc(100vh - 100px)">
+            <Box overflowY="scroll" height="calc(100vh - 120px)">
               <TabPanels>
                 <TabPanel>
                   <GeneralControls onClose={onClose} />
