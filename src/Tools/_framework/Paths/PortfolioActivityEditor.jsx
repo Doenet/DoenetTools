@@ -81,6 +81,11 @@ import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
 import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
+import { cidFromText } from "../../../Core/utils/cid";
+import {
+  textEditorDoenetMLAtom,
+  textEditorLastKnownCidAtom,
+} from "../../../_sharedRecoil/EditorViewerRecoil";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -213,6 +218,7 @@ export async function loader({ params }) {
   //Get the doenetML of the pageId.
   const doenetMLResponse = await axios.get(`/media/byPageId/${pageId}.doenet`);
   let doenetML = doenetMLResponse.data;
+  const lastKnownCid = await cidFromText(doenetML);
 
   const supportingFileResp = await axios.get(
     "/api/loadSupportingFileInfo.php",
@@ -227,6 +233,7 @@ export async function loader({ params }) {
     activityData,
     pageId,
     courseId,
+    lastKnownCid,
     doenetML,
     doenetId: params.doenetId,
     supportingFileData,
@@ -975,7 +982,8 @@ export function PortfolioActivityEditor2() {
 }
 
 export function PortfolioActivityEditor() {
-  const { doenetML, pageId, courseId, activityData } = useLoaderData();
+  const { doenetML, pageId, courseId, activityData, lastKnownCid } =
+    useLoaderData();
   const {
     isOpen: controlsAreOpen,
     onOpen: controlsOnOpen,
@@ -983,6 +991,9 @@ export function PortfolioActivityEditor() {
   } = useDisclosure();
   // const [textEditorDoenetML, setTextEditorDoenetML] = useState(doenetML);
   let textEditorDoenetML = useRef(doenetML);
+  let lastKnownCidRef = useRef(lastKnownCid);
+  const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
+  const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   let controlsTabsLastIndex = useRef(0);
 
@@ -1209,7 +1220,9 @@ export function PortfolioActivityEditor() {
                   // Debounce save to server at 3 seconds
                   clearTimeout(timeout.current);
                   timeout.current = setTimeout(async function () {
-                    console.log("SAVE DRAFT!!", value);
+                    setEditorDoenetML(value);
+                    setLastKnownCid(lastKnownCidRef.current);
+
                     saveDraft({
                       pageId,
                       courseId,
@@ -1217,6 +1230,9 @@ export function PortfolioActivityEditor() {
                     }).then(({ success }) => {
                       if (success) {
                         backupOldDraft.current = false;
+                        cidFromText(value).then((newlySavedCid) => {
+                          lastKnownCidRef.current = newlySavedCid;
+                        });
                       }
                     });
                     timeout.current = null;
