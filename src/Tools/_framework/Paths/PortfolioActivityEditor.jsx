@@ -47,6 +47,8 @@ import {
   // IconButton,
   Image,
   Input,
+  InputGroup,
+  InputRightElement,
   Menu,
   MenuButton,
   MenuItem,
@@ -374,71 +376,118 @@ function SupportFilesControls({ onClose }) {
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {
             return (
-              <Card
-                key={`file${i}`}
-                width="100%"
-                height="100px"
-                p="0"
-                mt="5px"
-                mb="5px"
-                data-test="Support File Card Alt text"
-                // background="doenet.mainGray"
-              >
-                <HStack>
-                  <Image
-                    height="100px"
-                    maxWidth="100px"
-                    src={previewImagePath}
-                    alt="Support File Image"
-                    objectFit="cover"
-                    borderLeftRadius="md"
-                  />
+              <Form key={`file${i}`} method="post">
+                <Card
+                  width="100%"
+                  height="100px"
+                  p="0"
+                  mt="5px"
+                  mb="5px"
+                  data-test="Support File Card Alt text"
+                  // background="doenet.mainGray"
+                >
+                  <HStack>
+                    <Image
+                      height="100px"
+                      maxWidth="100px"
+                      src={previewImagePath}
+                      alt="Support File Image"
+                      objectFit="cover"
+                      borderLeftRadius="md"
+                    />
 
-                  <CardBody p="2px">
-                    <VStack spacing="2px" align="flex-start">
-                      <Text
-                        height="26px"
-                        lineHeight="1.1"
-                        fontSize="md"
-                        fontWeight="700"
-                        noOfLines={1}
-                        textAlign="left"
-                      >
-                        {file.asFileName}
-                      </Text>
-                      <Text>Alt Text Description required to use file</Text>
-
-                      <Input
-                        placeholder="Enter Description Here"
-                        onBlur={(e) => {
-                          fetcher.submit(
-                            {
-                              _action: "update description",
-                              doenetId,
-                              cid: file.cid,
-                              description: e.target.value,
-                            },
-                            { method: "post" },
-                          );
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            fetcher.submit(
-                              {
-                                _action: "update description",
-                                doenetId,
-                                cid: file.cid,
-                                description: e.target.value,
-                              },
-                              { method: "post" },
-                            );
-                          }
-                        }}
-                      />
-                    </VStack>
-                  </CardBody>
-                </HStack>
-              </Card>
+                    <CardBody p="1px">
+                      <VStack spacing="0px" align="flex-start">
+                        <Flex width="100%" justifyContent="space-between">
+                          <Center>
+                            <Text
+                              height="26px"
+                              lineHeight="1.1"
+                              fontSize="sm"
+                              fontWeight="700"
+                              noOfLines={1}
+                              textAlign="left"
+                            >
+                              File name: {file.asFileName}
+                            </Text>
+                          </Center>
+                          <Menu>
+                            <MenuButton
+                              as={IconButton}
+                              aria-label="Options"
+                              icon={<GoKebabVertical />}
+                              variant="ghost"
+                            />
+                            <MenuList>
+                              <MenuItem
+                                onClick={() => {
+                                  setInfoMessage("Removing Image...");
+                                  fetcher.submit(
+                                    {
+                                      _action: "remove file",
+                                      doenetId,
+                                      cid: file.cid,
+                                    },
+                                    { method: "post" },
+                                  );
+                                }}
+                              >
+                                Remove
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Flex>
+                        <Text fontSize="xs">
+                          Alt Text Description required to use file
+                        </Text>
+                        <InputGroup size="xs">
+                          <Input
+                            size="sm"
+                            name="description"
+                            mr="10px"
+                            placeholder="Enter Description Here"
+                            onBlur={(e) => {
+                              fetcher.submit(
+                                {
+                                  _action: "update description",
+                                  doenetId,
+                                  cid: file.cid,
+                                  description: e.target.value,
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                fetcher.submit(
+                                  {
+                                    _action: "update description",
+                                    doenetId,
+                                    cid: file.cid,
+                                    description: e.target.value,
+                                  },
+                                  { method: "post" },
+                                );
+                              }
+                            }}
+                          />
+                          <InputRightElement width="4.5rem">
+                            <Button type="submit" mt="8px" mr="12px" size="xs">
+                              Submit
+                            </Button>
+                          </InputRightElement>
+                          <input type="hidden" name="cid" value={file.cid} />
+                          <input
+                            type="hidden"
+                            name="doenetId"
+                            value={doenetId}
+                          />
+                        </InputGroup>
+                      </VStack>
+                    </CardBody>
+                  </HStack>
+                </Card>
+              </Form>
               // <div key={`file${i}`}>{file.asFileName}Needs a alt text</div>
             );
           }
@@ -506,7 +555,12 @@ function SupportFilesControls({ onClose }) {
                       </VStack>
                     </GridItem>
                     <GridItem area="rightControls">
-                      <VStack spacing="10px" align="flex-end" p="4px">
+                      <VStack
+                        spacing="10px"
+                        align="flex-end"
+                        justifyContent="flex-start"
+                        p="4px"
+                      >
                         <Menu>
                           <MenuButton
                             as={IconButton}
@@ -532,26 +586,6 @@ function SupportFilesControls({ onClose }) {
                             </MenuItem>
                           </MenuList>
                         </Menu>
-                        {/* <Text>:</Text> */}
-                        {/* <Button
-                          background="doenet.mainRed"
-                          size="sm"
-                          onClick={() => {
-                            setInfoMessage("Removing Image...");
-                            fetcher.submit(
-                              {
-                                _action: "remove file",
-                                doenetId,
-                                cid: file.cid,
-                              },
-                              { method: "post" },
-                            );
-                            //TODO: Clear this with a return value once it's removed
-                            setTimeout(() => setInfoMessage(""), 5000);
-                          }}
-                        >
-                          Remove
-                        </Button> */}
                         <CopyToClipboard
                           onCopy={() => {
                             setInfoMessage(
