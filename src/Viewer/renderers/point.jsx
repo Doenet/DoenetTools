@@ -30,11 +30,14 @@ export default React.memo(function Point(props) {
   let calculatedY = useRef(null);
 
   let lastPositionFromCore = useRef(null);
+
+  // for each coordinate, will be -1 or 1 if moved off graph in that direction
+  let movedFromOffGraph = useRef([0, 0]);
+
   let fixed = useRef(false);
   let fixLocation = useRef(false);
   let switchable = useRef(false);
 
-  lastPositionFromCore.current = SVs.numericalXs;
   fixed.current = SVs.fixed;
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   switchable.current = SVs.switchable && !SVs.fixed;
@@ -104,46 +107,21 @@ export default React.memo(function Point(props) {
         SVs.selectedStyle.markerSize,
         SVs.selectedStyle.markerStyle,
       ),
-      face: normalizeStyle(SVs.selectedStyle.markerStyle),
+      face: normalizeStyle(
+        SVs.selectedStyle.markerStyle,
+        movedFromOffGraph.current,
+      ),
       highlight: !fixLocation.current,
     };
 
     if (withlabel) {
-      let anchorx, anchory, offset;
-      if (SVs.labelPosition === "upperright") {
-        offset = [5, 5];
-        anchorx = "left";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "upperleft") {
-        offset = [-5, 5];
-        anchorx = "right";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "lowerright") {
-        offset = [5, -5];
-        anchorx = "left";
-        anchory = "top";
-      } else if (SVs.labelPosition === "lowerleft") {
-        offset = [-5, -5];
-        anchorx = "right";
-        anchory = "top";
-      } else if (SVs.labelPosition === "top") {
-        offset = [0, 10];
-        anchorx = "middle";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "bottom") {
-        offset = [0, -10];
-        anchorx = "middle";
-        anchory = "top";
-      } else if (SVs.labelPosition === "left") {
-        offset = [-10, 0];
-        anchorx = "right";
-        anchory = "middle";
-      } else {
-        // labelPosition === right
-        offset = [10, 0];
-        anchorx = "left";
-        anchory = "middle";
-      }
+      let labelPosition = adjustLabelPosition(
+        SVs.labelPosition,
+        movedFromOffGraph.current,
+      );
+      previousLabelPosition.current = labelPosition;
+
+      let { offset, anchorx, anchory } = calculateLabelAnchor(labelPosition);
       jsxPointAttributes.label = {
         offset,
         anchorx,
@@ -175,7 +153,10 @@ export default React.memo(function Point(props) {
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     }
 
-    let coords = [SVs.numericalXs[0], SVs.numericalXs[1]];
+    let coords = [
+      lastPositionFromCore.current[0],
+      lastPositionFromCore.current[1],
+    ];
 
     if (!Number.isFinite(coords[0])) {
       coords[0] = 0;
@@ -295,6 +276,26 @@ export default React.memo(function Point(props) {
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
+      let xminAdjusted = xmin;
+      let xmaxAdjusted = xmax;
+      let yminAdjusted = ymin;
+      let ymaxAdjusted = ymax;
+
+      if (xmax < xmin) {
+        [xmaxAdjusted, xminAdjusted] = [xminAdjusted, xmaxAdjusted];
+      }
+      if (ymax < ymin) {
+        [ymaxAdjusted, yminAdjusted] = [yminAdjusted, ymaxAdjusted];
+      }
+
+      let xscale = xmaxAdjusted - xminAdjusted;
+      let yscale = ymaxAdjusted - yminAdjusted;
+
+      xmaxAdjusted -= xscale * 0.01;
+      xminAdjusted += xscale * 0.01;
+      ymaxAdjusted -= yscale * 0.01;
+      yminAdjusted += yscale * 0.01;
+
       if (viaPointer) {
         // the reason we calculate point position with this algorithm,
         // rather than using .X() and .Y() directly
@@ -317,8 +318,14 @@ export default React.memo(function Point(props) {
         calculatedY.current = newShadowPointJXG.Y();
       }
 
-      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
-      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
+      calculatedX.current = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, calculatedX.current),
+      );
+      calculatedY.current = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, calculatedY.current),
+      );
 
       callAction({
         action: actions.movePoint,
@@ -330,8 +337,14 @@ export default React.memo(function Point(props) {
         },
       });
 
-      let shadowX = Math.min(xmax, Math.max(xmin, newShadowPointJXG.X()));
-      let shadowY = Math.min(ymax, Math.max(ymin, newShadowPointJXG.Y()));
+      let shadowX = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, newShadowPointJXG.X()),
+      );
+      let shadowY = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, newShadowPointJXG.Y()),
+      );
       newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [
         shadowX,
         shadowY,
@@ -376,7 +389,6 @@ export default React.memo(function Point(props) {
 
     pointJXG.current = newPointJXG;
     shadowPointJXG.current = newShadowPointJXG;
-    previousLabelPosition.current = SVs.labelPosition;
     previousWithLabel.current = withlabel;
   }
 
@@ -393,6 +405,49 @@ export default React.memo(function Point(props) {
   }
 
   if (board) {
+    lastPositionFromCore.current = [...SVs.numericalXs];
+    movedFromOffGraph.current = [0, 0];
+
+    if (!SVs.canLeaveGraph) {
+      let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+
+      let xminAdjusted = xmin;
+      let xmaxAdjusted = xmax;
+      let yminAdjusted = ymin;
+      let ymaxAdjusted = ymax;
+
+      if (xmax < xmin) {
+        [xmaxAdjusted, xminAdjusted] = [xminAdjusted, xmaxAdjusted];
+      }
+      if (ymax < ymin) {
+        [ymaxAdjusted, yminAdjusted] = [yminAdjusted, ymaxAdjusted];
+      }
+
+      let xscale = xmaxAdjusted - xminAdjusted;
+      let yscale = ymaxAdjusted - yminAdjusted;
+
+      xmaxAdjusted -= xscale * 0.01;
+      xminAdjusted += xscale * 0.01;
+      ymaxAdjusted -= yscale * 0.01;
+      yminAdjusted += yscale * 0.01;
+
+      if (lastPositionFromCore.current[0] < xminAdjusted) {
+        movedFromOffGraph.current[0] = xmax < xmin ? 1 : -1;
+        lastPositionFromCore.current[0] = xminAdjusted;
+      } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
+        movedFromOffGraph.current[0] = xmax < xmin ? -1 : 1;
+        lastPositionFromCore.current[0] = xmaxAdjusted;
+      }
+
+      if (lastPositionFromCore.current[1] < yminAdjusted) {
+        movedFromOffGraph.current[1] = ymax < ymin ? 1 : -1;
+        lastPositionFromCore.current[1] = yminAdjusted;
+      } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
+        movedFromOffGraph.current[1] = ymax < ymin ? -1 : 1;
+        lastPositionFromCore.current[1] = ymaxAdjusted;
+      }
+    }
+
     if (pointJXG.current === null) {
       createPointJXG();
     } else {
@@ -417,8 +472,8 @@ export default React.memo(function Point(props) {
       // TODO: is this a problem for which we should find a general fix?
 
       //if coordinates update
-      let x = SVs.numericalXs?.[0];
-      let y = SVs.numericalXs?.[1];
+      let x = lastPositionFromCore.current?.[0];
+      let y = lastPositionFromCore.current?.[1];
 
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
       if (!dragged.current) {
@@ -480,7 +535,10 @@ export default React.memo(function Point(props) {
         pointJXG.current.visProp.fillopacity = SVs.selectedStyle.markerOpacity;
       }
 
-      let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
+      let newFace = normalizeStyle(
+        SVs.selectedStyle.markerStyle,
+        movedFromOffGraph.current,
+      );
       if (pointJXG.current.visProp.face !== newFace) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
@@ -519,46 +577,19 @@ export default React.memo(function Point(props) {
         } else {
           pointJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
-        if (SVs.labelPosition !== previousLabelPosition.current) {
-          let anchorx, anchory, offset;
-          if (SVs.labelPosition === "upperright") {
-            offset = [5, 5];
-            anchorx = "left";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "upperleft") {
-            offset = [-5, 5];
-            anchorx = "right";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "lowerright") {
-            offset = [5, -5];
-            anchorx = "left";
-            anchory = "top";
-          } else if (SVs.labelPosition === "lowerleft") {
-            offset = [-5, -5];
-            anchorx = "right";
-            anchory = "top";
-          } else if (SVs.labelPosition === "top") {
-            offset = [0, 10];
-            anchorx = "middle";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "bottom") {
-            offset = [0, -10];
-            anchorx = "middle";
-            anchory = "top";
-          } else if (SVs.labelPosition === "left") {
-            offset = [-10, 0];
-            anchorx = "right";
-            anchory = "middle";
-          } else {
-            // labelPosition === right
-            offset = [10, 0];
-            anchorx = "left";
-            anchory = "middle";
-          }
+
+        let labelPosition = adjustLabelPosition(
+          SVs.labelPosition,
+          movedFromOffGraph.current,
+        );
+
+        if (labelPosition !== previousLabelPosition.current) {
+          let { offset, anchorx, anchory } =
+            calculateLabelAnchor(labelPosition);
           pointJXG.current.label.visProp.anchorx = anchorx;
           pointJXG.current.label.visProp.anchory = anchory;
           pointJXG.current.label.visProp.offset = offset;
-          previousLabelPosition.current = SVs.labelPosition;
+          previousLabelPosition.current = labelPosition;
           pointJXG.current.label.fullUpdate();
         } else {
           pointJXG.current.label.update();
@@ -597,6 +628,99 @@ export default React.memo(function Point(props) {
   );
 });
 
+function adjustLabelPosition(labelPosition, movedFromOffGraph) {
+  if (movedFromOffGraph[0] === -1) {
+    if (
+      labelPosition.substring(
+        labelPosition.length - 4,
+        labelPosition.length,
+      ) === "left"
+    ) {
+      labelPosition =
+        labelPosition.substring(0, labelPosition.length - 4) + "right";
+    } else if (labelPosition === "top") {
+      labelPosition = "upperright";
+    } else if (labelPosition === "bottom") {
+      labelPosition = "lowerright";
+    }
+  } else if (movedFromOffGraph[0] === 1) {
+    if (
+      labelPosition.substring(
+        labelPosition.length - 5,
+        labelPosition.length,
+      ) === "right"
+    ) {
+      labelPosition =
+        labelPosition.substring(0, labelPosition.length - 5) + "left";
+    } else if (labelPosition === "top") {
+      labelPosition = "upperleft";
+    } else if (labelPosition === "bottom") {
+      labelPosition = "lowerleft";
+    }
+  }
+
+  if (movedFromOffGraph[1] === -1) {
+    if (labelPosition.substring(0, 5, labelPosition.length) === "lower") {
+      labelPosition =
+        "upper" + labelPosition.substring(5, labelPosition.length);
+    } else if (labelPosition === "left") {
+      labelPosition = "upperleft";
+    } else if (labelPosition === "right") {
+      labelPosition = "upperright";
+    }
+  } else if (movedFromOffGraph[1] === 1) {
+    if (labelPosition.substring(0, 5, labelPosition.length) === "upper") {
+      labelPosition =
+        "lower" + labelPosition.substring(5, labelPosition.length);
+    } else if (labelPosition === "left") {
+      labelPosition = "lowerleft";
+    } else if (labelPosition === "right") {
+      labelPosition = "lowerright";
+    }
+  }
+
+  return labelPosition;
+}
+
+function calculateLabelAnchor(labelPosition) {
+  let anchorx, anchory, offset;
+  if (labelPosition === "upperright") {
+    offset = [5, 5];
+    anchorx = "left";
+    anchory = "bottom";
+  } else if (labelPosition === "upperleft") {
+    offset = [-5, 5];
+    anchorx = "right";
+    anchory = "bottom";
+  } else if (labelPosition === "lowerright") {
+    offset = [5, -5];
+    anchorx = "left";
+    anchory = "top";
+  } else if (labelPosition === "lowerleft") {
+    offset = [-5, -5];
+    anchorx = "right";
+    anchory = "top";
+  } else if (labelPosition === "top") {
+    offset = [0, 10];
+    anchorx = "middle";
+    anchory = "bottom";
+  } else if (labelPosition === "bottom") {
+    offset = [0, -10];
+    anchorx = "middle";
+    anchory = "top";
+  } else if (labelPosition === "left") {
+    offset = [-10, 0];
+    anchorx = "right";
+    anchory = "middle";
+  } else {
+    // labelPosition === right
+    offset = [10, 0];
+    anchorx = "left";
+    anchory = "middle";
+  }
+  return { offset, anchorx, anchory };
+}
+
 function normalizeSize(size, style) {
   if (style === "diamond") {
     return size * 1.4;
@@ -608,8 +732,17 @@ function normalizeSize(size, style) {
     return size * 1.5;
   } else return size;
 }
-function normalizeStyle(style) {
-  if (style === "triangle") {
+
+function normalizeStyle(style, movedFromOffGraph) {
+  if (movedFromOffGraph[1] === -1) {
+    return "triangledown";
+  } else if (movedFromOffGraph[1] === 1) {
+    return "triangleup";
+  } else if (movedFromOffGraph[0] === -1) {
+    return "triangleleft";
+  } else if (movedFromOffGraph[0] === 1) {
+    return "triangleright";
+  } else if (style === "triangle") {
     return "triangleup";
   } else {
     return style;

@@ -110,6 +110,14 @@ export default class Point extends GraphicalComponent {
       forRenderer: true,
     };
 
+    attributes.canLeaveGraph = {
+      createComponentOfType: "boolean",
+      createStateVariable: "canLeaveGraph",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+
     return attributes;
   }
 
