@@ -59,10 +59,10 @@ export async function loader() {
   return { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email };
 }
 
-function NavLinkTab({ to, children, datatest }) {
+function NavLinkTab({ to, children, dataTest }) {
   // TODO: use end only when path is "/"
   return (
-    <NavLink to={to} end datatest={datatest}>
+    <NavLink to={to} end data-test={dataTest}>
       {({ isActive, isPending }) => {
         // let spinner = null;
         // if (isPending) {
@@ -162,17 +162,17 @@ export function SiteHeader(props) {
             </GridItem>
             <GridItem area="menus">
               <HStack spacing={8}>
-                <NavLinkTab to="/" datatest="Home">
+                <NavLinkTab to="/" dataTest="Home">
                   Home
                 </NavLinkTab>
-                <NavLinkTab to="community" datatest="Community">
+                <NavLinkTab to="community" dataTest="Community">
                   Community
                 </NavLinkTab>
                 {signedIn && (
                   <>
                     <NavLinkTab
                       to={`portfolio/${portfolioCourseId}`}
-                      datatest="Portfolio"
+                      dataTest="Portfolio"
                     >
                       Portfolio
                     </NavLinkTab>
@@ -192,7 +192,7 @@ export function SiteHeader(props) {
                       My Courses
                     </Center>
                     {isAdmin && (
-                      <NavLinkTab to="admin" datatest="Admin">
+                      <NavLinkTab to="admin" dataTest="Admin">
                         Admin
                       </NavLinkTab>
                     )}
@@ -249,7 +249,7 @@ export function SiteHeader(props) {
               ) : (
                 <Center h="40px" mr="10px">
                   <Button
-                    datatest="Nav to signin"
+                    data-test="Nav to signin"
                     size="sm"
                     // variant="ghost"
                     variant="outline"
