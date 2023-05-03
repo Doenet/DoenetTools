@@ -1035,21 +1035,21 @@ export function PortfolioActivityEditor() {
   // }, [pageId, saveDraft, courseId]);
 
   // save draft when leave page
-  useBeforeUnload(
-    React.useCallback(() => {
-      // save and stop timers
-      console.log("useBeforeUnload leave save", { pageId, courseId });
-      // saveDraft({
-      //   pageId,
-      //   courseId,
-      //   backup: backupOldDraft.current,
-      // });
-      // if (timeout.current !== null) {
-      //   clearTimeout(timeout.current);
-      // }
-      // timeout.current = null;
-    }, [pageId, saveDraft, courseId]),
-  );
+  // useBeforeUnload(
+  //   React.useCallback(() => {
+  //     // save and stop timers
+  //     console.log("useBeforeUnload leave save", { pageId, courseId });
+  //     // saveDraft({
+  //     //   pageId,
+  //     //   courseId,
+  //     //   backup: backupOldDraft.current,
+  //     // });
+  //     // if (timeout.current !== null) {
+  //     //   clearTimeout(timeout.current);
+  //     // }
+  //     // timeout.current = null;
+  //   }, [pageId, saveDraft, courseId]),
+  // );
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
