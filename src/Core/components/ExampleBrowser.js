@@ -21,11 +21,12 @@ export class ExampleBrowser extends BlockComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let addExampleBrowserVideo = function ({ matchedChildren }) {
+      // add exampleBrowserVideo at the beginning
+
       let exampleBrowserVideo = {
         componentType: "exampleBrowserVideo",
       };
 
-      //Update depends on this being the 1st index position
       let newChildren = [exampleBrowserVideo, ...matchedChildren];
 
       return {
@@ -428,6 +429,7 @@ export class ExampleBrowserItem extends BlockComponent {
   static rendererType = "containerBlock";
 
   static renderChildren = true;
+  static includeBlankStringChildren = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -437,6 +439,45 @@ export class ExampleBrowserItem extends BlockComponent {
       defaultValue: "",
     };
     return attributes;
+  }
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let addExampleBrowserContent = function ({ matchedChildren }) {
+      let newChildren = [];
+
+      // remove first child if it is a blank string
+      // so that doesn't prevent next setup from being first
+      if (
+        typeof matchedChildren[0] === "string" &&
+        matchedChildren[0].trim() === ""
+      ) {
+        matchedChildren = matchedChildren.slice(1);
+      }
+
+      // if first child is a setup, leave it unaltered
+      if (matchedChildren[0].componentType === "setup") {
+        newChildren.push(matchedChildren[0]);
+        matchedChildren = matchedChildren.slice(1);
+      }
+
+      // wrap all remaining children except in exampleBrowserContent
+      let exampleBrowserContent = {
+        componentType: "exampleBrowserContent",
+        children: matchedChildren,
+      };
+      newChildren.push(exampleBrowserContent);
+
+      return {
+        success: true,
+        newChildren,
+      };
+    };
+    sugarInstructions.push({
+      replacementFunction: addExampleBrowserContent,
+    });
+    return sugarInstructions;
   }
 
   static returnChildGroups() {

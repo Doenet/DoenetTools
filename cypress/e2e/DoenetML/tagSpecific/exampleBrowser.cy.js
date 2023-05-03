@@ -29,7 +29,7 @@ describe("ExampleBrowser Tag Tests", function () {
       .should("have.text", "");
   });
 
-  it.only("Basic example", () => {
+  it("Basic example", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -40,27 +40,21 @@ describe("ExampleBrowser Tag Tests", function () {
               <label>p</label>
               <description>The <tag>p</tag> is simple.</description>
             </setup>
-            <exampleBrowserContent>
-              <p name="pp">Hello!</p>
-            </exampleBrowserContent>
+            <p name="pp">Hello!</p>
           </exampleBrowserItem>
           <exampleBrowserItem>
             <setup>
               <label>mathInput</label>
               <description>The <tag>mathInput</tag> let's you input math, but we don't have a video.</description>
             </setup>
-            <exampleBrowserContent>
-              <p name="mathinputp">Here is a mathInput: <mathInput prefill="x+x"/></p>
-            </exampleBrowserContent>
+            <p name="mathinputp">Here is a mathInput: <mathInput prefill="x+x"/></p>
           </exampleBrowserItem>
           <exampleBrowserItem youtubecode="tJ4ypc5L6uU">
             <setup>
               <label>math</label>
               <description>The <tag>math</tag> does math.</description>
             </setup>
-            <exampleBrowserContent>
-              <p name="mathp">Here is a math: <math>x+x</math></p>
-            </exampleBrowserContent>
+            <p name="mathp">Here is a math: <math>x+x</math></p>
           </exampleBrowserItem>
 
         </exampleBrowser>
