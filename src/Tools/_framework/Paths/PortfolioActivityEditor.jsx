@@ -903,7 +903,7 @@ function PortfolioActivitySettingsDrawer({
         </DrawerHeader>
 
         <DrawerBody>
-          <Tabs isFixed defaultIndex={controlsTabsLastIndex.current}>
+          <Tabs defaultIndex={controlsTabsLastIndex.current}>
             <TabList>
               <Tab onClick={() => (controlsTabsLastIndex.current = 0)}>
                 General
