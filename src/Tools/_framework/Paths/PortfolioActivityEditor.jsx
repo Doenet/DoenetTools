@@ -43,9 +43,14 @@ import {
   GridItem,
   HStack,
   Icon,
+  IconButton,
   // IconButton,
   Image,
   Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Progress,
   Tab,
   TabList,
@@ -72,6 +77,7 @@ import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { GoKebabVertical } from "react-icons/go";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -247,13 +253,45 @@ function SupportFilesControls({ onClose }) {
   }
   return (
     <>
+      {serverUploadSuccess && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>
+            File &quot;fileName&quot; Uploaded Successfully
+          </AlertTitle>
+        </Alert>
+      )}
+      {serverUploadError && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>{serverUploadError}</AlertTitle>
+        </Alert>
+      )}
+      {infoMessage != "" && (
+        <Alert status="info">
+          <AlertIcon />
+          <AlertTitle>{infoMessage}</AlertTitle>
+        </Alert>
+      )}
+      {fileRejections.map((rejectObj, i) => {
+        return (
+          <Alert key={`Alert${i}`} status="error">
+            <AlertIcon />
+            <AlertTitle>
+              File &apos;{rejectObj.file.name}&apos; not uploaded
+            </AlertTitle>
+            <AlertDescription>{rejectObj.errors[0].message}</AlertDescription>
+          </Alert>
+        );
+      })}
+
       <Tooltip
         hasArrow
         label={`${formatBytes(userQuotaBytesAvailable)}/${formatBytes(
           quotaBytes,
         )} Available`}
       >
-        <Box>
+        <Box mt={4} mb={6}>
           <Text>Account Space Available</Text>
           {/* Note: I wish we could change this color */}
           <Progress
@@ -263,7 +301,7 @@ function SupportFilesControls({ onClose }) {
         </Box>
       </Tooltip>
 
-      <Center key="drop" {...getRootProps()}>
+      <Center key="drop" mb={6} {...getRootProps()}>
         <input {...getInputProps()} />
 
         {isDragActive ? (
@@ -321,38 +359,6 @@ function SupportFilesControls({ onClose }) {
           </VStack>
         )}
       </Center>
-
-      {serverUploadSuccess && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>
-            File &quot;fileName&quot; Uploaded Successfully
-          </AlertTitle>
-        </Alert>
-      )}
-      {serverUploadError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>{serverUploadError}</AlertTitle>
-        </Alert>
-      )}
-      {infoMessage != "" && (
-        <Alert status="info">
-          <AlertIcon />
-          <AlertTitle>{infoMessage}</AlertTitle>
-        </Alert>
-      )}
-      {fileRejections.map((rejectObj, i) => {
-        return (
-          <Alert key={`Alert${i}`} status="error">
-            <AlertIcon />
-            <AlertTitle>
-              File &apos;{rejectObj.file.name}&apos; not uploaded
-            </AlertTitle>
-            <AlertDescription>{rejectObj.errors[0].message}</AlertDescription>
-          </Alert>
-        );
-      })}
 
       <Box h="425px" w="100%" overflowY="scroll">
         {/* <Box h="415px" overflowY="scroll"> */}
@@ -500,21 +506,34 @@ function SupportFilesControls({ onClose }) {
                       </VStack>
                     </GridItem>
                     <GridItem area="rightControls">
-                      <VStack spacing="15px" align="flex-end" p="4px">
-                        <CopyToClipboard
-                          onCopy={() => {
-                            setInfoMessage(
-                              "DoenetML Code copied to the clipboard",
-                            );
-                            setTimeout(() => setInfoMessage(""), 5000);
-                          }}
-                          text={doenetMLCode}
-                        >
-                          <Button size="sm" leftIcon={<BsClipboardPlus />}>
-                            Copy Code
-                          </Button>
-                        </CopyToClipboard>
-                        <Button
+                      <VStack spacing="10px" align="flex-end" p="4px">
+                        <Menu>
+                          <MenuButton
+                            as={IconButton}
+                            aria-label="Options"
+                            icon={<GoKebabVertical />}
+                            variant="ghost"
+                          />
+                          <MenuList>
+                            <MenuItem
+                              onClick={() => {
+                                setInfoMessage("Removing Image...");
+                                fetcher.submit(
+                                  {
+                                    _action: "remove file",
+                                    doenetId,
+                                    cid: file.cid,
+                                  },
+                                  { method: "post" },
+                                );
+                              }}
+                            >
+                              Remove
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
+                        {/* <Text>:</Text> */}
+                        {/* <Button
                           background="doenet.mainRed"
                           size="sm"
                           onClick={() => {
@@ -532,7 +551,20 @@ function SupportFilesControls({ onClose }) {
                           }}
                         >
                           Remove
-                        </Button>
+                        </Button> */}
+                        <CopyToClipboard
+                          onCopy={() => {
+                            setInfoMessage(
+                              "DoenetML Code copied to the clipboard",
+                            );
+                            setTimeout(() => setInfoMessage(""), 5000);
+                          }}
+                          text={doenetMLCode}
+                        >
+                          <Button size="sm" leftIcon={<BsClipboardPlus />}>
+                            Copy Code
+                          </Button>
+                        </CopyToClipboard>
                       </VStack>
                     </GridItem>
                   </Grid>
@@ -778,7 +810,7 @@ function PortfolioActivitySettingsDrawer({
         <DrawerCloseButton />
         <DrawerHeader>
           <Center>
-            <Icon as={FaCog} mr="14px" />
+            {/* <Icon as={FaCog} mr="14px" /> */}
             <Text>Activity Controls</Text>
           </Center>
         </DrawerHeader>
