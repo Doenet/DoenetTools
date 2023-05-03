@@ -1159,12 +1159,21 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
       >
         <Center
           cursor="col-resize"
+          background="doenet.mainGray"
           h="calc(100vh - 100px)"
-          top="50px"
+          top="90px"
+          borderLeft="solid 1px"
+          borderTop="solid 1px"
+          borderBottom="solid 1px"
+          borderColor="doenet.mediumGray"
+          // h="calc(100vh - 100px)"
+          // top="90px"
           position="fixed"
           width="10px"
           onMouseDown={onMouseDown}
           data-test="contentPanelDragHandle"
+          // marginLeft="1px"
+          paddingLeft="1px"
         >
           <Icon ml="0" as={BsGripVertical} />
         </Center>
@@ -1176,15 +1185,21 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
         alignSelf="start"
         paddingTop="10px"
         position="sticky"
+        // position="relative"
       >
         <Box
           top="50px"
+          // position="fixed"
           boxSizing="border-box"
           background="doenet.canvas"
           height="calc(100vh - 100px)"
+          // width="100%"
           overflowY="scroll"
-          borderWidth="1px"
-          borderStyle="solid"
+          // borderWidth="1px"
+          // borderStyle="solid"
+          borderRight="solid 1px"
+          borderTop="solid 1px"
+          borderBottom="solid 1px"
           borderColor="doenet.mediumGray"
         >
           {right}
