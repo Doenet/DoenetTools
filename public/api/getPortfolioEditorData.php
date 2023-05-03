@@ -20,6 +20,7 @@ try {
     $sql = "
     SELECT 
     type,
+    courseId,
     imagePath,
     label,
     isBanned,
@@ -34,6 +35,7 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $type = $row['type'];
+    $courseId = $row['courseId'];
     $imagePath = $row['imagePath'];
     $isBanned = $row['isBanned'];
     $isPublic = $row['isPublic'];
@@ -57,6 +59,8 @@ if ($result->num_rows > 0) {
             "isPublic"=>$isPublic,
             "version"=>$json['version'],
         ],
+        "courseId"=>$courseId,
+
     ];
     // set response code - 200 OK
     http_response_code(200);

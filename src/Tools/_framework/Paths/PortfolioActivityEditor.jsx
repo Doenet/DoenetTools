@@ -74,12 +74,13 @@ import {
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
 import { FaCog, FaFileCsv, FaFileImage } from "react-icons/fa";
-import { Form, useFetcher } from "react-router-dom";
+import { Form, useBeforeUnload, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
+import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -143,31 +144,75 @@ export async function action({ params, request }) {
   // );
 }
 
+function findContentsChildIds(content) {
+  let collectionAliasOrderAndPageIds = [];
+
+  for (let item of content) {
+    if (item?.type == "order") {
+      let newIds = findContentsChildIds(item.content);
+      collectionAliasOrderAndPageIds = [
+        ...collectionAliasOrderAndPageIds,
+        item.doenetId,
+        ...newIds,
+      ];
+    } else if (item?.type == "collectionLink") {
+      // let newIds = findCollectionAliasPages(item)
+      let newIds = [];
+      collectionAliasOrderAndPageIds = [
+        ...collectionAliasOrderAndPageIds,
+        item.doenetId,
+        ...newIds,
+      ];
+    } else {
+      collectionAliasOrderAndPageIds.push(item);
+    }
+  }
+  return collectionAliasOrderAndPageIds;
+}
+
+function findFirstPageIdInContent(content) {
+  let pageId = null;
+
+  for (let item of content) {
+    if (item?.type == "order") {
+      let recursivePageId = findFirstPageIdInContent(item.content);
+      if (recursivePageId != null) {
+        pageId = recursivePageId;
+        break;
+      }
+    } else if (item?.type == "collectionLink") {
+      //Skip
+    } else {
+      pageId = item;
+      break;
+    }
+  }
+  return pageId;
+}
+
 export async function loader({ params }) {
   const response = await axios.get("/api/getPortfolioEditorData.php", {
     params: { doenetId: params.doenetId },
   });
   let data = response.data;
   const activityData = { ...data.activity };
+  const courseId = data.courseId;
 
   let pageId = params.pageId;
   if (params.pageId == "_") {
-    //TODO: find pageId in data.content
+    //find pageId in data.content
+    let pageId = findFirstPageIdInContent(activityData.content);
 
-    pageId = "test";
     //If we found a pageId then redirect there
+    //TODO: test what happens when there are only orders and no pageIds
     if (pageId != "_") {
       return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
     }
   }
 
-  //TODO: get the doenetML of the pageId.
-  //   let doenetML = `<graph>
-  //   <point name='p'/>
-  // </graph>
-  // <p>$p.x</p>`;
-  let doenetML =
-    "<graph ><point name='p'/></graph>$p.x<graph /><graph /><graph /><graph /><graph /><graph /><graph /><graph />";
+  //Get the doenetML of the pageId.
+  const doenetMLResponse = await axios.get(`/media/byPageId/${pageId}.doenet`);
+  let doenetML = doenetMLResponse.data;
 
   const supportingFileResp = await axios.get(
     "/api/loadSupportingFileInfo.php",
@@ -181,6 +226,7 @@ export async function loader({ params }) {
   return {
     activityData,
     pageId,
+    courseId,
     doenetML,
     doenetId: params.doenetId,
     supportingFileData,
@@ -926,8 +972,9 @@ export function PortfolioActivityEditor2() {
     </Box>
   );
 }
+
 export function PortfolioActivityEditor() {
-  const { doenetML, pageId, activityData } = useLoaderData();
+  const { doenetML, pageId, courseId, activityData } = useLoaderData();
   const {
     isOpen: controlsAreOpen,
     onOpen: controlsOnOpen,
@@ -936,13 +983,15 @@ export function PortfolioActivityEditor() {
   // const [textEditorDoenetML, setTextEditorDoenetML] = useState(doenetML);
   let textEditorDoenetML = useRef(doenetML);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
-
   let controlsTabsLastIndex = useRef(0);
 
+  // console.log("textEditorDoenetML", textEditorDoenetML.current);
   // console.log("activityData", activityData);
   // console.log("pageId", pageId);
 
   let editorRef = useRef(null);
+  let timeout = useRef(null);
+  let backupOldDraft = useRef(true);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -961,7 +1010,46 @@ export function PortfolioActivityEditor() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [textEditorDoenetML]);
+  }, [textEditorDoenetML, controlsOnOpen]);
+
+  const { saveDraft } = useSaveDraft();
+
+  // save draft when leave page
+  // useEffect(() => {
+  //   return () => {
+  //     //TODO: do we need this pageId guard?
+  //     if (pageId !== "") {
+  //       // save and stop timers
+  //       console.log("page leave save", { pageId, courseId });
+  //       saveDraft({
+  //         pageId,
+  //         courseId,
+  //         backup: backupOldDraft.current,
+  //       });
+  //       if (timeout.current !== null) {
+  //         clearTimeout(timeout.current);
+  //       }
+  //       timeout.current = null;
+  //     }
+  //   };
+  // }, [pageId, saveDraft, courseId]);
+
+  // save draft when leave page
+  useBeforeUnload(
+    React.useCallback(() => {
+      // save and stop timers
+      console.log("useBeforeUnload leave save", { pageId, courseId });
+      // saveDraft({
+      //   pageId,
+      //   courseId,
+      //   backup: backupOldDraft.current,
+      // });
+      // if (timeout.current !== null) {
+      //   clearTimeout(timeout.current);
+      // }
+      // timeout.current = null;
+    }, [pageId, saveDraft, courseId]),
+  );
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -1111,28 +1199,27 @@ export function PortfolioActivityEditor() {
                 // readOnly={false}
                 editorRef={editorRef}
                 // setInternalValue={updateInternalValue}
-                setInternalValue={textEditorDoenetML.current}
-                // value={editorDoenetML}
+                setInternalValueTo={textEditorDoenetML.current}
+                // value={textEditorDoenetML.current}
                 // value="starter value"
                 onBeforeChange={(value) => {
                   textEditorDoenetML.current = value;
-                  // setTextEditorDoenetML(value);
-                  // console.log(value);
-                  //   setEditorDoenetML(value);
-                  //   // Debounce save to server at 3 seconds
-                  //   clearTimeout(timeout.current);
-                  //   timeout.current = setTimeout(function () {
-                  //     saveDraft({
-                  //       pageId: initializedPageId,
-                  //       courseId,
-                  //       backup: backupOldDraft.current,
-                  //     }).then(({ success }) => {
-                  //       if (success) {
-                  //         backupOldDraft.current = false;
-                  //       }
-                  //     });
-                  //     timeout.current = null;
-                  //   }, 3000); //3 seconds
+
+                  // Debounce save to server at 3 seconds
+                  clearTimeout(timeout.current);
+                  timeout.current = setTimeout(async function () {
+                    console.log("SAVE DRAFT!!", value);
+                    saveDraft({
+                      pageId,
+                      courseId,
+                      backup: backupOldDraft.current,
+                    }).then(({ success }) => {
+                      if (success) {
+                        backupOldDraft.current = false;
+                      }
+                    });
+                    timeout.current = null;
+                  }, 3000); //3 seconds
                 }}
               />
             }
