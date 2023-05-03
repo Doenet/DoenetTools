@@ -25,7 +25,7 @@ import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { FaMoon, FaRobot, FaSun } from "react-icons/fa";
 import axios from "axios";
 
 export async function loader() {
@@ -100,7 +100,7 @@ export function SiteHeader(props) {
   let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
     useLoaderData();
 
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, toggleColorMode, setColorMode } = useColorMode();
   let location = useLocation();
 
   // const navColor = useColorModeValue("#ffffff", "gray.800");
@@ -230,6 +230,14 @@ export function SiteHeader(props) {
                           >
                             Dark
                           </Button>
+                          {/* <Button
+                            leftIcon={<FaRobot />}
+                            onClick={() => setColorMode("system")}
+                            // isDisabled={colorMode == ""}
+                            // cursor="not-allowed"
+                          >
+                            Auto
+                          </Button> */}
                         </ButtonGroup>
                       </VStack>
                       <MenuItem as="a" href="/signout">

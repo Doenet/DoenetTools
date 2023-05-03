@@ -11,7 +11,7 @@ import { createRoot } from "react-dom/client";
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "./Core/utils/math";
-import DarkmodeController from "./Tools/_framework/DarkmodeController";
+// import DarkmodeController from "./Tools/_framework/DarkmodeController";
 import {
   loader as communityLoader,
   action as communityAction,
@@ -66,8 +66,12 @@ const theme = extendTheme({
       fontFamily: "Jost",
     },
   },
-  initialColorMode: "light",
-  useSystemColorMode: true,
+  config: {
+    initialColorMode: "light",
+    useSystemColorMode: false,
+    // initialColorMode: "system",
+    // useSystemColorMode: true,
+  },
   colors: {
     doenet: {
       mainBlue: "#1a5a99",
@@ -140,7 +144,6 @@ const router = createBrowserRouter([
     loader: siteLoader,
     element: (
       <>
-        {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
         <ChakraProvider theme={theme}>
           <SiteHeader />
         </ChakraProvider>
@@ -214,17 +217,17 @@ const router = createBrowserRouter([
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
         element: (
-          <DarkmodeController>
-            <MathJaxContext
-              version={2}
-              config={mathjaxConfig}
-              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-            >
-              <ChakraProvider theme={theme}>
-                <PortfolioActivityViewer />
-              </ChakraProvider>
-            </MathJaxContext>
-          </DarkmodeController>
+          // <DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <ChakraProvider theme={theme}>
+              <PortfolioActivityViewer />
+            </ChakraProvider>
+          </MathJaxContext>
+          // </DarkmodeController>
         ),
       },
       {
@@ -245,16 +248,14 @@ const router = createBrowserRouter([
         action: portfolioEditorAction,
         // errorElement: <div>Error!</div>,
         element: (
-          <DarkmodeController>
-            <MathJaxContext
-              version={2}
-              config={mathjaxConfig}
-              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-            >
-              <PortfolioActivityEditor />
-              {/* <ToolRoot /> */}
-            </MathJaxContext>
-          </DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PortfolioActivityEditor />
+            {/* <ToolRoot /> */}
+          </MathJaxContext>
         ),
       },
     ],
@@ -277,30 +278,26 @@ const router = createBrowserRouter([
     action: editorSupportPanelAction,
     // errorElement: <div>Error!</div>,
     element: (
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <ToolRoot />
-        </MathJaxContext>
-      </DarkmodeController>
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ToolRoot />
+      </MathJaxContext>
     ),
   },
   {
     path: "*",
     // errorElement: <div>Error!</div>,
     element: (
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <ToolRoot />
-        </MathJaxContext>
-      </DarkmodeController>
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ToolRoot />
+      </MathJaxContext>
     ),
   },
 ]);
@@ -308,6 +305,8 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
+    {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
+
     <RouterProvider router={router} />
   </RecoilRoot>,
 );
