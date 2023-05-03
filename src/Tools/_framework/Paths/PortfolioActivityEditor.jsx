@@ -896,7 +896,7 @@ function PortfolioActivitySettingsDrawer({
         </DrawerHeader>
 
         <DrawerBody>
-          <Tabs defaultIndex={controlsTabsLastIndex.current}>
+          <Tabs isFitted defaultIndex={controlsTabsLastIndex.current}>
             <TabList>
               <Tab onClick={() => (controlsTabsLastIndex.current = 0)}>
                 General
@@ -908,18 +908,19 @@ function PortfolioActivitySettingsDrawer({
                 Pages & Orders
               </Tab>
             </TabList>
-
-            <TabPanels>
-              <TabPanel>
-                <GeneralControls onClose={onClose} />
-              </TabPanel>
-              <TabPanel>
-                <SupportFilesControls onClose={onClose} />
-              </TabPanel>
-              <TabPanel>
-                <p>Pages & Orders</p>
-              </TabPanel>
-            </TabPanels>
+            <Box overflowY="scroll" height="calc(100vh - 100px)">
+              <TabPanels>
+                <TabPanel>
+                  <GeneralControls onClose={onClose} />
+                </TabPanel>
+                <TabPanel>
+                  <SupportFilesControls onClose={onClose} />
+                </TabPanel>
+                <TabPanel>
+                  <p>Pages & Orders</p>
+                </TabPanel>
+              </TabPanels>
+            </Box>
           </Tabs>
         </DrawerBody>
       </DrawerContent>
