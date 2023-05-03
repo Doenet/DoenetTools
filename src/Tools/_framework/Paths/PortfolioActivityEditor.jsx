@@ -757,7 +757,12 @@ function GeneralControls({ onClose }) {
   );
 }
 
-function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
+function PortfolioActivitySettingsDrawer({
+  isOpen,
+  onClose,
+  finalFocusRef,
+  controlsTabsLastIndex,
+}) {
   // const { pageId, activityData } = useLoaderData();
 
   return (
@@ -779,11 +784,17 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
         </DrawerHeader>
 
         <DrawerBody>
-          <Tabs>
+          <Tabs defaultIndex={controlsTabsLastIndex.current}>
             <TabList>
-              <Tab>General</Tab>
-              <Tab>Pages & Orders</Tab>
-              <Tab>Support Files</Tab>
+              <Tab onClick={() => (controlsTabsLastIndex.current = 0)}>
+                General
+              </Tab>
+              <Tab onClick={() => (controlsTabsLastIndex.current = 1)}>
+                Support Files
+              </Tab>
+              <Tab onClick={() => (controlsTabsLastIndex.current = 2)}>
+                Pages & Orders
+              </Tab>
             </TabList>
 
             <TabPanels>
@@ -791,10 +802,10 @@ function PortfolioActivitySettingsDrawer({ isOpen, onClose, finalFocusRef }) {
                 <GeneralControls onClose={onClose} />
               </TabPanel>
               <TabPanel>
-                <p>Pages & Orders</p>
+                <SupportFilesControls onClose={onClose} />
               </TabPanel>
               <TabPanel>
-                <SupportFilesControls onClose={onClose} />
+                <p>Pages & Orders</p>
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -859,6 +870,9 @@ export function PortfolioActivityEditor() {
   // const [textEditorDoenetML, setTextEditorDoenetML] = useState(doenetML);
   let textEditorDoenetML = useRef(doenetML);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
+
+  let controlsTabsLastIndex = useRef(0);
+
   // console.log("activityData", activityData);
   // console.log("pageId", pageId);
 
@@ -908,6 +922,7 @@ export function PortfolioActivityEditor() {
         onClose={controlsOnClose}
         finalFocusRef={controlsBtnRef}
         activityData={activityData}
+        controlsTabsLastIndex={controlsTabsLastIndex}
       />
 
       <Grid
