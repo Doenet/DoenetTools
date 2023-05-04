@@ -134,7 +134,7 @@ export default class AttractToGrid extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          applyComponentConstraint: function ({ variables }) {
+          applyComponentConstraint: function (variables) {
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
             if ("x1" in variables) {
@@ -269,14 +269,13 @@ export default class AttractToGrid extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          applyConstraint: function ({ variables, scales }) {
+          applyConstraint: function (variables) {
             let newVariables = {};
             let constrained = false;
 
             for (let varName in variables) {
               let result = dependencyValues.applyComponentConstraint({
-                variables: { [varName]: variables[varName] },
-                scales,
+                [varName]: variables[varName],
               });
               if (result.constrained) {
                 constrained = true;

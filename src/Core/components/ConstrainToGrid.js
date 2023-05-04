@@ -92,7 +92,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          applyComponentConstraint: function ({ variables }) {
+          applyComponentConstraint: function (variables) {
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
             if ("x1" in variables) {

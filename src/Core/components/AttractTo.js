@@ -6,9 +6,18 @@ export default class AttractTo extends ConstraintComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
+
+    attributes.relativeToGraphScales = {
+      createComponentOfType: "boolean",
+      createStateVariable: "relativeToGraphScales",
+      defaultValue: false,
+      public: true,
+    };
+
     attributes.threshold = {
       createComponentOfType: "number",
     };
+
     return attributes;
   }
 
@@ -41,6 +50,10 @@ export default class AttractTo extends ConstraintComponent {
           componentType: "constraints",
           variableNames: ["graphXmin"],
         },
+        relativeToGraphScales: {
+          dependencyType: "stateVariable",
+          variableName: "relativeToGraphScales",
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.thresholdAttr) {
@@ -50,16 +63,20 @@ export default class AttractTo extends ConstraintComponent {
             },
           };
         } else {
-          let defaultValue = 0.02;
-          if (
-            dependencyValues.constraintsAncestor === null ||
-            dependencyValues.constraintsAncestor.stateValues.graphXmin === null
-          ) {
-            defaultValue = 0.5;
-          }
-
           return {
-            useEssentialOrDefaultValue: { threshold: { defaultValue } },
+            useEssentialOrDefaultValue: {
+              threshold: {
+                get defaultValue() {
+                  let useRelative =
+                    dependencyValues.relativeToGraphScales &&
+                    dependencyValues.constraintsAncestor !== null &&
+                    dependencyValues.constraintsAncestor.stateValues
+                      .graphXmin !== null;
+
+                  return useRelative ? 0.02 : 0.5;
+                },
+              },
+            },
           };
         }
       },
@@ -114,36 +131,6 @@ export default class AttractTo extends ConstraintComponent {
       },
     };
 
-    stateVariableDefinitions.graphXscale = {
-      additionalStateVariablesDefined: ["graphYscale"],
-      returnDependencies: () => ({
-        graphAncestor: {
-          dependencyType: "ancestor",
-          componentType: "constraints",
-          variableNames: ["scales"],
-        },
-      }),
-      definition({ dependencyValues }) {
-        if (!dependencyValues.graphAncestor) {
-          return {
-            setValue: {
-              graphXscale: null,
-              graphYscale: null,
-            },
-          };
-        }
-        let graphXscale = dependencyValues.graphAncestor.stateValues.xscale;
-        let graphYscale = dependencyValues.graphAncestor.stateValues.yscale;
-
-        return {
-          setValue: {
-            graphXscale,
-            graphYscale,
-          },
-        };
-      },
-    };
-
     stateVariableDefinitions.applyConstraint = {
       returnDependencies() {
         let dependencies = {
@@ -155,6 +142,10 @@ export default class AttractTo extends ConstraintComponent {
             dependencyType: "stateVariable",
             variableName: "threshold",
           },
+          relativeToGraphScales: {
+            dependencyType: "stateVariable",
+            variableName: "relativeToGraphScales",
+          },
           constraintsAncestor: {
             dependencyType: "ancestor",
             componentType: "constraints",
@@ -165,17 +156,19 @@ export default class AttractTo extends ConstraintComponent {
         return dependencies;
       },
       definition({ dependencyValues }) {
-        let xscale = 1,
-          yscale = 1;
+        let scales;
 
-        if (dependencyValues.constraintsAncestor) {
-          [xscale, yscale] =
-            dependencyValues.constraintsAncestor.stateValues.scales;
+        if (dependencyValues.relativeToGraphScales) {
+          scales = dependencyValues.constraintsAncestor?.stateValues.scales || [
+            1, 1, 1,
+          ];
+        } else {
+          scales = [1, 1, 1];
         }
 
         return {
           setValue: {
-            applyConstraint: function ({ variables, scales }) {
+            applyConstraint: function (variables) {
               let closestDistance2 = Infinity;
               let closestPoint = {};
 
@@ -202,7 +195,7 @@ export default class AttractTo extends ConstraintComponent {
                   }
                   constrainedVariables.x1 = nearestPoint.x1;
                   distance2 += Math.pow(
-                    (numericalVariables.x1 - nearestPoint.x1) / xscale,
+                    (numericalVariables.x1 - nearestPoint.x1) / scales[0],
                     2,
                   );
                 }
@@ -212,7 +205,7 @@ export default class AttractTo extends ConstraintComponent {
                   }
                   constrainedVariables.x2 = nearestPoint.x2;
                   distance2 += Math.pow(
-                    (numericalVariables.x2 - nearestPoint.x2) / yscale,
+                    (numericalVariables.x2 - nearestPoint.x2) / scales[1],
                     2,
                   );
                 }

@@ -357,6 +357,7 @@ function substituteDeprecations(serializedComponents) {
     textinput: ["size"],
     constraintogrid: ["ignoregraphbounds"],
     attracttogrid: ["ignoregraphbounds"],
+    constraints: ["baseongraph"],
   };
 
   for (let component of serializedComponents) {
