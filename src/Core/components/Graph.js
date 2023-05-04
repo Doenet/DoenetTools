@@ -887,6 +887,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1032,6 +1033,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1173,6 +1175,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1319,6 +1322,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,

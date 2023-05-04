@@ -6911,6 +6911,13 @@ export default class Core {
     );
   }
 
+  markDescendantsToUpdateRenderers(component) {
+    for (let child of component.activeChildren) {
+      this.updateInfo.componentsToUpdateRenderers.add(child.componentName);
+      this.markDescendantsToUpdateRenderers(child);
+    }
+  }
+
   async markStateVariableAndUpstreamDependentsStale({ component, varName }) {
     // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
@@ -7032,6 +7039,10 @@ export default class Core {
 
       if (result.updateRenderedChildren) {
         this.componentsWithChangedChildrenToRender.add(component.componentName);
+      }
+
+      if (result.updateDescendantRenderers) {
+        this.markDescendantsToUpdateRenderers(component);
       }
 
       if (result.updateActionChaining) {
@@ -7543,6 +7554,10 @@ export default class Core {
               this.componentsWithChangedChildrenToRender.add(
                 component.componentName,
               );
+            }
+
+            if (result.updateDescendantRenderers) {
+              this.markDescendantsToUpdateRenderers(component);
             }
 
             if (result.updateActionChaining) {
