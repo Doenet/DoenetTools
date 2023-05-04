@@ -86,11 +86,12 @@ import {
   textEditorDoenetMLAtom,
   textEditorLastKnownCidAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
+import { HiOutlineX, HiPlus } from "react-icons/hi";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  // console.log({ formObj });
+  console.log(formObj["Learning Outcomes"]);
 
   //Don't let label be blank
   let label = formObj?.label?.trim();
@@ -694,6 +695,87 @@ function SupportFilesControls({ onClose }) {
   );
 }
 
+function LearningOutcomes() {
+  const { activityData, doenetId } = useLoaderData();
+
+  let learningOutcomesInit = activityData.learningOutcomes;
+  if (learningOutcomesInit == null) {
+    learningOutcomesInit = [""];
+  }
+  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
+
+  return (
+    <>
+      <VStack width="100%">
+        {learningOutcomes.map((outcome, i) => {
+          return (
+            <Flex key={`learningOutcome${i}`} columnGap={6}>
+              <Input
+                // name={`learningOutcome`}
+                // name={`learningOutcome${i}`}
+                size="sm"
+                // width="392px"
+                value={outcome}
+                width="300px"
+                onChange={(e) => {
+                  setLearningOutcomes((prev) => {
+                    let next = [...prev];
+                    next[i] = e.target.value;
+                    return next;
+                  });
+                }}
+                placeholder={`Learning Outcome #${i + 1}`}
+                data-text={`Learning Outcome #${i}`}
+              />
+              <IconButton
+                tabIndex="-1"
+                variant="outline"
+                size="sm"
+                color="doenet.mainRed"
+                borderColor="doenet.mainRed"
+                // background="doenet.mainRed"
+                icon={<HiOutlineX />}
+                onClick={() => {
+                  setLearningOutcomes((prev) => {
+                    if (prev.length < 2) {
+                      return [""];
+                    }
+                    let next = [...prev];
+                    next.splice(i, 1);
+                    return next;
+                  });
+                }}
+              />
+              <input
+                type="hidden"
+                name="Learning Outcomes"
+                value={["1,one", "2,two", "3,three"]}
+                // value={learningOutcomes}
+              />
+            </Flex>
+          );
+        })}
+
+        <IconButton
+          isDisabled={learningOutcomes.length > 9}
+          variant="outline"
+          width="80%"
+          size="xs"
+          icon={<HiPlus />}
+          onClick={() => {
+            setLearningOutcomes((prev) => {
+              if (prev.length > 9) {
+                return prev;
+              }
+              return [...prev, ""];
+            });
+          }}
+        />
+      </VStack>
+    </>
+  );
+}
+
 function GeneralControls({ onClose }) {
   const { activityData, doenetId } = useLoaderData();
   const { isPublic, label, imagePath: dataImagePath } = activityData;
@@ -857,6 +939,14 @@ function GeneralControls({ onClose }) {
                   />
                 </Td>
               </Tr>
+              <Tr>
+                <Td colSpan={2}>
+                  <Flex flexDirection="column" width="100%" rowGap={6}>
+                    <Text>Learning Outcomes</Text>
+                    <LearningOutcomes />
+                  </Flex>
+                </Td>
+              </Tr>
 
               <Tr>
                 <Td>
@@ -905,7 +995,7 @@ function GeneralControls({ onClose }) {
   );
 }
 
-function PortfolioActivitySettingsDrawer({
+function PortfolioActivitySettingsDrawer2({
   isOpen,
   onClose,
   finalFocusRef,
@@ -1002,15 +1092,15 @@ function EditableLabel() {
   );
 }
 
-export function PortfolioActivityEditor2() {
+export function PortfolioActivityEditor() {
   return (
     <Box w="672px" p="10px">
-      <SupportFilesControls />
+      <GeneralControls />
     </Box>
   );
 }
 
-export function PortfolioActivityEditor() {
+export function PortfolioActivityEditor2() {
   const { doenetML, pageId, courseId, activityData, lastKnownCid } =
     useLoaderData();
   const {

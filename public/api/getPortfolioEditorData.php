@@ -25,7 +25,8 @@ try {
     label,
     isBanned,
     isPublic,
-    CAST(jsonDefinition as CHAR) AS json
+    CAST(jsonDefinition as CHAR) AS json,
+    CAST(learningOutcomes as CHAR) AS learningOutcomes
     FROM course_content
     WHERE doenetId = '$doenetId'
     AND isDeleted = '0'
@@ -41,6 +42,7 @@ if ($result->num_rows > 0) {
     $isPublic = $row['isPublic'];
     $label = $row['label'];
     $json = json_decode($row['json'], true);
+    $learningOutcomes = json_decode($row['learningOutcomes'], true);
     if ($isBanned == '1'){
         throw new Exception("Activity has been banned.");
     }
@@ -58,6 +60,7 @@ if ($result->num_rows > 0) {
             "isSinglePage"=>$json['isSinglePage'],
             "isPublic"=>$isPublic,
             "version"=>$json['version'],
+            "learningOutcomes"=>$learningOutcomes,
         ],
         "courseId"=>$courseId,
 
