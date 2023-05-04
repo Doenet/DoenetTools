@@ -99,6 +99,7 @@ function NavLinkTab({ to, children, datatest }) {
 export function SiteHeader(props) {
   let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
     useLoaderData();
+  const { childComponent } = props;
 
   const { colorMode, toggleColorMode } = useColorMode();
   let location = useLocation();
@@ -264,7 +265,7 @@ export function SiteHeader(props) {
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="scroll">
           {/* <Box>test</Box> */}
-          <Outlet context={{ signedIn }} />
+          {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
         </GridItem>
       </Grid>
     </>

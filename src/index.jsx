@@ -40,7 +40,7 @@ import {
   action as portfolioActivityViewerAction,
   PortfolioActivityViewer,
 } from "./Tools/_framework/Paths/PortfolioActivityViewer";
-import { ChakraProvider, ColorModeScript, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
@@ -138,10 +138,6 @@ const router = createBrowserRouter([
       </>
     ),
     children: [
-      {
-        path: "*",
-        element: <ErrorPage />,
-      },
       {
         path: "/",
         loader: caroselLoader,
@@ -283,6 +279,15 @@ const router = createBrowserRouter([
           <ToolRoot />
         </MathJaxContext>
       </DarkmodeController>
+    ),
+    // TODO - probably not a good idea long term, this is to populate the site header
+    // on the 404 page, but this results in extra network requests when loading
+    // ToolRoot content
+    loader: siteLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <SiteHeader childComponent={<ErrorPage />} />
+      </ChakraProvider>
     ),
   },
 ]);
