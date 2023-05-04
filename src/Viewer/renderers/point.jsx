@@ -32,7 +32,10 @@ export default React.memo(function Point(props) {
   let lastPositionFromCore = useRef(null);
 
   // for each coordinate, will be -1 or 1 if moved off graph in that direction
-  let movedFromOffGraph = useRef([0, 0]);
+  let offGraphIndicator = useRef([0, 0]);
+
+  // for each coordinate, will be -1 or 1 if near edge of graph (or off graph) in that direction
+  let nearEdgeOfGraph = useRef([0, 0]);
 
   let fixed = useRef(false);
   let fixLocation = useRef(false);
@@ -109,7 +112,7 @@ export default React.memo(function Point(props) {
       ),
       face: normalizeStyle(
         SVs.selectedStyle.markerStyle,
-        movedFromOffGraph.current,
+        offGraphIndicator.current,
       ),
       highlight: !fixLocation.current,
     };
@@ -117,7 +120,7 @@ export default React.memo(function Point(props) {
     if (withlabel) {
       let labelPosition = adjustLabelPosition(
         SVs.labelPosition,
-        movedFromOffGraph.current,
+        nearEdgeOfGraph.current,
       );
       previousLabelPosition.current = labelPosition;
 
@@ -406,46 +409,66 @@ export default React.memo(function Point(props) {
 
   if (board) {
     lastPositionFromCore.current = [...SVs.numericalXs];
-    movedFromOffGraph.current = [0, 0];
+    offGraphIndicator.current = [0, 0];
+    nearEdgeOfGraph.current = [0, 0];
+    let flippedX = false;
+    let flippedY = false;
 
-    if (!SVs.canLeaveGraph) {
-      let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+    let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
-      let xminAdjusted = xmin;
-      let xmaxAdjusted = xmax;
-      let yminAdjusted = ymin;
-      let ymaxAdjusted = ymax;
+    if (xmax < xmin) {
+      flippedX = true;
+      [xmax, xmin] = [xmin, xmax];
+    }
+    if (ymax < ymin) {
+      flippedY = true;
+      [ymax, ymin] = [ymin, ymax];
+    }
 
-      if (xmax < xmin) {
-        [xmaxAdjusted, xminAdjusted] = [xminAdjusted, xmaxAdjusted];
-      }
-      if (ymax < ymin) {
-        [ymaxAdjusted, yminAdjusted] = [yminAdjusted, ymaxAdjusted];
-      }
+    let xscale = xmax - xmin;
+    let yscale = ymax - ymin;
 
-      let xscale = xmaxAdjusted - xminAdjusted;
-      let yscale = ymaxAdjusted - yminAdjusted;
+    let xminAdjusted, xmaxAdjusted, yminAdjusted, ymaxAdjusted;
 
-      xmaxAdjusted -= xscale * 0.01;
-      xminAdjusted += xscale * 0.01;
-      ymaxAdjusted -= yscale * 0.01;
-      yminAdjusted += yscale * 0.01;
+    if (!SVs.hideOffGraphIndicator) {
+      xminAdjusted = xmin + xscale * 0.01;
+      xmaxAdjusted = xmax - xscale * 0.01;
+      yminAdjusted = ymin + yscale * 0.01;
+      ymaxAdjusted = ymax - yscale * 0.01;
 
       if (lastPositionFromCore.current[0] < xminAdjusted) {
-        movedFromOffGraph.current[0] = xmax < xmin ? 1 : -1;
+        offGraphIndicator.current[0] = flippedX ? 1 : -1;
         lastPositionFromCore.current[0] = xminAdjusted;
       } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
-        movedFromOffGraph.current[0] = xmax < xmin ? -1 : 1;
+        offGraphIndicator.current[0] = flippedX ? -1 : 1;
         lastPositionFromCore.current[0] = xmaxAdjusted;
       }
 
       if (lastPositionFromCore.current[1] < yminAdjusted) {
-        movedFromOffGraph.current[1] = ymax < ymin ? 1 : -1;
+        offGraphIndicator.current[1] = flippedY ? 1 : -1;
         lastPositionFromCore.current[1] = yminAdjusted;
       } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
-        movedFromOffGraph.current[1] = ymax < ymin ? -1 : 1;
+        offGraphIndicator.current[1] = flippedY ? -1 : 1;
         lastPositionFromCore.current[1] = ymaxAdjusted;
       }
+    }
+
+    // TODO: use a measure of label width rather than 0.05 for x
+    xminAdjusted = xmin + xscale * 0.05;
+    xmaxAdjusted = xmax - xscale * 0.05;
+    yminAdjusted = ymin + yscale * 0.05;
+    ymaxAdjusted = ymax - yscale * 0.05;
+
+    if (lastPositionFromCore.current[0] < xminAdjusted) {
+      nearEdgeOfGraph.current[0] = flippedX ? 1 : -1;
+    } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
+      nearEdgeOfGraph.current[0] = flippedX ? -1 : 1;
+    }
+
+    if (lastPositionFromCore.current[1] < yminAdjusted) {
+      nearEdgeOfGraph.current[1] = flippedY ? 1 : -1;
+    } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
+      nearEdgeOfGraph.current[1] = flippedY ? -1 : 1;
     }
 
     if (pointJXG.current === null) {
@@ -537,7 +560,7 @@ export default React.memo(function Point(props) {
 
       let newFace = normalizeStyle(
         SVs.selectedStyle.markerStyle,
-        movedFromOffGraph.current,
+        offGraphIndicator.current,
       );
       if (pointJXG.current.visProp.face !== newFace) {
         pointJXG.current.setAttribute({ face: newFace });
@@ -552,8 +575,13 @@ export default React.memo(function Point(props) {
         shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
-      if (fixLocation.current) {
+      if (
+        fixLocation.current ||
+        offGraphIndicator.current[0] ||
+        offGraphIndicator.current[1]
+      ) {
         pointJXG.current.visProp.showinfobox = false;
+        board.displayInfobox(false);
       } else {
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
       }
@@ -580,7 +608,7 @@ export default React.memo(function Point(props) {
 
         let labelPosition = adjustLabelPosition(
           SVs.labelPosition,
-          movedFromOffGraph.current,
+          nearEdgeOfGraph.current,
         );
 
         if (labelPosition !== previousLabelPosition.current) {
@@ -628,8 +656,8 @@ export default React.memo(function Point(props) {
   );
 });
 
-function adjustLabelPosition(labelPosition, movedFromOffGraph) {
-  if (movedFromOffGraph[0] === -1) {
+function adjustLabelPosition(labelPosition, nearEdgeOfGraph) {
+  if (nearEdgeOfGraph[0] === -1) {
     if (
       labelPosition.substring(
         labelPosition.length - 4,
@@ -643,7 +671,7 @@ function adjustLabelPosition(labelPosition, movedFromOffGraph) {
     } else if (labelPosition === "bottom") {
       labelPosition = "lowerright";
     }
-  } else if (movedFromOffGraph[0] === 1) {
+  } else if (nearEdgeOfGraph[0] === 1) {
     if (
       labelPosition.substring(
         labelPosition.length - 5,
@@ -659,7 +687,7 @@ function adjustLabelPosition(labelPosition, movedFromOffGraph) {
     }
   }
 
-  if (movedFromOffGraph[1] === -1) {
+  if (nearEdgeOfGraph[1] === -1) {
     if (labelPosition.substring(0, 5, labelPosition.length) === "lower") {
       labelPosition =
         "upper" + labelPosition.substring(5, labelPosition.length);
@@ -668,7 +696,7 @@ function adjustLabelPosition(labelPosition, movedFromOffGraph) {
     } else if (labelPosition === "right") {
       labelPosition = "upperright";
     }
-  } else if (movedFromOffGraph[1] === 1) {
+  } else if (nearEdgeOfGraph[1] === 1) {
     if (labelPosition.substring(0, 5, labelPosition.length) === "upper") {
       labelPosition =
         "lower" + labelPosition.substring(5, labelPosition.length);

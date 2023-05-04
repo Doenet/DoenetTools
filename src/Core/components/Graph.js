@@ -208,6 +208,14 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+
+    attributes.hideOffGraphIndicators = {
+      createComponentOfType: "boolean",
+      createStateVariable: "hideOffGraphIndicators",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 

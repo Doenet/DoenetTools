@@ -6911,10 +6911,16 @@ export default class Core {
     );
   }
 
-  markDescendantsToUpdateRenderers(component) {
-    for (let child of component.activeChildren) {
-      this.updateInfo.componentsToUpdateRenderers.add(child.componentName);
-      this.markDescendantsToUpdateRenderers(child);
+  async markDescendantsToUpdateRenderers(component) {
+    if (component.constructor.renderChildren) {
+      let indicesToRender = await this.returnActiveChildrenIndicesToRender(
+        component,
+      );
+      for (let ind of indicesToRender) {
+        let child = component.activeChildren[ind];
+        this.updateInfo.componentsToUpdateRenderers.add(child.componentName);
+        await this.markDescendantsToUpdateRenderers(child);
+      }
     }
   }
 
@@ -7042,7 +7048,7 @@ export default class Core {
       }
 
       if (result.updateDescendantRenderers) {
-        this.markDescendantsToUpdateRenderers(component);
+        await this.markDescendantsToUpdateRenderers(component);
       }
 
       if (result.updateActionChaining) {
@@ -7557,7 +7563,7 @@ export default class Core {
             }
 
             if (result.updateDescendantRenderers) {
-              this.markDescendantsToUpdateRenderers(component);
+              await this.markDescendantsToUpdateRenderers(component);
             }
 
             if (result.updateActionChaining) {
