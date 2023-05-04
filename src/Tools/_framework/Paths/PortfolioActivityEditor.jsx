@@ -257,6 +257,36 @@ function formatBytes(bytes) {
   else return (bytes / teraBytes).toFixed(decimal) + " TB";
 }
 
+// <VStack spacing={2} width="100%" maxHeight="140px" overflowY="scroll">
+//48px tall
+function AlertQueue({ alertInfo = [] }) {
+  // let alertInfo = [
+  //   { type: "success", title: "Success Title", id: 1 },
+  //   { type: "info", title: "Info Title", id: 2, description: "my description" },
+  //   {
+  //     type: "error",
+  //     title: "Error Title",
+  //     id: 3,
+  //     description: "my description2",
+  //   },
+  // ];
+  return (
+    <>
+      <VStack spacing={2} width="100%">
+        {alertInfo.map(({ type, title, description, id }) => {
+          return (
+            <Alert key={`alert${id}`} status={type}>
+              <AlertIcon />
+              <AlertTitle>{title}</AlertTitle>
+              <AlertDescription>{description}</AlertDescription>
+            </Alert>
+          );
+        })}
+      </VStack>
+    </>
+  );
+}
+
 function SupportFilesControls({ onClose }) {
   const { supportingFileData, doenetId } = useLoaderData();
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
@@ -308,7 +338,8 @@ function SupportFilesControls({ onClose }) {
   }
   return (
     <>
-      {serverUploadSuccess && (
+      <AlertQueue />
+      {/* {serverUploadSuccess && (
         <Alert status="success">
           <AlertIcon />
           <AlertTitle>
@@ -338,7 +369,7 @@ function SupportFilesControls({ onClose }) {
             <AlertDescription>{rejectObj.errors[0].message}</AlertDescription>
           </Alert>
         );
-      })}
+      })} */}
 
       <Tooltip
         hasArrow
@@ -973,7 +1004,7 @@ function EditableLabel() {
   );
 }
 
-export function PortfolioActivityEditor2() {
+export function PortfolioActivityEditor() {
   return (
     <Box w="672px" p="10px">
       <SupportFilesControls />
@@ -981,7 +1012,7 @@ export function PortfolioActivityEditor2() {
   );
 }
 
-export function PortfolioActivityEditor() {
+export function PortfolioActivityEditor2() {
   const { doenetML, pageId, courseId, activityData, lastKnownCid } =
     useLoaderData();
   const {
