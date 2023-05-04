@@ -21349,12 +21349,12 @@ describe("Circle Tag Tests", function () {
     <point>(2,-3)</point>
     <point>(3,4)
     <constraints>
-      <constrainToGrid ignoreGraphBounds dx="3" dy="2" />
+      <constrainToGrid dx="3" dy="2" />
     </constraints>
     </point>
     <point>(-3,4)
     <constraints>
-      <constrainToGrid ignoreGraphBounds dx="3" dy="2" />
+      <constrainToGrid dx="3" dy="2" />
     </constraints>
     </point>
     <circle through="$_point1 $_point2 $_point3" />

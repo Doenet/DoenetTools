@@ -355,6 +355,8 @@ function substituteDeprecations(serializedComponents) {
   // use lower case
   let deprecatedPropertyDeletionsComponentSpecific = {
     textinput: ["size"],
+    constraintogrid: ["ignoregraphbounds"],
+    attracttogrid: ["ignoregraphbounds"],
   };
 
   for (let component of serializedComponents) {

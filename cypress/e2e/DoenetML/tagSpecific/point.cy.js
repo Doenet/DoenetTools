@@ -4402,7 +4402,7 @@ describe("Point Tag Tests", function () {
     cy.get(cesc("#\\/_boolean1")).should("have.text", "true");
   });
 
-  it("point constrained to grid, exclude points outside graph", () => {
+  it("point constrained to grid", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -4413,92 +4413,6 @@ describe("Point Tag Tests", function () {
   <point x="1" y="2">
     <constraints>
       <constrainToGrid dx="1.04" dy="1.04" />
-    </constraints>
-  </point>
-
-  </graph>
-  <math><copy prop="coords" target="_point1" /></math>
-  `,
-        },
-        "*",
-      );
-    });
-
-    // use this to wait for page to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(1.04,2.08)",
-    );
-
-    cy.log(`move point to (10,3.6)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 10, y: 3.6 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(9.36,3.12)",
-    );
-
-    cy.log(`move point to (-11,-7.4)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -11, y: -7.4 },
-      });
-    });
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(−9.36,−7.28)",
-    );
-
-    cy.log(`move point to (10,-10)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 10, y: -10 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(9.36,−9.36)",
-    );
-
-    cy.log(`move point to (-2,12)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -2, y: 12 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(−2.08,9.36)",
-    );
-  });
-
-  it("point constrained to grid, ignoreGraphBounds", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-  <text>a</text>
-  <graph>
-
-  <point x="1" y="2">
-    <constraints>
-      <constrainToGrid dx="1.04" dy="1.04" ignoreGraphBounds />
     </constraints>
   </point>
 
@@ -6787,21 +6701,19 @@ describe("Point Tag Tests", function () {
     cy.get(cesc("#\\/_boolean1")).should("have.text", "true");
   });
 
-  it("point attracted to grid, exclude points outside graph", () => {
+  it("point attracted to grid", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
   <text>a</text>
-  <p>threshold: <mathinput name="threshold" prefill="1" /></p>
   <p>include gridlines: <booleaninput name="includeGridlines" /></p>
-  <p>ignore graph bounds: <booleaninput name="ignoreGraphBounds" /></p>
 
   <graph grid="3 3" xmin="-8.5" xmax="8.5" ymin="-8.5" ymax="8.5">
 
   <point xs="-3.5 6.6">
     <constraints>
-      <attractToGrid dx="3" dy="3" xthreshold="$threshold" ythreshold="$threshold" includeGridlines="$includeGridlines" ignoreGraphBounds="$ignoreGraphBounds" />
+      <attractToGrid dx="3" dy="3" xthreshold="1" ythreshold="1" includeGridlines="$includeGridlines"  />
     </constraints>
   </point>
 
@@ -6817,65 +6729,6 @@ describe("Point Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(−3,6)");
-
-    cy.log(`move point to (8.5,3.1)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: 3.1 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(8.5,3.1)",
-    );
-
-    cy.log(`move point to (-8.5,-6.4)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -8.5, y: -6.4 },
-      });
-    });
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(−8.5,−6.4)",
-    );
-
-    cy.log(`move point to (8.5,-8.5)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: -8.5 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(8.5,−8.5)",
-    );
-
-    cy.log(`move point to (-3.2,8.5)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -3.2, y: 8.5 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(−3.2,8.5)",
-    );
-
-    cy.get(cesc("#\\/ignoreGraphBounds")).click();
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(−3,9)");
 
     cy.log(`move point to (8.5,3.1)`);
     cy.window().then(async (win) => {
@@ -6920,116 +6773,7 @@ describe("Point Tag Tests", function () {
 
     cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(−3,9)");
 
-    cy.get(cesc("#\\/ignoreGraphBounds")).click();
-
-    cy.get(cesc("#\\/threshold") + " textarea").type(
-      "{end}{backspace}3{enter}",
-      { force: true },
-    );
-
-    cy.log(`move point to (8.5,3.1)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: 3.1 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(6,3)");
-
-    cy.log(`move point to (-8.5,-6.4)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -8.5, y: -6.4 },
-      });
-    });
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(−6,−6)");
-
-    cy.log(`move point to (8.5,-8.5)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: -8.5 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(6,−6)");
-
-    cy.log(`move point to (-3.2,8.5)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -3.2, y: 8.5 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(−3,6)");
-
-    cy.get(cesc("#\\/threshold") + " textarea").type(
-      "{end}{backspace}1{enter}",
-      { force: true },
-    );
-
     cy.get(cesc("#\\/includeGridlines")).click();
-
-    cy.log(`move point to (8.5,3.1)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: 3.1 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(8.5,3)");
-
-    cy.log(`move point to (-8.5,-6.4)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -8.5, y: -6.4 },
-      });
-    });
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(−8.5,−6)",
-    );
-
-    cy.log(`move point to (8.5,-8.5)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: 8.5, y: -8.5 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(8.5,−8.5)",
-    );
-
-    cy.log(`move point to (-3.2,8.5)`);
-    cy.window().then(async (win) => {
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x: -3.2, y: 8.5 },
-      });
-    });
-
-    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should(
-      "contain.text",
-      "(−3,8.5)",
-    );
-
-    cy.get(cesc("#\\/ignoreGraphBounds")).click();
 
     cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "(−3,9)");
 

@@ -10372,7 +10372,7 @@ describe("Ray Tag Tests", function () {
   <graph>
   <point name="P">(4,1)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <point name="Q">(-4,2)</point>
@@ -10541,7 +10541,7 @@ describe("Ray Tag Tests", function () {
   <point name="P">(4,1)</point>
   <point name="Q">(-4,2)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <ray endpoint="$P" through="$Q" />
