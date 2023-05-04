@@ -38,7 +38,10 @@ $description = ''; //Don't automatically fill with file name
 
 $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id, $type);
 
-
+if ($type != "image/png" && $type != "image/jpeg"){
+    $success = false;
+    $msg = "Only .png or .jpg files. '$original_file_name' can not be uploaded.";
+}
 //Test if user has space to upload files
 if ($success) {
     list($userQuotaBytesAvailable, $quotaBytes) = getBytesAvailable(
@@ -157,6 +160,7 @@ $response_arr = [
     'height' => $height,
     'msg' => $msg,
     'userQuotaBytesAvailable' => $userQuotaBytesAvailable,
+    'type' => $type,
 ];
 
 // make it json format

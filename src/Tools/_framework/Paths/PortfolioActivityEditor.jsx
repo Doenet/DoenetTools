@@ -131,13 +131,19 @@ export async function action({ params, request }) {
     let resp = await axios.get("/api/deleteFile.php", {
       params: { doenetId: formObj.doenetId, cid: formObj.cid },
     });
+
+    return {
+      _action: formObj._action,
+      fileRemovedCid: formObj.cid,
+      success: resp.data.success,
+    };
   }
 
   if (formObj._action == "noop") {
     // console.log("noop");
   }
 
-  return true;
+  return { nothingToReturn: true };
   // let response = await fetch(
   //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
   // );
@@ -147,32 +153,6 @@ export async function action({ params, request }) {
   // return redirect(
   //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
   // );
-}
-
-function findContentsChildIds(content) {
-  let collectionAliasOrderAndPageIds = [];
-
-  for (let item of content) {
-    if (item?.type == "order") {
-      let newIds = findContentsChildIds(item.content);
-      collectionAliasOrderAndPageIds = [
-        ...collectionAliasOrderAndPageIds,
-        item.doenetId,
-        ...newIds,
-      ];
-    } else if (item?.type == "collectionLink") {
-      // let newIds = findCollectionAliasPages(item)
-      let newIds = [];
-      collectionAliasOrderAndPageIds = [
-        ...collectionAliasOrderAndPageIds,
-        item.doenetId,
-        ...newIds,
-      ];
-    } else {
-      collectionAliasOrderAndPageIds.push(item);
-    }
-  }
-  return collectionAliasOrderAndPageIds;
 }
 
 function findFirstPageIdInContent(content) {
@@ -239,6 +219,7 @@ export async function loader({ params }) {
     supportingFileData,
   };
 }
+
 function formatBytes(bytes) {
   var marker = 1024; // Change to 1000 if required
   var decimal = 1; // Change as required
@@ -257,23 +238,11 @@ function formatBytes(bytes) {
   else return (bytes / teraBytes).toFixed(decimal) + " TB";
 }
 
-// <VStack spacing={2} width="100%" maxHeight="140px" overflowY="scroll">
-//48px tall
-function AlertQueue({ alertInfo = [] }) {
-  // let alertInfo = [
-  //   { type: "success", title: "Success Title", id: 1 },
-  //   { type: "info", title: "Info Title", id: 2, description: "my description" },
-  //   {
-  //     type: "error",
-  //     title: "Error Title",
-  //     id: 3,
-  //     description: "my description2",
-  //   },
-  // ];
+function AlertQueue({ alerts = [] }) {
   return (
     <>
       <VStack spacing={2} width="100%">
-        {alertInfo.map(({ type, title, description, id }) => {
+        {alerts.map(({ type, title, description, id }) => {
           return (
             <Alert key={`alert${id}`} status={type}>
               <AlertIcon />
@@ -294,9 +263,27 @@ function SupportFilesControls({ onClose }) {
 
   const fetcher = useFetcher();
 
-  let [serverUploadError, setServerUploadError] = useState(null);
-  let [serverUploadSuccess, setServerUploadSuccess] = useState(false); //Quote not true/false
-  let [infoMessage, setInfoMessage] = useState("");
+  let [alerts, setAlerts] = useState([]);
+
+  //Update messages after action completes
+  if (fetcher.data) {
+    if (fetcher.data._action == "remove file") {
+      let newAlerts = [...alerts];
+      const index = newAlerts.findIndex(
+        (obj) => obj.id == fetcher.data.fileRemovedCid && obj.stage == 1,
+      );
+      if (index !== -1) {
+        newAlerts.splice(index, 1, {
+          id: newAlerts[index].id,
+          type: "info",
+          title: `Removed`,
+          description: newAlerts[index].description,
+          stage: 2,
+        });
+        setAlerts(newAlerts);
+      }
+    }
+  }
 
   const onDrop = useCallback(async (acceptedFiles) => {
     acceptedFiles.forEach((file) => {
@@ -311,11 +298,23 @@ function SupportFilesControls({ onClose }) {
         let resp = await axios.post("/api/supportFileUpload.php", uploadData);
 
         if (resp.data.success) {
-          setServerUploadSuccess(true);
-          setServerUploadError("");
+          setAlerts([
+            {
+              id: `uploadsuccess${resp.data.cid}`,
+              type: "success",
+              title: `File '${resp.data.asFileName}' Uploaded Successfully`,
+              description: "",
+            },
+          ]);
         } else {
-          setServerUploadSuccess(false);
-          setServerUploadError(resp.data.msg);
+          setAlerts([
+            {
+              id: resp.data.asFileName,
+              type: "error",
+              title: resp.data.msg,
+              description: "",
+            },
+          ]);
         }
 
         fetcher.submit({ _action: "noop" }, { method: "post" });
@@ -333,44 +332,23 @@ function SupportFilesControls({ onClose }) {
       // accept: ".csv,.jpg,.png",
     });
 
-  if (fileRejections.length > 0 && serverUploadSuccess) {
-    setServerUploadSuccess(false);
-  }
+  fileRejections.map((rejection) => {
+    const index = alerts.findIndex((obj) => obj.id == rejection.file.name);
+    if (index == -1) {
+      setAlerts([
+        {
+          id: rejection.file.name,
+          type: "error",
+          title: `Can't Upload '${rejection.file.name}'`,
+          description: rejection.errors[0].message,
+        },
+      ]);
+    }
+  });
+
   return (
     <>
-      <AlertQueue />
-      {/* {serverUploadSuccess && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>
-            File &quot;fileName&quot; Uploaded Successfully
-          </AlertTitle>
-        </Alert>
-      )}
-      {serverUploadError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>{serverUploadError}</AlertTitle>
-        </Alert>
-      )}
-      {infoMessage != "" && (
-        <Alert status="info">
-          <AlertIcon />
-          <AlertTitle>{infoMessage}</AlertTitle>
-        </Alert>
-      )}
-      {fileRejections.map((rejectObj, i) => {
-        return (
-          <Alert key={`Alert${i}`} status="error">
-            <AlertIcon />
-            <AlertTitle>
-              File &apos;{rejectObj.file.name}&apos; not uploaded
-            </AlertTitle>
-            <AlertDescription>{rejectObj.errors[0].message}</AlertDescription>
-          </Alert>
-        );
-      })} */}
-
+      <AlertQueue alerts={alerts} />
       <Tooltip
         hasArrow
         label={`${formatBytes(userQuotaBytesAvailable)}/${formatBytes(
@@ -453,10 +431,10 @@ function SupportFilesControls({ onClose }) {
 
           let doenetMLCode = `<image source='/media/${file.fileName}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
 
-          if (file.fileType == "text/csv") {
-            previewImagePath = "/activity_default.jpg";
-            doenetMLCode = `CSV Code HERE`;
-          }
+          // if (file.fileType == "text/csv") {
+          //   previewImagePath = "/activity_default.jpg";
+          //   doenetMLCode = `CSV Code HERE`;
+          // }
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {
             return (
@@ -505,7 +483,15 @@ function SupportFilesControls({ onClose }) {
                             <MenuList>
                               <MenuItem
                                 onClick={() => {
-                                  setInfoMessage("Removing Image...");
+                                  setAlerts([
+                                    {
+                                      id: file.cid,
+                                      type: "info",
+                                      title: "Removing",
+                                      description: file.asFileName,
+                                      stage: 1,
+                                    },
+                                  ]);
                                   fetcher.submit(
                                     {
                                       _action: "remove file",
@@ -655,7 +641,15 @@ function SupportFilesControls({ onClose }) {
                           <MenuList>
                             <MenuItem
                               onClick={() => {
-                                setInfoMessage("Removing Image...");
+                                setAlerts([
+                                  {
+                                    id: file.cid,
+                                    type: "info",
+                                    title: "Removing",
+                                    description: file.description,
+                                    stage: 1,
+                                  },
+                                ]);
                                 fetcher.submit(
                                   {
                                     _action: "remove file",
@@ -672,10 +666,14 @@ function SupportFilesControls({ onClose }) {
                         </Menu>
                         <CopyToClipboard
                           onCopy={() => {
-                            setInfoMessage(
-                              "DoenetML Code copied to the clipboard",
-                            );
-                            setTimeout(() => setInfoMessage(""), 5000);
+                            setAlerts([
+                              {
+                                id: file.cid,
+                                type: "info",
+                                title: "DoenetML Code copied to the clipboard",
+                                description: `for ${file.description}`,
+                              },
+                            ]);
                           }}
                           text={doenetMLCode}
                         >
@@ -1004,7 +1002,7 @@ function EditableLabel() {
   );
 }
 
-export function PortfolioActivityEditor() {
+export function PortfolioActivityEditor2() {
   return (
     <Box w="672px" p="10px">
       <SupportFilesControls />
@@ -1012,7 +1010,7 @@ export function PortfolioActivityEditor() {
   );
 }
 
-export function PortfolioActivityEditor2() {
+export function PortfolioActivityEditor() {
   const { doenetML, pageId, courseId, activityData, lastKnownCid } =
     useLoaderData();
   const {
@@ -1058,24 +1056,24 @@ export function PortfolioActivityEditor2() {
   const { saveDraft } = useSaveDraft();
 
   // save draft when leave page
-  // useEffect(() => {
-  //   return () => {
-  //     //TODO: do we need this pageId guard?
-  //     if (pageId !== "") {
-  //       // save and stop timers
-  //       console.log("page leave save", { pageId, courseId });
-  //       saveDraft({
-  //         pageId,
-  //         courseId,
-  //         backup: backupOldDraft.current,
-  //       });
-  //       if (timeout.current !== null) {
-  //         clearTimeout(timeout.current);
-  //       }
-  //       timeout.current = null;
-  //     }
-  //   };
-  // }, [pageId, saveDraft, courseId]);
+  useEffect(() => {
+    return () => {
+      //TODO: do we need this pageId guard?
+      // if (pageId !== "") {
+      // save and stop timers
+      // console.log("page leave save", { pageId, courseId });
+      saveDraft({
+        pageId,
+        courseId,
+        backup: backupOldDraft.current,
+      });
+      if (timeout.current !== null) {
+        clearTimeout(timeout.current);
+      }
+      timeout.current = null;
+      // }
+    };
+  }, [pageId, saveDraft, courseId]);
 
   // save draft when leave page
   // useBeforeUnload(
