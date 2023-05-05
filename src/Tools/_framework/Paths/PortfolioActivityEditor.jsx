@@ -91,7 +91,7 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  // console.log(formObj);
+  // console.log({ formObj });
 
   //Don't let label be blank
   let label = formObj?.label?.trim();
@@ -108,13 +108,8 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "update general") {
-    let i = 0;
-    let learningOutcomes = [];
-    while (formObj[`LearningOutcome${i}`]) {
-      learningOutcomes.push(formObj[`LearningOutcome${i}`]);
-      i++;
-    }
-    // console.log("formObj params", formObj, params);
+    let learningOutcomes = JSON.parse(formObj.LearningOutcomes);
+
     let response = await axios.post(
       "/api/updatePortfolioActivitySettings.php",
       {
@@ -703,7 +698,7 @@ function SupportFilesControls({ onClose }) {
 }
 
 function LearningOutcomes() {
-  const { activityData, doenetId } = useLoaderData();
+  const { activityData } = useLoaderData();
 
   let learningOutcomesInit = activityData.learningOutcomes;
   if (learningOutcomesInit == null) {
@@ -711,6 +706,7 @@ function LearningOutcomes() {
   }
   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
 
+  let serializedLearningOutcomes = JSON.stringify(learningOutcomes);
   return (
     <>
       <VStack width="100%">
@@ -718,10 +714,7 @@ function LearningOutcomes() {
           return (
             <Flex key={`learningOutcome${i}`} columnGap={6}>
               <Input
-                // name={`learningOutcome`}
-                // name={`learningOutcome${i}`}
                 size="sm"
-                // width="392px"
                 value={outcome}
                 width="300px"
                 onChange={(e) => {
@@ -752,16 +745,12 @@ function LearningOutcomes() {
                   });
                 }}
               />
-              {learningOutcomes.map((learningOutcome, i) => {
-                return (
-                  <input
-                    key={`hidden${i}`}
-                    type="hidden"
-                    name={`LearningOutcome${i}`}
-                    value={learningOutcome}
-                  />
-                );
-              })}
+              <input
+                key={`hidden`}
+                type="hidden"
+                name={`LearningOutcomes`}
+                value={serializedLearningOutcomes}
+              />
             </Flex>
           );
         })}
@@ -1199,7 +1188,7 @@ export function PortfolioActivityEditor() {
     allPossibleVariants: ["a"],
   });
 
-  console.log("variants", variants);
+  // console.log("variants", variants);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
