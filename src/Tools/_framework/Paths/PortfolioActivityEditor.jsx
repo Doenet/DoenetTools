@@ -417,11 +417,14 @@ function SupportFilesControls({ onClose }) {
                 color="doenet.mediumGray"
                 as={FaFileImage}
               />
+              <Text color="doenet.mediumGray" fontSize="20pt">
+                Click for Menu
+              </Text>
               {/* <Icon fontSize="24pt" color="doenet.mediumGray" as={FaFileCsv} /> */}
             </HStack>
-            <Text color="doenet.mediumGray" fontSize="24pt">
+
+            <Text color="doenet.mediumGray" fontSize="20pt">
               Drop JPG or PNG Files Here
-              {/* Drop JPG, PNG or CSV Files Here */}
             </Text>
           </VStack>
         )}
@@ -1145,24 +1148,24 @@ export function PortfolioActivityEditor() {
   const { saveDraft } = useSaveDraft();
 
   // save draft when leave page
-  useEffect(() => {
-    return () => {
-      //TODO: do we need this pageId guard?
-      // if (pageId !== "") {
-      // save and stop timers
-      // console.log("page leave save", { pageId, courseId });
-      saveDraft({
-        pageId,
-        courseId,
-        backup: backupOldDraft.current,
-      });
-      if (timeout.current !== null) {
-        clearTimeout(timeout.current);
-      }
-      timeout.current = null;
-      // }
-    };
-  }, [pageId, saveDraft, courseId]);
+  // useEffect(() => {
+  //   return () => {
+  //     //TODO: do we need this pageId guard?
+  //     // if (pageId !== "") {
+  //     // save and stop timers
+  //     // console.log("page leave save", { pageId, courseId });
+  //     saveDraft({
+  //       pageId,
+  //       courseId,
+  //       backup: backupOldDraft.current,
+  //     });
+  //     if (timeout.current !== null) {
+  //       clearTimeout(timeout.current);
+  //     }
+  //     timeout.current = null;
+  //     // }
+  //   };
+  // }, [pageId, saveDraft, courseId]);
 
   // save draft when leave page
   // useBeforeUnload(
