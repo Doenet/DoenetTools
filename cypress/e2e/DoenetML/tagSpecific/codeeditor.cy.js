@@ -1407,12 +1407,21 @@ describe("Code Editor Tag Tests", function () {
 
       cy.log("Overwrite text");
 
-      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
-        "{control+a}<alert>Ovewritten!</alert>",
-        {
-          delay: 0,
-        },
-      );
+      if (Cypress.platform === "darwin") {
+        cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+          "{command+a}<alert>Ovewritten!</alert>",
+          {
+            delay: 0,
+          },
+        );
+      } else {
+        cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+          "{control+a}<alert>Ovewritten!</alert>",
+          {
+            delay: 0,
+          },
+        );
+      }
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<alert>Ovewritten!</alert>");

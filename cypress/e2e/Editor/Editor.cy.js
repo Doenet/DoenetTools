@@ -65,17 +65,24 @@ describe("doenetEditor test", function () {
     cy.reload();
     cy.get(".cm-content").contains(doenetMLString);
     cy.get(".cm-content").type("newly added content");
+    cy.get(".cm-content").type("\n");
+    cy.get(".cm-content").type("even more stuff");
 
     cy.wait(5000); // make sure we have a debounced save event from the newly typed text
     if (Cypress.platform === "darwin") {
       cy.get(".cm-content").type("{command}{z}");
+      cy.get(".cm-content").type("{command}{z}");
+      cy.get(".cm-content").type("{command}{shift}{z}");
     } else {
       cy.get(".cm-content").type("{control}{z}");
+      cy.get(".cm-content").type("{control}{z}");
+      cy.get(".cm-content").type("{control}{y}");
     }
     cy.wait(5000); // wait for another debounce after the undo event
     cy.reload();
     cy.get(cesc2("#/_document1")).contains(doenetMLString);
-    cy.get(cesc2("#/_document1")).should("not.contain", "newly added content");
+    cy.get(cesc2("#/_document1")).contains("newly added content");
+    cy.get(cesc2("#/_document1")).should("not.contain", "even more stuff");
   });
 
   it("command+s updates viewer", () => {

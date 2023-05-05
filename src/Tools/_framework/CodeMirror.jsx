@@ -201,11 +201,7 @@ export default function CodeMirror({
       onBlurExtension,
       onFocusExtension,
       EditorState.changeFilter.of(changeFunc),
-      EditorView.updateListener.of(function (update) {
-        if (update.docChanged) {
-          onBeforeChange(update.state.sliceDoc());
-        }
-      }),
+      EditorView.updateListener.of(changeFunc),
     ],
     [changeFunc],
   );
