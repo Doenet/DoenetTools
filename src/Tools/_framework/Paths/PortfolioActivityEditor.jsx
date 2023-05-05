@@ -91,7 +91,7 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  console.log(formObj);
+  // console.log(formObj);
 
   //Don't let label be blank
   let label = formObj?.label?.trim();
@@ -1053,7 +1053,7 @@ function PortfolioActivitySettingsDrawer({
                   <SupportFilesControls onClose={onClose} />
                 </TabPanel>
                 <TabPanel>
-                  <p>Pages & Orders</p>
+                  <Button size="sm">Enable Pages & Orders</Button>
                 </TabPanel>
               </TabPanels>
             </Box>
@@ -1192,21 +1192,23 @@ export function PortfolioActivityEditor() {
   //   }, [pageId, saveDraft, courseId]),
   // );
 
-  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const controlsBtnRef = useRef(null);
+
+  const [variants, setVariants] = useState({
+    index: 1,
+    allPossibleVariants: ["a"],
+  });
+
+  console.log("variants", variants);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(
       JSON.stringify(generatedVariantInfo),
     );
-    setVariantPanel({
+    setVariants({
       index: cleanGeneratedVariant.index,
       allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
     });
   }
 
@@ -1281,7 +1283,30 @@ export function PortfolioActivityEditor() {
                   Update
                 </Button>
               </Tooltip>
-              Variant Control
+              {variants.allPossibleVariants.length > 1 && (
+                <Menu size="sm">
+                  <MenuButton as={Button}>Page Variant</MenuButton>
+                  <MenuList>
+                    {variants.allPossibleVariants.map((variant, i) => {
+                      return (
+                        <MenuItem
+                          key={`key${i}`}
+                          onClick={() => {
+                            console.log({ variant, i });
+                            setVariants((prev) => {
+                              let next = { ...prev };
+                              next.index = i + 1;
+                              return next;
+                            });
+                          }}
+                        >
+                          {variant}
+                        </MenuItem>
+                      );
+                    })}
+                  </MenuList>
+                </Menu>
+              )}
             </GridItem>
             <GridItem area="label">
               <EditableLabel />
@@ -1329,7 +1354,7 @@ export function PortfolioActivityEditor() {
                 // doenetId={doenetId}
                 attemptNumber={1}
                 generatedVariantCallback={variantCallback} //TODO:Replace
-                requestedVariantIndex={variantInfo.index}
+                requestedVariantIndex={variants.index}
                 // setIsInErrorState={setIsInErrorState}
                 pageIsActive={true}
               />
