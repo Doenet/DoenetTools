@@ -91,7 +91,7 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  console.log(formObj["Learning Outcomes"]);
+  console.log(formObj);
 
   //Don't let label be blank
   let label = formObj?.label?.trim();
@@ -108,6 +108,12 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "update general") {
+    let i = 0;
+    let learningOutcomes = [];
+    while (formObj[`LearningOutcome${i}`]) {
+      learningOutcomes.push(formObj[`LearningOutcome${i}`]);
+      i++;
+    }
     // console.log("formObj params", formObj, params);
     let response = await axios.post(
       "/api/updatePortfolioActivitySettings.php",
@@ -116,6 +122,7 @@ export async function action({ params, request }) {
         imagePath: formObj.imagePath,
         public: formObj.public,
         doenetId: params.doenetId,
+        learningOutcomes,
       },
     );
   }
@@ -746,12 +753,16 @@ function LearningOutcomes() {
                   });
                 }}
               />
-              <input
-                type="hidden"
-                name="Learning Outcomes"
-                value={["1,one", "2,two", "3,three"]}
-                // value={learningOutcomes}
-              />
+              {learningOutcomes.map((learningOutcome, i) => {
+                return (
+                  <input
+                    key={`hidden${i}`}
+                    type="hidden"
+                    name={`LearningOutcome${i}`}
+                    value={learningOutcome}
+                  />
+                );
+              })}
             </Flex>
           );
         })}
