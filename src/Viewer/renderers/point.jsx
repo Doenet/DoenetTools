@@ -5,6 +5,13 @@ import { MathJax } from "better-react-mathjax";
 import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 import { useRecoilValue } from "recoil";
 import { textRendererStyle } from "../../Core/utils/style";
+import { characterizeOffGraphPoint } from "./utils/offGraphIndicators";
+import {
+  adjustPointLabelPosition,
+  calculatePointLabelAnchor,
+  normalizePointSize,
+  normalizePointStyle,
+} from "./utils/graph";
 
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
@@ -89,7 +96,6 @@ export default React.memo(function Point(props) {
 
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
-    //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
@@ -100,17 +106,13 @@ export default React.memo(function Point(props) {
       strokeColor,
       strokeOpacity: SVs.selectedStyle.markerOpacity,
       fillOpacity: SVs.selectedStyle.markerOpacity,
-      highlightFillColor: getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--mainGray"),
-      highlightStrokeColor: getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--lightBlue"),
-      size: normalizeSize(
+      highlightFillColor: "var(--mainGray)",
+      highlightStrokeColor: "var(--lightBlue)",
+      size: normalizePointSize(
         SVs.selectedStyle.markerSize,
         SVs.selectedStyle.markerStyle,
       ),
-      face: normalizeStyle(
+      face: normalizePointStyle(
         SVs.selectedStyle.markerStyle,
         offGraphIndicator.current,
       ),
@@ -118,13 +120,14 @@ export default React.memo(function Point(props) {
     };
 
     if (withlabel) {
-      let labelPosition = adjustLabelPosition(
+      let labelPosition = adjustPointLabelPosition(
         SVs.labelPosition,
         nearEdgeOfGraph.current,
       );
       previousLabelPosition.current = labelPosition;
 
-      let { offset, anchorx, anchory } = calculateLabelAnchor(labelPosition);
+      let { offset, anchorx, anchory } =
+        calculatePointLabelAnchor(labelPosition);
       jsxPointAttributes.label = {
         offset,
         anchorx,
@@ -410,7 +413,21 @@ export default React.memo(function Point(props) {
   if (board) {
     lastPositionFromCore.current = [...SVs.numericalXs];
     offGraphIndicator.current = [0, 0];
+
+    if (!SVs.hideOffGraphIndicator) {
+      let { needIndicator, indicatorCoords, indicatorSides } =
+        characterizeOffGraphPoint(lastPositionFromCore.current, board);
+
+      if (needIndicator) {
+        lastPositionFromCore.current = indicatorCoords;
+        offGraphIndicator.current = indicatorSides;
+      }
+    }
+
+    // determine if near edge of graph
+    // which will be used to alter label position so that it is visible
     nearEdgeOfGraph.current = [0, 0];
+
     let flippedX = false;
     let flippedY = false;
 
@@ -428,36 +445,11 @@ export default React.memo(function Point(props) {
     let xscale = xmax - xmin;
     let yscale = ymax - ymin;
 
-    let xminAdjusted, xmaxAdjusted, yminAdjusted, ymaxAdjusted;
-
-    if (!SVs.hideOffGraphIndicator) {
-      xminAdjusted = xmin + xscale * 0.01;
-      xmaxAdjusted = xmax - xscale * 0.01;
-      yminAdjusted = ymin + yscale * 0.01;
-      ymaxAdjusted = ymax - yscale * 0.01;
-
-      if (lastPositionFromCore.current[0] < xminAdjusted) {
-        offGraphIndicator.current[0] = flippedX ? 1 : -1;
-        lastPositionFromCore.current[0] = xminAdjusted;
-      } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
-        offGraphIndicator.current[0] = flippedX ? -1 : 1;
-        lastPositionFromCore.current[0] = xmaxAdjusted;
-      }
-
-      if (lastPositionFromCore.current[1] < yminAdjusted) {
-        offGraphIndicator.current[1] = flippedY ? 1 : -1;
-        lastPositionFromCore.current[1] = yminAdjusted;
-      } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
-        offGraphIndicator.current[1] = flippedY ? -1 : 1;
-        lastPositionFromCore.current[1] = ymaxAdjusted;
-      }
-    }
-
     // TODO: use a measure of label width rather than 0.05 for x
-    xminAdjusted = xmin + xscale * 0.05;
-    xmaxAdjusted = xmax - xscale * 0.05;
-    yminAdjusted = ymin + yscale * 0.05;
-    ymaxAdjusted = ymax - yscale * 0.05;
+    let xminAdjusted = xmin + xscale * 0.05;
+    let xmaxAdjusted = xmax - xscale * 0.05;
+    let yminAdjusted = ymin + yscale * 0.05;
+    let ymaxAdjusted = ymax - yscale * 0.05;
 
     if (lastPositionFromCore.current[0] < xminAdjusted) {
       nearEdgeOfGraph.current[0] = flippedX ? 1 : -1;
@@ -558,7 +550,7 @@ export default React.memo(function Point(props) {
         pointJXG.current.visProp.fillopacity = SVs.selectedStyle.markerOpacity;
       }
 
-      let newFace = normalizeStyle(
+      let newFace = normalizePointStyle(
         SVs.selectedStyle.markerStyle,
         offGraphIndicator.current,
       );
@@ -566,7 +558,7 @@ export default React.memo(function Point(props) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
       }
-      let newSize = normalizeSize(
+      let newSize = normalizePointSize(
         SVs.selectedStyle.markerSize,
         SVs.selectedStyle.markerStyle,
       );
@@ -606,14 +598,14 @@ export default React.memo(function Point(props) {
           pointJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
 
-        let labelPosition = adjustLabelPosition(
+        let labelPosition = adjustPointLabelPosition(
           SVs.labelPosition,
           nearEdgeOfGraph.current,
         );
 
         if (labelPosition !== previousLabelPosition.current) {
           let { offset, anchorx, anchory } =
-            calculateLabelAnchor(labelPosition);
+            calculatePointLabelAnchor(labelPosition);
           pointJXG.current.label.visProp.anchorx = anchorx;
           pointJXG.current.label.visProp.anchory = anchory;
           pointJXG.current.label.visProp.offset = offset;
@@ -655,124 +647,3 @@ export default React.memo(function Point(props) {
     </>
   );
 });
-
-function adjustLabelPosition(labelPosition, nearEdgeOfGraph) {
-  if (nearEdgeOfGraph[0] === -1) {
-    if (
-      labelPosition.substring(
-        labelPosition.length - 4,
-        labelPosition.length,
-      ) === "left"
-    ) {
-      labelPosition =
-        labelPosition.substring(0, labelPosition.length - 4) + "right";
-    } else if (labelPosition === "top") {
-      labelPosition = "upperright";
-    } else if (labelPosition === "bottom") {
-      labelPosition = "lowerright";
-    }
-  } else if (nearEdgeOfGraph[0] === 1) {
-    if (
-      labelPosition.substring(
-        labelPosition.length - 5,
-        labelPosition.length,
-      ) === "right"
-    ) {
-      labelPosition =
-        labelPosition.substring(0, labelPosition.length - 5) + "left";
-    } else if (labelPosition === "top") {
-      labelPosition = "upperleft";
-    } else if (labelPosition === "bottom") {
-      labelPosition = "lowerleft";
-    }
-  }
-
-  if (nearEdgeOfGraph[1] === -1) {
-    if (labelPosition.substring(0, 5, labelPosition.length) === "lower") {
-      labelPosition =
-        "upper" + labelPosition.substring(5, labelPosition.length);
-    } else if (labelPosition === "left") {
-      labelPosition = "upperleft";
-    } else if (labelPosition === "right") {
-      labelPosition = "upperright";
-    }
-  } else if (nearEdgeOfGraph[1] === 1) {
-    if (labelPosition.substring(0, 5, labelPosition.length) === "upper") {
-      labelPosition =
-        "lower" + labelPosition.substring(5, labelPosition.length);
-    } else if (labelPosition === "left") {
-      labelPosition = "lowerleft";
-    } else if (labelPosition === "right") {
-      labelPosition = "lowerright";
-    }
-  }
-
-  return labelPosition;
-}
-
-function calculateLabelAnchor(labelPosition) {
-  let anchorx, anchory, offset;
-  if (labelPosition === "upperright") {
-    offset = [5, 5];
-    anchorx = "left";
-    anchory = "bottom";
-  } else if (labelPosition === "upperleft") {
-    offset = [-5, 5];
-    anchorx = "right";
-    anchory = "bottom";
-  } else if (labelPosition === "lowerright") {
-    offset = [5, -5];
-    anchorx = "left";
-    anchory = "top";
-  } else if (labelPosition === "lowerleft") {
-    offset = [-5, -5];
-    anchorx = "right";
-    anchory = "top";
-  } else if (labelPosition === "top") {
-    offset = [0, 10];
-    anchorx = "middle";
-    anchory = "bottom";
-  } else if (labelPosition === "bottom") {
-    offset = [0, -10];
-    anchorx = "middle";
-    anchory = "top";
-  } else if (labelPosition === "left") {
-    offset = [-10, 0];
-    anchorx = "right";
-    anchory = "middle";
-  } else {
-    // labelPosition === right
-    offset = [10, 0];
-    anchorx = "left";
-    anchory = "middle";
-  }
-  return { offset, anchorx, anchory };
-}
-
-function normalizeSize(size, style) {
-  if (style === "diamond") {
-    return size * 1.4;
-  } else if (style === "plus") {
-    return size * 1.2;
-  } else if (style === "square") {
-    return size * 1.1;
-  } else if (style.substring(0, 8) === "triangle") {
-    return size * 1.5;
-  } else return size;
-}
-
-function normalizeStyle(style, movedFromOffGraph) {
-  if (movedFromOffGraph[1] === -1) {
-    return "triangledown";
-  } else if (movedFromOffGraph[1] === 1) {
-    return "triangleup";
-  } else if (movedFromOffGraph[0] === -1) {
-    return "triangleleft";
-  } else if (movedFromOffGraph[0] === 1) {
-    return "triangleright";
-  } else if (style === "triangle") {
-    return "triangleup";
-  } else {
-    return style;
-  }
-}
