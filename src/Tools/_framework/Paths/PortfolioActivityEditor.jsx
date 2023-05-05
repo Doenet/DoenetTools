@@ -432,7 +432,7 @@ function SupportFilesControls({ onClose }) {
         )}
       </Center>
 
-      <Box h="425px" w="100%" overflowY="scroll">
+      <Box h="360px" w="100%" overflowY="scroll">
         {/* <Box h="415px" overflowY="scroll"> */}
         {supportingFiles.map((file, i) => {
           let previewImagePath = `/media/${file.fileName}`;
