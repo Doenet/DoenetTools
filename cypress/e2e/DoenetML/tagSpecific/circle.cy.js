@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 function nInDOM(n) {
   if (n < 0) {
@@ -21928,5 +21928,59 @@ describe("Circle Tag Tests", function () {
         expect(stateVariables["/diam"].stateValues.value).closeTo(2 * r, 1e-12);
       });
     });
+  });
+
+  it("hideOffGraphIndicator", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <circle name="P1" center="(12,3)" />
+      <circle name="Q1" hideOffGraphIndicator center="(-2,14)" />
+      <circle name="R1" hideOffGraphIndicator="false" center="(6,-14)" />
+    </graph>
+
+    <boolean copySource="P1.hideOffGraphIndicator" name="P1h" />
+    <boolean copySource="Q1.hideOffGraphIndicator" name="Q1h" />
+    <boolean copySource="R1.hideOffGraphIndicator" name="R1h" />
+
+    <graph hideOffGraphIndicators>
+      <circle name="P2" copySource="P1" />
+      <circle name="Q2" copySource="Q1" />
+      <circle name="R2" copySource="R1" />
+    </graph>
+
+    <boolean copySource="P2.hideOffGraphIndicator" name="P2h" />
+    <boolean copySource="Q2.hideOffGraphIndicator" name="Q2h" />
+    <boolean copySource="R2.hideOffGraphIndicator" name="R2h" />
+
+    <graph hideOffGraphIndicators="false" >
+      <circle name="P3" copySource="P1" />
+      <circle name="Q3" copySource="Q1" />
+      <circle name="R3" copySource="R1" />
+    </graph>
+
+    <boolean copySource="P3.hideOffGraphIndicator" name="P3h" />
+    <boolean copySource="Q3.hideOffGraphIndicator" name="Q3h" />
+    <boolean copySource="R3.hideOffGraphIndicator" name="R3h" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/P1h")).should("have.text", "false");
+    cy.get(cesc2("#/Q1h")).should("have.text", "true");
+    cy.get(cesc2("#/R1h")).should("have.text", "false");
+
+    cy.get(cesc2("#/P2h")).should("have.text", "true");
+    cy.get(cesc2("#/Q2h")).should("have.text", "true");
+    cy.get(cesc2("#/R2h")).should("have.text", "false");
+
+    cy.get(cesc2("#/P3h")).should("have.text", "false");
+    cy.get(cesc2("#/Q3h")).should("have.text", "true");
+    cy.get(cesc2("#/R3h")).should("have.text", "false");
+
   });
 });
