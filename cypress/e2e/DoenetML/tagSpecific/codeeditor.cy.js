@@ -1344,4 +1344,116 @@ describe("Code Editor Tag Tests", function () {
     );
     cy.get(cesc2("#/pv")).should("have.text", "value: Hello!\nSelam!\nKaixo!");
   });
+
+  it("undo prompts save", () => {
+    let doenetML = `
+    <text>a</text>
+    <codeEditor showResults />
+
+    <p><copy prop="value" target="_codeeditor1" /></p>
+    `;
+
+    cy.get("#testRunner_toggleControls").click();
+    cy.get("#testRunner_allowLocalState").click();
+    cy.wait(100);
+    cy.get("#testRunner_toggleControls").click();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("contain.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let viewerName =
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
+      let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
+      let contentAnchor = "#" + cesc2(viewerName) + "_content";
+
+      cy.get(cesc2("#/_p1")).should("have.text", "");
+      cy.get(contentAnchor).should("have.text", "");
+
+      cy.log("type text in editor");
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>", {
+        delay: 0,
+      });
+      cy.get(updateAnchor).click();
+
+      cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
+      cy.get(contentAnchor).should("have.text", "Hello!");
+
+      cy.wait(1500); // wait for 1 second debounce
+
+      cy.reload();
+
+      cy.window().then(async (win) => {
+        win.postMessage(
+          {
+            doenetML,
+          },
+          "*",
+        );
+      });
+
+      cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
+      cy.get(contentAnchor).should("have.text", "Hello!");
+
+      cy.log("Overwrite text");
+
+      if (Cypress.platform === "darwin") {
+        cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+          "{command+a}<alert>Ovewritten!</alert>",
+          {
+            delay: 0,
+          },
+        );
+      } else {
+        cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+          "{control+a}<alert>Ovewritten!</alert>",
+          {
+            delay: 0,
+          },
+        );
+      }
+      cy.get(updateAnchor).click();
+
+      cy.get(cesc2("#/_p1")).should("have.text", "<alert>Ovewritten!</alert>");
+      cy.get(contentAnchor).should("have.text", "Ovewritten!");
+
+      cy.wait(1500); // wait for 1 second debounce
+
+      if (Cypress.platform === "darwin") {
+        cy.get(".cm-content").type("{command}{z}");
+      } else {
+        cy.get(".cm-content").type("{control}{z}");
+      }
+      cy.get(updateAnchor).click();
+
+      cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
+      cy.get(contentAnchor).should("have.text", "Hello!");
+
+      cy.wait(1500); // wait for 1 second debounce
+
+      cy.reload();
+
+      cy.window().then(async (win) => {
+        win.postMessage(
+          {
+            doenetML,
+          },
+          "*",
+        );
+      });
+
+      cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
+      cy.get(contentAnchor).should("have.text", "Hello!");
+    });
+  });
 });

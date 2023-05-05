@@ -207,7 +207,7 @@ export default class Cell extends BaseComponent {
     stateVariableDefinitions.inHeader = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "booloean",
+        createComponentOfType: "boolean",
       },
       forRenderer: true,
       defaultValue: false,

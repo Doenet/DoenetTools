@@ -201,6 +201,7 @@ export default function CodeMirror({
       onBlurExtension,
       onFocusExtension,
       EditorState.changeFilter.of(changeFunc),
+      EditorView.updateListener.of(changeFunc),
     ],
     [changeFunc],
   );
