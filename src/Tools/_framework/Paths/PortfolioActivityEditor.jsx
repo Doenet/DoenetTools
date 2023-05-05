@@ -259,7 +259,7 @@ function AlertQueue({ alerts = [] }) {
   );
 }
 
-function SupportFilesControls({ onClose }) {
+function SupportFilesControls() {
   const { supportingFileData, doenetId } = useLoaderData();
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
     supportingFileData;
@@ -335,17 +335,32 @@ function SupportFilesControls({ onClose }) {
       // accept: ".csv,.jpg,.png",
     });
 
+  let handledTooMany = false;
   fileRejections.map((rejection) => {
-    const index = alerts.findIndex((obj) => obj.id == rejection.file.name);
-    if (index == -1) {
-      setAlerts([
-        {
-          id: rejection.file.name,
-          type: "error",
-          title: `Can't Upload '${rejection.file.name}'`,
-          description: rejection.errors[0].message,
-        },
-      ]);
+    if (rejection.errors[0].code == "too-many-files") {
+      if (alerts[0]?.id != "too-many-files" && !handledTooMany) {
+        handledTooMany = true;
+        setAlerts([
+          {
+            id: "too-many-files",
+            type: "error",
+            title: "Can only upload one file at a time.",
+            description: "",
+          },
+        ]);
+      }
+    } else {
+      const index = alerts.findIndex((obj) => obj.id == rejection.file.name);
+      if (index == -1) {
+        setAlerts([
+          {
+            id: rejection.file.name,
+            type: "error",
+            title: `Can't Upload '${rejection.file.name}'`,
+            description: rejection.errors[0].message,
+          },
+        ]);
+      }
     }
   });
 
@@ -1097,7 +1112,7 @@ function EditableLabel() {
 export function PortfolioActivityEditor2() {
   return (
     <Box w="672px" p="10px">
-      <GeneralControls />
+      <SupportFilesControls />
     </Box>
   );
 }
@@ -1263,7 +1278,7 @@ export function PortfolioActivityEditor() {
               </Tooltip>
               {variants.allPossibleVariants.length > 1 && (
                 <Menu size="sm">
-                  <MenuButton as={Button}>Page Variant</MenuButton>
+                  <MenuButton as={Button}>Variant</MenuButton>
                   <MenuList>
                     {variants.allPossibleVariants.map((variant, i) => {
                       return (
