@@ -396,6 +396,7 @@ function SupportFilesControls() {
             borderColor="doenet.mediumGray"
             borderRadius="lg"
             width="90%"
+            height="164px"
             // background="blue.200"
           >
             <HStack>
@@ -412,7 +413,7 @@ function SupportFilesControls() {
         ) : (
           <VStack
             m={2}
-            spacing={4}
+            spacing={0}
             p="24px"
             borderWidth="2px"
             borderStyle="dashed"
@@ -427,19 +428,13 @@ function SupportFilesControls() {
                 color="doenet.mediumGray"
                 as={FaFileImage}
               />
-              <Icon
-                fontSize="24pt"
-                color="doenet.mediumGray"
-                as={FaFileImage}
-              />
-              <Text color="doenet.mediumGray" fontSize="20pt">
-                Click for Menu
-              </Text>
-              {/* <Icon fontSize="24pt" color="doenet.mediumGray" as={FaFileCsv} /> */}
             </HStack>
 
             <Text color="doenet.mediumGray" fontSize="20pt">
-              Drop JPG or PNG Files Here
+              Drop an image file here,
+            </Text>
+            <Text color="doenet.mediumGray" fontSize="20pt">
+              or click to select a file
             </Text>
           </VStack>
         )}
