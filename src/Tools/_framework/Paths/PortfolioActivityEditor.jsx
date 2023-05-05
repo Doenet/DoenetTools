@@ -735,7 +735,6 @@ function LearningOutcomes() {
                 data-text={`Learning Outcome #${i}`}
               />
               <IconButton
-                tabIndex="-1"
                 variant="outline"
                 size="sm"
                 color="doenet.mainRed"
@@ -1006,7 +1005,7 @@ function GeneralControls({ onClose }) {
   );
 }
 
-function PortfolioActivitySettingsDrawer2({
+function PortfolioActivitySettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
@@ -1103,7 +1102,7 @@ function EditableLabel() {
   );
 }
 
-export function PortfolioActivityEditor() {
+export function PortfolioActivityEditor2() {
   return (
     <Box w="672px" p="10px">
       <GeneralControls />
@@ -1111,7 +1110,7 @@ export function PortfolioActivityEditor() {
   );
 }
 
-export function PortfolioActivityEditor2() {
+export function PortfolioActivityEditor() {
   const { doenetML, pageId, courseId, activityData, lastKnownCid } =
     useLoaderData();
   const {

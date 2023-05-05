@@ -79,6 +79,8 @@ if ($result->num_rows > 0) {
     $message = "Error: doenetId doesn't match.";
 }
 
+$textLearningOutcomes = "[" . implode(",", array_map(function($value) { return '"' . $value . '"'; }, $learningOutcomes)) . "]";
+
 if ($success) {
 
     if($dbIsPublic != $isPublic) {
@@ -94,6 +96,7 @@ if ($success) {
             UPDATE course_content
             SET isPublic = '$isPublic',
             userCanViewSource = '$userCanViewSource',
+            learningOutcomes=JSON_MERGE('[]','$textLearningOutcomes'),
             addToPrivatePortfolioDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
             WHERE doenetId = '$doenetId'
             ";
@@ -104,11 +107,13 @@ if ($success) {
         UPDATE course_content
         SET label = '$label', 
         imagePath = '$imagePath',
+        learningOutcomes=JSON_MERGE('[]','$textLearningOutcomes'),
         isPublic = '$isPublic'
         WHERE doenetId = '$doenetId'
         AND courseId = '$portfolioCourseId'
         ";
     $conn->query($sql);
+
 }
 
 $response_arr = [
