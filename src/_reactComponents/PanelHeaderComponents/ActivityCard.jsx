@@ -37,6 +37,7 @@ export default function ActivityCard({
           alt="Activity Card Image"
           borderTopRadius="md"
           objectFit="cover"
+          cursor="pointer"
         />
       </Link>
       <CardBody p="1">

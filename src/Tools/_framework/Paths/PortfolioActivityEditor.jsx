@@ -1148,41 +1148,27 @@ export function PortfolioActivityEditor() {
   const { saveDraft } = useSaveDraft();
 
   // save draft when leave page
-  // useEffect(() => {
-  //   return () => {
-  //     //TODO: do we need this pageId guard?
-  //     // if (pageId !== "") {
-  //     // save and stop timers
-  //     // console.log("page leave save", { pageId, courseId });
-  //     saveDraft({
-  //       pageId,
-  //       courseId,
-  //       backup: backupOldDraft.current,
-  //     });
-  //     if (timeout.current !== null) {
-  //       clearTimeout(timeout.current);
-  //     }
-  //     timeout.current = null;
-  //     // }
-  //   };
-  // }, [pageId, saveDraft, courseId]);
+  //TODO: is textEditorDoenetML.current is NOT actually the entered - how do we get that?
+  useEffect(() => {
+    return () => {
+      setEditorDoenetML(textEditorDoenetML.current);
+      setLastKnownCid(lastKnownCidRef.current);
 
-  // save draft when leave page
-  // useBeforeUnload(
-  //   React.useCallback(() => {
-  //     // save and stop timers
-  //     console.log("useBeforeUnload leave save", { pageId, courseId });
-  //     // saveDraft({
-  //     //   pageId,
-  //     //   courseId,
-  //     //   backup: backupOldDraft.current,
-  //     // });
-  //     // if (timeout.current !== null) {
-  //     //   clearTimeout(timeout.current);
-  //     // }
-  //     // timeout.current = null;
-  //   }, [pageId, saveDraft, courseId]),
-  // );
+      saveDraft({
+        pageId,
+        courseId,
+        backup: backupOldDraft.current,
+      }).then(({ success }) => {
+        if (success) {
+          backupOldDraft.current = false;
+          cidFromText(textEditorDoenetML.current).then((newlySavedCid) => {
+            lastKnownCidRef.current = newlySavedCid;
+          });
+        }
+      });
+      timeout.current = null;
+    };
+  }, [pageId, saveDraft, courseId, textEditorDoenetML]);
 
   const controlsBtnRef = useRef(null);
 
