@@ -36,8 +36,11 @@ $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 $label = mysqli_real_escape_string($conn, $_POST['label']);
 $imagePath = mysqli_real_escape_string($conn, $_POST['imagePath']);
 $public = mysqli_real_escape_string($conn, $_POST['public']);
+$learningOutcomes = array_map(function($item) use($conn) {
+    return mysqli_real_escape_string($conn, $item);
+  }, $_POST['learningOutcomes']);
 
-
+  
 $isPublic = '0';
 if ($public) {
     $isPublic = '1';
