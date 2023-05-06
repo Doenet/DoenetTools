@@ -744,7 +744,17 @@ export default class Angle extends GraphicalComponent {
     return stateVariableDefinitions;
   }
 
-  static adapters = ["radians"];
+  static adapters = [
+    {
+      stateVariable: "radians",
+      stateVariablesToShadow: [
+        "displayDigits",
+        "displayDecimals",
+        "displaySmallAsZero",
+        "padZeros",
+      ],
+    },
+  ];
 }
 
 function calculateLineIntersection(line1, line2) {
