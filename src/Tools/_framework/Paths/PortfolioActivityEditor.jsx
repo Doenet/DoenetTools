@@ -851,12 +851,11 @@ function GeneralControls({ onClose }) {
         // uploadData.append('file',file);
         uploadData.append("file", image);
         uploadData.append("doenetId", doenetId);
-        uploadData.append("isActivityThumbnail", "1");
 
         axios
-          .post("/api/supportFileUpload.php", uploadData)
+          .post("/api/activityThumbnailUpload.php", uploadData)
           .then(({ data }) => {
-            // console.log("RESPONSE data>",data)
+            // console.log("RESPONSE data>", data);
 
             //uploads are finished clear it out
             numberOfFilesUploading.current = 0;
@@ -988,7 +987,7 @@ function GeneralControls({ onClose }) {
             </Tbody>
           </Table>
         </TableContainer>
-        <Flex mt="14px" justifyContent="flex-end">
+        {/* <Flex mt="14px" justifyContent="flex-end">
           <Button
             size="sm"
             mr={3}
@@ -1000,7 +999,7 @@ function GeneralControls({ onClose }) {
           <Button type="submit" size="sm" colorScheme="blue" onClick={onClose}>
             Update
           </Button>
-        </Flex>
+        </Flex> */}
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
       </Form>

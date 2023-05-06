@@ -26,8 +26,6 @@ $tmp_name = $_FILES['file']['tmp_name'];
 $error = $_FILES['file']['error'];
 $size = $_FILES['file']['size'];
 $original_file_name = $_FILES['file']['name'];
-$description = ''; //Don't automatically fill with file name
-// $description = substr($original_file_name, 0, strrpos($original_file_name, "."));
 
 $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id, $type);
 
@@ -55,6 +53,8 @@ if ($success) {
     }
 }
 
+$activity_had_a_thumbnail_already = false;
+
 if ($success) {
     move_uploaded_file($tmp_name, $tmp_dest);
     $SHA = hash_file('sha256', $tmp_dest);
@@ -73,70 +73,67 @@ if ($success) {
         list($width, $height) = getimagesize($destination);
     }
 
-
-    //Test if user already has this file in this activity
-    $sql = "
-  SELECT cid
-  FROM support_files 
-  WHERE userId = '$userId'
-  AND cid = '$cid'
-  AND doenetId = '$doenetId'
-  ";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $already_have_file = true;
-        $success = false;
-        $msg = "Already have the file '$original_file_name' in this activity.";
-    }
-    
 }
 
 if ($success) {
-    //Test if user has file in another activity
+    //Test if user has a thumbnail row for this activity
     $sql = "
         SELECT cid
         FROM support_files 
         WHERE userId = '$userId'
-        AND cid = '$cid'
-        AND doenetId != '$doenetId'
+        AND doenetId = '$doenetId'
+        AND isActivityThumbnail = '1'
         ";
     $result = $conn->query($sql);
-
     if ($result->num_rows > 0) {
-        $already_have_file = true;
-        $msg =
-            'Found the file in another activity.  Not used against your quota.';
+        $activity_had_a_thumbnail_already = true;
     }
 }
 
 $escapedType = str_replace('\/', '/', $type);
 
-if ($success && !$already_have_file) {
-    //track upload for IPFS upload nanny to upload later
-    $sql = "
-  INSERT INTO ipfs_to_upload 
-  (cid,fileType,sizeInBytes,timestamp)
-  VALUES
-  ('$cid','$escapedType','$size',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-  ";
-  $conn->query($sql);
-}
 
 if ($success) {
-  
+    if ($activity_had_a_thumbnail_already){
+        //Update for activity thumbnails once one is already stored
+        $sql = "
+        UPDATE support_files 
+        SET cid = '$cid',
+        fileType = '$escapedType',
+        asFileName = '$original_file_name',
+        sizeInBytes = '$size',
+        widthPixels = '$width',
+        heightPixels = '$height',
+        timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+        WHERE doenetId = '$doenetId'
+        and userId = '$userId'
+        ";
+        $conn->query($sql);
+        
+    }else{
+        //Insert all support files and first activity thumbnail
+        $sql = "
+        INSERT INTO support_files 
+        (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp,isActivityThumbnail)
+        VALUES
+        ('$userId','$cid','$doenetId','$escapedType','','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'1')
+        ";
+        $conn->query($sql);
+
+    }
+}
+//Update activity to have the thumbnail path
+//Note: the browser converts images to jpg before they are sent here
+if ($success) {
     $sql = "
-    INSERT INTO support_files 
-    (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp,isActivityThumbnail)
-    VALUES
-    ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'0')
+    UPDATE course_content 
+    SET imagePath = '/media/$cid.jpg'
+    WHERE doenetId = '$doenetId'
     ";
     $conn->query($sql);
-
 }
 
-
-if ($success) {
+    if ($success) {
     //   //TODO: test at the top as well for over quota
     list($userQuotaBytesAvailable, $quotaBytes) = getBytesAvailable(
         $conn,
@@ -151,7 +148,6 @@ $response_arr = [
     'success' => $success,
     'cid' => $cid,
     'fileName' => $newFileName,
-    'description' => $description,
     'asFileName' => $original_file_name,
     'width' => $width,
     'height' => $height,
