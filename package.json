@@ -83,7 +83,7 @@
     "react-measure": "^2.5.2",
     "react-router": "^6.9.0",
     "react-router-dom": "^6.9.0",
-    "react-select": "^5.7.0",
+    "react-select": "^5.7.3",
     "react-table": "^7.7.0",
     "react-use-measure": "^2.1.1",
     "react-visibility-sensor-v2": "^1.0.0",

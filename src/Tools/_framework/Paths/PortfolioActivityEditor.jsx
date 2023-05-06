@@ -87,6 +87,7 @@ import {
   textEditorLastKnownCidAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
+import Select from "react-select";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1187,6 +1188,10 @@ export function PortfolioActivityEditor() {
     allPossibleVariants: ["a"],
   });
 
+  let variantOptions = [];
+  variants.allPossibleVariants.forEach((variant) => {
+    variantOptions.push({ value: variant, label: variant });
+  });
   // console.log("variants", variants);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
@@ -1257,6 +1262,31 @@ export function PortfolioActivityEditor() {
                   </Button>
                 </Tooltip>
               </ButtonGroup>
+              {variants.allPossibleVariants.length > 1 && (
+                <Box display="inline-block" width="150px" ml="10px" h="32px">
+                  <Select
+                    options={variantOptions}
+                    value={variantOptions[variants.index]}
+                    onChange={(selectedOption) => {
+                      const index = variantOptions.indexOf(selectedOption);
+                      setVariants((prev) => {
+                        let next = { ...prev };
+                        next.index = index;
+                        return next;
+                      });
+                    }}
+                    style={{
+                      control: (provided) => ({
+                        ...provided,
+                        display: "inline-block",
+                        width: "150px",
+                        // height: "32px",
+                        // minHeight: "32px",
+                      }),
+                    }}
+                  />
+                </Box>
+              )}
               <Tooltip hasArrow label="Updates Viewer cmd+s">
                 <Button
                   ml="10px"
@@ -1271,30 +1301,6 @@ export function PortfolioActivityEditor() {
                   Update
                 </Button>
               </Tooltip>
-              {variants.allPossibleVariants.length > 1 && (
-                <Menu size="sm">
-                  <MenuButton as={Button}>Variant</MenuButton>
-                  <MenuList>
-                    {variants.allPossibleVariants.map((variant, i) => {
-                      return (
-                        <MenuItem
-                          key={`key${i}`}
-                          onClick={() => {
-                            console.log({ variant, i });
-                            setVariants((prev) => {
-                              let next = { ...prev };
-                              next.index = i + 1;
-                              return next;
-                            });
-                          }}
-                        >
-                          {variant}
-                        </MenuItem>
-                      );
-                    })}
-                  </MenuList>
-                </Menu>
-              )}
             </GridItem>
             <GridItem area="label">
               <EditableLabel />
