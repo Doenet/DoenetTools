@@ -141,7 +141,11 @@ function roundingDependencies({
         dependencyType: "attributeComponent",
         attributeName: ignoreVariable,
         variableNames: ["value"],
+        dontRecurseToShadowsIfHaveAttribute: stateVariable,
       };
+
+      dependencies.attribute.dontRecurseToShadowsIfHaveAttribute =
+        ignoreVariable;
     }
 
     if (additionalAttributeComponent) {
