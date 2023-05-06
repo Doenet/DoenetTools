@@ -1,3 +1,7 @@
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../../utils/rounding";
 import BaseComponent from "../abstract/BaseComponent";
 import me from "math-expressions";
 
@@ -8,32 +12,7 @@ export default class EigenDecomposition extends BaseComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 14,
-      public: true,
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-      createStateVariable: "padZeros",
-      defaultValue: false,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     return attributes;
   }
@@ -49,6 +28,11 @@ export default class EigenDecomposition extends BaseComponent {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.decomposition = {
       returnDependencies: () => ({

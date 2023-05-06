@@ -17,6 +17,10 @@ import {
   returnSymbolicFunctionFromReevaluatedFormula,
 } from "../utils/function";
 import { returnTextStyleDescriptionDefinitions } from "../utils/style";
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -136,20 +140,7 @@ export default class Function extends InlineComponent {
       createComponentOfType: "boolean",
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-    };
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.nearestPointAsCurve = {
       createComponentOfType: "boolean",
@@ -315,245 +306,10 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      defaultValue: 10,
-      hasEssential: true,
-      returnDependencies: () => ({
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["displayDigits"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not use default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        } else if (dependencyValues.functionChild.length > 0) {
-          let displayDigitsFunctionChildUsedDefault =
-            usedDefault.functionChild[0];
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(
-              displayDigitsFunctionChildUsedDefault ||
-              displayDecimalsAttrUsedDefault
-            )
-          ) {
-            // if both display digits (from function) and display decimals did not use default
-            // we'll regard display digits as using default
-            displayDigitsFunctionChildUsedDefault = true;
-          }
-
-          if (displayDigitsFunctionChildUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.functionChild[0].stateValues.displayDigits,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.functionChild[0].stateValues.displayDigits,
-              },
-            };
-          }
-        } else {
-          return {
-            useEssentialOrDefaultValue: { displayDigits: true },
-          };
-        }
-      },
-    };
-
-    stateVariableDefinitions.displayDecimals = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      defaultValue: null,
-      hasEssential: true,
-      returnDependencies: () => ({
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["displayDecimals"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
-          return {
-            setValue: {
-              displayDecimals:
-                dependencyValues.displayDecimalsAttr.stateValues.value,
-            },
-          };
-        } else if (
-          dependencyValues.functionChild.length > 0 &&
-          !usedDefault.functionChild[0]
-        ) {
-          return {
-            setValue: {
-              displayDecimals:
-                dependencyValues.functionChild[0].stateValues.displayDecimals,
-            },
-          };
-        } else {
-          return {
-            useEssentialOrDefaultValue: { displayDecimals: true },
-          };
-        }
-      },
-    };
-
-    stateVariableDefinitions.displaySmallAsZero = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "number",
-      },
-      defaultValue: 0,
-      hasEssential: true,
-      returnDependencies: () => ({
-        displaySmallAsZeroAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displaySmallAsZero",
-          variableNames: ["value"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["displaySmallAsZero"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displaySmallAsZeroAttr !== null) {
-          return {
-            setValue: {
-              displaySmallAsZero:
-                dependencyValues.displaySmallAsZeroAttr.stateValues.value,
-            },
-          };
-        } else if (
-          dependencyValues.functionChild.length > 0 &&
-          !usedDefault.functionChild[0]
-        ) {
-          return {
-            setValue: {
-              displaySmallAsZero:
-                dependencyValues.functionChild[0].stateValues
-                  .displaySmallAsZero,
-            },
-          };
-        } else {
-          return {
-            useEssentialOrDefaultValue: { displaySmallAsZero: true },
-          };
-        }
-      },
-    };
-
-    stateVariableDefinitions.padZeros = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "boolean",
-      },
-      defaultValue: false,
-      hasEssential: true,
-      returnDependencies: () => ({
-        padZerosAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "padZeros",
-          variableNames: ["value"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["padZeros"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.padZerosAttr !== null) {
-          return {
-            setValue: {
-              padZeros: dependencyValues.padZerosAttr.stateValues.value,
-            },
-          };
-        } else if (
-          dependencyValues.functionChild.length > 0 &&
-          !usedDefault.functionChild[0]
-        ) {
-          return {
-            setValue: {
-              padZeros: dependencyValues.functionChild[0].stateValues.padZeros,
-            },
-          };
-        } else {
-          return {
-            useEssentialOrDefaultValue: { padZeros: true },
-          };
-        }
-      },
-    };
+    let roundingDefinitions = returnRoundingStateVariableDefinitions({
+      childsGroupIfSingleMatch: ["functions"],
+    });
+    Object.assign(stateVariableDefinitions, roundingDefinitions);
 
     stateVariableDefinitions.isInterpolatedFunction = {
       returnDependencies: () => ({
@@ -2554,21 +2310,19 @@ export default class Function extends InlineComponent {
           variableName: "padZeros",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         let params = {};
         if (dependencyValues.padZeros) {
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            if (Number.isFinite(dependencyValues.displayDecimals)) {
-              params.padToDecimals = dependencyValues.displayDecimals;
-            }
-          } else if (dependencyValues.displayDigits >= 1) {
+          if (Number.isFinite(dependencyValues.displayDecimals)) {
+            params.padToDecimals = dependencyValues.displayDecimals;
+          }
+          if (dependencyValues.displayDigits >= 1) {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
         let latex = roundForDisplay({
           value: dependencyValues.formula,
           dependencyValues,
-          usedDefault,
         }).toLatex(params);
         return { setValue: { latex } };
       },

@@ -1,6 +1,10 @@
 import BlockComponent from "./abstract/BlockComponent";
 import me from "math-expressions";
 import { roundForDisplay } from "../utils/math";
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class SummaryStatistics extends BlockComponent {
   constructor(args) {
@@ -39,23 +43,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     return attributes;
   }
@@ -63,69 +51,10 @@ export default class SummaryStatistics extends BlockComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not use default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        return { useEssentialOrDefaultValue: { displayDigits: true } };
-      },
-    };
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.statisticsToDisplay = {
       public: true,
@@ -284,6 +213,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -310,6 +240,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -335,6 +266,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -361,6 +293,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -387,6 +320,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -417,6 +351,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -442,6 +377,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -467,6 +403,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -492,6 +429,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -517,6 +455,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -542,6 +481,7 @@ export default class SummaryStatistics extends BlockComponent {
           "displayDigits",
           "displayDecimals",
           "displaySmallAsZero",
+          "padZeros",
         ],
       },
       returnDependencies: () => ({
@@ -658,91 +598,79 @@ export default class SummaryStatistics extends BlockComponent {
 
         return dependencies;
       },
-      definition({ dependencyValues, usedDefault }) {
+      definition({ dependencyValues }) {
         let summaryStatistics = {};
 
         if (dependencyValues.mean !== undefined) {
           summaryStatistics.mean = roundForDisplay({
             value: dependencyValues.mean,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.stdev !== undefined) {
           summaryStatistics.stdev = roundForDisplay({
             value: dependencyValues.stdev,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.variance !== undefined) {
           summaryStatistics.variance = roundForDisplay({
             value: dependencyValues.variance,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.stderr !== undefined) {
           summaryStatistics.stderr = roundForDisplay({
             value: dependencyValues.stderr,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.count !== undefined) {
           summaryStatistics.count = roundForDisplay({
             value: dependencyValues.count,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.minimum !== undefined) {
           summaryStatistics.minimum = roundForDisplay({
             value: dependencyValues.minimum,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.quartile1 !== undefined) {
           summaryStatistics.quartile1 = roundForDisplay({
             value: dependencyValues.quartile1,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.median !== undefined) {
           summaryStatistics.median = roundForDisplay({
             value: dependencyValues.median,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.quartile3 !== undefined) {
           summaryStatistics.quartile3 = roundForDisplay({
             value: dependencyValues.quartile3,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.maximum !== undefined) {
           summaryStatistics.maximum = roundForDisplay({
             value: dependencyValues.maximum,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.range !== undefined) {
           summaryStatistics.range = roundForDisplay({
             value: dependencyValues.range,
             dependencyValues,
-            usedDefault,
           });
         }
         if (dependencyValues.sum !== undefined) {
           summaryStatistics.sum = roundForDisplay({
             value: dependencyValues.sum,
             dependencyValues,
-            usedDefault,
           });
         }
 

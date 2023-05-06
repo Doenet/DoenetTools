@@ -9,6 +9,10 @@ import {
   convertValueToMathExpression,
 } from "../utils/math";
 import { deepCompare } from "../utils/deepFunctions";
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -90,26 +94,9 @@ export default class MathInput extends Input {
       public: true,
       fallBackToParentStateVariable: "parseScientificNotation",
     };
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
+
+    Object.assign(attributes, returnRoundingAttributes());
+
     attributes.bindValueTo = {
       createComponentOfType: "math",
     };
@@ -177,6 +164,11 @@ export default class MathInput extends Input {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions({ displayDigitsDefault: 10 }),
+    );
 
     stateVariableDefinitions.value = {
       public: true,
@@ -406,13 +398,12 @@ export default class MathInput extends Input {
         },
       }),
       set: convertValueToMathExpression,
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         // round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
         let rounded = roundForDisplay({
           value: dependencyValues.value,
           dependencyValues,
-          usedDefault,
         });
 
         return {

@@ -22,6 +22,10 @@ import {
   returnAnchorAttributes,
   returnAnchorStateVariableDefinition,
 } from "../utils/graphical";
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 const vectorAndListOperators = ["list", ...vectorOperators];
 
@@ -77,21 +81,8 @@ export default class MathComponent extends InlineComponent {
       public: true,
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-    };
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-    };
     attributes.renderMode = {
       createComponentOfType: "text",
       createStateVariable: "renderMode",
@@ -207,529 +198,12 @@ export default class MathComponent extends InlineComponent {
     let anchorDefinition = returnAnchorStateVariableDefinition();
     Object.assign(stateVariableDefinitions, anchorDefinition);
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        mathListParentDisplayDigits: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "mathList",
-          variableName: "displayDigits",
-        },
-        numberListParentDisplayDigits: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "numberList",
-          variableName: "displayDigits",
-        },
-        mathListParentDisplayDecimals: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "mathList",
-          variableName: "displayDecimals",
-        },
-        numberListParentDisplayDecimals: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "numberList",
-          variableName: "displayDecimals",
-        },
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        mathChildren: {
-          dependencyType: "child",
-          childGroups: ["maths"],
-          variableNames: ["displayDigits"],
-        },
-        stringChildren: {
-          dependencyType: "child",
-          childGroups: ["strings"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        let foundDefaultValue = false;
-        let theDefaultValueFound;
-
-        if (dependencyValues.mathListParentDisplayDigits !== null) {
-          if (usedDefault.mathListParentDisplayDigits) {
-            foundDefaultValue = true;
-            theDefaultValueFound = dependencyValues.mathListParentDisplayDigits;
-          } else {
-            // having a mathlist parent that prescribed displayDigits.
-            // this overrides everything else
-            return {
-              setValue: {
-                displayDigits: dependencyValues.mathListParentDisplayDigits,
-              },
-            };
-          }
-        }
-
-        if (dependencyValues.numberListParentDisplayDigits !== null) {
-          if (usedDefault.numberListParentDisplayDigits) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.numberListParentDisplayDigits;
-          } else {
-            // having a numberlist parent that prescribed displayDigits.
-            // this overrides everything else
-            return {
-              setValue: {
-                displayDigits: dependencyValues.numberListParentDisplayDigits,
-              },
-            };
-          }
-        }
-
-        let haveListParentWithDisplayDecimals =
-          (dependencyValues.numberListParentDisplayDecimals !== null &&
-            !usedDefault.numberListParentDisplayDecimals) ||
-          (dependencyValues.mathListParentDisplayDecimals !== null &&
-            !usedDefault.mathListParentDisplayDecimals);
-
-        let displayDigitsAttrUsedDefault =
-          dependencyValues.displayDigitsAttr === null ||
-          usedDefault.displayDigitsAttr;
-        let displayDecimalsAttrUsedDefault =
-          dependencyValues.displayDecimalsAttr === null ||
-          usedDefault.displayDecimalsAttr;
-
-        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
-          // if both display digits and display decimals did not use default
-          // we'll regard display digits as using default if it comes from a deeper shadow
-          let shadowDepthDisplayDigits =
-            dependencyValues.displayDigitsAttr.shadowDepth;
-          let shadowDepthDisplayDecimals =
-            dependencyValues.displayDecimalsAttr.shadowDepth;
-
-          if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-            displayDigitsAttrUsedDefault = true;
-          }
-        }
-
-        if (
-          !haveListParentWithDisplayDecimals &&
-          dependencyValues.displayDigitsAttr !== null
-        ) {
-          // have to check to exclude case where have displayDecimals from mathList parent
-          // because otherwise a non-default displayDigits will win over displayDecimals
-
-          if (displayDigitsAttrUsedDefault) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.displayDigitsAttr.stateValues.value;
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        if (
-          !haveListParentWithDisplayDecimals &&
-          displayDecimalsAttrUsedDefault &&
-          dependencyValues.mathChildren.length === 1 &&
-          dependencyValues.stringChildren.length === 0
-        ) {
-          // have to check to exclude case where have displayDecimals attribute or from mathList parent
-          // because otherwise a non-default displayDigits will win over displayDecimals
-
-          if (
-            usedDefault.mathChildren[0] &&
-            usedDefault.mathChildren[0].displayDigits
-          ) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.mathChildren[0].stateValues.displayDigits;
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.mathChildren[0].stateValues.displayDigits,
-              },
-            };
-          }
-        }
-
-        if (foundDefaultValue) {
-          return {
-            useEssentialOrDefaultValue: {
-              displayDigits: { defaultValue: theDefaultValueFound },
-            },
-          };
-        } else {
-          return { useEssentialOrDefaultValue: { displayDigits: true } };
-        }
-      },
-    };
-
-    stateVariableDefinitions.displayDecimals = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: null,
-      returnDependencies: () => ({
-        mathListParentDisplayDecimals: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "mathList",
-          variableName: "displayDecimals",
-        },
-        numberListParentDisplayDecimals: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "numberList",
-          variableName: "displayDecimals",
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        mathChildren: {
-          dependencyType: "child",
-          childGroups: ["maths"],
-          variableNames: ["displayDecimals"],
-        },
-        stringChildren: {
-          dependencyType: "child",
-          childGroups: ["strings"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        let foundDefaultValue = false;
-        let theDefaultValueFound;
-
-        if (dependencyValues.mathListParentDisplayDecimals !== null) {
-          if (usedDefault.mathListParentDisplayDecimals) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.mathListParentDisplayDecimals;
-          } else {
-            // having a mathlist parent that prescribed displayDecimals.
-            // this overrides everything else
-            return {
-              setValue: {
-                displayDecimals: dependencyValues.mathListParentDisplayDecimals,
-              },
-            };
-          }
-        }
-
-        if (dependencyValues.numberListParentDisplayDecimals !== null) {
-          if (usedDefault.numberListParentDisplayDecimals) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.numberListParentDisplayDecimals;
-          } else {
-            // having a numberlist parent that prescribed displayDecimals.
-            // this overrides everything else
-            return {
-              setValue: {
-                displayDecimals:
-                  dependencyValues.numberListParentDisplayDecimals,
-              },
-            };
-          }
-        }
-
-        if (dependencyValues.displayDecimalsAttr !== null) {
-          if (usedDefault.displayDecimalsAttr) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.displayDecimalsAttr.stateValues.value;
-          } else {
-            return {
-              setValue: {
-                displayDecimals:
-                  dependencyValues.displayDecimalsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        if (
-          dependencyValues.mathChildren.length === 1 &&
-          dependencyValues.stringChildren.length === 0
-        ) {
-          if (
-            usedDefault.mathChildren[0] &&
-            usedDefault.mathChildren[0].displayDecimals
-          ) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.mathChildren[0].stateValues.displayDecimals;
-          } else {
-            return {
-              setValue: {
-                displayDecimals:
-                  dependencyValues.mathChildren[0].stateValues.displayDecimals,
-              },
-            };
-          }
-        }
-
-        if (foundDefaultValue) {
-          return {
-            useEssentialOrDefaultValue: {
-              displayDecimals: { defaultValue: theDefaultValueFound },
-            },
-          };
-        } else {
-          return { useEssentialOrDefaultValue: { displayDecimals: true } };
-        }
-      },
-    };
-
-    stateVariableDefinitions.displaySmallAsZero = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "number",
-      },
-      hasEssential: true,
-      defaultValue: 0,
-      returnDependencies: () => ({
-        mathListParentDisplaySmallAsZero: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "mathList",
-          variableName: "displaySmallAsZero",
-        },
-        numberListParentDisplaySmallAsZero: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "numberList",
-          variableName: "displaySmallAsZero",
-        },
-        displaySmallAsZeroAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displaySmallAsZero",
-          variableNames: ["value"],
-        },
-        mathChildren: {
-          dependencyType: "child",
-          childGroups: ["maths"],
-          variableNames: ["displaySmallAsZero"],
-        },
-        stringChildren: {
-          dependencyType: "child",
-          childGroups: ["strings"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        let foundDefaultValue = false;
-        let theDefaultValueFound;
-
-        if (dependencyValues.mathListParentDisplaySmallAsZero !== null) {
-          if (usedDefault.mathListParentDisplaySmallAsZero) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.mathListParentDisplaySmallAsZero;
-          } else {
-            // having a mathlist parent that prescribed displaySmallAsZero.
-            // this overrides everything else
-            return {
-              setValue: {
-                displaySmallAsZero:
-                  dependencyValues.mathListParentDisplaySmallAsZero,
-              },
-            };
-          }
-        }
-
-        if (dependencyValues.numberListParentDisplaySmallAsZero !== null) {
-          if (usedDefault.numberListParentDisplaySmallAsZero) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.numberListParentDisplaySmallAsZero;
-          } else {
-            // having a numberlist parent that prescribed displaySmallAsZero.
-            // this overrides everything else
-            return {
-              setValue: {
-                displaySmallAsZero:
-                  dependencyValues.numberListParentDisplaySmallAsZero,
-              },
-            };
-          }
-        }
-
-        if (dependencyValues.displaySmallAsZeroAttr !== null) {
-          if (usedDefault.displaySmallAsZeroAttr) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.displaySmallAsZeroAttr.stateValues.value;
-          } else {
-            return {
-              setValue: {
-                displaySmallAsZero:
-                  dependencyValues.displaySmallAsZeroAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        if (
-          dependencyValues.mathChildren.length === 1 &&
-          dependencyValues.stringChildren.length === 0
-        ) {
-          if (
-            usedDefault.mathChildren[0] &&
-            usedDefault.mathChildren[0].displaySmallAsZero
-          ) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.mathChildren[0].stateValues.displaySmallAsZero;
-          } else {
-            return {
-              setValue: {
-                displaySmallAsZero:
-                  dependencyValues.mathChildren[0].stateValues
-                    .displaySmallAsZero,
-              },
-            };
-          }
-        }
-
-        if (foundDefaultValue) {
-          return {
-            useEssentialOrDefaultValue: {
-              displaySmallAsZero: { defaultValue: theDefaultValueFound },
-            },
-          };
-        } else {
-          return { useEssentialOrDefaultValue: { displaySmallAsZero: true } };
-        }
-      },
-    };
-
-    stateVariableDefinitions.padZeros = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "boolean",
-      },
-      hasEssential: true,
-      defaultValue: false,
-      returnDependencies: () => ({
-        mathListParentPadZeros: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "mathList",
-          variableName: "padZeros",
-        },
-        numberListParentPadZeros: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "numberList",
-          variableName: "padZeros",
-        },
-        padZerosAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "padZeros",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        mathChildren: {
-          dependencyType: "child",
-          childGroups: ["maths"],
-          variableNames: ["padZeros"],
-        },
-        stringChildren: {
-          dependencyType: "child",
-          childGroups: ["strings"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        let foundDefaultValue = false;
-        let theDefaultValueFound;
-
-        if (dependencyValues.mathListParentPadZeros !== null) {
-          if (usedDefault.mathListParentPadZeros) {
-            foundDefaultValue = true;
-            theDefaultValueFound = dependencyValues.mathListParentPadZeros;
-          } else {
-            // having a mathlist parent that prescribed padZeros.
-            // this overrides everything else
-            return {
-              setValue: {
-                padZeros: dependencyValues.mathListParentPadZeros,
-              },
-            };
-          }
-        }
-
-        if (dependencyValues.numberListParentPadZeros !== null) {
-          if (usedDefault.numberListParentPadZeros) {
-            foundDefaultValue = true;
-            theDefaultValueFound = dependencyValues.numberListParentPadZeros;
-          } else {
-            // having a numberlist parent that prescribed padZeros.
-            // this overrides everything else
-            return {
-              setValue: {
-                padZeros: dependencyValues.numberListParentPadZeros,
-              },
-            };
-          }
-        }
-
-        if (dependencyValues.padZerosAttr !== null) {
-          if (usedDefault.padZerosAttr) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.padZerosAttr.stateValues.value;
-          } else {
-            return {
-              setValue: {
-                padZeros: dependencyValues.padZerosAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        if (
-          dependencyValues.mathChildren.length === 1 &&
-          dependencyValues.stringChildren.length == 0
-        ) {
-          if (
-            usedDefault.mathChildren[0] &&
-            usedDefault.mathChildren[0].padZeros
-          ) {
-            foundDefaultValue = true;
-            theDefaultValueFound =
-              dependencyValues.mathChildren[0].stateValues.padZeros;
-          } else {
-            return {
-              setValue: {
-                padZeros: dependencyValues.mathChildren[0].stateValues.padZeros,
-              },
-            };
-          }
-        }
-
-        if (foundDefaultValue) {
-          return {
-            useEssentialOrDefaultValue: {
-              padZeros: { defaultValue: theDefaultValueFound },
-            },
-          };
-        } else {
-          return { useEssentialOrDefaultValue: { padZeros: true } };
-        }
-      },
-    };
+    let roundingDefinitions = returnRoundingStateVariableDefinitions({
+      childsGroupIfSingleMatch: ["maths"],
+      childGroupsToStopSingleMatch: ["strings"],
+      includeListParents: true,
+    });
+    Object.assign(stateVariableDefinitions, roundingDefinitions);
 
     // valueShadow will be long underscore unless math was created
     // from serialized state with unnormalizedValue
@@ -1243,13 +717,12 @@ export default class MathComponent extends InlineComponent {
           variableName: "expand",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
         let rounded = roundForDisplay({
           value: dependencyValues.value,
           dependencyValues,
-          usedDefault,
         });
 
         return {
@@ -1303,15 +776,14 @@ export default class MathComponent extends InlineComponent {
           variableName: "displayBlanks",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         let latex;
         let params = {};
         if (dependencyValues.padZeros) {
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            if (Number.isFinite(dependencyValues.displayDecimals)) {
-              params.padToDecimals = dependencyValues.displayDecimals;
-            }
-          } else if (dependencyValues.displayDigits >= 1) {
+          if (Number.isFinite(dependencyValues.displayDecimals)) {
+            params.padToDecimals = dependencyValues.displayDecimals;
+          }
+          if (dependencyValues.displayDigits >= 1) {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
@@ -1395,15 +867,14 @@ export default class MathComponent extends InlineComponent {
           variableName: "displayBlanks",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         let text;
         let params = {};
         if (dependencyValues.padZeros) {
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            if (Number.isFinite(dependencyValues.displayDecimals)) {
-              params.padToDecimals = dependencyValues.displayDecimals;
-            }
-          } else if (dependencyValues.displayDigits >= 1) {
+          if (Number.isFinite(dependencyValues.displayDecimals)) {
+            params.padToDecimals = dependencyValues.displayDecimals;
+          }
+          if (dependencyValues.displayDigits >= 1) {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }

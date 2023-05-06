@@ -11,6 +11,10 @@ import {
 } from "../utils/math";
 import CompositeComponent from "./abstract/CompositeComponent";
 import BaseComponent from "./abstract/BaseComponent";
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export class MatrixInput extends Input {
   constructor(args) {
@@ -115,26 +119,9 @@ export class MatrixInput extends Input {
       defaultValue: false,
       public: true,
     };
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
+
+    Object.assign(attributes, returnRoundingAttributes());
+
     attributes.bindValueTo = {
       createComponentOfType: "math",
     };
@@ -190,6 +177,11 @@ export class MatrixInput extends Input {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions({ displayDigitsDefault: 10 }),
+    );
 
     stateVariableDefinitions.valueOriginal = {
       hasEssential: true,
@@ -1663,7 +1655,6 @@ export class MatrixInput extends Input {
         globalDependencyValues,
         dependencyValuesByKey,
         arrayKeys,
-        usedDefault,
       }) {
         let componentValuesForDisplay = {};
 
@@ -1673,7 +1664,6 @@ export class MatrixInput extends Input {
           let rounded = roundForDisplay({
             value: dependencyValuesByKey[arrayKey].componentValue,
             dependencyValues: globalDependencyValues,
-            usedDefault,
           });
 
           componentValuesForDisplay[arrayKey] = rounded;
@@ -1957,13 +1947,12 @@ export class MatrixInput extends Input {
           variableName: "displaySmallAsZero",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         // round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
         let rounded = roundForDisplay({
           value: dependencyValues.value,
           dependencyValues,
-          usedDefault,
         });
 
         return {
@@ -2686,13 +2675,12 @@ export default class MatrixComponentInput extends BaseComponent {
           variableName: "displaySmallAsZero",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         // round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
         let rounded = roundForDisplay({
           value: dependencyValues.value,
           dependencyValues,
-          usedDefault,
         });
 
         return {
