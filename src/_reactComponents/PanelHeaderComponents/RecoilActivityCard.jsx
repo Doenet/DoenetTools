@@ -32,6 +32,9 @@ export default function RecoilActivityCard({
   courseId,
   version,
   content,
+  setDoenetId,
+  onClose,
+  onOpen,
 }) {
   const fetcher = useFetcher();
   // const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
@@ -143,7 +146,12 @@ export default function RecoilActivityCard({
               >
                 Delete
               </MenuItem>
-              <MenuItem as={Link} to={`/portfolio/${doenetId}/settings`}>
+              <MenuItem
+                onClick={() => {
+                  setDoenetId(doenetId);
+                  onOpen();
+                }}
+              >
                 Settings
               </MenuItem>
             </MenuList>

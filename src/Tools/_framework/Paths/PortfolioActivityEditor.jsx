@@ -709,8 +709,7 @@ function SupportFilesControls() {
   );
 }
 
-function GeneralControls({ onClose }) {
-  const { activityData, doenetId } = useLoaderData();
+export function GeneralActivityControls({ doenetId, activityData }) {
   const { isPublic, label, imagePath: dataImagePath } = activityData;
 
   const fetcher = useFetcher();
@@ -1018,7 +1017,7 @@ function PortfolioActivitySettingsDrawer({
   finalFocusRef,
   controlsTabsLastIndex,
 }) {
-  // const { pageId, activityData } = useLoaderData();
+  const { doenetId, activityData } = useLoaderData();
 
   return (
     <Drawer
@@ -1054,7 +1053,10 @@ function PortfolioActivitySettingsDrawer({
             <Box overflowY="scroll" height="calc(100vh - 120px)">
               <TabPanels>
                 <TabPanel>
-                  <GeneralControls onClose={onClose} />
+                  <GeneralActivityControls
+                    doenetId={doenetId}
+                    activityData={activityData}
+                  />
                 </TabPanel>
                 <TabPanel>
                   <SupportFilesControls onClose={onClose} />
@@ -1112,7 +1114,7 @@ function EditableLabel() {
 export function PortfolioActivityEditor2() {
   return (
     <Box w="672px" p="10px">
-      <GeneralControls />
+      <GeneralActivityControls />
     </Box>
   );
 }
@@ -1125,17 +1127,12 @@ export function PortfolioActivityEditor() {
     onOpen: controlsOnOpen,
     onClose: controlsOnClose,
   } = useDisclosure();
-  // const [textEditorDoenetML, setTextEditorDoenetML] = useState(doenetML);
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   let controlsTabsLastIndex = useRef(0);
-
-  // console.log("textEditorDoenetML", textEditorDoenetML.current);
-  // console.log("activityData", activityData);
-  // console.log("pageId", pageId);
 
   let editorRef = useRef(null);
   let timeout = useRef(null);
@@ -1225,11 +1222,8 @@ export function PortfolioActivityEditor() {
         templateAreas={`"header header header"
       "leftGutter centerContent rightGutter"
       `}
-        // "viewer middleGutter textEditor"
         templateRows="40px auto"
         templateColumns=".06fr 1fr .06fr"
-        // templateColumns=".1fr minmax(800px,1fr) .1fr"
-        // templateColumns="minmax(10px,auto) minmax(500px,.7fr) 10px minmax(350px,.3fr) minmax(10px,auto)"
         position="relative"
       >
         <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
@@ -1284,8 +1278,6 @@ export function PortfolioActivityEditor() {
                         ...provided,
                         display: "inline-block",
                         width: "150px",
-                        // height: "32px",
-                        // minHeight: "32px",
                       }),
                     }}
                   />
@@ -1336,7 +1328,6 @@ export function PortfolioActivityEditor() {
               <PageViewer
                 key={`HPpageViewer`}
                 doenetML={viewerDoenetML}
-                // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
                 flags={{
                   showCorrectness: true,
                   solutionDisplayMode: true,
@@ -1349,7 +1340,6 @@ export function PortfolioActivityEditor() {
                   allowSaveSubmissions: false,
                   allowSaveEvents: false,
                 }}
-                // doenetId={doenetId}
                 attemptNumber={1}
                 generatedVariantCallback={variantCallback} //TODO:Replace
                 requestedVariantIndex={variants.index}
@@ -1360,15 +1350,10 @@ export function PortfolioActivityEditor() {
             right={
               <CodeMirror
                 key="codemirror"
-                // readOnly={false}
                 editorRef={editorRef}
-                // setInternalValue={updateInternalValue}
                 setInternalValueTo={textEditorDoenetML.current}
-                // value={textEditorDoenetML.current}
-                // value="starter value"
                 onBeforeChange={(value) => {
                   textEditorDoenetML.current = value;
-
                   // Debounce save to server at 3 seconds
                   clearTimeout(timeout.current);
                   timeout.current = setTimeout(async function () {
