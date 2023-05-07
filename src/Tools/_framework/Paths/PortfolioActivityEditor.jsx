@@ -86,6 +86,7 @@ import {
 } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 import Select from "react-select";
+import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -709,7 +710,7 @@ function SupportFilesControls() {
   );
 }
 
-export function GeneralActivityControls({ doenetId, activityData }) {
+export function GeneralActivityControls({ courseId, doenetId, activityData }) {
   let { isPublic, label, imagePath: dataImagePath } = activityData;
   if (!isPublic && activityData?.public) {
     isPublic = activityData.public;
@@ -817,6 +818,7 @@ export function GeneralActivityControls({ doenetId, activityData }) {
 
   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
     let learningOutcomesToSubmit = learningOutcomes;
@@ -1009,7 +1011,27 @@ export function GeneralActivityControls({ doenetId, activityData }) {
               let nextIsPublic = "0";
               if (e.target.checked) {
                 nextIsPublic = "1";
-                //TODO: process making activity public here
+                //Process making activity public here
+                compileActivity({
+                  activityDoenetId: doenetId,
+                  isAssigned: true,
+                  courseId,
+                  activity: {
+                    version: activityData.version,
+                    isSinglePage: true,
+                    content: activityData.content,
+                  },
+                  // successCallback: () => {
+                  //   addToast('Activity Assigned.', toastType.INFO);
+                  // },
+                });
+                updateAssignItem({
+                  doenetId,
+                  isAssigned: true,
+                  successCallback: () => {
+                    //addToast(assignActivityToast, toastType.INFO);
+                  },
+                });
               }
               setCheckboxIsPublic(nextIsPublic);
               saveDataToServer({ nextIsPublic });
@@ -1031,7 +1053,7 @@ function PortfolioActivitySettingsDrawer({
   finalFocusRef,
   controlsTabsLastIndex,
 }) {
-  const { doenetId, activityData } = useLoaderData();
+  const { courseId, doenetId, activityData } = useLoaderData();
 
   return (
     <Drawer
@@ -1070,6 +1092,7 @@ function PortfolioActivitySettingsDrawer({
                   <GeneralActivityControls
                     doenetId={doenetId}
                     activityData={activityData}
+                    courseId={courseId}
                   />
                 </TabPanel>
                 <TabPanel>

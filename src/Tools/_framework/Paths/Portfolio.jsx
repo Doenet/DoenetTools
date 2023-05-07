@@ -17,7 +17,6 @@ import {
 import React, { useRef, useState } from "react";
 import {
   redirect,
-  Form,
   useOutletContext,
   useLoaderData,
   useNavigate,
@@ -167,6 +166,7 @@ function PortfolioSettingsDrawer({
   finalFocusRef,
   doenetId,
   data,
+  courseId,
 }) {
   // const { pageId, activityData } = useLoaderData();
   // console.log({ doenetId, data });
@@ -211,6 +211,7 @@ function PortfolioSettingsDrawer({
             <GeneralActivityControls
               doenetId={doenetId}
               activityData={activityData}
+              courseId={courseId}
             />
           )}
         </DrawerBody>
@@ -245,6 +246,7 @@ export function Portfolio() {
         finalFocusRef={controlsBtnRef}
         doenetId={doenetId}
         data={data}
+        courseId={data.courseId}
       />
       <PortfolioGrid>
         <Box
