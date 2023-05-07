@@ -862,8 +862,7 @@ export function GeneralActivityControls({ doenetId, activityData }) {
       <Form method="post">
         <FormControl>
           <FormLabel>Thumbnail</FormLabel>
-          <Box key="drop" {...getRootProps()}>
-            <input {...getInputProps()} />
+          <Box>
             {isDragActive ? (
               <VStack
                 spacing={4}
@@ -871,14 +870,25 @@ export function GeneralActivityControls({ doenetId, activityData }) {
                 border="2px dashed #949494"
                 borderRadius="lg"
                 width="90%"
+                {...getRootProps()}
               >
+                <input {...getInputProps()} />
+
                 <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
                 <Text color="#949494" fontSize="24pt">
                   Drop Image Here
                 </Text>
               </VStack>
             ) : (
-              <Card width="180px" height="120px" p="0" m="0">
+              <Card
+                width="180px"
+                height="120px"
+                p="0"
+                m="0"
+                {...getRootProps()}
+              >
+                <input {...getInputProps()} />
+
                 <Image
                   height="120px"
                   maxWidth="180px"
