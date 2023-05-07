@@ -39,6 +39,10 @@ import {
   EditableInput,
   EditablePreview,
   Flex,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
   Grid,
   GridItem,
   HStack,
@@ -54,20 +58,14 @@ import {
   MenuItem,
   MenuList,
   Progress,
+  // Spinner,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
-  Table,
-  TableContainer,
   Tabs,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -109,7 +107,7 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "update general") {
-    let learningOutcomes = JSON.parse(formObj.LearningOutcomes);
+    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
 
     let response = await axios.post(
       "/api/updatePortfolioActivitySettings.php",
@@ -711,90 +709,15 @@ function SupportFilesControls() {
   );
 }
 
-function LearningOutcomes() {
-  const { activityData } = useLoaderData();
-
-  let learningOutcomesInit = activityData.learningOutcomes;
-  if (learningOutcomesInit == null) {
-    learningOutcomesInit = [""];
-  }
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
-
-  let serializedLearningOutcomes = JSON.stringify(learningOutcomes);
-  return (
-    <>
-      <VStack width="100%">
-        {learningOutcomes.map((outcome, i) => {
-          return (
-            <Flex key={`learningOutcome${i}`} columnGap={6}>
-              <Input
-                size="sm"
-                value={outcome}
-                width="300px"
-                onChange={(e) => {
-                  setLearningOutcomes((prev) => {
-                    let next = [...prev];
-                    next[i] = e.target.value;
-                    return next;
-                  });
-                }}
-                placeholder={`Learning Outcome #${i + 1}`}
-                data-text={`Learning Outcome #${i}`}
-              />
-              <IconButton
-                variant="outline"
-                size="sm"
-                color="doenet.mainRed"
-                borderColor="doenet.mainRed"
-                // background="doenet.mainRed"
-                icon={<HiOutlineX />}
-                onClick={() => {
-                  setLearningOutcomes((prev) => {
-                    if (prev.length < 2) {
-                      return [""];
-                    }
-                    let next = [...prev];
-                    next.splice(i, 1);
-                    return next;
-                  });
-                }}
-              />
-              <input
-                key={`hidden`}
-                type="hidden"
-                name={`LearningOutcomes`}
-                value={serializedLearningOutcomes}
-              />
-            </Flex>
-          );
-        })}
-
-        <IconButton
-          isDisabled={learningOutcomes.length > 9}
-          variant="outline"
-          width="80%"
-          size="xs"
-          icon={<HiPlus />}
-          onClick={() => {
-            setLearningOutcomes((prev) => {
-              if (prev.length > 9) {
-                return prev;
-              }
-              return [...prev, ""];
-            });
-          }}
-        />
-      </VStack>
-    </>
-  );
-}
-
 function GeneralControls({ onClose }) {
   const { activityData, doenetId } = useLoaderData();
   const { isPublic, label, imagePath: dataImagePath } = activityData;
 
+  const fetcher = useFetcher();
+
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
+  let [alerts, setAlerts] = useState([]);
 
   const onDrop = useCallback(
     async (files) => {
@@ -854,14 +777,24 @@ function GeneralControls({ onClose }) {
 
         axios
           .post("/api/activityThumbnailUpload.php", uploadData)
-          .then(({ data }) => {
+          .then((resp) => {
+            let { data } = resp;
             // console.log("RESPONSE data>", data);
 
             //uploads are finished clear it out
             numberOfFilesUploading.current = 0;
-            let { success, cid } = data;
+            let { success, cid, msg, asFileName } = data;
             if (success) {
               setImagePath(`/media/${cid}.jpg`);
+              setAlerts([
+                {
+                  type: "success",
+                  id: cid,
+                  title: "Activity thumbnail updated!",
+                },
+              ]);
+            } else {
+              setAlerts([{ type: "error", id: cid, title: msg }]);
             }
           });
       };
@@ -871,135 +804,207 @@ function GeneralControls({ onClose }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  let learningOutcomesInit = activityData.learningOutcomes;
+  if (learningOutcomesInit == null) {
+    learningOutcomesInit = [""];
+  }
+
+  let [labelValue, setLabel] = useState(label);
+  let lastAcceptedLabelValue = useRef(label);
+  let [labelIsInvalid, setLabelIsInvalid] = useState(false);
+
+  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
+  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
+
+  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
+    let learningOutcomesToSubmit = learningOutcomes;
+    if (nextLearningOutcomes) {
+      learningOutcomesToSubmit = nextLearningOutcomes;
+    }
+
+    let isPublicToSubmit = checkboxIsPublic;
+    if (nextIsPublic) {
+      isPublicToSubmit = nextIsPublic;
+    }
+
+    // Turn on/off label error messages and
+    // use the latest valid label
+    let labelToSubmit = labelValue;
+    if (labelValue == "") {
+      labelToSubmit = lastAcceptedLabelValue.current;
+      setLabelIsInvalid(true);
+    } else {
+      if (labelIsInvalid) {
+        setLabelIsInvalid(false);
+      }
+    }
+    lastAcceptedLabelValue.current = labelToSubmit;
+    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+
+    fetcher.submit(
+      {
+        _action: "update general",
+        label: labelToSubmit,
+        imagePath,
+        public: isPublicToSubmit,
+        learningOutcomes: serializedLearningOutcomes,
+      },
+      { method: "post" },
+    );
+  }
+
   return (
     <>
+      <AlertQueue alerts={alerts} />
       <Form method="post">
-        <TableContainer
-          p="10px"
-          maxWidth="540px"
-          // borderWidth="1px"
-          // borderStyle="solid"
-          // borderColor="doenet.grey"
-          // borderRadius="lg"
-        >
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Property</Th>
-                <Th>Setting</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td>
-                  <Flex>
-                    <Text>Image</Text>
-                  </Flex>
-                </Td>
-                <Td>
-                  <Box key="drop" {...getRootProps()}>
-                    <input {...getInputProps()} />
-                    {isDragActive ? (
-                      <VStack
-                        spacing={4}
-                        p="24px"
-                        border="2px dashed #949494"
-                        borderRadius="lg"
-                        width="90%"
-                      >
-                        <Icon
-                          fontSize="24pt"
-                          color="#949494"
-                          as={FaFileImage}
-                        />
-                        <Text color="#949494" fontSize="24pt">
-                          Drop Image Here
-                        </Text>
-                      </VStack>
-                    ) : (
-                      <Card width="180px" height="120px" p="0" m="0">
-                        <Image
-                          height="120px"
-                          maxWidth="180px"
-                          src={imagePath}
-                          alt="Activity Card Image"
-                          borderTopRadius="md"
-                          objectFit="cover"
-                        />
-                      </Card>
-                    )}
-                  </Box>
-                </Td>
-              </Tr>
+        <FormControl>
+          <FormLabel>Thumbnail</FormLabel>
+          <Box key="drop" {...getRootProps()}>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <VStack
+                spacing={4}
+                p="24px"
+                border="2px dashed #949494"
+                borderRadius="lg"
+                width="90%"
+              >
+                <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
+                <Text color="#949494" fontSize="24pt">
+                  Drop Image Here
+                </Text>
+              </VStack>
+            ) : (
+              <Card width="180px" height="120px" p="0" m="0">
+                <Image
+                  height="120px"
+                  maxWidth="180px"
+                  src={imagePath}
+                  alt="Activity Card Image"
+                  borderTopRadius="md"
+                  objectFit="cover"
+                />
+              </Card>
+            )}
+          </Box>
+        </FormControl>
 
-              <Tr>
-                <Td>
-                  <Text>Activity Label</Text>
-                </Td>
-                <Td>
-                  <Input
-                    name="label"
-                    size="sm"
-                    // width="392px"
-                    width="100%"
-                    placeholder="Activity 1"
-                    data-test="Activity Label"
-                    defaultValue={label}
-                    // onChange={(e) => {
-                    //   setLabel(e.target.value);
-                    // }}
-                  />
-                </Td>
-              </Tr>
-              <Tr>
-                <Td colSpan={2}>
-                  <Flex flexDirection="column" width="100%" rowGap={6}>
-                    <Text>Learning Outcomes</Text>
-                    <LearningOutcomes />
-                  </Flex>
-                </Td>
-              </Tr>
+        <FormControl isRequired isInvalid={labelIsInvalid}>
+          <FormLabel mt="16px">Label</FormLabel>
 
-              <Tr>
-                <Td>
-                  <Checkbox
-                    size="lg"
-                    name="public"
-                    value="on"
-                    // isChecked={isPublic}
-                    defaultChecked={isPublic == "1"}
-                    // defaultChecked={data.public == '1'}
-                    onChange={(e) => {
-                      // setIsPublic(e.target.checked);
-                      // //Need to track that it was not public and now it is
-                      // if (e.target.checked && data.public == 0) {
-                      //   setIsMakePublic(true);
-                      // } else {
-                      //   setIsMakePublic(false);
-                      // }
-                    }}
-                  >
-                    Public
-                  </Checkbox>
-                </Td>
-                <Td></Td>
-              </Tr>
-            </Tbody>
-          </Table>
-        </TableContainer>
-        {/* <Flex mt="14px" justifyContent="flex-end">
-          <Button
+          <Input
+            name="label"
             size="sm"
-            mr={3}
-            onClick={onClose}
-            background="doenet.mainRed"
+            // width="392px"
+            width="100%"
+            placeholder="Activity 1"
+            data-test="Activity Label"
+            value={labelValue}
+            onChange={(e) => {
+              setLabel(e.target.value);
+            }}
+            onBlur={saveDataToServer}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                saveDataToServer();
+              }
+            }}
+          />
+          <FormErrorMessage>
+            Error - A label for the activity is required.
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl>
+          <Flex flexDirection="column" width="100%" rowGap={6}>
+            <FormLabel mt="16px">Learning Outcomes</FormLabel>
+
+            {learningOutcomes.map((outcome, i) => {
+              return (
+                <Flex key={`learningOutcome${i}`} columnGap={4}>
+                  <Input
+                    size="sm"
+                    value={outcome}
+                    // width="300px"
+                    onChange={(e) => {
+                      setLearningOutcomes((prev) => {
+                        let next = [...prev];
+                        next[i] = e.target.value;
+                        return next;
+                      });
+                    }}
+                    onBlur={saveDataToServer}
+                    onKeyDown={(e) => {
+                      if (e.key == "Enter") {
+                        saveDataToServer();
+                      }
+                    }}
+                    placeholder={`Learning Outcome #${i + 1}`}
+                    data-text={`Learning Outcome #${i}`}
+                  />
+                  <IconButton
+                    variant="outline"
+                    size="sm"
+                    color="doenet.mainRed"
+                    borderColor="doenet.mainRed"
+                    // background="doenet.mainRed"
+                    icon={<HiOutlineX />}
+                    onClick={() => {
+                      let nextLearningOutcomes = [...learningOutcomes];
+                      if (learningOutcomes.length < 2) {
+                        nextLearningOutcomes = [""];
+                      } else {
+                        nextLearningOutcomes.splice(i, 1);
+                      }
+
+                      setLearningOutcomes(nextLearningOutcomes);
+                      saveDataToServer({ nextLearningOutcomes });
+                    }}
+                  />
+                </Flex>
+              );
+            })}
+
+            <Center>
+              <IconButton
+                isDisabled={learningOutcomes.length > 9}
+                variant="outline"
+                width="80%"
+                size="xs"
+                icon={<HiPlus />}
+                onClick={() => {
+                  let nextLearningOutcomes = [...learningOutcomes];
+                  if (learningOutcomes.length < 9) {
+                    nextLearningOutcomes.push("");
+                  }
+
+                  setLearningOutcomes(nextLearningOutcomes);
+                  saveDataToServer({ nextLearningOutcomes });
+                }}
+              />
+            </Center>
+          </Flex>
+        </FormControl>
+        <FormControl>
+          <FormLabel mt="16px">Visibility</FormLabel>
+
+          <Checkbox
+            size="lg"
+            name="public"
+            value="on"
+            isChecked={checkboxIsPublic == "1"}
+            onChange={(e) => {
+              let nextIsPublic = "0";
+              if (e.target.checked) {
+                nextIsPublic = "1";
+                //TODO: process making activity public here
+              }
+              setCheckboxIsPublic(nextIsPublic);
+              saveDataToServer({ nextIsPublic });
+            }}
           >
-            Cancel
-          </Button>
-          <Button type="submit" size="sm" colorScheme="blue" onClick={onClose}>
-            Update
-          </Button>
-        </Flex> */}
+            Public
+          </Checkbox>
+        </FormControl>
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
       </Form>
@@ -1107,7 +1112,7 @@ function EditableLabel() {
 export function PortfolioActivityEditor2() {
   return (
     <Box w="672px" p="10px">
-      <SupportFilesControls />
+      <GeneralControls />
     </Box>
   );
 }
