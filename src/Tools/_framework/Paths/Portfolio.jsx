@@ -28,10 +28,31 @@ import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { RiEmotionSadLine } from "react-icons/ri";
 import RecoilActivityCard from "../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard";
 import { GeneralActivityControls } from "./PortfolioActivityEditor";
+import axios from "axios";
 
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
+
+  if (formObj._action == "update general") {
+    //Don't let label be blank
+    let label = formObj?.label?.trim();
+    if (label == "") {
+      label = "Untitled";
+    }
+    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
+    let response = await axios.post(
+      "/api/updatePortfolioActivitySettings.php",
+      {
+        label,
+        imagePath: formObj.imagePath,
+        public: formObj.public,
+        doenetId: formObj.doenetId,
+        learningOutcomes,
+      },
+    );
+    return true;
+  }
 
   if (formObj?._action == "Add Activity") {
     //Create a portfilio activity and redirect to the editor for it

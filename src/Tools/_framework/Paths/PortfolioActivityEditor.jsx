@@ -710,7 +710,10 @@ function SupportFilesControls() {
 }
 
 export function GeneralActivityControls({ doenetId, activityData }) {
-  const { isPublic, label, imagePath: dataImagePath } = activityData;
+  let { isPublic, label, imagePath: dataImagePath } = activityData;
+  if (!isPublic && activityData?.public) {
+    isPublic = activityData.public;
+  }
 
   const fetcher = useFetcher();
 
@@ -847,6 +850,7 @@ export function GeneralActivityControls({ doenetId, activityData }) {
         imagePath,
         public: isPublicToSubmit,
         learningOutcomes: serializedLearningOutcomes,
+        doenetId,
       },
       { method: "post" },
     );
