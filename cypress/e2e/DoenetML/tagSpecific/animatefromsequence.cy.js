@@ -692,7 +692,7 @@ describe("AnimateFromSequence Tag Tests", function () {
     });
   });
 
-  it("animation adjusts if value changed when running", () => {
+  it("animation adjusts if value changed when running if allowAdjustmentsWhileRunning", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -702,9 +702,10 @@ describe("AnimateFromSequence Tag Tests", function () {
   <p name="pa">value: $a</p> 
   <slider name="a" initialValue="89.8" from="1" to="100" step="0.1" />
 
-  <animateFromSequence name="x" animationMode='increase' animationOn='$b' target='a' animationInterval='400' from="1" to="100" step="0.1" />
+  <animateFromSequence name="x" animationMode='increase once' animationOn='$aon' target='a' animationInterval='400' from="1" to="100" step="0.1" allowAdjustmentsWhileRunning="$aawr" />
 
-  <booleaninput name="b" />
+  <p>Animation on: <booleaninput name="aon" /></p>
+  <p>Allow adjustments while running: <booleaninput name="aawr" /> <boolean name="aawr2" copySource="aawr" /></p>
   
   <p name="pa2">value: $a2</p>
   <slider copysource="a" name="a2" />
@@ -720,17 +721,51 @@ describe("AnimateFromSequence Tag Tests", function () {
     cy.get(cesc("#\\/pa")).should("have.text", "value: 89.8");
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 89.8");
 
-    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc(`#\\/aon`)).click();
     cy.get(cesc("#\\/pa")).should("have.text", "value: 89.8");
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 89.8");
     cy.get(cesc("#\\/pa")).should("have.text", "value: 89.9");
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 89.9");
     cy.get(cesc("#\\/pa")).should("have.text", "value: 90");
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 90");
+
+    cy.log(`can't change value on with first slider`);
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "changeValue",
+        componentName: "/a",
+        args: { value: 33.4 },
+      });
+    });
+
     cy.get(cesc("#\\/pa")).should("have.text", "value: 90.1");
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 90.1");
+    cy.get(cesc("#\\/pa")).should("have.text", "value: 90.2");
+    cy.get(cesc("#\\/pa2")).should("have.text", "value: 90.2");
+    cy.get(cesc("#\\/pa")).should("have.text", "value: 90.3");
+    cy.get(cesc("#\\/pa2")).should("have.text", "value: 90.3");
 
-    cy.log(`change value on with first slider`);
+    cy.log(`can't change value on with second slider`);
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "changeValue",
+        componentName: "/a2",
+        args: { value: 4.5 },
+      });
+    });
+
+    cy.get(cesc("#\\/pa")).should("have.text", "value: 90.4");
+    cy.get(cesc("#\\/pa2")).should("have.text", "value: 90.4");
+    cy.get(cesc("#\\/pa")).should("have.text", "value: 90.5");
+    cy.get(cesc("#\\/pa2")).should("have.text", "value: 90.5");
+    cy.get(cesc("#\\/pa")).should("have.text", "value: 90.6");
+    cy.get(cesc("#\\/pa2")).should("have.text", "value: 90.6");
+
+    cy.log("allow adjustments");
+    cy.get(cesc(`#\\/aawr`)).click();
+    cy.get(cesc("#\\/aawr2")).should("have.text", "true");
+
+    cy.log(`can now change value on with first slider`);
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "changeValue",
@@ -746,7 +781,7 @@ describe("AnimateFromSequence Tag Tests", function () {
     cy.get(cesc("#\\/pa")).should("have.text", "value: 33.6");
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 33.6");
 
-    cy.log(`change value on with second slider`);
+    cy.log(`can now change value on with second slider`);
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "changeValue",
@@ -761,7 +796,7 @@ describe("AnimateFromSequence Tag Tests", function () {
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 4.6");
     cy.get(cesc("#\\/pa")).should("have.text", "value: 4.7");
     cy.get(cesc("#\\/pa2")).should("have.text", "value: 4.7");
-    cy.get(cesc(`#\\/b`)).click();
+    cy.get(cesc(`#\\/aon`)).click();
 
     cy.waitUntil(() =>
       cy.window().then(async (win) => {
