@@ -119,11 +119,14 @@ describe("Code Editor Tag Tests", function () {
       let viewerName =
         stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
-      let contentAnchor = "#" + cesc2(viewerName) + "_content";
+
+      let rendererName =
+        stateVariables[viewerName].activeChildren[0].componentName;
+
+      cy.get(cesc2(`#${rendererName}/_document1`)).should("exist");
 
       cy.get(cesc("#\\/_p1")).should("have.text", "");
       cy.get(cesc("#\\/_p2")).should("have.text", "");
-      cy.get(contentAnchor).should("have.text", "");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -131,7 +134,6 @@ describe("Code Editor Tag Tests", function () {
           "",
         );
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq("");
-        expect(stateVariables[viewerName].activeChildren.length).eq(0);
       });
 
       cy.log("type text in editor");
@@ -141,7 +143,8 @@ describe("Code Editor Tag Tests", function () {
 
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "");
-      cy.get(contentAnchor).should("have.text", "");
+      cy.get(cesc2(`#${rendererName}/_document1`)).should("exist");
+      cy.get(cesc2(`#${rendererName}/_p1`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -149,7 +152,6 @@ describe("Code Editor Tag Tests", function () {
           "<p>Hello!</p>",
         );
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq("");
-        expect(stateVariables[viewerName].activeChildren.length).eq(0);
       });
 
       cy.log("blur updates value but not content");
@@ -157,7 +159,8 @@ describe("Code Editor Tag Tests", function () {
 
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "<p>Hello!</p>");
-      cy.get(contentAnchor).should("have.text", "");
+      cy.get(cesc2(`#${rendererName}/_document1`)).should("exist");
+      cy.get(cesc2(`#${rendererName}/_p1`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -167,15 +170,14 @@ describe("Code Editor Tag Tests", function () {
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq(
           "<p>Hello!</p>",
         );
-        expect(stateVariables[viewerName].activeChildren.length).eq(0);
       });
 
       cy.log("click to update content");
       cy.get(updateAnchor).click();
 
+      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "<p>Hello!</p>");
-      cy.get(contentAnchor).should("have.text", "Hello!");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -185,12 +187,6 @@ describe("Code Editor Tag Tests", function () {
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq(
           "<p>Hello!</p>",
         );
-        expect(stateVariables[viewerName].activeChildren.length).eq(1);
-        expect(stateVariables[viewerName].activeChildren[0].componentType).eq(
-          "p",
-        );
-        let pName = stateVariables[viewerName].activeChildren[0].componentName;
-        expect(stateVariables[pName].stateValues.text).eq("Hello!");
       });
 
       cy.log("type more content");
@@ -204,7 +200,9 @@ describe("Code Editor Tag Tests", function () {
         "<p>Hello!</p>\n<p><math simplify>1+1</math></p>",
       );
       cy.get(cesc("#\\/_p2")).should("have.text", "<p>Hello!</p>");
-      cy.get(contentAnchor).should("have.text", "Hello!");
+
+      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
+      cy.get(cesc2(`#${rendererName}/_p2`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -214,12 +212,6 @@ describe("Code Editor Tag Tests", function () {
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq(
           "<p>Hello!</p>",
         );
-        expect(stateVariables[viewerName].activeChildren.length).eq(1);
-        expect(stateVariables[viewerName].activeChildren[0].componentType).eq(
-          "p",
-        );
-        let pName = stateVariables[viewerName].activeChildren[0].componentName;
-        expect(stateVariables[pName].stateValues.text).eq("Hello!");
       });
 
       cy.log("Wait for value to be updated");
@@ -231,7 +223,9 @@ describe("Code Editor Tag Tests", function () {
         "have.text",
         "<p>Hello!</p>\n<p><math simplify>1+1</math></p>",
       );
-      cy.get(contentAnchor).should("have.text", "Hello!");
+
+      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
+      cy.get(cesc2(`#${rendererName}/_p2`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -241,16 +235,12 @@ describe("Code Editor Tag Tests", function () {
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq(
           "<p>Hello!</p>\n<p><math simplify>1+1</math></p>",
         );
-        expect(stateVariables[viewerName].activeChildren.length).eq(1);
-        expect(stateVariables[viewerName].activeChildren[0].componentType).eq(
-          "p",
-        );
-        let pName = stateVariables[viewerName].activeChildren[0].componentName;
-        expect(stateVariables[pName].stateValues.text).eq("Hello!");
       });
 
       cy.log("click to update content");
       cy.get(updateAnchor).click();
+
+      cy.get(cesc2(`#${rendererName}/_p2`)).should("contain.text", "2");
 
       cy.get(cesc("#\\/_p1")).should(
         "have.text",
@@ -260,13 +250,11 @@ describe("Code Editor Tag Tests", function () {
         "have.text",
         "<p>Hello!</p>\n<p><math simplify>1+1</math></p>",
       );
-      cy.get(contentAnchor).should("contain.text", "Hello!\n2");
-      cy.get(contentAnchor + " .mjx-mrow")
+
+      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
+      cy.get(cesc2(`#${rendererName}/_p2`) + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2");
-        });
+        .should("have.text", "2");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -276,26 +264,13 @@ describe("Code Editor Tag Tests", function () {
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq(
           "<p>Hello!</p>\n<p><math simplify>1+1</math></p>",
         );
-        expect(stateVariables[viewerName].activeChildren.length).eq(3);
-        expect(stateVariables[viewerName].activeChildren[0].componentType).eq(
-          "p",
-        );
-        let p1Name = stateVariables[viewerName].activeChildren[0].componentName;
-        expect(stateVariables[p1Name].stateValues.text).eq("Hello!");
-        expect(stateVariables[viewerName].activeChildren[1]).eq("\n");
-        expect(stateVariables[viewerName].activeChildren[2].componentType).eq(
-          "p",
-        );
-        let p2Name = stateVariables[viewerName].activeChildren[2].componentName;
-        expect(stateVariables[p2Name].stateValues.text).eq("2");
-        expect(stateVariables[p2Name].activeChildren.length).eq(1);
-        let mathName = stateVariables[p2Name].activeChildren[0].componentName;
-        expect(stateVariables[mathName].stateValues.value).eq(2);
       });
     });
   });
 
-  it("code editor with renderedName", () => {
+  // TODO: if we can find a way to communicate with the rendered DoenetML again,
+  // we should revive these next two tests
+  it.skip("code editor with renderedName", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -549,7 +524,7 @@ describe("Code Editor Tag Tests", function () {
     });
   });
 
-  it("code editor with renderedName and staticName", () => {
+  it.skip("code editor with renderedName and staticName", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -1205,7 +1180,7 @@ describe("Code Editor Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <codeEditor showResults renderedName="result" prefill="<text>hello</text> <text>there</text>" />
+    <codeEditor showResults prefill="<text>hello</text> <text>there</text>" />
 
     `,
         },
@@ -1222,7 +1197,7 @@ describe("Code Editor Tag Tests", function () {
         stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
-      cy.get(contentAnchor).should("have.text", "hello there");
+      cy.get(contentAnchor).should("contain.text", "hello there");
     });
   });
 
@@ -1378,7 +1353,6 @@ describe("Code Editor Tag Tests", function () {
       let contentAnchor = "#" + cesc2(viewerName) + "_content";
 
       cy.get(cesc2("#/_p1")).should("have.text", "");
-      cy.get(contentAnchor).should("have.text", "");
 
       cy.log("type text in editor");
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>", {
@@ -1387,7 +1361,7 @@ describe("Code Editor Tag Tests", function () {
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
-      cy.get(contentAnchor).should("have.text", "Hello!");
+      cy.get(contentAnchor).should("contain.text", "Hello!");
 
       cy.wait(1500); // wait for 1 second debounce
 
@@ -1403,7 +1377,7 @@ describe("Code Editor Tag Tests", function () {
       });
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
-      cy.get(contentAnchor).should("have.text", "Hello!");
+      cy.get(contentAnchor).should("contain.text", "Hello!");
 
       cy.log("Overwrite text");
 
@@ -1425,7 +1399,8 @@ describe("Code Editor Tag Tests", function () {
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<alert>Ovewritten!</alert>");
-      cy.get(contentAnchor).should("have.text", "Ovewritten!");
+      cy.get(contentAnchor).should("not.contain.text", "Hello!");
+      cy.get(contentAnchor).should("contain.text", "Ovewritten!");
 
       cy.wait(1500); // wait for 1 second debounce
 
@@ -1437,7 +1412,8 @@ describe("Code Editor Tag Tests", function () {
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
-      cy.get(contentAnchor).should("have.text", "Hello!");
+      cy.get(contentAnchor).should("contain.text", "Hello!");
+      cy.get(contentAnchor).should("not.contain.text", "Ovewritten!");
 
       cy.wait(1500); // wait for 1 second debounce
 
@@ -1453,7 +1429,79 @@ describe("Code Editor Tag Tests", function () {
       });
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>");
-      cy.get(contentAnchor).should("have.text", "Hello!");
+      cy.get(contentAnchor).should("contain.text", "Hello!");
+      cy.get(contentAnchor).should("not.contain.text", "Ovewritten!");
+    });
+  });
+
+  it("recover from invalid doenetML", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <text>a</text>
+        <codeEditor showResults />
+    
+        <p><copy prop="value" target="_codeeditor1" /></p>
+        `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("contain.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let viewerName =
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
+      let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
+      let contentAnchor = "#" + cesc2(viewerName) + "_content";
+
+      cy.get(cesc2("#/_p1")).should("have.text", "");
+
+      cy.log("type text in editor");
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+        "<p>Hello!</p>{enter}",
+        {
+          delay: 0,
+        },
+      );
+      cy.get(updateAnchor).click();
+
+      cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>\n");
+      cy.get(contentAnchor).should("contain.text", "Hello!");
+
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+        "{ctrl+end}<text name='ti'>$ti</text>{enter}",
+        {
+          delay: 0,
+        },
+      );
+      cy.get(updateAnchor).click();
+
+      cy.get(cesc2("#/_p1")).should(
+        "have.text",
+        "<p>Hello!</p>\n<text name='ti'>$ti</text>\n",
+      );
+      cy.get(contentAnchor).should("contain.text", "Circular dependency");
+
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+        "{ctrl+end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}Bye",
+        {
+          delay: 0,
+        },
+      );
+
+      cy.get(updateAnchor).click();
+
+      cy.get(cesc2("#/_p1")).should(
+        "have.text",
+        "<p>Hello!</p>\n<text name='ti'>Bye</text>\n",
+      );
+
+      cy.get(contentAnchor).should("contain.text", "Hello!\nBye");
     });
   });
 });
