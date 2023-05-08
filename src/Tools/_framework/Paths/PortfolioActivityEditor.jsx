@@ -1176,6 +1176,8 @@ export function PortfolioActivityEditor() {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
+  const [mode, setMode] = useState("Edit");
+
   let controlsTabsLastIndex = useRef(0);
 
   let editorRef = useRef(null);
@@ -1294,12 +1296,26 @@ export function PortfolioActivityEditor() {
                 variant="outline"
               >
                 <Tooltip hasArrow label="View Activity cmd+v">
-                  <Button size="sm" leftIcon={<BsPlayBtnFill />}>
+                  <Button
+                    isActive={mode == "View"}
+                    size="sm"
+                    leftIcon={<BsPlayBtnFill />}
+                    onClick={() => {
+                      setMode("View");
+                    }}
+                  >
                     View
                   </Button>
                 </Tooltip>
                 <Tooltip hasArrow label="Edit Activity cmd+e">
-                  <Button isActive size="sm" leftIcon={<MdModeEditOutline />}>
+                  <Button
+                    isActive={mode == "Edit"}
+                    size="sm"
+                    leftIcon={<MdModeEditOutline />}
+                    onClick={() => {
+                      setMode("Edit");
+                    }}
+                  >
                     Edit
                   </Button>
                 </Tooltip>
@@ -1327,20 +1343,22 @@ export function PortfolioActivityEditor() {
                   />
                 </Box>
               )}
-              <Tooltip hasArrow label="Updates Viewer cmd+s">
-                <Button
-                  ml="10px"
-                  mt="-1"
-                  size="sm"
-                  variant="outline"
-                  leftIcon={<RxUpdate />}
-                  onClick={() => {
-                    setViewerDoenetML(textEditorDoenetML.current);
-                  }}
-                >
-                  Update
-                </Button>
-              </Tooltip>
+              {mode == "Edit" && (
+                <Tooltip hasArrow label="Updates Viewer cmd+s">
+                  <Button
+                    ml="10px"
+                    mt="-1"
+                    size="sm"
+                    variant="outline"
+                    leftIcon={<RxUpdate />}
+                    onClick={() => {
+                      setViewerDoenetML(textEditorDoenetML.current);
+                    }}
+                  >
+                    Update
+                  </Button>
+                </Tooltip>
+              )}
             </GridItem>
             <GridItem area="label">
               <EditableLabel />
@@ -1366,63 +1384,136 @@ export function PortfolioActivityEditor() {
             </GridItem>
           </Grid>
         </GridItem>
-        <GridItem area="centerContent">
-          <ResizeableSideBySide
-            left={
-              <PageViewer
-                key={`HPpageViewer`}
-                doenetML={viewerDoenetML}
-                flags={{
-                  showCorrectness: true,
-                  solutionDisplayMode: true,
-                  showFeedback: true,
-                  showHints: true,
-                  autoSubmit: false,
-                  allowLoadState: false,
-                  allowSaveState: false,
-                  allowLocalState: false,
-                  allowSaveSubmissions: false,
-                  allowSaveEvents: false,
-                }}
-                attemptNumber={1}
-                generatedVariantCallback={variantCallback} //TODO:Replace
-                requestedVariantIndex={variants.index}
-                // setIsInErrorState={setIsInErrorState}
-                pageIsActive={true}
-              />
-            }
-            right={
-              <CodeMirror
-                key="codemirror"
-                editorRef={editorRef}
-                setInternalValueTo={textEditorDoenetML.current}
-                onBeforeChange={(value) => {
-                  textEditorDoenetML.current = value;
-                  // Debounce save to server at 3 seconds
-                  clearTimeout(timeout.current);
-                  timeout.current = setTimeout(async function () {
-                    setEditorDoenetML(value);
-                    setLastKnownCid(lastKnownCidRef.current);
 
-                    saveDraft({
-                      pageId,
-                      courseId,
-                      backup: backupOldDraft.current,
-                    }).then(({ success }) => {
-                      if (success) {
-                        backupOldDraft.current = false;
-                        cidFromText(value).then((newlySavedCid) => {
-                          lastKnownCidRef.current = newlySavedCid;
-                        });
-                      }
-                    });
-                    timeout.current = null;
-                  }, 3000); //3 seconds
-                }}
+        {mode == "Edit" && (
+          <GridItem area="centerContent">
+            <ResizeableSideBySide
+              left={
+                <PageViewer
+                  key={`HPpageViewer`}
+                  doenetML={viewerDoenetML}
+                  flags={{
+                    showCorrectness: true,
+                    solutionDisplayMode: true,
+                    showFeedback: true,
+                    showHints: true,
+                    autoSubmit: false,
+                    allowLoadState: false,
+                    allowSaveState: false,
+                    allowLocalState: false,
+                    allowSaveSubmissions: false,
+                    allowSaveEvents: false,
+                  }}
+                  attemptNumber={1}
+                  generatedVariantCallback={variantCallback} //TODO:Replace
+                  requestedVariantIndex={variants.index}
+                  // setIsInErrorState={setIsInErrorState}
+                  pageIsActive={true}
+                />
+              }
+              right={
+                <CodeMirror
+                  key="codemirror"
+                  editorRef={editorRef}
+                  setInternalValueTo={textEditorDoenetML.current}
+                  onBeforeChange={(value) => {
+                    textEditorDoenetML.current = value;
+                    // Debounce save to server at 3 seconds
+                    clearTimeout(timeout.current);
+                    timeout.current = setTimeout(async function () {
+                      setEditorDoenetML(value);
+                      setLastKnownCid(lastKnownCidRef.current);
+
+                      saveDraft({
+                        pageId,
+                        courseId,
+                        backup: backupOldDraft.current,
+                      }).then(({ success }) => {
+                        if (success) {
+                          backupOldDraft.current = false;
+                          cidFromText(value).then((newlySavedCid) => {
+                            lastKnownCidRef.current = newlySavedCid;
+                          });
+                        }
+                      });
+                      timeout.current = null;
+                    }, 3000); //3 seconds
+                  }}
+                />
+              }
+            />
+          </GridItem>
+        )}
+
+        {mode == "View" && (
+          <GridItem area="centerContent">
+            <Grid
+              width="100%"
+              minHeight="calc(100vh - 40px)" //40px header height
+              templateAreas={`"leftGutter viewer rightGutter"`}
+              templateColumns={`1fr minmax(400px,850px) 1fr`}
+              overflow="hidden"
+            >
+              <GridItem
+                area="leftGutter"
+                background="doenet.lightBlue"
+                width="100%"
+                paddingTop="10px"
+                alignSelf="start"
               />
-            }
-          />
-        </GridItem>
+              <GridItem
+                area="rightGutter"
+                background="doenet.lightBlue"
+                width="100%"
+                paddingTop="10px"
+                alignSelf="start"
+              />
+              <GridItem
+                area="viewer"
+                width="100%"
+                placeSelf="center"
+                minHeight="100%"
+                maxWidth="850px"
+                overflow="hidden"
+              >
+                <Box
+                  minHeight="calc(100vh - 100px)"
+                  background="var(--canvas)"
+                  borderWidth="1px"
+                  borderStyle="solid"
+                  borderColor="doenet.mediumGray"
+                  margin="10px 0px 10px 0px" //Only need when there is an outline
+                  padding="20px 5px 20px 5px"
+                  flexGrow={1}
+                  overflow="scroll"
+                  marginBottom="50vh"
+                >
+                  <PageViewer
+                    key={`HPpageViewer`}
+                    doenetML={viewerDoenetML}
+                    flags={{
+                      showCorrectness: true,
+                      solutionDisplayMode: true,
+                      showFeedback: true,
+                      showHints: true,
+                      autoSubmit: false,
+                      allowLoadState: false,
+                      allowSaveState: false,
+                      allowLocalState: false,
+                      allowSaveSubmissions: false,
+                      allowSaveEvents: false,
+                    }}
+                    attemptNumber={1}
+                    generatedVariantCallback={variantCallback} //TODO:Replace
+                    requestedVariantIndex={variants.index}
+                    // setIsInErrorState={setIsInErrorState}
+                    pageIsActive={true}
+                  />
+                </Box>
+              </GridItem>
+            </Grid>
+          </GridItem>
+        )}
       </Grid>
     </>
   );
