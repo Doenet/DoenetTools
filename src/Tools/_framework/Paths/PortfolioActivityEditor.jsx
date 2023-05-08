@@ -59,6 +59,7 @@ import {
   MenuList,
   Progress,
   // Spinner,
+  Select,
   Tab,
   TabList,
   TabPanel,
@@ -71,7 +72,7 @@ import {
 } from "@chakra-ui/react";
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
-import { FaCog, FaFileCsv, FaFileImage } from "react-icons/fa";
+import { FaCog, FaFileCsv, FaFileImage, FaKeyboard } from "react-icons/fa";
 import { Form, useBeforeUnload, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
@@ -85,7 +86,7 @@ import {
   textEditorLastKnownCidAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
-import Select from "react-select";
+// import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 
 export async function action({ params, request }) {
@@ -1171,11 +1172,17 @@ export function PortfolioActivityEditor() {
     onOpen: controlsOnOpen,
     onClose: controlsOnClose,
   } = useDisclosure();
+  const {
+    isOpen: keyboardIsOpen,
+    onOpen: keyboardOnOpen,
+    onClose: keyboardOnClose,
+  } = useDisclosure();
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
+  // const [mode, setMode] = useState("View");
   const [mode, setMode] = useState("Edit");
 
   let controlsTabsLastIndex = useRef(0);
@@ -1229,6 +1236,7 @@ export function PortfolioActivityEditor() {
   }, [pageId, saveDraft, courseId, textEditorDoenetML]);
 
   const controlsBtnRef = useRef(null);
+  const keyboardBtnRef = useRef(null);
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -1288,77 +1296,80 @@ export function PortfolioActivityEditor() {
             width="100%"
           >
             <GridItem area="leftControls">
-              <ButtonGroup
-                size="sm"
-                ml="10px"
-                mt="4px"
-                isAttached
-                variant="outline"
-              >
-                <Tooltip hasArrow label="View Activity cmd+v">
-                  <Button
-                    isActive={mode == "View"}
-                    size="sm"
-                    leftIcon={<BsPlayBtnFill />}
-                    onClick={() => {
-                      setMode("View");
-                    }}
-                  >
-                    View
-                  </Button>
-                </Tooltip>
-                <Tooltip hasArrow label="Edit Activity cmd+e">
-                  <Button
-                    isActive={mode == "Edit"}
-                    size="sm"
-                    leftIcon={<MdModeEditOutline />}
-                    onClick={() => {
-                      setMode("Edit");
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </Tooltip>
-              </ButtonGroup>
-              {variants.allPossibleVariants.length > 1 && (
-                <Box display="inline-block" width="150px" ml="10px" h="32px">
-                  <Select
-                    options={variantOptions}
-                    value={variantOptions[variants.index]}
-                    onChange={(selectedOption) => {
-                      const index = variantOptions.indexOf(selectedOption);
-                      setVariants((prev) => {
-                        let next = { ...prev };
-                        next.index = index;
-                        return next;
-                      });
-                    }}
-                    style={{
-                      control: (provided) => ({
-                        ...provided,
-                        display: "inline-block",
-                        width: "150px",
-                      }),
-                    }}
-                  />
-                </Box>
-              )}
-              {mode == "Edit" && (
-                <Tooltip hasArrow label="Updates Viewer cmd+s">
-                  <Button
-                    ml="10px"
-                    mt="-1"
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<RxUpdate />}
-                    onClick={() => {
-                      setViewerDoenetML(textEditorDoenetML.current);
-                    }}
-                  >
-                    Update
-                  </Button>
-                </Tooltip>
-              )}
+              <HStack ml="10px" mt="4px">
+                <ButtonGroup size="sm" isAttached variant="outline">
+                  <Tooltip hasArrow label="View Activity cmd+v">
+                    <Button
+                      isActive={mode == "View"}
+                      size="sm"
+                      leftIcon={<BsPlayBtnFill />}
+                      onClick={() => {
+                        setMode("View");
+                      }}
+                    >
+                      View
+                    </Button>
+                  </Tooltip>
+                  <Tooltip hasArrow label="Edit Activity cmd+e">
+                    <Button
+                      isActive={mode == "Edit"}
+                      size="sm"
+                      leftIcon={<MdModeEditOutline />}
+                      onClick={() => {
+                        setMode("Edit");
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Tooltip>
+                </ButtonGroup>
+                {variants.allPossibleVariants.length > 1 && (
+                  <Tooltip hasArrow label="Variant">
+                    <Select
+                      size="sm"
+                      maxWidth="120px"
+                      border="1px"
+                      borderColor="#2D5A94"
+                      onChange={(e) => {
+                        let index = variants.allPossibleVariants.indexOf(
+                          e.target.value,
+                        );
+                        index++;
+                        setVariants((prev) => {
+                          let next = { ...prev };
+                          next.index = index;
+                          return next;
+                        });
+                      }}
+                    >
+                      {variants.allPossibleVariants.map((item, i) => {
+                        return (
+                          <option key={`option${i}`} name={item}>
+                            {item}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                  </Tooltip>
+                )}
+
+                {mode == "Edit" && (
+                  <Tooltip hasArrow label="Updates Viewer cmd+s">
+                    <Button
+                      ml="10px"
+                      mt="-1"
+                      size="sm"
+                      variant="outline"
+                      leftIcon={<RxUpdate />}
+                      onClick={() => {
+                        setViewerDoenetML(textEditorDoenetML.current);
+                      }}
+                    >
+                      Update
+                    </Button>
+                  </Tooltip>
+                )}
+              </HStack>
             </GridItem>
             <GridItem area="label">
               <EditableLabel />
@@ -1446,73 +1457,117 @@ export function PortfolioActivityEditor() {
         )}
 
         {mode == "View" && (
-          <GridItem area="centerContent">
-            <Grid
-              width="100%"
-              minHeight="calc(100vh - 40px)" //40px header height
-              templateAreas={`"leftGutter viewer rightGutter"`}
-              templateColumns={`1fr minmax(400px,850px) 1fr`}
-              overflow="hidden"
+          <>
+            <Drawer
+              placement="bottom"
+              onClose={keyboardOnClose}
+              isOpen={keyboardIsOpen}
+              finalFocusRef={keyboardBtnRef}
+              size="md"
             >
-              <GridItem
-                area="leftGutter"
-                background="doenet.lightBlue"
+              <DrawerOverlay />
+              <DrawerContent>
+                {/* <DrawerHeader borderBottomWidth="1px">
+                  Basic Drawer
+                </DrawerHeader> */}
+                <DrawerBody>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                  <Text>Keyboard HERE</Text>
+                </DrawerBody>
+              </DrawerContent>
+            </Drawer>
+            <GridItem area="centerContent">
+              <Grid
                 width="100%"
-                paddingTop="10px"
-                alignSelf="start"
-              />
-              <GridItem
-                area="rightGutter"
-                background="doenet.lightBlue"
-                width="100%"
-                paddingTop="10px"
-                alignSelf="start"
-              />
-              <GridItem
-                area="viewer"
-                width="100%"
-                placeSelf="center"
-                minHeight="100%"
-                maxWidth="850px"
+                minHeight="calc(100vh - 40px)" //40px header height
+                templateAreas={`"leftGutter viewer rightGutter"`}
+                templateColumns={`1fr minmax(400px,850px) 1fr`}
                 overflow="hidden"
               >
-                <Box
-                  minHeight="calc(100vh - 100px)"
-                  background="var(--canvas)"
-                  borderWidth="1px"
-                  borderStyle="solid"
-                  borderColor="doenet.mediumGray"
-                  margin="10px 0px 10px 0px" //Only need when there is an outline
-                  padding="20px 5px 20px 5px"
-                  flexGrow={1}
-                  overflow="scroll"
-                  marginBottom="50vh"
+                <GridItem
+                  area="leftGutter"
+                  background="doenet.lightBlue"
+                  width="100%"
+                  paddingTop="10px"
+                  alignSelf="start"
                 >
-                  <PageViewer
-                    key={`HPpageViewer`}
-                    doenetML={viewerDoenetML}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: true,
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    attemptNumber={1}
-                    generatedVariantCallback={variantCallback} //TODO:Replace
-                    requestedVariantIndex={variants.index}
-                    // setIsInErrorState={setIsInErrorState}
-                    pageIsActive={true}
-                  />
-                </Box>
-              </GridItem>
-            </Grid>
-          </GridItem>
+                  <Tooltip hasArrow label="Open Keyboard cmd+k">
+                    <IconButton
+                      zIndex="20000"
+                      position="absolute"
+                      top="100px"
+                      size="sm"
+                      variant="outline"
+                      icon={<FaKeyboard />}
+                      onClick={keyboardOnOpen}
+                      ref={keyboardBtnRef}
+                      background="doenet.canvas"
+                    />
+                  </Tooltip>
+                </GridItem>
+                <GridItem
+                  area="rightGutter"
+                  background="doenet.lightBlue"
+                  width="100%"
+                  paddingTop="10px"
+                  alignSelf="start"
+                />
+                <GridItem
+                  area="viewer"
+                  width="100%"
+                  placeSelf="center"
+                  minHeight="100%"
+                  maxWidth="850px"
+                  overflow="hidden"
+                >
+                  <Box
+                    minHeight="calc(100vh - 100px)"
+                    background="var(--canvas)"
+                    borderWidth="1px"
+                    borderStyle="solid"
+                    borderColor="doenet.mediumGray"
+                    margin="10px 0px 10px 0px" //Only need when there is an outline
+                    padding="20px 5px 20px 5px"
+                    flexGrow={1}
+                    overflow="scroll"
+                    marginBottom="50vh"
+                  >
+                    <PageViewer
+                      key={`HPpageViewer`}
+                      doenetML={viewerDoenetML}
+                      flags={{
+                        showCorrectness: true,
+                        solutionDisplayMode: true,
+                        showFeedback: true,
+                        showHints: true,
+                        autoSubmit: false,
+                        allowLoadState: false,
+                        allowSaveState: false,
+                        allowLocalState: false,
+                        allowSaveSubmissions: false,
+                        allowSaveEvents: false,
+                      }}
+                      attemptNumber={1}
+                      generatedVariantCallback={variantCallback} //TODO:Replace
+                      requestedVariantIndex={variants.index}
+                      // setIsInErrorState={setIsInErrorState}
+                      pageIsActive={true}
+                    />
+                  </Box>
+                </GridItem>
+              </Grid>
+            </GridItem>
+          </>
         )}
       </Grid>
     </>
