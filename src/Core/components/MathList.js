@@ -292,12 +292,7 @@ export default class MathList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       isArray: true,
       entryPrefixes: ["math"],
@@ -518,12 +513,7 @@ export default class MathList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         maths: {
@@ -845,12 +835,9 @@ export default class MathList extends InlineComponent {
   static adapters = [
     {
       stateVariable: "math",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
     "text",
   ];

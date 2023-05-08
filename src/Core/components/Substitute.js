@@ -428,12 +428,13 @@ export default class Substitute extends CompositeComponent {
     if (type === "math") {
       let attributes = {};
 
-      let attributesComponentTypes = {
-        displayDigits: "integer",
-        displayDecimals: "integer",
-        displaySmallAsZero: "number",
-        padZeros: "boolean",
-      };
+      let attributesComponentTypes = {};
+
+      let roundingAttrs = Object.keys(returnRoundingAttributes());
+      for (let attrName in roundingAttrs) {
+        attributesComponentTypes[attrName] =
+          roundingAttrs[attrName].createComponentOfType;
+      }
 
       for (let attr in attributesComponentTypes) {
         let shadowComponent = {

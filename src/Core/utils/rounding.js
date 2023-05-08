@@ -2,8 +2,9 @@ export function returnRoundingStateVariableDefinitions({
   childsGroupIfSingleMatch = [],
   childGroupsToStopSingleMatch = [],
   includeListParents = false,
-  displayDigitsDefault = 3,
   additionalAttributeComponent = null,
+  displayDigitsDefault = 3,
+  displaySmallAsZeroDefault = 1e-14,
 } = {}) {
   let stateVariableDefinitions = {};
 
@@ -57,7 +58,7 @@ export function returnRoundingStateVariableDefinitions({
       createComponentOfType: "number",
     },
     hasEssential: true,
-    defaultValue: 1e-14,
+    defaultValue: displaySmallAsZeroDefault,
     returnDependencies: roundingDependencies({
       stateVariable: "displaySmallAsZero",
       childsGroupIfSingleMatch,
@@ -201,7 +202,7 @@ function roundingDefinition({
     }
 
     if (dependencyValues.attribute) {
-      if (usedDefault.attribute) {
+      if (usedDefault.attribute?.value) {
         foundDefaultValue = true;
         theDefaultValueFound = dependencyValues.attribute.stateValues.value;
       } else {
@@ -212,13 +213,18 @@ function roundingDefinition({
         };
       }
     } else if (dependencyValues.attributeIgnore?.stateValues.value) {
-      return {
-        setValue: {
-          [stateVariable]: valueIfIgnore,
-        },
-      };
+      if (usedDefault.attributeIgnore?.value) {
+        foundDefaultValue = true;
+        theDefaultValueFound = valueIfIgnore;
+      } else {
+        return {
+          setValue: {
+            [stateVariable]: valueIfIgnore,
+          },
+        };
+      }
     } else if (dependencyValues.additionalAttribute) {
-      if (usedDefault.additionalAttribute) {
+      if (usedDefault.additionalAttribute?.[stateVariable]) {
         foundDefaultValue = true;
         theDefaultValueFound =
           dependencyValues.additionalAttribute.stateValues[stateVariable];
@@ -236,15 +242,22 @@ function roundingDefinition({
       dependencyValues.singleMatchChildren.length === 1 &&
       dependencyValues.stopSingleMatchChildren.length === 0 &&
       dependencyValues.singleMatchChildren[0].stateValues[stateVariable] !==
-        undefined &&
-      !usedDefault.singleMatchChildren[0]?.[stateVariable]
+        undefined
     ) {
-      return {
-        setValue: {
-          [stateVariable]:
-            dependencyValues.singleMatchChildren[0].stateValues[stateVariable],
-        },
-      };
+      if (usedDefault.singleMatchChildren[0]?.[stateVariable]) {
+        foundDefaultValue = true;
+        theDefaultValueFound =
+          dependencyValues.singleMatchChildren[0].stateValues[stateVariable];
+      } else {
+        return {
+          setValue: {
+            [stateVariable]:
+              dependencyValues.singleMatchChildren[0].stateValues[
+                stateVariable
+              ],
+          },
+        };
+      }
     }
 
     if (foundDefaultValue) {

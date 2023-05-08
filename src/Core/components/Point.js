@@ -819,12 +819,7 @@ export default class Point extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       isArray: true,
       entryPrefixes: ["x"],
@@ -950,12 +945,7 @@ export default class Point extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         xs: {
@@ -1224,12 +1214,9 @@ export default class Point extends GraphicalComponent {
   static adapters = [
     {
       stateVariable: "coords",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 

@@ -180,7 +180,10 @@ export class MatrixInput extends Input {
 
     Object.assign(
       stateVariableDefinitions,
-      returnRoundingStateVariableDefinitions({ displayDigitsDefault: 10 }),
+      returnRoundingStateVariableDefinitions({
+        displayDigitsDefault: 10,
+        displaySmallAsZeroDefault: 0,
+      }),
     );
 
     stateVariableDefinitions.valueOriginal = {
@@ -1677,11 +1680,27 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-        ],
+        // We use addAttributeComponentsShadowingStateVariables,
+        // rather than attributesToShadow
+        // because we want the non-default values of
+        // displayDigits and displaySmallAsZero
+        // to propagate
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigits",
+          },
+          displaySmallAsZero: {
+            stateVariableToShadow: "displaySmallAsZero",
+          },
+        },
+        attributesToShadow: Object.keys(returnRoundingAttributes()).filter(
+          (v) =>
+            ![
+              "displayDigits",
+              "ignoreDisplayDigits",
+              "displaySmallAsZero",
+            ].includes(v),
+        ),
       },
       returnDependencies: () => ({
         componentValues: {
@@ -1804,11 +1823,27 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-        ],
+        // We use addAttributeComponentsShadowingStateVariables,
+        // rather than attributesToShadow
+        // because we want the non-default values of
+        // displayDigits and displaySmallAsZero
+        // to propagate
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigits",
+          },
+          displaySmallAsZero: {
+            stateVariableToShadow: "displaySmallAsZero",
+          },
+        },
+        attributesToShadow: Object.keys(returnRoundingAttributes()).filter(
+          (v) =>
+            ![
+              "displayDigits",
+              "ignoreDisplayDigits",
+              "displaySmallAsZero",
+            ].includes(v),
+        ),
       },
       returnDependencies: () => ({
         componentImmediateValues: {
@@ -2022,11 +2057,9 @@ export class MatrixInput extends Input {
   static adapters = [
     {
       stateVariable: "value",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 }
@@ -2606,15 +2639,6 @@ export default class MatrixComponentInput extends BaseComponent {
     };
 
     stateVariableDefinitions.immediateValue = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-        ],
-      },
       stateVariablesDeterminingDependencies: ["rowInd", "colInd"],
       returnDependencies: ({ stateValues }) => {
         let varEnding = "";

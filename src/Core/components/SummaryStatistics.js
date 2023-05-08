@@ -209,12 +209,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -236,12 +231,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -262,12 +252,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -289,12 +274,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -316,12 +296,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         stdev: {
@@ -347,12 +322,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -373,12 +343,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -399,12 +364,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -425,12 +385,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -451,12 +406,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -477,12 +427,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         minimum: {

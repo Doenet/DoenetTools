@@ -215,6 +215,20 @@ export default class Answer extends InlineComponent {
       public: true,
     };
 
+    attributes.displayDigitsForResponses = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigitsForResponses",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDigitsForCreditAchieved = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigitsForCreditAchieved",
+      defaultValue: 3,
+      public: true,
+    };
+
     // temporary attribute until fix toast
     attributes.suppressToast = {
       createComponentOfType: "boolean",
@@ -932,6 +946,11 @@ export default class Answer extends InlineComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForResponses",
+          },
+        },
       },
       isArray: true,
       entryPrefixes: ["currentResponse"],
@@ -1182,6 +1201,11 @@ export default class Answer extends InlineComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForResponses",
+          },
+        },
       },
       isArray: true,
       entryPrefixes: ["submittedResponse"],
@@ -1450,6 +1474,11 @@ export default class Answer extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          },
+        },
       },
       forRenderer: true,
       hasEssential: true,

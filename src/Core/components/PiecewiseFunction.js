@@ -4,6 +4,7 @@ import GraphicalComponent from "./abstract/GraphicalComponent";
 import me from "math-expressions";
 import { returnPiecewiseNumericalFunctionFromChildren } from "../utils/function";
 import { roundForDisplay } from "../utils/math";
+import { returnRoundingAttributes } from "../utils/rounding";
 
 export default class PiecewiseFunction extends Function {
   static componentType = "piecewiseFunction";
@@ -231,12 +232,7 @@ export default class PiecewiseFunction extends Function {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { formula: me.fromAst("\uff3f") } }),

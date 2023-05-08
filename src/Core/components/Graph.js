@@ -718,12 +718,7 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -856,12 +851,7 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1002,12 +992,7 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1144,12 +1129,7 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1384,12 +1364,7 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["gridAttrCompChildren"],

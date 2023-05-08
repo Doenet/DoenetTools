@@ -803,12 +803,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       defaultValue: me.fromAst(0),
       hasEssential: true,
@@ -2901,12 +2896,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "minimum" || prefix === undefined) {
             // minimum or entire array
@@ -3637,12 +3627,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "maximum" || prefix === undefined) {
             // maximum or entire array
@@ -3862,12 +3847,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "extremum" || prefix === undefined) {
             // extremum or entire array
@@ -4280,12 +4260,9 @@ export default class Function extends InlineComponent {
     {
       stateVariable: "formula",
       componentType: "math",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 }

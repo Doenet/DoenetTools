@@ -22,7 +22,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="true">x^3</function>
+    <function name="original" symbolic="true" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -98,7 +98,7 @@ describe("Function Operator Tag Tests", function () {
 
       let clamp01 = (x) => Math.min(1, Math.max(0, x));
       let clampn35 = (x) => Math.min(5, Math.max(-3, x));
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
       for (let i = 1; i <= 21; i++) {
@@ -203,7 +203,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false">x^3</function>
+    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -279,7 +279,7 @@ describe("Function Operator Tag Tests", function () {
 
       let clamp01 = (x) => Math.min(1, Math.max(0, x));
       let clampn35 = (x) => Math.min(5, Math.max(-3, x));
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
       for (let i = 1; i <= 21; i++) {
@@ -384,7 +384,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original">x^3<label>orig</label></function>
+    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3<label>orig</label></function>
     <clampfunction name="clamp01"><copy target="original" /><label>clamp 1</label></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /><label>clamp 2</label></clampfunction>
 
@@ -445,7 +445,7 @@ describe("Function Operator Tag Tests", function () {
 
       let clamp01 = (x) => Math.min(1, Math.max(0, x));
       let clampn35 = (x) => Math.min(5, Math.max(-3, x));
-      let indToVal = (ind) => me.math.round((ind - 3) ** 3, 8);
+      let indToVal = (ind) => me.math.round((ind - 3) ** 3, 3);
 
       cy.log("Check values in DOM");
       for (let i = 1; i <= 5; i++) {
@@ -522,7 +522,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original">x^3</function>
+    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 
@@ -596,9 +596,9 @@ describe("Function Operator Tag Tests", function () {
         cesc2("#" + x.componentName),
       );
 
-      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 8);
-      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 3);
+      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 3);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
 
@@ -704,7 +704,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false">x^3</function>
+    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 
@@ -778,9 +778,9 @@ describe("Function Operator Tag Tests", function () {
         cesc2("#" + x.componentName),
       );
 
-      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 8);
-      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 3);
+      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 3);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
 

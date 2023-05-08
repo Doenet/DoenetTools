@@ -543,10 +543,7 @@ export default class MathComponent extends InlineComponent {
         createComponentOfType: this.componentType,
         attributesToShadow: [
           "unordered",
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
+          ...Object.keys(returnRoundingAttributes()),
           "simplify",
           "expand",
         ],
@@ -616,12 +613,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         value: {
@@ -1084,12 +1076,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "x") {
             return [];
@@ -1325,12 +1312,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "matrixEntry") {
             return [];
@@ -1604,12 +1586,9 @@ export default class MathComponent extends InlineComponent {
   static adapters = [
     {
       stateVariable: "number",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
     "text",
     {

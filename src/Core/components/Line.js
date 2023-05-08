@@ -496,12 +496,7 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "pointX") {
             return [];
@@ -1033,12 +1028,7 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       additionalStateVariablesDefined: [
@@ -1047,12 +1037,7 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
-            attributesToShadow: [
-              "displayDigits",
-              "displayDecimals",
-              "displaySmallAsZero",
-              "padZeros",
-            ],
+            attributesToShadow: Object.keys(returnRoundingAttributes()),
           },
         },
         {
@@ -1060,12 +1045,7 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
-            attributesToShadow: [
-              "displayDigits",
-              "displayDecimals",
-              "displaySmallAsZero",
-              "padZeros",
-            ],
+            attributesToShadow: Object.keys(returnRoundingAttributes()),
           },
         },
         {
@@ -1073,12 +1053,7 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
-            attributesToShadow: [
-              "displayDigits",
-              "displayDecimals",
-              "displaySmallAsZero",
-              "padZeros",
-            ],
+            attributesToShadow: Object.keys(returnRoundingAttributes()),
           },
         },
       ],
@@ -1431,12 +1406,7 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         coeffvar1: {
@@ -1466,12 +1436,7 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         coeff0: {
@@ -1501,12 +1466,7 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       returnDependencies: () => ({
         coeff0: {
@@ -1683,12 +1643,9 @@ export default class Line extends GraphicalComponent {
   static adapters = [
     {
       stateVariable: "equation",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 

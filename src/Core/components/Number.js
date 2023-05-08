@@ -323,12 +323,7 @@ export default class NumberComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         // the reason we create a attribute component from the state variable,
         // rather than just shadowing the attribute,
         // is that a sequence creates a number where it sets fixed directly in the state
@@ -858,12 +853,8 @@ export default class NumberComponent extends InlineComponent {
       isPublic: true,
     });
 
-    stateVariableDefinitions.math.shadowingInstructions.attributesToShadow = [
-      "displayDigits",
-      "displayDecimals",
-      "displaySmallAsZero",
-      "padZeros",
-    ];
+    stateVariableDefinitions.math.shadowingInstructions.attributesToShadow =
+      Object.keys(returnRoundingAttributes());
 
     stateVariableDefinitions.latex = {
       public: true,
@@ -971,12 +962,9 @@ export default class NumberComponent extends InlineComponent {
   static adapters = [
     {
       stateVariable: "math",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
     "text",
   ];

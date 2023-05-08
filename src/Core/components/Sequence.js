@@ -7,6 +7,7 @@ import {
   returnStandardSequenceAttributes,
   returnStandardSequenceStateVariableDefinitions,
 } from "../utils/sequence";
+import { returnRoundingAttributes } from "../utils/rounding";
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
@@ -22,18 +23,11 @@ export default class Sequence extends CompositeComponent {
       leaveRaw: true,
     };
 
-    attributes.displayDigits = {
-      leaveRaw: true,
-    };
-    attributes.displayDecimals = {
-      leaveRaw: true,
-    };
-    attributes.displaySmallAsZero = {
-      leaveRaw: true,
-    };
-    attributes.padZeros = {
-      leaveRaw: true,
-    };
+    for (let attrName in returnRoundingAttributes()) {
+      attributes[attrName] = {
+        leaveRaw: true,
+      };
+    }
 
     let sequenceAttributes = returnStandardSequenceAttributes();
     Object.assign(attributes, sequenceAttributes);
@@ -141,13 +135,7 @@ export default class Sequence extends CompositeComponent {
     let replacements = [];
 
     let attributesToConvert = {};
-    for (let attr of [
-      "fixed",
-      "displayDigits",
-      "displaySmallAsZero",
-      "displayDecimals",
-      "padZeros",
-    ]) {
+    for (let attr of ["fixed", ...Object.keys(returnRoundingAttributes())]) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr];
       }
@@ -355,10 +343,7 @@ export default class Sequence extends CompositeComponent {
         let attributesToConvert = {};
         for (let attr of [
           "fixed",
-          "displayDigits",
-          "displaySmallAsZero",
-          "displayDecimals",
-          "padZeros",
+          ...Object.keys(returnRoundingAttributes()),
         ]) {
           if (attr in component.attributes) {
             attributesToConvert[attr] = component.attributes[attr];

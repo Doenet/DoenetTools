@@ -167,18 +167,37 @@ export default class MathInput extends Input {
 
     Object.assign(
       stateVariableDefinitions,
-      returnRoundingStateVariableDefinitions({ displayDigitsDefault: 10 }),
+      returnRoundingStateVariableDefinitions({
+        displayDigitsDefault: 10,
+        displaySmallAsZeroDefault: 0,
+      }),
     );
 
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-        ],
+        // We use addAttributeComponentsShadowingStateVariables,
+        // rather than attributesToShadow
+        // because we want the non-default values of
+        // displayDigits and displaySmallAsZero
+        // to propagate
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigits",
+          },
+          displaySmallAsZero: {
+            stateVariableToShadow: "displaySmallAsZero",
+          },
+        },
+        attributesToShadow: Object.keys(returnRoundingAttributes()).filter(
+          (v) =>
+            ![
+              "displayDigits",
+              "ignoreDisplayDigits",
+              "displaySmallAsZero",
+            ].includes(v),
+        ),
       },
       hasEssential: true,
       shadowVariable: true,
@@ -302,11 +321,27 @@ export default class MathInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-        ],
+        // We use addAttributeComponentsShadowingStateVariables,
+        // rather than attributesToShadow
+        // because we want the non-default values of
+        // displayDigits and displaySmallAsZero
+        // to propagate
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigits",
+          },
+          displaySmallAsZero: {
+            stateVariableToShadow: "displaySmallAsZero",
+          },
+        },
+        attributesToShadow: Object.keys(returnRoundingAttributes()).filter(
+          (v) =>
+            ![
+              "displayDigits",
+              "ignoreDisplayDigits",
+              "displaySmallAsZero",
+            ].includes(v),
+        ),
       },
       hasEssential: true,
       shadowVariable: true,
@@ -837,11 +872,9 @@ export default class MathInput extends Input {
   static adapters = [
     {
       stateVariable: "value",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 }

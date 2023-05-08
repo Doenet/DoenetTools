@@ -1031,10 +1031,7 @@ export default class Vector extends GraphicalComponent {
       shadowingInstructions: {
         createComponentOfType: "math",
         attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
+          ...Object.keys(returnRoundingAttributes()),
           "displayWithAngleBrackets",
         ],
         returnWrappingComponents(prefix) {
@@ -1411,12 +1408,7 @@ export default class Vector extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "headX") {
             return [];
@@ -1610,12 +1602,7 @@ export default class Vector extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "tailX") {
             return [];
@@ -2160,12 +2147,9 @@ export default class Vector extends GraphicalComponent {
     {
       stateVariable: "displacementCoords",
       componentType: "coords",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 

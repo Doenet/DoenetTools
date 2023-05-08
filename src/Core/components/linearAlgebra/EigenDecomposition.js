@@ -112,12 +112,7 @@ export default class EigenDecomposition extends BaseComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       entryPrefixes: ["eigenvalue"],
       returnArraySizeDependencies: () => ({
@@ -162,12 +157,7 @@ export default class EigenDecomposition extends BaseComponent {
       nDimensions: 2,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
         returnWrappingComponents(prefix) {
           if (prefix === "eigenvectorX") {
             return [];

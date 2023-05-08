@@ -659,12 +659,7 @@ export default class ODESystem extends InlineComponent {
             stateVariableToShadow: "numericalSolutionFDefinitions",
           },
         },
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        attributesToShadow: Object.keys(returnRoundingAttributes()),
       },
       createWorkspace: true,
       returnArraySizeDependencies: () => ({

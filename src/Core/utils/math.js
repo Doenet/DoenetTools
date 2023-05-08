@@ -676,10 +676,7 @@ export function roundForDisplay({ value, dependencyValues }) {
     dependencyValues.displayDigits > 0 &&
     dependencyValues.displaySmallAsZero > 0
   ) {
-    rounded = me.evaluate_numbers(rounded, {
-      skip_ordering: true,
-      set_small_zero: dependencyValues.displaySmallAsZero,
-    });
+    rounded = me.set_small_zero(rounded, dependencyValues.displaySmallAsZero);
   }
 
   return rounded;

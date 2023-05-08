@@ -7929,8 +7929,8 @@ describe("Function Tag Tests", function () {
   <text>a</text>
 
   <function name="f1" simplify="none">255.029847 sin(0.52952342x) + 3</function>
-  <function name="f2" simplify="none" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f3" simplify="none" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" simplify="none" displayDigits="4"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" simplify="none" displayDigits="4" padZeros> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f4" simplify="none" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f5" simplify="none" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
@@ -7982,19 +7982,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4") + " .mjx-mrow")
       .eq(0)
@@ -8013,19 +8013,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2a") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3a") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4a") + " .mjx-mrow")
       .eq(0)
@@ -8044,19 +8044,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2b") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3b") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4b") + " .mjx-mrow")
       .eq(0)
@@ -8075,19 +8075,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2c") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3c") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4c") + " .mjx-mrow")
       .eq(0)
@@ -8106,19 +8106,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2d") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3d") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4d") + " .mjx-mrow")
       .eq(0)
@@ -8137,19 +8137,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2e") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3e") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4e") + " .mjx-mrow")
       .eq(0)
@@ -8168,19 +8168,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2f") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3f") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4f") + " .mjx-mrow")
       .eq(0)
@@ -8204,8 +8204,8 @@ describe("Function Tag Tests", function () {
   <text>a</text>
 
   <function name="f1">255.029847 sin(0.52952342x) + 3</function>
-  <function name="f2" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f3" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" displayDigits="4"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" displayDigits="4" padZeros> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
@@ -8287,19 +8287,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4") + " .mjx-mrow")
       .eq(0)
@@ -8504,19 +8504,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.0298470sin(0.5295234200x)+3.000000000");
+        expect(text).eq("255.03sin(0.530x)+3.00");
       });
     cy.get(cesc("#\\/f2pt") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f3pt") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4pt") + " .mjx-mrow")
       .eq(0)
@@ -8531,23 +8531,85 @@ describe("Function Tag Tests", function () {
         expect(text).eq("255.030sin(0.530x)+3.000");
       });
 
+    cy.get(cesc("#\\/f1fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.530x)+3.00");
+      });
+    cy.get(cesc("#\\/f2fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f3fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f4fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+    cy.get(cesc("#\\/f5fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+
+    cy.get(cesc("#\\/f1pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.530x)+3.00");
+      });
+    cy.get(cesc("#\\/f2pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f3pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f4pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+    cy.get(cesc("#\\/f5pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+
     cy.get(cesc("#\\/f1pf") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2pf") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3pf") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f4pf") + " .mjx-mrow")
       .eq(0)
@@ -8556,6 +8618,68 @@ describe("Function Tag Tests", function () {
         expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f5pf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+
+    cy.get(cesc("#\\/f1fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f2fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f3fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f4fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f5fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+
+    cy.get(cesc("#\\/f1pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f2pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f3pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f4pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f5pfa") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
