@@ -1504,4 +1504,86 @@ describe("Code Editor Tag Tests", function () {
       cy.get(contentAnchor).should("contain.text", "Hello!\nBye");
     });
   });
+
+  it("Multiple code editors", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <text>a</text>
+        <codeEditor showResults />
+    
+        <p><copy prop="value" target="_codeeditor1" /></p>
+
+
+        <codeEditor showResults />
+    
+        <p><copy prop="value" target="_codeeditor2" /></p>
+
+        <codeEditor showResults />
+    
+        <p><copy prop="value" target="_codeeditor3" /></p>
+        `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("contain.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let viewer1Name =
+        stateVariables["/_codeeditor1"].activeChildren[0].componentName;
+      let updateAnchor1 = "#" + cesc2(viewer1Name) + "_updateButton";
+      let contentAnchor1 = "#" + cesc2(viewer1Name) + "_content";
+
+      let viewer2Name =
+        stateVariables["/_codeeditor2"].activeChildren[0].componentName;
+      let updateAnchor2 = "#" + cesc2(viewer2Name) + "_updateButton";
+      let contentAnchor2 = "#" + cesc2(viewer2Name) + "_content";
+
+      let viewer3Name =
+        stateVariables["/_codeeditor3"].activeChildren[0].componentName;
+      let updateAnchor3 = "#" + cesc2(viewer3Name) + "_updateButton";
+      let contentAnchor3 = "#" + cesc2(viewer3Name) + "_content";
+
+      cy.log("type text in editor 1");
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
+        "<p>Apple</p>{enter}",
+        {
+          delay: 0,
+        },
+      );
+      cy.get(updateAnchor1).click();
+
+      cy.get(cesc2("#/_p1")).should("have.text", "<p>Apple</p>\n");
+      cy.get(contentAnchor1).should("contain.text", "Apple");
+
+      cy.log("type text in editor 2");
+      cy.get(cesc("#\\/_codeeditor2") + " .cm-content").type(
+        "<p>Banana</p>{enter}",
+        {
+          delay: 0,
+        },
+      );
+      cy.get(updateAnchor2).click();
+
+      cy.get(cesc2("#/_p2")).should("have.text", "<p>Banana</p>\n");
+      cy.get(contentAnchor2).should("contain.text", "Banana");
+
+      cy.log("type text in editor 3");
+      cy.get(cesc("#\\/_codeeditor3") + " .cm-content").type(
+        "<p>Cherry</p>{enter}",
+        {
+          delay: 0,
+        },
+      );
+      cy.get(updateAnchor3).click();
+
+      cy.get(cesc2("#/_p3")).should("have.text", "<p>Cherry</p>\n");
+      cy.get(contentAnchor3).should("contain.text", "Cherry");
+    });
+  });
 });
