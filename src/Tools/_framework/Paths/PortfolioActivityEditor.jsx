@@ -789,6 +789,13 @@ export function GeneralActivityControls({ courseId, doenetId, activityData }) {
             let { success, cid, msg, asFileName } = data;
             if (success) {
               setImagePath(`/media/${cid}.jpg`);
+              //Refresh images in portfolio
+              fetcher.submit(
+                {
+                  _action: "noop",
+                },
+                { method: "post" },
+              );
               setAlerts([
                 {
                   type: "success",

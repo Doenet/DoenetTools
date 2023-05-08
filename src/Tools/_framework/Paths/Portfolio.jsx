@@ -51,9 +51,7 @@ export async function action({ request }) {
       },
     );
     return true;
-  }
-
-  if (formObj?._action == "Add Activity") {
+  } else if (formObj?._action == "Add Activity") {
     //Create a portfilio activity and redirect to the editor for it
     let response = await fetch("/api/createPortfolioActivity.php");
 
