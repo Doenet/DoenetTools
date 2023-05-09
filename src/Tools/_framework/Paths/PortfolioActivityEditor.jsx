@@ -1085,9 +1085,9 @@ function PortfolioActivitySettingsDrawer({
               <Tab onClick={() => (controlsTabsLastIndex.current = 1)}>
                 Support Files
               </Tab>
-              <Tab onClick={() => (controlsTabsLastIndex.current = 2)}>
+              {/* <Tab onClick={() => (controlsTabsLastIndex.current = 2)}>
                 Pages & Orders
-              </Tab>
+              </Tab> */}
             </TabList>
             <Box overflowY="scroll" height="calc(100vh - 120px)">
               <TabPanels>
@@ -1101,9 +1101,9 @@ function PortfolioActivitySettingsDrawer({
                 <TabPanel>
                   <SupportFilesControls onClose={onClose} />
                 </TabPanel>
-                <TabPanel>
+                {/* <TabPanel>
                   <Button size="sm">Enable Pages & Orders</Button>
-                </TabPanel>
+                </TabPanel> */}
               </TabPanels>
             </Box>
           </Tabs>
