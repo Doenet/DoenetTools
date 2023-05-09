@@ -2886,6 +2886,34 @@ describe("MathList Tag Tests", function () {
     <p><mathlist displayDecimals="4" displaySmallAsZero="false">2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
     <p><mathlist displayDecimals="4" displaySmallAsZero="false" padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
 
+    <p><mathlist name="ml1a" copySource="_mathlist1" /></p>
+    <p><mathlist name="ml2a" copySource="_mathlist2" /></p>
+    <p><mathlist name="ml3a" copySource="_mathlist3" /></p>
+    <p><mathlist name="ml4a" copySource="_mathlist4" /></p>
+    <p><mathlist name="ml5a" copySource="_mathlist5" /></p>
+    <p><mathlist name="ml6a" copySource="_mathlist6" /></p>
+
+    <p name="pms1"><copy source="_mathlist1.maths" assignNames="m1_1 m1_2 m1_3 m1_4 m1_5" /></p>
+    <p name="pms2"><copy source="_mathlist2.maths" assignNames="m2_1 m2_2 m2_3 m2_4 m2_5" /></p>
+    <p name="pms3"><copy source="_mathlist3.maths" assignNames="m3_1 m3_2 m3_3 m3_4 m3_5" /></p>
+    <p name="pms4"><copy source="_mathlist4.maths" assignNames="m4_1 m4_2 m4_3 m4_4 m4_5" /></p>
+    <p name="pms5"><copy source="_mathlist5.maths" assignNames="m5_1 m5_2 m5_3 m5_4 m5_5" /></p>
+    <p name="pms6"><copy source="_mathlist6.maths" assignNames="m6_1 m6_2 m6_3 m6_4 m6_5" /></p>
+
+    <p><mathlist name="ml1b" copySource="_mathlist1" link="false" /></p>
+    <p><mathlist name="ml2b" copySource="_mathlist2" link="false" /></p>
+    <p><mathlist name="ml3b" copySource="_mathlist3" link="false" /></p>
+    <p><mathlist name="ml4b" copySource="_mathlist4" link="false" /></p>
+    <p><mathlist name="ml5b" copySource="_mathlist5" link="false" /></p>
+    <p><mathlist name="ml6b" copySource="_mathlist6" link="false" /></p>
+
+    <p name="pms1a"><copy source="_mathlist1.maths" assignNames="m1_1a m1_2a m1_3a m1_4a m1_5a" link="false" /></p>
+    <p name="pms2a"><copy source="_mathlist2.maths" assignNames="m2_1a m2_2a m2_3a m2_4a m2_5a" link="false" /></p>
+    <p name="pms3a"><copy source="_mathlist3.maths" assignNames="m3_1a m3_2a m3_3a m3_4a m3_5a" link="false" /></p>
+    <p name="pms4a"><copy source="_mathlist4.maths" assignNames="m4_1a m4_2a m4_3a m4_4a m4_5a" link="false" /></p>
+    <p name="pms5a"><copy source="_mathlist5.maths" assignNames="m5_1a m5_2a m5_3a m5_4a m5_5a" link="false" /></p>
+    <p name="pms6a"><copy source="_mathlist6.maths" assignNames="m6_1a m6_2a m6_3a m6_4a m6_5a" link="false" /></p>
+
     `,
         },
         "*",
@@ -2896,211 +2924,292 @@ describe("MathList Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 0; i < 5; i++) {
+        let maths1, maths2, maths3, maths4, maths5, maths6;
 
-      let maths1 = stateVariables["/_mathlist1"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths2 = stateVariables["/_mathlist2"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths3 = stateVariables["/_mathlist3"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths4 = stateVariables["/_mathlist4"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths5 = stateVariables["/_mathlist5"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths6 = stateVariables["/_mathlist6"].activeChildren.map(
-        (x) => x.componentName,
-      );
+        if (i === 0) {
+          maths1 = stateVariables["/_mathlist1"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/_mathlist2"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/_mathlist3"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/_mathlist4"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/_mathlist5"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/_mathlist6"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else if (i === 1) {
+          maths1 = stateVariables["/ml1a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/ml2a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/ml3a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/ml4a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/ml5a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/ml6a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else if (i === 2) {
+          maths1 = stateVariables["/pms1"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/pms2"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/pms3"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/pms4"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/pms5"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/pms6"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else if (i === 3) {
+          maths1 = stateVariables["/ml1b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/ml2b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/ml3b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/ml4b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/ml5b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/ml6b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else {
+          maths1 = stateVariables["/pms1a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/pms2a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/pms3a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/pms4a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/pms5a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/pms6a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        }
 
-      cy.get(cesc2("#" + maths1[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345");
-        });
-      cy.get(cesc2("#" + maths1[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.523");
-        });
-      cy.get(cesc2("#" + maths1[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5");
-        });
-      cy.get(cesc2("#" + maths1[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.252⋅10−13");
-        });
-      cy.get(cesc2("#" + maths1[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0");
-        });
+        cy.get(cesc2("#" + maths1[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345");
+          });
+        cy.get(cesc2("#" + maths1[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths1[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5");
+          });
+        cy.get(cesc2("#" + maths1[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.252⋅10−13");
+          });
+        cy.get(cesc2("#" + maths1[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0");
+          });
 
-      cy.get(cesc2("#" + maths2[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345");
-        });
-      cy.get(cesc2("#" + maths2[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.523");
-        });
-      cy.get(cesc2("#" + maths2[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5000");
-        });
-      cy.get(cesc2("#" + maths2[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.252⋅10−13");
-        });
-      cy.get(cesc2("#" + maths2[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.000");
-        });
+        cy.get(cesc2("#" + maths2[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345");
+          });
+        cy.get(cesc2("#" + maths2[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths2[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5000");
+          });
+        cy.get(cesc2("#" + maths2[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.252⋅10−13");
+          });
+        cy.get(cesc2("#" + maths2[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.000");
+          });
 
-      cy.get(cesc2("#" + maths3[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345.154");
-        });
-      cy.get(cesc2("#" + maths3[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.523");
-        });
-      cy.get(cesc2("#" + maths3[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5");
-        });
-      cy.get(cesc2("#" + maths3[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0");
-        });
-      cy.get(cesc2("#" + maths3[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0");
-        });
+        cy.get(cesc2("#" + maths3[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.154");
+          });
+        cy.get(cesc2("#" + maths3[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths3[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5");
+          });
+        cy.get(cesc2("#" + maths3[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0");
+          });
+        cy.get(cesc2("#" + maths3[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0");
+          });
 
-      cy.get(cesc2("#" + maths4[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345.154");
-        });
-      cy.get(cesc2("#" + maths4[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.523");
-        });
-      cy.get(cesc2("#" + maths4[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.500");
-        });
-      cy.get(cesc2("#" + maths4[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.000");
-        });
-      cy.get(cesc2("#" + maths4[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.000");
-        });
+        cy.get(cesc2("#" + maths4[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.154");
+          });
+        cy.get(cesc2("#" + maths4[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths4[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.500");
+          });
+        cy.get(cesc2("#" + maths4[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.000");
+          });
+        cy.get(cesc2("#" + maths4[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.000");
+          });
 
-      cy.get(cesc2("#" + maths5[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345.1535");
-        });
-      cy.get(cesc2("#" + maths5[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.5234");
-        });
-      cy.get(cesc2("#" + maths5[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5");
-        });
-      cy.get(cesc2("#" + maths5[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.25⋅10−13");
-        });
-      cy.get(cesc2("#" + maths5[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("6⋅10−21");
-        });
+        cy.get(cesc2("#" + maths5[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.1535");
+          });
+        cy.get(cesc2("#" + maths5[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.5234");
+          });
+        cy.get(cesc2("#" + maths5[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5");
+          });
+        cy.get(cesc2("#" + maths5[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.25⋅10−13");
+          });
+        cy.get(cesc2("#" + maths5[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("6⋅10−21");
+          });
 
-      cy.get(cesc2("#" + maths6[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345.1535");
-        });
-      cy.get(cesc2("#" + maths6[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.5234");
-        });
-      cy.get(cesc2("#" + maths6[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5000");
-        });
-      cy.get(cesc2("#" + maths6[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.25⋅10−13");
-        });
-      cy.get(cesc2("#" + maths6[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("6.00⋅10−21");
-        });
+        cy.get(cesc2("#" + maths6[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.1535");
+          });
+        cy.get(cesc2("#" + maths6[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.5234");
+          });
+        cy.get(cesc2("#" + maths6[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5000");
+          });
+        cy.get(cesc2("#" + maths6[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.25⋅10−13");
+          });
+        cy.get(cesc2("#" + maths6[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("6.00⋅10−21");
+          });
+      }
     });
   });
 

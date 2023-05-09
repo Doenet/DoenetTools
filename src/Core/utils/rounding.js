@@ -304,7 +304,13 @@ export function returnRoundingAttributes() {
 export function returnRoundingAttributeComponentShadowing() {
   let shadowing = {};
   for (let stateVariable in returnRoundingStateVariableDefinitions()) {
-    shadowing[stateVariable] = { stateVariableToShadow: stateVariable };
+    shadowing[stateVariable] = {
+      stateVariableToShadow: stateVariable,
+      // if used in an array state variable that has wrapping components
+      // add the attribute to the outer component
+      // rather than the inner components (the default)
+      addToOuterIfWrappedArray: true,
+    };
   }
   return shadowing;
 }

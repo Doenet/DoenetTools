@@ -4163,6 +4163,24 @@ class AttributeComponentDependency extends Dependency {
 
     if (attribute?.component) {
       // have an attribute that is a component
+
+      if (
+        attribute.component.shadows &&
+        this.dontRecurseToShadowsIfHaveAttribute
+      ) {
+        let otherAttribute =
+          parent.attributes[this.dontRecurseToShadowsIfHaveAttribute];
+        if (otherAttribute?.component && !otherAttribute.component.shadows) {
+          // The current attribute is a shadow
+          // but the dontRecurseToShadows attribute is not,
+          // so we don't use the current attribute
+          return {
+            success: true,
+            downstreamComponentNames: [],
+            downstreamComponentTypes: [],
+          };
+        }
+      }
       return {
         success: true,
         downstreamComponentNames: [attribute.component.componentName],
