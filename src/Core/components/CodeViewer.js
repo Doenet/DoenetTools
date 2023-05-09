@@ -112,6 +112,28 @@ export default class CodeViewer extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.locationFromParent = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      forRenderer: true,
+      returnDependencies: () => ({
+        locationFromParent: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "codeEditor",
+          variableName: "resultsLocation",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          setValue: {
+            locationFromParent: dependencyValues.locationFromParent || null,
+          },
+        };
+      },
+    };
+
     stateVariableDefinitions.width = {
       public: true,
       shadowingInstructions: {

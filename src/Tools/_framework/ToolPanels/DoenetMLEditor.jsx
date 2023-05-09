@@ -94,7 +94,7 @@ export default function DoenetMLEditor() {
         key="codemirror"
         readOnly={readOnly}
         editorRef={editorRef}
-        setInternalValue={updateInternalValue}
+        setInternalValueTo={updateInternalValue}
         // value={editorDoenetML}
         onBeforeChange={(value) => {
           setEditorDoenetML(value);
@@ -115,6 +115,7 @@ export default function DoenetMLEditor() {
             timeout.current = null;
           }, 3000); //3 seconds
         }}
+        paddingBottom="50vh"
       />
     </div>
   );

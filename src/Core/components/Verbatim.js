@@ -3,6 +3,7 @@ import {
   returnTextStyleDescriptionDefinitions,
 } from "../utils/style";
 import BlockComponent from "./abstract/BlockComponent";
+import InlineComponent from "./abstract/InlineComponent";
 
 export class Pre extends BlockComponent {
   constructor(args) {
@@ -39,7 +40,7 @@ export class Pre extends BlockComponent {
   }
 }
 
-export class DisplayDoenetML extends BlockComponent {
+export class DisplayDoenetML extends InlineComponent {
   constructor(args) {
     super(args);
 

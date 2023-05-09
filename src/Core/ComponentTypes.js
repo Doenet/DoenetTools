@@ -167,6 +167,7 @@ import Matrix from "./components/Matrix";
 import EigenDecomposition from "./components/linearAlgebra/EigenDecomposition";
 import Latex from "./components/Latex";
 import BlockQuote from "./components/BlockQuote";
+import ContentPicker from "./components/ContentPicker";
 
 //Extended
 import * as ComponentSize from "./components/abstract/ComponentSize";
@@ -351,6 +352,7 @@ const componentTypeArray = [
   EigenDecomposition,
   Latex,
   BlockQuote,
+  ContentPicker,
 
   BaseComponent,
   InlineComponent,

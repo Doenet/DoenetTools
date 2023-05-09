@@ -1,5 +1,4 @@
 import React from "react";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 // import type { StyleFunctionProps } from '@chakra-ui/styled-system';
 import { createRoot } from "react-dom/client";
 import { RecoilRoot } from "recoil";
@@ -42,6 +41,7 @@ import {
   action as portfolioActivityViewerAction,
   PortfolioActivityViewer,
 } from "./Tools/_framework/Paths/PortfolioActivityViewer";
+import { ChakraProvider, ColorModeScript, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
@@ -58,12 +58,15 @@ const theme = extendTheme({
       fontFamily: "Jost",
     },
   },
+  initialColorMode: "light",
+  useSystemColorMode: true,
   colors: {
     doenet: {
       mainBlue: "#1a5a99",
       lightBlue: "#b8d2ea",
       solidLightBlue: "#8fb8de",
       mainGray: "#e3e3e3",
+      lightGray: "#e7e7e7",
       donutBody: "#eea177",
       donutTopping: "#6d4445",
       mainRed: "#c1292e",
@@ -161,26 +164,29 @@ const router = createBrowserRouter([
     path: "/",
     loader: siteLoader,
     element: (
-      <ChakraProvider theme={theme}>
-        <SiteHeader />
-      </ChakraProvider>
+      <>
+        {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
+        <ChakraProvider theme={theme}>
+          <SiteHeader />
+        </ChakraProvider>
+      </>
     ),
     children: [
       {
         path: "/",
         loader: caroselLoader,
         element: (
-          <DarkmodeController>
-            <MathJaxContext
-              version={2}
-              config={mathjaxConfig}
-              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-            >
-              <ChakraProvider theme={theme}>
-                <Home />
-              </ChakraProvider>
-            </MathJaxContext>
-          </DarkmodeController>
+          // <DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            {/* <ChakraProvider theme={theme}> */}
+            <Home />
+            {/* </ChakraProvider> */}
+          </MathJaxContext>
+          // </DarkmodeController>
         ),
       },
       {

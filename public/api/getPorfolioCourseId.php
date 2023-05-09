@@ -32,11 +32,35 @@ if ($success) {
         $portfolioCourseId = $row['courseId'];
     }
 }
+$firstName = "";
+$lastName = "";
+$email = "";
+
+if ($success) {
+    $sql = "
+    SELECT firstName,
+    lastName,
+    email
+    FROM user
+    WHERE userId='$userId'
+    ";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $firstName = $row['firstName'];
+        $lastName = $row['lastName'];
+        $email = $row['email'];
+    }
+}
 
 $response_arr = [
     'success' => $success,
     'message' => $message,
     'portfolioCourseId' => $portfolioCourseId,
+    'firstName' => $firstName,
+    'lastName' => $lastName,
+    'email' => $email,
 ];
 
 http_response_code(200);

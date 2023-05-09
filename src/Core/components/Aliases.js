@@ -60,3 +60,8 @@ export class Introduction extends Div {
 export class Conclusion extends Div {
   static componentType = "conclusion";
 }
+
+export class Topic extends TextComponent {
+  static componentType = "topic";
+  static rendererType = "text";
+}

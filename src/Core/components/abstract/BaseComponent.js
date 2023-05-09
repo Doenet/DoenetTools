@@ -1171,6 +1171,12 @@ export default class BaseComponent {
       serializedComponent.state = deepClone(this.essentialState);
     }
 
+    if (this.doenetMLrange) {
+      serializedComponent.range = JSON.parse(
+        JSON.stringify(this.doenetMLrange),
+      );
+    }
+
     if (parameters.copyVariants) {
       if (this.state.generatedVariantInfo) {
         serializedComponent.variants = {
@@ -1228,6 +1234,10 @@ export default class BaseComponent {
       serializedCopy.attributes = deepClone(serializedComponent.attributes);
       delete serializedCopy.doenetAttributes.prescribedName;
       delete serializedCopy.doenetAttributes.assignNames;
+    }
+
+    if (serializedComponent.range !== undefined) {
+      serializedCopy.range = deepClone(serializedComponent.range);
     }
 
     if (serializedComponent.state !== undefined) {
