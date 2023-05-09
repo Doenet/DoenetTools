@@ -1474,7 +1474,9 @@ export function PortfolioActivityEditor() {
                     roundedBottom="0px"
                     height="24px"
                     width="50px"
-                    style={{ top: keyboardIsOpen ? "-8px" : "-24px" }}
+                    // top="-24px"
+                    top={keyboardIsOpen ? "-8px" : "-24px"}
+                    // style={{ top: keyboardIsOpen ? "-8px" : "-24px" }}
                     variant="ghost"
                     // variant="outline"
                     icon={<FaKeyboard />}
