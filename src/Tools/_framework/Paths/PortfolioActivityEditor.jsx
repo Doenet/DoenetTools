@@ -44,6 +44,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Link,
   Menu,
   MenuButton,
   MenuItem,
@@ -62,7 +63,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
 import { FaCog, FaFileImage, FaKeyboard } from "react-icons/fa";
@@ -1429,19 +1430,26 @@ export function PortfolioActivityEditor() {
               display="flex"
               justifyContent="flex-end"
             >
-              <Tooltip hasArrow label="Open Controls cmd+u">
-                <Button
-                  mt="4px"
-                  mr="10px"
-                  size="sm"
-                  variant="outline"
-                  leftIcon={<FaCog />}
-                  onClick={controlsOnOpen}
-                  ref={controlsBtnRef}
+              <HStack mr="10px">
+                <Link
+                  href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
+                  isExternal
                 >
-                  Controls
-                </Button>
-              </Tooltip>
+                  Documentation <ExternalLinkIcon mx="2px" />
+                </Link>
+                <Tooltip hasArrow label="Open Controls cmd+u">
+                  <Button
+                    mt="4px"
+                    size="sm"
+                    variant="outline"
+                    leftIcon={<FaCog />}
+                    onClick={controlsOnOpen}
+                    ref={controlsBtnRef}
+                  >
+                    Controls
+                  </Button>
+                </Tooltip>
+              </HStack>
             </GridItem>
           </Grid>
         </GridItem>
