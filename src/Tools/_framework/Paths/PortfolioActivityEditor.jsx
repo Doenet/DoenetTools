@@ -1,20 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  // Outlet,
-  redirect,
-  useLoaderData,
-  // useNavigate,
-  // useOutletContext,
-} from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
 // import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
-import {
-  pageVariantInfoAtom,
-  pageVariantPanelAtom,
-} from "../../../_sharedRecoil/PageViewerRecoil";
+
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   Alert,
@@ -41,7 +32,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
+  // FormHelperText,
   FormLabel,
   Grid,
   GridItem,
@@ -60,6 +51,7 @@ import {
   Progress,
   // Spinner,
   Select,
+  Slide,
   Tab,
   TabList,
   TabPanel,
@@ -70,10 +62,11 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
-import { FaCog, FaFileCsv, FaFileImage, FaKeyboard } from "react-icons/fa";
-import { Form, useBeforeUnload, useFetcher } from "react-router-dom";
+import { FaCog, FaFileImage, FaKeyboard } from "react-icons/fa";
+import { Form, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
@@ -421,6 +414,7 @@ function SupportFilesControls() {
             borderColor="doenet.mediumGray"
             borderRadius="lg"
             width="90%"
+            cursor="pointer"
             // background="blue.200"
           >
             <HStack>
@@ -895,6 +889,7 @@ export function GeneralActivityControls({ courseId, doenetId, activityData }) {
                 height="120px"
                 p="0"
                 m="0"
+                cursor="pointer"
                 {...getRootProps()}
               >
                 <input {...getInputProps()} />
@@ -1182,8 +1177,8 @@ export function PortfolioActivityEditor() {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
-  // const [mode, setMode] = useState("View");
-  const [mode, setMode] = useState("Edit");
+  const [mode, setMode] = useState("View");
+  // const [mode, setMode] = useState("Edit");
 
   let controlsTabsLastIndex = useRef(0);
 
@@ -1458,34 +1453,40 @@ export function PortfolioActivityEditor() {
 
         {mode == "View" && (
           <>
-            <Drawer
-              placement="bottom"
-              onClose={keyboardOnClose}
-              isOpen={keyboardIsOpen}
-              finalFocusRef={keyboardBtnRef}
-              size="md"
+            <Slide
+              direction="bottom"
+              in={keyboardIsOpen}
+              style={{ zIndex: 10 }}
             >
-              <DrawerOverlay />
-              <DrawerContent>
-                {/* <DrawerHeader borderBottomWidth="1px">
-                  Basic Drawer
-                </DrawerHeader> */}
-                <DrawerBody>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                  <Text>Keyboard HERE</Text>
-                </DrawerBody>
-              </DrawerContent>
-            </Drawer>
+              <Box
+                p="4px"
+                mt="4"
+                bg="doenet.canvas"
+                borderTop="1px"
+                borderTopColor="doenet.mediumGray"
+              >
+                <IconButton
+                  position="absolute"
+                  top="20px"
+                  right="6px"
+                  size="sm"
+                  icon={<CloseIcon />}
+                  variant="ghost"
+                  onClick={keyboardOnClose}
+                />
+
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+                <Text>Keyboard HERE</Text>
+              </Box>
+            </Slide>
+
             <GridItem area="centerContent">
               <Grid
                 width="100%"
