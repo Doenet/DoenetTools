@@ -72,7 +72,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
     };
 
     attributes.variable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
       public: true,

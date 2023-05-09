@@ -1,3 +1,7 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import Curve from "./Curve";
 import GraphicalComponent from "./abstract/GraphicalComponent";
 
@@ -56,6 +60,11 @@ export default class Circle extends Curve {
   static returnStateVariableDefinitions(args) {
     let stateVariableDefinitions =
       GraphicalComponent.returnStateVariableDefinitions(args);
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -389,6 +398,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "throughPointX") {
             return [];
@@ -1903,6 +1914,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       stateVariablesDeterminingDependencies: [
         "nThroughPoints",
@@ -2115,6 +2128,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         radius: {
@@ -2153,6 +2168,8 @@ export default class Circle extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "centerX") {
             return [];

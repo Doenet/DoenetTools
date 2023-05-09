@@ -1,3 +1,7 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import Curve from "./Curve";
 import GraphicalComponent from "./abstract/GraphicalComponent";
 import me from "math-expressions";
@@ -32,6 +36,11 @@ export default class Parabola extends Curve {
   static returnStateVariableDefinitions(args) {
     let stateVariableDefinitions =
       GraphicalComponent.returnStateVariableDefinitions(args);
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     let curveStateVariableDefinitions = super.returnStateVariableDefinitions(
       args,
@@ -73,6 +82,8 @@ export default class Parabola extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -83,6 +94,8 @@ export default class Parabola extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -144,6 +157,8 @@ export default class Parabola extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "throughPointX") {
             return [];
@@ -466,6 +481,8 @@ export default class Parabola extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: [
         {
@@ -473,6 +490,8 @@ export default class Parabola extends Curve {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
+            addAttributeComponentsShadowingStateVariables:
+              returnRoundingAttributeComponentShadowing(),
           },
           hasEssential: true,
           defaultValue: 0,
@@ -482,6 +501,8 @@ export default class Parabola extends Curve {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
+            addAttributeComponentsShadowingStateVariables:
+              returnRoundingAttributeComponentShadowing(),
           },
           hasEssential: true,
           defaultValue: 0,
@@ -1118,6 +1139,8 @@ export default class Parabola extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "vertexX") {
             return [];
@@ -1238,6 +1261,8 @@ export default class Parabola extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       // TODO: implement additional properties
       additionalProperties: {

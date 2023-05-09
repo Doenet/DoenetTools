@@ -3,6 +3,7 @@ import BaseComponent from "./abstract/BaseComponent";
 import me from "math-expressions";
 import { returnLabelStateVariableDefinitions } from "../utils/label";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -501,6 +502,8 @@ export default class Slider extends BaseComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         type: {

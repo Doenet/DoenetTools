@@ -19,7 +19,7 @@ export default class ODESystem extends InlineComponent {
     let attributes = super.createAttributesObject();
 
     attributes.independentVariable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "independentVariable",
       defaultValue: me.fromAst("t"),
       public: true,
@@ -75,7 +75,7 @@ export default class ODESystem extends InlineComponent {
     };
 
     attributes.variables = {
-      createComponentOfType: "variables",
+      createComponentOfType: "_variableNameList",
     };
 
     attributes.number = {
@@ -156,7 +156,7 @@ export default class ODESystem extends InlineComponent {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
@@ -228,6 +228,8 @@ export default class ODESystem extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["rhs", "righthandside"],
       returnArraySizeDependencies: () => ({
@@ -287,6 +289,8 @@ export default class ODESystem extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["initialCondition"],
       defaultValueByArrayKey: () => me.fromAst(0),

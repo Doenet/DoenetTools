@@ -4,7 +4,10 @@ import {
   returnNumericFunctionForEvaluate,
   returnSymbolicFunctionForEvaluate,
 } from "../utils/function";
-import { returnRoundingStateVariableDefinitions } from "../utils/rounding";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
@@ -94,10 +97,6 @@ export default class Evaluate extends MathComponent {
     };
 
     stateVariableDefinitions.unnormalizedValue = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "math",
-      },
       returnDependencies() {
         return {
           inputMaths: {
@@ -161,6 +160,8 @@ export default class Evaluate extends MathComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies() {
         return {

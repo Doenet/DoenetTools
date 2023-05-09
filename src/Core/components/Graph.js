@@ -115,9 +115,6 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true,
     };
-    attributes.xlabel = {
-      createComponentOfType: "label",
-    };
     attributes.xlabelPosition = {
       createComponentOfType: "text",
       createStateVariable: "xlabelPosition",
@@ -133,9 +130,6 @@ export default class Graph extends BlockComponent {
       defaultValue: null,
       public: true,
       forRenderer: true,
-    };
-    attributes.ylabel = {
-      createComponentOfType: "label",
     };
     attributes.ylabelPosition = {
       createComponentOfType: "text",
@@ -268,11 +262,6 @@ export default class Graph extends BlockComponent {
         },
       ],
       returnDependencies: () => ({
-        xlabelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "xlabel",
-          variableNames: ["value", "hasLatex"],
-        },
         xlabelChild: {
           dependencyType: "child",
           childGroups: ["xlabels"],
@@ -289,13 +278,6 @@ export default class Graph extends BlockComponent {
             setValue: {
               xlabel: xlabelChild.stateValues.value,
               xlabelHasLatex: xlabelChild.stateValues.hasLatex,
-            },
-          };
-        } else if (dependencyValues.xlabelAttr) {
-          return {
-            setValue: {
-              xlabel: dependencyValues.xlabelAttr.stateValues.value,
-              xlabelHasLatex: dependencyValues.xlabelAttr.stateValues.hasLatex,
             },
           };
         } else {
@@ -357,11 +339,6 @@ export default class Graph extends BlockComponent {
         },
       ],
       returnDependencies: () => ({
-        ylabelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "ylabel",
-          variableNames: ["value", "hasLatex"],
-        },
         ylabelChild: {
           dependencyType: "child",
           childGroups: ["ylabels"],
@@ -378,13 +355,6 @@ export default class Graph extends BlockComponent {
             setValue: {
               ylabel: ylabelChild.stateValues.value,
               ylabelHasLatex: ylabelChild.stateValues.hasLatex,
-            },
-          };
-        } else if (dependencyValues.ylabelAttr) {
-          return {
-            setValue: {
-              ylabel: dependencyValues.ylabelAttr.stateValues.value,
-              ylabelHasLatex: dependencyValues.ylabelAttr.stateValues.hasLatex,
             },
           };
         } else {
@@ -1272,6 +1242,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         xmin: {
@@ -1296,6 +1268,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         ymin: {

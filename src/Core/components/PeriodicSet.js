@@ -1,7 +1,10 @@
 import MathComponent from "./Math";
 import me from "math-expressions";
 import { deepClone } from "../utils/deepFunctions";
-import { returnRoundingStateVariableDefinitions } from "../utils/rounding";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class PeriodicSet extends MathComponent {
   static componentType = "periodicSet";
@@ -202,6 +205,8 @@ export default class PeriodicSet extends MathComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "mathList",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         uniqueOffsets: {

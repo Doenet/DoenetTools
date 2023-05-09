@@ -135,7 +135,7 @@ export default class Function extends InlineComponent {
       createComponentOfType: "mathList",
     };
     attributes.variables = {
-      createComponentOfType: "variables",
+      createComponentOfType: "_variableNameList",
     };
     attributes.symbolic = {
       createComponentOfType: "boolean",
@@ -708,7 +708,7 @@ export default class Function extends InlineComponent {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({

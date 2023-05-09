@@ -1,7 +1,7 @@
 import me from "math-expressions";
 import { cesc, cesc2 } from "../../../../src/_utils/url";
 
-describe("Point Tag Tests", function () {
+describe("Point Tag Tests 2", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
     cy.visit("/src/Tools/cypressTest/");

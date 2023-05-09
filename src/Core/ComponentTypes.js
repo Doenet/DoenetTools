@@ -31,7 +31,6 @@ import RandomizedTextList from "./components/RandomizedTextList";
 import MathList from "./components/MathList";
 import TupleList from "./components/TupleList";
 import NumberList from "./components/NumberList";
-import NumberListFromString from "./components/NumberListFromString";
 import P from "./components/P";
 import BooleanComponent from "./components/Boolean";
 import BooleanList from "./components/BooleanList";
@@ -73,8 +72,6 @@ import Choice from "./components/Choice";
 import NumberComponent from "./components/Number";
 import Integer from "./components/Integer";
 import Graph from "./components/Graph";
-import Variables from "./components/Variables";
-import Variable from "./components/Variable";
 import Function from "./components/Function";
 import PiecewiseFunction from "./components/PiecewiseFunction";
 import Interval from "./components/Interval";
@@ -187,6 +184,8 @@ import FunctionBaseOperator from "./components/abstract/FunctionBaseOperator";
 import InlineRenderInlineChildren from "./components/abstract/InlineRenderInlineChildren";
 import TextOrInline from "./components/abstract/TextOrInline";
 import SingleCharacterInline from "./components/abstract/SingleCharacterInline";
+import VariableNameList from "./components/abstract/VariableNameList";
+import VariableName from "./components/abstract/VariableName";
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -225,7 +224,6 @@ const componentTypeArray = [
   MathList,
   TupleList,
   NumberList,
-  NumberListFromString,
   Copy,
   Extract,
   Collect,
@@ -258,8 +256,6 @@ const componentTypeArray = [
   NumberComponent,
   Integer,
   Graph,
-  Variables,
-  Variable,
   Function,
   PiecewiseFunction,
   Interval,
@@ -376,6 +372,8 @@ const componentTypeArray = [
   InlineRenderInlineChildren,
   TextOrInline,
   SingleCharacterInline,
+  VariableNameList,
+  VariableName,
 ];
 
 export function allComponentClasses() {

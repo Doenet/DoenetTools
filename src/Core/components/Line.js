@@ -46,7 +46,7 @@ export default class Line extends GraphicalComponent {
       createComponentOfType: "number",
     };
     attributes.variables = {
-      createComponentOfType: "variables",
+      createComponentOfType: "_variableNameList",
     };
 
     Object.assign(attributes, returnRoundingAttributes());
@@ -337,7 +337,7 @@ export default class Line extends GraphicalComponent {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({

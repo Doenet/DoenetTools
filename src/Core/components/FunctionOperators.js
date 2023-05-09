@@ -170,7 +170,7 @@ export class Derivative extends FunctionBaseOperator {
     let attributes = super.createAttributesObject();
 
     attributes.derivVariables = {
-      createComponentOfType: "variables",
+      createComponentOfType: "_variableNameList",
     };
 
     return attributes;
@@ -291,7 +291,7 @@ export class Derivative extends FunctionBaseOperator {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
@@ -445,7 +445,7 @@ export class Derivative extends FunctionBaseOperator {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["derivVariable"],
       returnArraySizeDependencies: () => ({

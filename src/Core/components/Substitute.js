@@ -430,10 +430,10 @@ export default class Substitute extends CompositeComponent {
 
       let attributesComponentTypes = {};
 
-      let roundingAttrs = Object.keys(returnRoundingAttributes());
-      for (let attrName in roundingAttrs) {
+      let roundingSVs = returnRoundingStateVariableDefinitions();
+      for (let attrName in roundingSVs) {
         attributesComponentTypes[attrName] =
-          roundingAttrs[attrName].createComponentOfType;
+          roundingSVs[attrName].shadowingInstructions.createComponentOfType;
       }
 
       for (let attr in attributesComponentTypes) {

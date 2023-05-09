@@ -18772,7 +18772,7 @@ describe("Vector Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <vector name="v" head="(5,4)" tail="(-2,1)" />
+      <vector name="v" head="(5,4)" tail="(-2,1)" displayDigits="10" />
     </graph>
     <copy prop="magnitude" target="v" assignNames="magnitude" />
     <point name="A" copySource="v.tail" />
