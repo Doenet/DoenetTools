@@ -1169,8 +1169,9 @@ export function PortfolioActivityEditor() {
   } = useDisclosure();
   const {
     isOpen: keyboardIsOpen,
-    onOpen: keyboardOnOpen,
+    // onOpen: keyboardOnOpen,
     onClose: keyboardOnClose,
+    onToggle: keyboardOnToggle,
   } = useDisclosure();
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
@@ -1264,7 +1265,6 @@ export function PortfolioActivityEditor() {
         activityData={activityData}
         controlsTabsLastIndex={controlsTabsLastIndex}
       />
-
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -1465,6 +1465,29 @@ export function PortfolioActivityEditor() {
                 borderTop="1px"
                 borderTopColor="doenet.mediumGray"
               >
+                <Tooltip hasArrow label="Open Keyboard">
+                  <IconButton
+                    zIndex="10"
+                    position="absolute"
+                    left="10px"
+                    size="md"
+                    roundedBottom="0px"
+                    height="24px"
+                    width="50px"
+                    // top="-24px"
+                    //keyboardIsOpen
+                    // top="-24px"
+                    style={{ top: keyboardIsOpen ? "-8px" : "-24px" }}
+                    variant="ghost"
+                    // variant="outline"
+                    icon={<FaKeyboard />}
+                    // onClick={keyboardOnOpen}
+                    onClick={keyboardOnToggle}
+                    ref={keyboardBtnRef}
+                    background="doenet.canvas"
+                  />
+                </Tooltip>
+
                 <IconButton
                   position="absolute"
                   top="20px"
@@ -1501,21 +1524,7 @@ export function PortfolioActivityEditor() {
                   width="100%"
                   paddingTop="10px"
                   alignSelf="start"
-                >
-                  <Tooltip hasArrow label="Open Keyboard cmd+k">
-                    <IconButton
-                      zIndex="20000"
-                      position="absolute"
-                      top="100px"
-                      size="sm"
-                      variant="outline"
-                      icon={<FaKeyboard />}
-                      onClick={keyboardOnOpen}
-                      ref={keyboardBtnRef}
-                      background="doenet.canvas"
-                    />
-                  </Tooltip>
-                </GridItem>
+                ></GridItem>
                 <GridItem
                   area="rightGutter"
                   background="doenet.lightBlue"
