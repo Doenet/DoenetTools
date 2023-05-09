@@ -6,6 +6,7 @@ import {
   returnTextStyleDescriptionDefinitions,
 } from "../../utils/style";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../../utils/rounding";
@@ -659,7 +660,8 @@ export default class ODESystem extends InlineComponent {
             stateVariableToShadow: "numericalSolutionFDefinitions",
           },
         },
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       createWorkspace: true,
       returnArraySizeDependencies: () => ({

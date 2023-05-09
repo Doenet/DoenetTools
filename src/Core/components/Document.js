@@ -484,6 +484,13 @@ export default class Document extends BaseComponent {
       },
     };
 
+    stateVariableDefinitions.displayDecimalsForCreditAchieved = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: { displayDecimalsForCreditAchieved: -Infinity },
+      }),
+    };
+
     stateVariableDefinitions.creditAchieved = {
       public: true,
       forRenderer: true,
@@ -493,6 +500,9 @@ export default class Document extends BaseComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
+          },
+          displayDecimals: {
+            stateVariableToShadow: "displayDecimalsForCreditAchieved",
           },
         },
       },
@@ -505,6 +515,9 @@ export default class Document extends BaseComponent {
             addAttributeComponentsShadowingStateVariables: {
               displayDigits: {
                 stateVariableToShadow: "displayDigitsForCreditAchieved",
+              },
+              displayDecimals: {
+                stateVariableToShadow: "displayDecimalsForCreditAchieved",
               },
             },
           },

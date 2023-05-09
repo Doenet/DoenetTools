@@ -9,6 +9,7 @@ import { returnBreakStringsSugarFunction } from "./commonsugar/breakstrings";
 import { deepClone } from "../utils/deepFunctions";
 import { returnTextStyleDescriptionDefinitions } from "../utils/style";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -819,7 +820,8 @@ export default class Point extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       isArray: true,
       entryPrefixes: ["x"],
@@ -945,7 +947,8 @@ export default class Point extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         xs: {

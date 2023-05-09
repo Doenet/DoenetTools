@@ -1,5 +1,6 @@
 import { roundForDisplay } from "../utils/math";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -192,7 +193,8 @@ export default class NumberList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       isArray: true,
       entryPrefixes: ["number"],
@@ -324,7 +326,8 @@ export default class NumberList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         numbers: {

@@ -5185,6 +5185,16 @@ describe("Math Tag Tests", function () {
     <math name="m1g" displayDecimals="4"><math displayDigits="8">8.5203845251+582342.423835237238</math></math>
   </p>
 
+  <p><math name="m1_v" copySource="m1.value" />
+    <math name="m1a_v" copySource="m1a.value" />
+    <math name="m1b_v" copySource="m1b.value" />
+    <math name="m1c_v" copySource="m1c.value" />
+    <math name="m1d_v" copySource="m1d.value" />
+    <math name="m1e_v" copySource="m1e.value" />
+    <math name="m1f_v" copySource="m1f.value" />
+    <math name="m1g_v" copySource="m1g.value" />
+  </p>
+
   <p><math name="m2"><math displayDecimals="4">8.5203845251</math></math>
     <math name="m2a"><number displayDecimals="4">8.5203845251</number></math>
     <math name="m2b"><math displayDecimals="4">8.5203845251</math>x+526195.5352</math>
@@ -5193,6 +5203,16 @@ describe("Math Tag Tests", function () {
     <math name="m2e"><number displayDecimals="4">8.5203845251</number><math displayDecimals="4">x</math></math>
     <math name="m2f" displayDecimals="6"><math displayDecimals="4">8.5203845251</math></math>
     <math name="m2g" displayDigits="8"><math displayDecimals="4">8.5203845251+582342.423835237238</math></math>
+  </p>
+
+  <p><math name="m2_v" copySource="m2.value" />
+    <math name="m2a_v" copySource="m2a.value" />
+    <math name="m2b_v" copySource="m2b.value" />
+    <math name="m2c_v" copySource="m2c.value" />
+    <math name="m2d_v" copySource="m2d.value" />
+    <math name="m2e_v" copySource="m2e.value" />
+    <math name="m2f_v" copySource="m2f.value" />
+    <math name="m2g_v" copySource="m2g.value" />
   </p>
 
   <p><math name="m3"><math displaySmallAsZero="false">0.000000000000000015382487</math></math>
@@ -5204,14 +5224,32 @@ describe("Math Tag Tests", function () {
     <math name="m3f" displaySmallAsZero="true"><math displaySmallAsZero="false">0.000000000000000015382487</math></math>
   </p>
 
+  <p><math name="m3_v" copySource="m3.value" />
+    <math name="m3a_v" copySource="m3a.value" />
+    <math name="m3b_v" copySource="m3b.value" />
+    <math name="m3c_v" copySource="m3c.value" />
+    <math name="m3d_v" copySource="m3d.value" />
+    <math name="m3e_v" copySource="m3e.value" />
+    <math name="m3f_v" copySource="m3f.value" />
+  </p>
+
   <p><math name="m4"><math displayDigits="5" padZeros>8</math></math>
-  <math name="m4a"><number displayDigits="5" padZeros>8</number></math>
-  <math name="m4b"><math displayDigits="5" padZeros>8</math>x+526195.5352</math>
-  <math name="m4c"><number displayDigits="5" padZeros>8</number>x+526195.5352</math>
-  <math name="m4d"><math displayDigits="5" padZeros>8</math><math displayDigits="5" padZeros>x</math></math>
-  <math name="m4e"><number displayDigits="5" padZeros>8</number><math displayDigits="5" padZeros>x</math></math>
-  <math name="m4f" padZeros="false"><math displayDigits="5" padZeros>8</math></math>
-</p>
+    <math name="m4a"><number displayDigits="5" padZeros>8</number></math>
+    <math name="m4b"><math displayDigits="5" padZeros>8</math>x+526195.5352</math>
+    <math name="m4c"><number displayDigits="5" padZeros>8</number>x+526195.5352</math>
+    <math name="m4d"><math displayDigits="5" padZeros>8</math><math displayDigits="5" padZeros>x</math></math>
+    <math name="m4e"><number displayDigits="5" padZeros>8</number><math displayDigits="5" padZeros>x</math></math>
+    <math name="m4f" padZeros="false"><math displayDigits="5" padZeros>8</math></math>
+  </p>
+
+  <p><math name="m4_v" copySource="m4.value" />
+    <math name="m4a_v" copySource="m4a.value" />
+    <math name="m4b_v" copySource="m4b.value" />
+    <math name="m4c_v" copySource="m4c.value" />
+    <math name="m4d_v" copySource="m4d.value" />
+    <math name="m4e_v" copySource="m4e.value" />
+    <math name="m4f_v" copySource="m4f.value" />
+  </p>
 
   `,
         },
@@ -5246,6 +5284,31 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .should("have.text", "8.5203845+582342.4238");
 
+    cy.get(cesc("#\\/m1_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m1a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m1b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m1c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m1d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m1e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m1f_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.520385");
+    cy.get(cesc("#\\/m1g_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5203845+582342.4238");
+
     cy.get(cesc("#\\/m2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8.5204");
@@ -5271,6 +5334,31 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .should("have.text", "8.5203845+582342.4238");
 
+    cy.get(cesc("#\\/m2_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m2a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m2b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m2c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m2d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m2e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m2f_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.520385");
+    cy.get(cesc("#\\/m2g_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5203845+582342.4238");
+
     cy.get(cesc("#\\/m3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "1.54⋅10−17");
@@ -5293,6 +5381,28 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .should("have.text", "0");
 
+    cy.get(cesc("#\\/m3_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.54⋅10−17");
+    cy.get(cesc("#\\/m3a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.54⋅10−17");
+    cy.get(cesc("#\\/m3b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x+526195.54");
+    cy.get(cesc("#\\/m3c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x+526195.54");
+    cy.get(cesc("#\\/m3d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x");
+    cy.get(cesc("#\\/m3e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x");
+    cy.get(cesc("#\\/m3f_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0");
+
     cy.get(cesc("#\\/m4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8.0000");
@@ -5312,6 +5422,28 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .should("have.text", "8x");
     cy.get(cesc("#\\/m4f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8");
+
+    cy.get(cesc("#\\/m4_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.0000");
+    cy.get(cesc("#\\/m4a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.0000");
+    cy.get(cesc("#\\/m4b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x+526195.54");
+    cy.get(cesc("#\\/m4c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x+526195.54");
+    cy.get(cesc("#\\/m4d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x");
+    cy.get(cesc("#\\/m4e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x");
+    cy.get(cesc("#\\/m4f_v") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8");
   });
@@ -10605,7 +10737,7 @@ describe("Math Tag Tests", function () {
     });
   });
 
-  it.only("basic units", () => {
+  it("basic units", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {

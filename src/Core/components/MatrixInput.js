@@ -12,6 +12,7 @@ import {
 import CompositeComponent from "./abstract/CompositeComponent";
 import BaseComponent from "./abstract/BaseComponent";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -1680,27 +1681,8 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        // We use addAttributeComponentsShadowingStateVariables,
-        // rather than attributesToShadow
-        // because we want the non-default values of
-        // displayDigits and displaySmallAsZero
-        // to propagate
-        addAttributeComponentsShadowingStateVariables: {
-          displayDigits: {
-            stateVariableToShadow: "displayDigits",
-          },
-          displaySmallAsZero: {
-            stateVariableToShadow: "displaySmallAsZero",
-          },
-        },
-        attributesToShadow: Object.keys(returnRoundingAttributes()).filter(
-          (v) =>
-            ![
-              "displayDigits",
-              "ignoreDisplayDigits",
-              "displaySmallAsZero",
-            ].includes(v),
-        ),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         componentValues: {
@@ -1823,27 +1805,8 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        // We use addAttributeComponentsShadowingStateVariables,
-        // rather than attributesToShadow
-        // because we want the non-default values of
-        // displayDigits and displaySmallAsZero
-        // to propagate
-        addAttributeComponentsShadowingStateVariables: {
-          displayDigits: {
-            stateVariableToShadow: "displayDigits",
-          },
-          displaySmallAsZero: {
-            stateVariableToShadow: "displaySmallAsZero",
-          },
-        },
-        attributesToShadow: Object.keys(returnRoundingAttributes()).filter(
-          (v) =>
-            ![
-              "displayDigits",
-              "ignoreDisplayDigits",
-              "displaySmallAsZero",
-            ].includes(v),
-        ),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         componentImmediateValues: {

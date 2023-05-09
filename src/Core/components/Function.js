@@ -18,6 +18,7 @@ import {
 } from "../utils/function";
 import { returnTextStyleDescriptionDefinitions } from "../utils/style";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -803,7 +804,8 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       defaultValue: me.fromAst(0),
       hasEssential: true,
@@ -2896,7 +2898,8 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "minimum" || prefix === undefined) {
             // minimum or entire array
@@ -3627,7 +3630,8 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "maximum" || prefix === undefined) {
             // maximum or entire array
@@ -3847,7 +3851,8 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "extremum" || prefix === undefined) {
             // extremum or entire array

@@ -2820,8 +2820,8 @@ describe("Polygon Tag Tests", function () {
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" />
+  <copy target="_point1" assignNames="p1" displayDigits="8" />
+  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
   `,
         },
         "*",
@@ -3156,8 +3156,8 @@ describe("Polygon Tag Tests", function () {
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" />
+  <copy target="_point1" assignNames="p1" displayDigits="8" />
+  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
   `,
         },
         "*",

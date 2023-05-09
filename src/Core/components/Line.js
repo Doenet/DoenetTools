@@ -7,6 +7,7 @@ import {
 } from "../utils/math";
 import { returnTextStyleDescriptionDefinitions } from "../utils/style";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -496,7 +497,8 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "pointX") {
             return [];
@@ -1028,7 +1030,8 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       additionalStateVariablesDefined: [
@@ -1037,7 +1040,8 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
-            attributesToShadow: Object.keys(returnRoundingAttributes()),
+            addAttributeComponentsShadowingStateVariables:
+              returnRoundingAttributeComponentShadowing(),
           },
         },
         {
@@ -1045,7 +1049,8 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
-            attributesToShadow: Object.keys(returnRoundingAttributes()),
+            addAttributeComponentsShadowingStateVariables:
+              returnRoundingAttributeComponentShadowing(),
           },
         },
         {
@@ -1053,7 +1058,8 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
-            attributesToShadow: Object.keys(returnRoundingAttributes()),
+            addAttributeComponentsShadowingStateVariables:
+              returnRoundingAttributeComponentShadowing(),
           },
         },
       ],
@@ -1406,7 +1412,8 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         coeffvar1: {
@@ -1436,7 +1443,8 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         coeff0: {
@@ -1466,7 +1474,8 @@ export default class Line extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         coeff0: {

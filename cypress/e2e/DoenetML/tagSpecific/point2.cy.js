@@ -8638,17 +8638,17 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
     
-    <point displayDigits="2" name="P">(32.252609, 0.0672854, 5)</point>
-    <point displayDecimals="2" name="Q" x="32.252609" y="0.0672854" z="5" />
+    <point displayDigits="2" ignoreDisplayDecimals name="P">(32.252609, 0.0672854, 5)</point>
+    <point displayDecimals="2" ignoreDisplayDigits name="Q" x="32.252609" y="0.0672854" z="5" />
     <point padZeros name="R" x="32.252609" y="0.0672854" z="5" />
 
     <copy prop="coords" target="P" assignNames="Pcoords" />
     <copy prop="coords" target="Q" assignNames="Qcoords" />
     <copy prop="coords" target="R" assignNames="Rcoords" />
 
-    <copy prop="coords" target="P" assignNames="PcoordsDec4" displayDecimals="4" />
-    <copy prop="coords" target="Q" assignNames="QcoordsDig4" displayDigits="4" />
-    <copy prop="coords" target="R" assignNames="RcoordsDig2" displayDigits="2" />
+    <copy prop="coords" target="P" assignNames="PcoordsDec4" displayDecimals="4" ignoreDisplayDigits />
+    <copy prop="coords" target="Q" assignNames="QcoordsDig4" displayDigits="4" ignoreDisplayDecimals />
+    <copy prop="coords" target="R" assignNames="RcoordsDig2" displayDigits="2" ignoreDisplayDecimals />
 
     <copy prop="coords" target="P" assignNames="PcoordsPad" padZeros />
     <copy prop="coords" target="Q" assignNames="QcoordsPad" padZeros />
@@ -8663,9 +8663,9 @@ describe("Point Tag Tests", function () {
     <math name="Qmath">$Q</math>
     <math name="Rmath">$R</math>
 
-    <math name="PmathDec4" displayDecimals="4">$P</math>
-    <math name="QmathDig4" displayDigits="4">$Q</math>
-    <math name="RmathDig2" displayDigits="2">$R</math>
+    <math name="PmathDec4" displayDecimals="4" ignoreDisplayDigits>$P</math>
+    <math name="QmathDig4" displayDigits="4" ignoreDisplayDecimals>$Q</math>
+    <math name="RmathDig2" displayDigits="2" ignoreDisplayDecimals>$R</math>
 
     <number name="Px1number">$(P.x)</number>
     <number name="Px2number"><copy prop="y" target="P" /></number>
@@ -8698,7 +8698,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.25260900,0.06728540000,5.000000000)");
+        expect(text).eq("(32.25,0.0673,5.00)");
       });
     cy.get(cesc("#\\/Pcoords") + " .mjx-mrow")
       .eq(0)
@@ -8716,7 +8716,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.25260900,0.06728540000,5.000000000)");
+        expect(text).eq("(32.25,0.0673,5.00)");
       });
     cy.get(cesc("#\\/PcoordsDec4") + " .mjx-mrow")
       .eq(0)
@@ -8752,7 +8752,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.252609,0.0672854,5)");
+        expect(text).eq("(32.25,0.0673,5)");
       });
     cy.get(cesc("#\\/Px1") + " .mjx-mrow")
       .eq(0)
@@ -8788,7 +8788,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.000000000");
+        expect(text).eq("5.00");
       });
     cy.get(cesc("#\\/Pmath") + " .mjx-mrow")
       .eq(0)
@@ -8806,7 +8806,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.25260900,0.06728540000,5.000000000)");
+        expect(text).eq("(32.25,0.0673,5.00)");
       });
     cy.get(cesc("#\\/PmathDec4") + " .mjx-mrow")
       .eq(0)
@@ -8839,11 +8839,11 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <p><point name="p1">(34.245023482352345, 245.23823402358234234)</point></p>
-    <p><point name="p1Dig4" copySource="p1" displayDigits="4" /></p>
-    <p><point name="p1Dec6" copySource="p1" displayDecimals="5" /></p>
-    <p><point name="p1Dig4a" copySource="p1Dec6" displayDigits="4" /></p>
-    <p><point name="p1Dec6a" copySource="p1Dig4" displayDecimals="5" /></p>
+    <p><point name="p1" displayDigits="10">(34.245023482352345, 245.23823402358234234)</point></p>
+    <p><point name="p1Dig4" copySource="p1" displayDigits="4" ignoreDisplayDecimals /></p>
+    <p><point name="p1Dec6" copySource="p1" displayDecimals="5" ignoreDisplayDigits /></p>
+    <p><point name="p1Dig4a" copySource="p1Dec6" displayDigits="4" ignoreDisplayDecimals /></p>
+    <p><point name="p1Dec6a" copySource="p1Dig4" displayDecimals="5" ignoreDisplayDigits /></p>
     `,
         },
         "*",
@@ -8878,19 +8878,19 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <point name="P" displayDecimals="1" padZeros>
+      <point name="P" displayDecimals="1" ignoreDisplayDigits padZeros>
         (1,2)
         <label>We have <m>x^{<copy prop="x" target="P"/>} + y^{<copy target="P" prop="y" />}</m></label>
       </point>
-      <point name="Q" displayDigits="3" padZeros>
+      <point name="Q" displayDigits="3" ignoreDisplayDecimals padZeros>
         <label>No latex: x^<text><copy prop="x" target="Q"/></text> + y^<text><copy target="Q" prop="y" /></text></label>
         (3,4)
       </point>
-      <point name="R" displayDecimals="2">
+      <point name="R" displayDecimals="2" ignoreDisplayDigits>
         <label><copy prop="label" target="P"/> and <copy prop="coords" target="R" /></label>
         (5,6)
       </point>
-      <point name="S" displayDigits="2">
+      <point name="S" displayDigits="2" ignoreDisplayDecimals>
         <label><copy prop="label" target="Q"/> and <copy prop="coords" target="S" /></label>
         (7,8)
       </point>
@@ -9042,13 +9042,13 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <point name="P" displayDecimals="1" padZeros>
+      <point name="P" displayDecimals="1" ignoreDisplayDigits padZeros>
         (1,2)
         <label>We have <m>x^{<copy prop="x" target="P"/>} + y^{<copy target="P" prop="y" />}</m></label>
       </point>
     </graph>
     <graph>
-      <point name="Q" displayDigits="3" padZeros copySource="P">
+      <point name="Q" displayDigits="3" ignoreDisplayDecimals padZeros copySource="P">
         <label>No latex: x^<text><copy prop="x" target="Q"/></text> + y^<text><copy target="Q" prop="y" /></text></label>
       </point>
     </graph>

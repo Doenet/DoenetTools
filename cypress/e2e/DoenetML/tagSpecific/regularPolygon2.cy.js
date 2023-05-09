@@ -1,5 +1,8 @@
 import { cesc, cesc2 } from "../../../../src/_utils/url";
-import { runTests, setupScene } from "./regularPolygonUtils";
+import {
+  runRegularPolygonTests,
+  setupRegularPolygonScene,
+} from "./regularPolygon.cy";
 
 describe("Regular Polygon Tag Tests", function () {
   beforeEach(() => {
@@ -8,7 +11,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify radius for square", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "4",
         radius: "7",
@@ -16,7 +19,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 4,
       vertex1: [-6 + 7, -2],
       center: [-6, -2],
@@ -26,14 +29,14 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify center for pentagon", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "5",
         center: "(-5,-3)",
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 5,
       vertex1: [-5 + 1, -3],
       center: [-5, -3],
@@ -42,14 +45,14 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify one vertex for square", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: 4,
         vertices: "(2,-5)",
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 4,
       vertex1: [2, -5],
       center: [1, -5],
@@ -58,7 +61,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify two vertices for pentagon", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "5",
         vertices: "(2,-5) (5,1)",
@@ -88,7 +91,7 @@ describe("Regular Polygon Tag Tests", function () {
       midpoint[1] + inradiusDirection[1] * inradius,
     ];
 
-    runTests({
+    runRegularPolygonTests({
       nVertices,
       vertex1,
       center,
@@ -97,7 +100,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify center and one vertex for triangle", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         vertices: "(2,-5)",
@@ -105,7 +108,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
@@ -114,7 +117,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify center and two vertices for triangle, ignore second vertex", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         vertices: "(2,-5) (10,12)",
@@ -122,7 +125,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
@@ -132,7 +135,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify center and vertex for triangle, ignore all size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         vertices: "(2,-5)",
@@ -145,7 +148,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
@@ -155,7 +158,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify center and circumradius for triangle, ignore all other size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         center: "(-1,-3)",
@@ -167,7 +170,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [10, -3],
       center: [-1, -3],
@@ -177,7 +180,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify vertex and circumradius for triangle, ignore all other size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         vertices: "(2,-5)",
@@ -189,7 +192,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [2, -5],
       center: [-9, -5],
@@ -199,7 +202,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify two vertices for triangle, ingnore all size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         vertices: "(2,-5) (5,1)",
@@ -234,7 +237,7 @@ describe("Regular Polygon Tag Tests", function () {
       midpoint[1] + inradiusDirection[1] * inradius,
     ];
 
-    runTests({
+    runRegularPolygonTests({
       nVertices,
       vertex1,
       center,
@@ -244,7 +247,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify circumradius for triangle, ignore all other size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         circumradius: "11",
@@ -255,7 +258,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [11, 0],
       center: [0, 0],
@@ -265,7 +268,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify radius for triangle, ignore all other size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         radius: "11",
@@ -276,7 +279,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [11, 0],
       center: [0, 0],
@@ -286,7 +289,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify inradius for triangle, ignore all other size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         inradius: "3",
@@ -296,7 +299,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [3 / Math.cos(Math.PI / 3), 0],
       center: [0, 0],
@@ -306,7 +309,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify center and apothem for triangle, ignore all other size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         center: "(-1,-3)",
@@ -317,7 +320,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [-1 + 3 / Math.cos(Math.PI / 3), -3],
       center: [-1, -3],
@@ -327,7 +330,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify sideLength for triangle, ignore all other size attributes", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         sideLength: "5",
@@ -336,7 +339,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [5 / (2 * Math.sin(Math.PI / 3)), 0],
       center: [0, 0],
@@ -346,7 +349,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify center and perimeter for triangle, ignore area", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "3",
         center: "(-1,-3)",
@@ -355,7 +358,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 3,
       vertex1: [-1 + 10 / (3 * 2 * Math.sin(Math.PI / 3)), -3],
       center: [-1, -3],
@@ -365,7 +368,7 @@ describe("Regular Polygon Tag Tests", function () {
   });
 
   it("specify nVertices, ignore nSides", () => {
-    setupScene({
+    setupRegularPolygonScene({
       attributes: {
         nVertices: "4",
         nSides: "6",
@@ -373,7 +376,7 @@ describe("Regular Polygon Tag Tests", function () {
       },
     });
 
-    runTests({
+    runRegularPolygonTests({
       nVertices: 4,
       vertex1: [5, 1],
       center: [4, 1],

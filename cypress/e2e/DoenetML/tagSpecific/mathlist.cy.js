@@ -3858,8 +3858,8 @@ describe("MathList Tag Tests", function () {
     <text>a</text>
     <p><mathList name="ml1">34.245023482352345 <math displayDigits="7">245.23823402358234234</math></mathList></p>
     <p><mathList name="ml1Dig6" copySource="ml1" displayDigits="6" /></p>
-    <p><mathList name="ml1Dig6a" copySource="ml1Dec6" displayDigits="6" ignoreDisplayDecimals /></p>
     <p><mathList name="ml1Dec6" copySource="ml1" displayDecimals="6" /></p>
+    <p><mathList name="ml1Dig6a" copySource="ml1Dec6" displayDigits="6" ignoreDisplayDecimals /></p>
     <p><mathList name="ml1Dec6a" copySource="ml1Dig6" displayDecimals="6" /></p>
     `,
         },

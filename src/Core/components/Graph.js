@@ -8,6 +8,7 @@ import {
   sizePossibilities,
 } from "../utils/size";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -718,7 +719,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -851,7 +853,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -992,7 +995,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1129,7 +1133,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1364,7 +1369,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["gridAttrCompChildren"],

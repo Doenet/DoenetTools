@@ -296,3 +296,15 @@ export function returnRoundingAttributes() {
     },
   };
 }
+
+// since state variable values are computed using more than attributes,
+// (such as children or parents)
+// we need to send the actual state variables as the attributes
+// when shadowing public state variables
+export function returnRoundingAttributeComponentShadowing() {
+  let shadowing = {};
+  for (let stateVariable in returnRoundingStateVariableDefinitions()) {
+    shadowing[stateVariable] = { stateVariableToShadow: stateVariable };
+  }
+  return shadowing;
+}

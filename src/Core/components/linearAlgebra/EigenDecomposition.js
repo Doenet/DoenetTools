@@ -1,4 +1,5 @@
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../../utils/rounding";
@@ -112,7 +113,8 @@ export default class EigenDecomposition extends BaseComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["eigenvalue"],
       returnArraySizeDependencies: () => ({
@@ -157,7 +159,8 @@ export default class EigenDecomposition extends BaseComponent {
       nDimensions: 2,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "eigenvectorX") {
             return [];

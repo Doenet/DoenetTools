@@ -1988,10 +1988,10 @@ describe("Sequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><sequence assignNames="n1a n1b n1c" from="10.12345" length="3" step="0.03257" /></aslist></p>
-    <p><aslist><sequence assignNames="n2a n2b n2c" from="10.12345" length="3" step="0.03257" displayDigits="3" /></aslist></p>
-    <p><aslist><sequence assignNames="n3a n3b n3c" from="10.12345" length="3" step="0.03257" displayDecimals="3" /></aslist></p>
-    <p><aslist><sequence assignNames="n4a n4b n4c" from="10" length="3" displayDigits="3" padZeros /></aslist></p>
+    <p><aslist><sequence assignNames="n1a n1b n1c" from="10.12345" length="3" step="0.03257" displayDigits="10" /></aslist></p>
+    <p><aslist><sequence assignNames="n2a n2b n2c" from="10.12345" length="3" step="0.03257" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
+    <p><aslist><sequence assignNames="n3a n3b n3c" from="10.12345" length="3" step="0.03257" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
+    <p><aslist><sequence assignNames="n4a n4b n4c" from="10" length="3" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
 
     <p><number name="n1a1">$n1a</number> <number name="n1b1">$n1b</number> <number name="n1c1">$n1c</number></p>
     <p><number name="n2a1">$n2a</number> <number name="n2b1">$n2b</number> <number name="n2c1">$n2c</number></p>

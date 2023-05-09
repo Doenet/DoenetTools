@@ -1469,6 +1469,13 @@ export default class Answer extends InlineComponent {
       },
     };
 
+    stateVariableDefinitions.displayDecimalsForCreditAchieved = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: { displayDecimalsForCreditAchieved: -Infinity },
+      }),
+    };
+
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
       public: true,
@@ -1477,6 +1484,9 @@ export default class Answer extends InlineComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
+          },
+          displayDecimals: {
+            stateVariableToShadow: "displayDecimalsForCreditAchieved",
           },
         },
       },

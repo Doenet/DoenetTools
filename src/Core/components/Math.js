@@ -25,6 +25,7 @@ import {
 import {
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
+  returnRoundingAttributeComponentShadowing,
 } from "../utils/rounding";
 
 const vectorAndListOperators = ["list", ...vectorOperators];
@@ -541,21 +542,15 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
-        attributesToShadow: [
-          "unordered",
-          ...Object.keys(returnRoundingAttributes()),
-          "simplify",
-          "expand",
-        ],
-        // the reason we create a attribute component from the state variable,
+        attributesToShadow: ["unordered", "simplify", "expand"],
+        // the reason we create a attribute component from the state variable fixed,
         // rather than just shadowing the attribute,
         // is that a sequence creates a math where it sets fixed directly in the state
-        // TODO: how to deal with this in general?  Should we disallow that way to set state?
-        // Or should we always shadow attributes this way?
         addAttributeComponentsShadowingStateVariables: {
           fixed: {
             stateVariableToShadow: "fixed",
           },
+          ...returnRoundingAttributeComponentShadowing(),
         },
       },
       returnDependencies: () => ({
@@ -613,7 +608,8 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         value: {
@@ -1076,7 +1072,8 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "x") {
             return [];
@@ -1312,7 +1309,8 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "matrixEntry") {
             return [];

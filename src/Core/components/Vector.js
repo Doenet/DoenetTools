@@ -8,6 +8,7 @@ import {
 } from "../utils/math";
 import { returnTextStyleDescriptionDefinitions } from "../utils/style";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -1030,10 +1031,9 @@ export default class Vector extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          ...Object.keys(returnRoundingAttributes()),
-          "displayWithAngleBrackets",
-        ],
+        attributesToShadow: ["displayWithAngleBrackets"],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "x") {
             return [];
@@ -1408,7 +1408,8 @@ export default class Vector extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "headX") {
             return [];
@@ -1602,7 +1603,8 @@ export default class Vector extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "tailX") {
             return [];

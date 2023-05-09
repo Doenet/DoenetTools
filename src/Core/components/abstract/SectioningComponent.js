@@ -62,6 +62,13 @@ export class SectioningComponent extends BlockComponent {
       forRenderer: true,
     };
 
+    attributes.displayDigitsForCreditAchieved = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigitsForCreditAchieved",
+      defaultValue: 3,
+      public: true,
+    };
+
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.boxed = {
@@ -537,9 +544,11 @@ export class SectioningComponent extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.displayDigitsForCreditAchieved = {
+    stateVariableDefinitions.displayDecimalsForCreditAchieved = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } }),
+      definition: () => ({
+        setValue: { displayDecimalsForCreditAchieved: -Infinity },
+      }),
     };
 
     stateVariableDefinitions.creditAchieved = {
@@ -549,6 +558,9 @@ export class SectioningComponent extends BlockComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
+          },
+          displayDecimals: {
+            stateVariableToShadow: "displayDecimalsForCreditAchieved",
           },
         },
       },
@@ -564,6 +576,9 @@ export class SectioningComponent extends BlockComponent {
             addAttributeComponentsShadowingStateVariables: {
               displayDigits: {
                 stateVariableToShadow: "displayDigitsForCreditAchieved",
+              },
+              displayDecimals: {
+                stateVariableToShadow: "displayDecimalsForCreditAchieved",
               },
             },
           },

@@ -18,6 +18,7 @@ import {
   returnAnchorStateVariableDefinition,
 } from "../utils/graphical";
 import {
+  returnRoundingAttributeComponentShadowing,
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
@@ -323,16 +324,14 @@ export default class NumberComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
-        attributesToShadow: Object.keys(returnRoundingAttributes()),
         // the reason we create a attribute component from the state variable,
         // rather than just shadowing the attribute,
         // is that a sequence creates a number where it sets fixed directly in the state
-        // TODO: how to deal with this in general?  Should we disallow that way to set state?
-        // Or should we always shadow attributes this way?
         addAttributeComponentsShadowingStateVariables: {
           fixed: {
             stateVariableToShadow: "fixed",
           },
+          ...returnRoundingAttributeComponentShadowing(),
         },
       },
       hasEssential: true,
@@ -853,8 +852,8 @@ export default class NumberComponent extends InlineComponent {
       isPublic: true,
     });
 
-    stateVariableDefinitions.math.shadowingInstructions.attributesToShadow =
-      Object.keys(returnRoundingAttributes());
+    stateVariableDefinitions.math.shadowingInstructions.addAttributeComponentsShadowingStateVariables =
+      returnRoundingAttributeComponentShadowing();
 
     stateVariableDefinitions.latex = {
       public: true,
