@@ -1,4 +1,6 @@
-FROM composer as composer
+# composer:2.2.18
+# https://hub.docker.com/layers/library/composer/2.2.18/images/sha256-7b05f8df23459b8631d50c6720025e7f44ab5072c18ec727f64c100ebd03ead4?context=explore
+FROM composer@sha256:7b05f8df23459b8631d50c6720025e7f44ab5072c18ec727f64c100ebd03ead4 as composer
 WORKDIR /build
 COPY ./doenet_docker/php/composer.json .
 RUN composer install --ignore-platform-reqs
