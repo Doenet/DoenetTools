@@ -1474,14 +1474,10 @@ export function PortfolioActivityEditor() {
                     roundedBottom="0px"
                     height="24px"
                     width="50px"
-                    // top="-24px"
-                    //keyboardIsOpen
-                    // top="-24px"
                     style={{ top: keyboardIsOpen ? "-8px" : "-24px" }}
                     variant="ghost"
                     // variant="outline"
                     icon={<FaKeyboard />}
-                    // onClick={keyboardOnOpen}
                     onClick={keyboardOnToggle}
                     ref={keyboardBtnRef}
                     background="doenet.canvas"
