@@ -23,12 +23,7 @@ import {
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
 import { loader as caroselLoader, Home } from "./Tools/_framework/Paths/Home";
-import {
-  loader as portfolioActivitySettingsLoader,
-  action as portfolioActivitySettingsAction,
-  ErrorBoundry as portfolioActivitySettingsError,
-  PortfolioActivitySettings,
-} from "./Tools/_framework/Paths/PortfolioActivitySettings";
+
 import {
   loader as portfolioLoader,
   action as portfolioAction,
@@ -259,18 +254,6 @@ const router = createBrowserRouter([
         ),
       },
     ],
-  },
-
-  {
-    path: "portfolio/:doenetId/settings",
-    loader: portfolioActivitySettingsLoader,
-    action: portfolioActivitySettingsAction,
-    ErrorBoundary: portfolioActivitySettingsError,
-    element: (
-      <ChakraProvider theme={theme}>
-        <PortfolioActivitySettings />
-      </ChakraProvider>
-    ),
   },
   {
     path: "public",
