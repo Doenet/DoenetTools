@@ -1159,6 +1159,67 @@ export function PortfolioActivityEditor2() {
   );
 }
 
+function MathKeyboard() {
+  const keyboardBtnRef = useRef(null);
+
+  const {
+    isOpen: keyboardIsOpen,
+    // onOpen: keyboardOnOpen,
+    onClose: keyboardOnClose,
+    onToggle: keyboardOnToggle,
+  } = useDisclosure();
+
+  return (
+    <Slide direction="bottom" in={keyboardIsOpen} style={{ zIndex: 10 }}>
+      <Box
+        p="4px"
+        mt="4"
+        bg="doenet.canvas"
+        borderTop="1px"
+        borderTopColor="doenet.mediumGray"
+      >
+        <Tooltip hasArrow label="Open Keyboard">
+          <IconButton
+            position="absolute"
+            left="10px"
+            size="md"
+            roundedBottom="0px"
+            height="24px"
+            width="50px"
+            top={keyboardIsOpen ? "-8px" : "-24px"}
+            variant="ghost"
+            // variant="outline"
+            icon={<FaKeyboard />}
+            onClick={keyboardOnToggle}
+            ref={keyboardBtnRef}
+            background="doenet.canvas"
+          />
+        </Tooltip>
+
+        <IconButton
+          position="absolute"
+          top="20px"
+          right="6px"
+          size="sm"
+          icon={<CloseIcon />}
+          variant="ghost"
+          onClick={keyboardOnClose}
+        />
+
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+        <Text>Keyboard HERE</Text>
+      </Box>
+    </Slide>
+  );
+}
+
 export function PortfolioActivityEditor() {
   const { doenetML, pageId, courseId, activityData, lastKnownCid } =
     useLoaderData();
@@ -1167,12 +1228,7 @@ export function PortfolioActivityEditor() {
     onOpen: controlsOnOpen,
     onClose: controlsOnClose,
   } = useDisclosure();
-  const {
-    isOpen: keyboardIsOpen,
-    // onOpen: keyboardOnOpen,
-    onClose: keyboardOnClose,
-    onToggle: keyboardOnToggle,
-  } = useDisclosure();
+
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
@@ -1232,7 +1288,6 @@ export function PortfolioActivityEditor() {
   }, [pageId, saveDraft, courseId, textEditorDoenetML]);
 
   const controlsBtnRef = useRef(null);
-  const keyboardBtnRef = useRef(null);
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -1453,61 +1508,7 @@ export function PortfolioActivityEditor() {
 
         {mode == "View" && (
           <>
-            <Slide
-              direction="bottom"
-              in={keyboardIsOpen}
-              style={{ zIndex: 10 }}
-            >
-              <Box
-                p="4px"
-                mt="4"
-                bg="doenet.canvas"
-                borderTop="1px"
-                borderTopColor="doenet.mediumGray"
-              >
-                <Tooltip hasArrow label="Open Keyboard">
-                  <IconButton
-                    zIndex="10"
-                    position="absolute"
-                    left="10px"
-                    size="md"
-                    roundedBottom="0px"
-                    height="24px"
-                    width="50px"
-                    // top="-24px"
-                    top={keyboardIsOpen ? "-8px" : "-24px"}
-                    // style={{ top: keyboardIsOpen ? "-8px" : "-24px" }}
-                    variant="ghost"
-                    // variant="outline"
-                    icon={<FaKeyboard />}
-                    onClick={keyboardOnToggle}
-                    ref={keyboardBtnRef}
-                    background="doenet.canvas"
-                  />
-                </Tooltip>
-
-                <IconButton
-                  position="absolute"
-                  top="20px"
-                  right="6px"
-                  size="sm"
-                  icon={<CloseIcon />}
-                  variant="ghost"
-                  onClick={keyboardOnClose}
-                />
-
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-                <Text>Keyboard HERE</Text>
-              </Box>
-            </Slide>
-
+            <MathKeyboard />
             <GridItem area="centerContent">
               <Grid
                 width="100%"
