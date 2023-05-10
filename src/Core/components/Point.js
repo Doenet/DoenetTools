@@ -217,7 +217,6 @@ export default class Point extends GraphicalComponent {
     };
 
     sugarInstructions.push({
-      // childrenRegex: /n*s+(.*s)?n*/,
       replacementFunction: breakIntoXsOrCoords,
     });
 

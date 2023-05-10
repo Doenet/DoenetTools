@@ -278,7 +278,6 @@ export class Extrema extends BaseComponent {
     };
 
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
       replacementFunction: createExtremumList,
     });
 

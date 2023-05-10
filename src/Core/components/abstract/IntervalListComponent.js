@@ -33,7 +33,6 @@ export default class IntervalListComponent extends BaseComponent {
     };
 
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
       replacementFunction: createIntervalList,
     });
 

@@ -773,8 +773,6 @@ export default class Polyline extends GraphicalComponent {
       }
     }
 
-    console.log("***************** no modifications");
-
     // if no modifications were made, still need to update renderers
     // as original update was performed with skipping renderer update
     return await this.coreFunctions.updateRenderers({
