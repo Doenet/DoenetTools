@@ -665,38 +665,18 @@ export function numberToMathExpression(number) {
   return me.fromAst(mathTree);
 }
 
-export function roundForDisplay({ value, dependencyValues, usedDefault }) {
-  let rounded;
+export function roundForDisplay({ value, dependencyValues }) {
+  let rounded = me.round_numbers_to_precision_plus_decimals(
+    value,
+    dependencyValues.displayDigits,
+    dependencyValues.displayDecimals,
+  );
 
-  // displayDigits takes precedence
-  // use displayDecimals only if
-  // - didn't specify displayDigits or specified invalid displayDigits, and
-  // - specified a valid displayDecimals
   if (
-    (usedDefault.displayDigits || !(dependencyValues.displayDigits >= 1)) &&
-    !usedDefault.displayDecimals &&
-    Number.isFinite(dependencyValues.displayDecimals)
+    dependencyValues.displayDigits > 0 &&
+    dependencyValues.displaySmallAsZero > 0
   ) {
-    rounded = me.round_numbers_to_decimals(
-      value,
-      dependencyValues.displayDecimals,
-    );
-  } else {
-    if (dependencyValues.displayDigits >= 1) {
-      rounded = me.round_numbers_to_precision(
-        value,
-        dependencyValues.displayDigits,
-      );
-    } else {
-      // default behavior is round to 10 digits
-      rounded = me.round_numbers_to_precision(value, 10);
-    }
-    if (dependencyValues.displaySmallAsZero > 0) {
-      rounded = me.evaluate_numbers(rounded, {
-        skip_ordering: true,
-        set_small_zero: dependencyValues.displaySmallAsZero,
-      });
-    }
+    rounded = me.set_small_zero(rounded, dependencyValues.displaySmallAsZero);
   }
 
   return rounded;

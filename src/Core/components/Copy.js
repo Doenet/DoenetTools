@@ -2507,24 +2507,26 @@ export async function replacementFromProp({
                   attributeComponentsShadowingStateVariables[attrName]
                     .stateVariableToShadow;
                 let attributeComponentType =
-                  attrObj[attrName].createComponentOfType;
+                  attrObj[attrName]?.createComponentOfType;
 
-                let shadowComponent = {
-                  componentType: attributeComponentType,
-                  downstreamDependencies: {
-                    [target.componentName]: [
-                      {
-                        compositeName: component.componentName,
-                        dependencyType: "referenceShadow",
-                        propVariable: stateVariableToShadow,
-                      },
-                    ],
-                  },
-                };
+                if (attributeComponentType) {
+                  let shadowComponent = {
+                    componentType: attributeComponentType,
+                    downstreamDependencies: {
+                      [target.componentName]: [
+                        {
+                          compositeName: component.componentName,
+                          dependencyType: "referenceShadow",
+                          propVariable: stateVariableToShadow,
+                        },
+                      ],
+                    },
+                  };
 
-                attributesForReplacement[attrName] = {
-                  component: shadowComponent,
-                };
+                  attributesForReplacement[attrName] = {
+                    component: shadowComponent,
+                  };
+                }
               }
             }
 
@@ -2552,21 +2554,27 @@ export async function replacementFromProp({
             let attributesForReplacement = {};
 
             if (attributeComponentsShadowingStateVariables) {
+              let classOfComponentToCreate =
+                componentInfoObjects.allComponentClasses[createComponentOfType];
+              let attrObj = classOfComponentToCreate.createAttributesObject();
+
               let additionalAttributes = {};
               for (let attrName in attributeComponentsShadowingStateVariables) {
-                let vName =
-                  attributeComponentsShadowingStateVariables[attrName]
-                    .stateVariableToShadow;
-                let attributeStateVarObj = target.state[vName];
-                let attributeValue = await attributeStateVarObj.value;
-                if (attributeStateVarObj.isArray) {
-                  // Assume attribute has same dimensions as original
-                  // TODO: multidimensional arrays?
-                  attributeValue =
-                    attributeValue[attributeStateVarObj.keyToIndex[arrayKey]];
-                }
-                if (!target.state[vName].usedDefault) {
-                  additionalAttributes[attrName] = attributeValue;
+                if (attrObj[attrName]?.createComponentOfType) {
+                  let vName =
+                    attributeComponentsShadowingStateVariables[attrName]
+                      .stateVariableToShadow;
+                  let attributeStateVarObj = target.state[vName];
+                  let attributeValue = await attributeStateVarObj.value;
+                  if (attributeStateVarObj.isArray) {
+                    // Assume attribute has same dimensions as original
+                    // TODO: multidimensional arrays?
+                    attributeValue =
+                      attributeValue[attributeStateVarObj.keyToIndex[arrayKey]];
+                  }
+                  if (!target.state[vName].usedDefault) {
+                    additionalAttributes[attrName] = attributeValue;
+                  }
                 }
               }
 
@@ -2657,6 +2665,7 @@ export async function replacementFromProp({
       let createReplacementPiece = async function (
         subArrayKeys,
         nDimensionsLeft,
+        init = false,
       ) {
         let pieces = [];
         let propVariablesCopiedByPiece = [];
@@ -2703,22 +2712,27 @@ export async function replacementFromProp({
             ) {
               attributeComponentsShadowingStateVariables = {};
 
-              for (let attrName in arrayStateVarObj.shadowingInstructions
-                .addAttributeComponentsShadowingStateVariables) {
-                let stateVariableToShadow =
-                  arrayStateVarObj.shadowingInstructions
-                    .addAttributeComponentsShadowingStateVariables[attrName]
-                    .stateVariableToShadow;
+              let attributeShadowingInfo =
+                arrayStateVarObj.shadowingInstructions
+                  .addAttributeComponentsShadowingStateVariables;
 
-                let sObj = target.state[stateVariableToShadow];
-                if (sObj.isArray) {
-                  stateVariableToShadow =
-                    sObj.arrayVarNameFromArrayKey(arrayKey);
+              for (let attrName in attributeShadowingInfo) {
+                if (
+                  !attributeShadowingInfo[attrName].addToOuterIfWrappedArray
+                ) {
+                  let stateVariableToShadow =
+                    attributeShadowingInfo[attrName].stateVariableToShadow;
+
+                  let sObj = target.state[stateVariableToShadow];
+                  if (sObj.isArray) {
+                    stateVariableToShadow =
+                      sObj.arrayVarNameFromArrayKey(arrayKey);
+                  }
+
+                  attributeComponentsShadowingStateVariables[attrName] = {
+                    stateVariableToShadow,
+                  };
                 }
-
-                attributeComponentsShadowingStateVariables[attrName] = {
-                  stateVariableToShadow,
-                };
               }
             }
 
@@ -2763,24 +2777,26 @@ export async function replacementFromProp({
                     attributeComponentsShadowingStateVariables[attrName]
                       .stateVariableToShadow;
                   let attributeComponentType =
-                    attrObj[attrName].createComponentOfType;
+                    attrObj[attrName]?.createComponentOfType;
 
-                  let shadowComponent = {
-                    componentType: attributeComponentType,
-                    downstreamDependencies: {
-                      [target.componentName]: [
-                        {
-                          compositeName: component.componentName,
-                          dependencyType: "referenceShadow",
-                          propVariable: stateVariableToShadow,
-                        },
-                      ],
-                    },
-                  };
+                  if (attributeComponentType) {
+                    let shadowComponent = {
+                      componentType: attributeComponentType,
+                      downstreamDependencies: {
+                        [target.componentName]: [
+                          {
+                            compositeName: component.componentName,
+                            dependencyType: "referenceShadow",
+                            propVariable: stateVariableToShadow,
+                          },
+                        ],
+                      },
+                    };
 
-                  attributesForReplacement[attrName] = {
-                    component: shadowComponent,
-                  };
+                    attributesForReplacement[attrName] = {
+                      component: shadowComponent,
+                    };
+                  }
                 }
               }
 
@@ -2804,21 +2820,30 @@ export async function replacementFromProp({
               let attributesForReplacement = {};
 
               if (attributeComponentsShadowingStateVariables) {
+                let classOfComponentToCreate =
+                  componentInfoObjects.allComponentClasses[
+                    createComponentOfType
+                  ];
+                let attrObj = classOfComponentToCreate.createAttributesObject();
                 let additionalAttributes = {};
                 for (let attrName in attributeComponentsShadowingStateVariables) {
-                  let vName =
-                    attributeComponentsShadowingStateVariables[attrName]
-                      .stateVariableToShadow;
-                  let attributeStateVarObj = target.state[vName];
-                  let attributeValue = await attributeStateVarObj.value;
-                  if (attributeStateVarObj.isArray) {
-                    // Assume attribute has same dimensions as original
-                    // TODO: multidimensional arrays?
-                    attributeValue =
-                      attributeValue[attributeStateVarObj.keyToIndex[arrayKey]];
-                  }
-                  if (!target.state[vName].usedDefault) {
-                    additionalAttributes[attrName] = attributeValue;
+                  if (attrObj[attrName]?.createComponentOfType) {
+                    let vName =
+                      attributeComponentsShadowingStateVariables[attrName]
+                        .stateVariableToShadow;
+                    let attributeStateVarObj = target.state[vName];
+                    let attributeValue = await attributeStateVarObj.value;
+                    if (attributeStateVarObj.isArray) {
+                      // Assume attribute has same dimensions as original
+                      // TODO: multidimensional arrays?
+                      attributeValue =
+                        attributeValue[
+                          attributeStateVarObj.keyToIndex[arrayKey]
+                        ];
+                    }
+                    if (!target.state[vName].usedDefault) {
+                      additionalAttributes[attrName] = attributeValue;
+                    }
                   }
                 }
 
@@ -2951,12 +2976,106 @@ export async function replacementFromProp({
           ];
         }
 
+        if (
+          init &&
+          arrayStateVarObj.shadowingInstructions
+            .addAttributeComponentsShadowingStateVariables
+        ) {
+          let attributeComponentsShadowingStateVariables = {};
+
+          let attributeShadowingInfo =
+            arrayStateVarObj.shadowingInstructions
+              .addAttributeComponentsShadowingStateVariables;
+
+          for (let attrName in attributeShadowingInfo) {
+            if (attributeShadowingInfo[attrName].addToOuterIfWrappedArray) {
+              let stateVariableToShadow =
+                attributeShadowingInfo[attrName].stateVariableToShadow;
+
+              attributeComponentsShadowingStateVariables[attrName] = {
+                stateVariableToShadow,
+              };
+            }
+          }
+
+          if (
+            Object.keys(attributeComponentsShadowingStateVariables).length > 0
+          ) {
+            for (let piece of pieces) {
+              let attributesForReplacement = piece.attributes;
+              if (!attributesForReplacement) {
+                attributesForReplacement = piece.attributes = {};
+              }
+
+              let classOfComponentToCreate =
+                componentInfoObjects.allComponentClasses[piece.componentType];
+              let attrObj = classOfComponentToCreate.createAttributesObject();
+
+              if (link) {
+                for (let attrName in attributeComponentsShadowingStateVariables) {
+                  let stateVariableToShadow =
+                    attributeComponentsShadowingStateVariables[attrName]
+                      .stateVariableToShadow;
+                  let attributeComponentType =
+                    attrObj[attrName]?.createComponentOfType;
+
+                  if (attributeComponentType) {
+                    let shadowComponent = {
+                      componentType: attributeComponentType,
+                      downstreamDependencies: {
+                        [target.componentName]: [
+                          {
+                            compositeName: component.componentName,
+                            dependencyType: "referenceShadow",
+                            propVariable: stateVariableToShadow,
+                          },
+                        ],
+                      },
+                    };
+
+                    attributesForReplacement[attrName] = {
+                      component: shadowComponent,
+                    };
+                  }
+                }
+              } else {
+                let additionalAttributes = {};
+                for (let attrName in attributeComponentsShadowingStateVariables) {
+                  if (attrObj[attrName]?.createComponentOfType) {
+                    let vName =
+                      attributeComponentsShadowingStateVariables[attrName]
+                        .stateVariableToShadow;
+                    let attributeStateVarObj = target.state[vName];
+                    let attributeValue = await attributeStateVarObj.value;
+
+                    if (!target.state[vName].usedDefault) {
+                      additionalAttributes[attrName] = attributeValue;
+                    }
+                  }
+                }
+
+                if (Object.keys(additionalAttributes).length > 0) {
+                  additionalAttributes = convertAttributesForComponentType({
+                    attributes: additionalAttributes,
+                    componentType: piece.componentType,
+                    componentInfoObjects,
+                    flags,
+                  });
+
+                  Object.assign(attributesForReplacement, additionalAttributes);
+                }
+              }
+            }
+          }
+        }
+
         return { pieces, propVariablesCopiedByPiece };
       };
 
       let result = await createReplacementPiece(
         unflattenedArrayKeys,
         stateVarObj.nDimensions,
+        true,
       );
 
       let newReplacements = result.pieces;
@@ -3130,24 +3249,26 @@ export async function replacementFromProp({
                 .addAttributeComponentsShadowingStateVariables[attrName]
                 .stateVariableToShadow;
             let attributeComponentType =
-              attrObj[attrName].createComponentOfType;
+              attrObj[attrName]?.createComponentOfType;
 
-            let shadowComponent = {
-              componentType: attributeComponentType,
-              downstreamDependencies: {
-                [target.componentName]: [
-                  {
-                    compositeName: component.componentName,
-                    dependencyType: "referenceShadow",
-                    propVariable: stateVariableToShadow,
-                  },
-                ],
-              },
-            };
+            if (attributeComponentType) {
+              let shadowComponent = {
+                componentType: attributeComponentType,
+                downstreamDependencies: {
+                  [target.componentName]: [
+                    {
+                      compositeName: component.componentName,
+                      dependencyType: "referenceShadow",
+                      propVariable: stateVariableToShadow,
+                    },
+                  ],
+                },
+              };
 
-            attributesForReplacement[attrName] = {
-              component: shadowComponent,
-            };
+              attributesForReplacement[attrName] = {
+                component: shadowComponent,
+              };
+            }
           }
         }
 
@@ -3178,19 +3299,27 @@ export async function replacementFromProp({
           stateVarObj.shadowingInstructions
             .addAttributeComponentsShadowingStateVariables
         ) {
+          let classOfComponentToCreate =
+            componentInfoObjects.allComponentClasses[
+              stateVarObj.shadowingInstructions.createComponentOfType
+            ];
+          let attrObj = classOfComponentToCreate.createAttributesObject();
+
           let additionalAttributes = {};
           for (let attrName in stateVarObj.shadowingInstructions
             .addAttributeComponentsShadowingStateVariables) {
-            // when copying with link=false, don't copy fixed attribute
-            // so that, for example, a copy from a sequence with link=false is not fixed
-            if (attrName !== "fixed") {
-              let vName =
-                stateVarObj.shadowingInstructions
-                  .addAttributeComponentsShadowingStateVariables[attrName]
-                  .stateVariableToShadow;
-              let attributeValue = await target.state[vName].value;
-              if (!target.state[vName].usedDefault) {
-                additionalAttributes[attrName] = attributeValue;
+            if (attrObj[attrName]?.createComponentOfType) {
+              // when copying with link=false, don't copy fixed attribute
+              // so that, for example, a copy from a sequence with link=false is not fixed
+              if (attrName !== "fixed") {
+                let vName =
+                  stateVarObj.shadowingInstructions
+                    .addAttributeComponentsShadowingStateVariables[attrName]
+                    .stateVariableToShadow;
+                let attributeValue = await target.state[vName].value;
+                if (!target.state[vName].usedDefault) {
+                  additionalAttributes[attrName] = attributeValue;
+                }
               }
             }
           }

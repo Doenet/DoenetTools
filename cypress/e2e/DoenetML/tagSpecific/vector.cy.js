@@ -6868,8 +6868,8 @@ describe("Vector Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <vector head="(-1,-0.05)" tail="(1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -18772,7 +18772,7 @@ describe("Vector Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <vector name="v" head="(5,4)" tail="(-2,1)" />
+      <vector name="v" head="(5,4)" tail="(-2,1)" displayDigits="10" />
     </graph>
     <copy prop="magnitude" target="v" assignNames="magnitude" />
     <point name="A" copySource="v.tail" />
@@ -19704,7 +19704,7 @@ describe("Vector Tag Tests", function () {
   <graph>
   <point name="P">(4,1)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <point name="Q">(-4,2)</point>
@@ -19873,7 +19873,7 @@ describe("Vector Tag Tests", function () {
   <point name="P">(4,1)</point>
   <point name="Q">(-4,2)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <vector tail="$P" head="$Q" />
@@ -20036,5 +20036,76 @@ describe("Vector Tag Tests", function () {
         displacementTailShifty,
       });
     });
+  });
+
+  it("round vector", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <vector tail="(2.58106823,510.523950183)" head="(5.2164162,623.5234601)" name="v1"/>
+
+    $v1.displacement{assignNames="v1d"}
+    $v1.tail{assignNames="v1t"}
+    $v1.head{assignNames="v1h"}
+    
+    <p>
+      <vector copysource="v1" name="v2" displayDigits="6" />
+      
+      $v2.displacement{assignNames="v2d"}
+      $v2.tail{assignNames="v2t"}
+      $v2.head{assignNames="v2h"}
+    </p>
+
+    <vector copysource="v1" name="v3" displayDecimals="0" ignoreDisplayDigits />
+    
+    $v3.displacement{assignNames="v3d"}
+    $v3.tail{assignNames="v3t"}
+    $v3.head{assignNames="v3h"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.64,113)");
+    cy.get(cesc2("#/v1d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.64,113)");
+    cy.get(cesc2("#/v1t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58,510.52)");
+    cy.get(cesc2("#/v1h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.22,623.52)");
+
+    cy.get(cesc2("#/v2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.63535,113)");
+    cy.get(cesc2("#/v2d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.63535,113)");
+    cy.get(cesc2("#/v2t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58107,510.524)");
+    cy.get(cesc2("#/v2h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.21642,623.523)");
+
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,113)");
+    cy.get(cesc2("#/v3d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,113)");
+    cy.get(cesc2("#/v3t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,511)");
+    cy.get(cesc2("#/v3h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,624)");
   });
 });

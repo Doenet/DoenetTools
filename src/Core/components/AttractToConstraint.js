@@ -47,7 +47,7 @@ export default class AttractToConstraint extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          applyConstraint: function ({ variables, scales }) {
+          applyConstraint: function (variables) {
             let constraintResult;
 
             let constraintChild = dependencyValues.constraintChild[0];
@@ -57,17 +57,13 @@ export default class AttractToConstraint extends ConstraintComponent {
             }
 
             if (constraintChild.stateValues.applyConstraint) {
-              constraintResult = constraintChild.stateValues.applyConstraint({
-                variables,
-                scales,
-              });
+              constraintResult =
+                constraintChild.stateValues.applyConstraint(variables);
             } else {
-              constraintResult = applyConstraintFromComponentConstraints({
+              constraintResult = applyConstraintFromComponentConstraints(
                 variables,
-                applyComponentConstraint:
-                  constraintChild.stateValues.applyComponentConstraint,
-                scales,
-              });
+                constraintChild.stateValues.applyComponentConstraint,
+              );
             }
 
             let distance2 = 0;

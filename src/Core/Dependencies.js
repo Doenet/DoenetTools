@@ -4108,6 +4108,9 @@ class AttributeComponentDependency extends Dependency {
     this.returnSingleComponent = true;
 
     this.shadowDepth = 0;
+
+    this.dontRecurseToShadowsIfHaveAttribute =
+      this.definition.dontRecurseToShadowsIfHaveAttribute;
   }
 
   async determineDownstreamComponents() {
@@ -4160,6 +4163,24 @@ class AttributeComponentDependency extends Dependency {
 
     if (attribute?.component) {
       // have an attribute that is a component
+
+      if (
+        attribute.component.shadows &&
+        this.dontRecurseToShadowsIfHaveAttribute
+      ) {
+        let otherAttribute =
+          parent.attributes[this.dontRecurseToShadowsIfHaveAttribute];
+        if (otherAttribute?.component && !otherAttribute.component.shadows) {
+          // The current attribute is a shadow
+          // but the dontRecurseToShadows attribute is not,
+          // so we don't use the current attribute
+          return {
+            success: true,
+            downstreamComponentNames: [],
+            downstreamComponentTypes: [],
+          };
+        }
+      }
       return {
         success: true,
         downstreamComponentNames: [attribute.component.componentName],
@@ -4176,6 +4197,13 @@ class AttributeComponentDependency extends Dependency {
       let shadows = comp.shadows;
       let propVariable = comp.shadows.propVariable;
       let fromPlainMacro = comp.doenetAttributes.fromPlainMacro;
+
+      if (
+        this.dontRecurseToShadowsIfHaveAttribute &&
+        comp.attributes[this.dontRecurseToShadowsIfHaveAttribute]
+      ) {
+        break;
+      }
 
       comp = this.dependencyHandler._components[shadows.componentName];
       if (!comp) {

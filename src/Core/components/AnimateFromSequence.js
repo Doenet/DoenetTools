@@ -79,6 +79,13 @@ export default class AnimateFromSequence extends BaseComponent {
       public: true,
     };
 
+    attributes.allowAdjustmentsWhileRunning = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowAdjustmentsWhileRunning",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
@@ -727,10 +734,16 @@ export default class AnimateFromSequence extends BaseComponent {
     let newDirection;
     let animationMode = await this.stateValues.animationMode;
 
-    // Look up index from target at every frame
-    // in case the target value was changed in the middle of the animation
-    // (e.g., by user interaction)
-    let previousIndex = await this.findIndexFromTarget();
+    let previousIndex;
+
+    if (await this.stateValues.allowAdjustmentsWhileRunning) {
+      // Look up index from target at every frame
+      // in case the target value was changed in the middle of the animation
+      // (e.g., by user interaction)
+      previousIndex = await this.findIndexFromTarget();
+    } else {
+      previousIndex = await this.stateValues.selectedIndex;
+    }
 
     if ((await this.stateValues.currentAnimationDirection) === "decrease") {
       newSelectedIndex = previousIndex - 1;

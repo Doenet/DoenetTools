@@ -1224,7 +1224,7 @@ describe("Rectangle Tag Tests", function () {
   <graph>
     <point name="P">(1,3)
       <constraints>
-         <constrainToGrid dx="3" dy="2" ignoreGraphBounds />
+         <constrainToGrid dx="3" dy="2" />
       </constraints>
     </point>
     <rectangle vertices="$P" name="p" />
@@ -1277,7 +1277,7 @@ describe("Rectangle Tag Tests", function () {
   <graph>
     <point name="P">(1,3)
       <constraints>
-         <constrainToGrid dx="3" dy="2" ignoreGraphBounds />
+         <constrainToGrid dx="3" dy="2" />
       </constraints>
     </point>
     <point name="Q">(6,5)</point>
@@ -1331,7 +1331,7 @@ describe("Rectangle Tag Tests", function () {
   <graph>
     <point name="P">(1,3)
       <constraints>
-         <constrainToGrid dx="3" dy="2" ignoreGraphBounds />
+         <constrainToGrid dx="3" dy="2" />
       </constraints>
     </point>
     <point name="Q">(6,5)</point>
@@ -1386,7 +1386,7 @@ describe("Rectangle Tag Tests", function () {
     <point name="P">(1,3)</point>
     <point name="Q">(6,5)
       <constraints>
-        <constrainToGrid dx="3" dy="2" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="2" />
       </constraints>
     </point>
     <rectangle vertices="$P" center="$Q" name="p" />

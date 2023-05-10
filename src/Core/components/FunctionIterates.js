@@ -1,6 +1,11 @@
 import InlineComponent from "./abstract/InlineComponent";
 import me from "math-expressions";
 import { vectorOperators } from "../utils/math";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class FunctionIterates extends InlineComponent {
   static componentType = "functionIterates";
@@ -35,11 +40,18 @@ export default class FunctionIterates extends InlineComponent {
       createComponentOfType: "function",
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.nDimensions = {
       public: true,
@@ -78,6 +90,8 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "mathList",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         functionAttr: {
@@ -185,6 +199,8 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "mathList",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         initialValue: {
@@ -213,6 +229,8 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["iterate"],
       returnArraySizeDependencies: () => ({
@@ -249,6 +267,8 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       stateVariablesDeterminingDependencies: ["nIterates"],
       returnDependencies({ stateValues }) {

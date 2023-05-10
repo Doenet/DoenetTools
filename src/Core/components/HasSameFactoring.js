@@ -10,7 +10,7 @@ export default class HasSameFactoring extends BooleanComponent {
     let attributes = super.createAttributesObject();
 
     attributes.variable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
     };

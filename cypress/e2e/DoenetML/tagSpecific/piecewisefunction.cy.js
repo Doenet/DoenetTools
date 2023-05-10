@@ -981,10 +981,10 @@ describe("Piecewise Function Tag Tests", function () {
       .should("have.text", "NaN");
     cy.get(cesc("#\\/p8") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "4.096");
+      .should("have.text", "4.1");
     cy.get(cesc("#\\/p9") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "6.561");
+      .should("have.text", "6.56");
     cy.get(cesc("#\\/p10") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "10");

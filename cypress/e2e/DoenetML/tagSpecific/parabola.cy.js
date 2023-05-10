@@ -13958,16 +13958,16 @@ describe("Parabola Tag Tests", function () {
     <graph ymin="-1000" ymax="1000">
     <parabola through="(1,-200) (2,-300) (0,-300)" name="p" />
     <point x="0" y="0" name="A">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo>$p</constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales>$p</constrainTo>
       </constraints>
     </point>
     </graph>
-    <graph name="g2">
+    <graph name="g2" ymin="-1000" ymax="1000">
       <copy assignNames="p2" target="p" />
       <copy assignNames="A2" target="A" />
     </graph>
-    <copy assignNames="g3" target="g2"/>
+    <copy assignNames="g3" target="g2" ymin="-1000" ymax="1000"/>
     `,
         },
         "*",

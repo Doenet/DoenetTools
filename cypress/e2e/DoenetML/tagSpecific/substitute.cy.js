@@ -2414,77 +2414,77 @@ describe("Substitute Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math name="orig">ax+847.29418392+5y</math>
-    <math name="origDig3" displayDigits="3">ax+847.29418392+5y</math>
-    <math name="origDec3" displayDecimals="3">ax+847.29418392+5y</math>
+    <math name="origDig3" displayDigits="3" ignoreDisplayDecimals>ax+847.29418392+5y</math>
+    <math name="origDec3" displayDecimals="3" ignoreDisplayDigits>ax+847.29418392+5y</math>
     <math name="origPad" padZeros>ax+847.29418392+5y</math>
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e1">
       $orig
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e1Dig4" displayDigits="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e1Dig4" displayDigits="4" ignoreDisplayDecimals>
       $orig
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e1Dec4" displayDecimals="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e1Dec4" displayDecimals="4" ignoreDisplayDigits>
       $orig
     </substitute>
     <substitute match="a" replacement="0.07394918" assignNames="e1Pad" padZeros>
       $orig
     </substitute></p>
     <p>
-      <math copySource="e1Dec4" name="e1Dig4a" displayDigits="4" />
-      <math copySource="e1Dig4" name="e1Dec4a" displayDecimals="4" />
+      <math copySource="e1Dec4" name="e1Dig4a" displayDigits="4" ignoreDisplayDecimals />
+      <math copySource="e1Dig4" name="e1Dec4a" displayDecimals="4" ignoreDisplayDigits />
     </p>
 
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e2">
       $origDig3
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e2Dig4" displayDigits="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e2Dig4" displayDigits="4" ignoreDisplayDecimals>
       $origDig3
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e2Dec4" displayDecimals="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e2Dec4" displayDecimals="4" ignoreDisplayDigits>
       $origDig3
     </substitute>
     <substitute match="a" replacement="0.07394918" assignNames="e2Pad" padZeros>
       $origDig3
     </substitute></p>
     <p>
-      <math copySource="e2Dec4" name="e2Dig4a" displayDigits="4" />
-      <math copySource="e2Dig4" name="e2Dec4a" displayDecimals="4" />
+      <math copySource="e2Dec4" name="e2Dig4a" displayDigits="4" ignoreDisplayDecimals />
+      <math copySource="e2Dig4" name="e2Dec4a" displayDecimals="4" ignoreDisplayDigits />
     </p>
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e3">
       $origDec3
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e3Dig4" displayDigits="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e3Dig4" displayDigits="4" ignoreDisplayDecimals >
       $origDec3
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e3Dec4" displayDecimals="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e3Dec4" displayDecimals="4" ignoreDisplayDigits >
       $origDec3
     </substitute>
     <substitute match="a" replacement="0.07394918" assignNames="e3Pad" padZeros>
       $origDec3
     </substitute></p>
     <p>
-      <math copySource="e3Dec4" name="e3Dig4a" displayDigits="4" />
-      <math copySource="e3Dig4" name="e3Dec4a" displayDecimals="4" />
+      <math copySource="e3Dec4" name="e3Dig4a" displayDigits="4" ignoreDisplayDecimals />
+      <math copySource="e3Dig4" name="e3Dec4a" displayDecimals="4" ignoreDisplayDigits />
     </p>
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e4">
       $origPad
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e4Dig4" displayDigits="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e4Dig4" displayDigits="4" ignoreDisplayDecimals >
       $origPad
     </substitute>
-    <substitute match="a" replacement="0.07394918" assignNames="e4Dec4" displayDecimals="4">
+    <substitute match="a" replacement="0.07394918" assignNames="e4Dec4" displayDecimals="4" ignoreDisplayDigits >
       $origPad
     </substitute>
     <substitute match="a" replacement="0.07394918" assignNames="e4NoPad" padZeros="false">
       $origPad
     </substitute></p>
     <p>
-      <math copySource="e4Dec4" name="e4Dig4a" displayDigits="4" />
-      <math copySource="e4Dig4" name="e4Dec4a" displayDecimals="4" />
+      <math copySource="e4Dec4" name="e4Dig4a" displayDigits="4" ignoreDisplayDecimals />
+      <math copySource="e4Dig4" name="e4Dec4a" displayDecimals="4" ignoreDisplayDigits />
     </p>
 
     `,
@@ -2499,7 +2499,7 @@ describe("Substitute Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).equal("0.07394918x+847.2941839+5y");
+        expect(text).equal("0.0739x+847.29+5y");
       });
     cy.get(cesc("#\\/e1Dig4") + " .mjx-mrow")
       .eq(0)
@@ -2517,7 +2517,7 @@ describe("Substitute Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).equal("0.07394918000x+847.2941839+5.000000000y");
+        expect(text).equal("0.0739x+847.29+5.00y");
       });
     cy.get(cesc("#\\/e1Dig4a") + " .mjx-mrow")
       .eq(0)
@@ -2610,7 +2610,7 @@ describe("Substitute Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).equal("0.07394918000x+847.2941839+5.000000000y");
+        expect(text).equal("0.0739x+847.29+5.00y");
       });
     cy.get(cesc("#\\/e4Dig4") + " .mjx-mrow")
       .eq(0)
@@ -2628,7 +2628,7 @@ describe("Substitute Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).equal("0.07394918x+847.2941839+5y");
+        expect(text).equal("0.0739x+847.29+5y");
       });
     cy.get(cesc("#\\/e4Dig4a") + " .mjx-mrow")
       .eq(0)

@@ -1,3 +1,7 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import Curve from "./Curve";
 import GraphicalComponent from "./abstract/GraphicalComponent";
 
@@ -38,6 +42,10 @@ export default class Circle extends Curve {
       forRenderer: true,
     };
 
+    attributes.hideOffGraphIndicator = {
+      createComponentOfType: "boolean",
+    };
+
     delete attributes.parMin;
     delete attributes.parMax;
     delete attributes.variable;
@@ -52,6 +60,11 @@ export default class Circle extends Curve {
   static returnStateVariableDefinitions(args) {
     let stateVariableDefinitions =
       GraphicalComponent.returnStateVariableDefinitions(args);
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -280,6 +293,48 @@ export default class Circle extends Curve {
       },
     };
 
+    stateVariableDefinitions.hideOffGraphIndicator = {
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({
+        hideOffGraphIndicatorAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "hideOffGraphIndicator",
+          variableNames: ["value"],
+        },
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["hideOffGraphIndicators"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.hideOffGraphIndicatorAttr) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.hideOffGraphIndicatorAttr.stateValues.value,
+            },
+          };
+        } else if (dependencyValues.graphAncestor) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.graphAncestor.stateValues
+                  .hideOffGraphIndicators,
+            },
+          };
+        } else {
+          return {
+            setValue: { hideOffGraphIndicator: false },
+          };
+        }
+      },
+    };
+
     stateVariableDefinitions.curveType = {
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -342,6 +397,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "throughPointX") {
             return [];
@@ -1856,6 +1913,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       stateVariablesDeterminingDependencies: [
         "nThroughPoints",
@@ -2068,6 +2127,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         radius: {
@@ -2106,6 +2167,8 @@ export default class Circle extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "centerX") {
             return [];

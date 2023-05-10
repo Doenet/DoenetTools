@@ -4,6 +4,11 @@ import {
   returnSelectedStyleStateVariableDefinition,
   returnTextStyleDescriptionDefinitions,
 } from "../../utils/style";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../../utils/rounding";
 
 export default class Atom extends InlineComponent {
   static componentType = "atom";
@@ -22,11 +27,18 @@ export default class Atom extends InlineComponent {
       createComponentOfType: "integer",
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
@@ -406,6 +418,8 @@ export default class Atom extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         dataForAtom: {
@@ -552,6 +566,8 @@ export default class Atom extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         dataForAtom: {
@@ -576,6 +592,8 @@ export default class Atom extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         dataForAtom: {
@@ -600,6 +618,8 @@ export default class Atom extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         dataForAtom: {
@@ -648,6 +668,8 @@ export default class Atom extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         dataForAtom: {
@@ -672,6 +694,8 @@ export default class Atom extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         dataForAtom: {

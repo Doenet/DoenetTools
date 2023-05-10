@@ -9,6 +9,7 @@ import {
   returnSequenceValues,
 } from "../utils/sequence";
 import { convertAttributesForComponentType } from "../utils/copy";
+import { returnRoundingAttributes } from "../utils/rounding";
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectFromSequence";
@@ -221,13 +222,7 @@ export default class SelectFromSequence extends Sequence {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of [
-      "fixed",
-      "displayDigits",
-      "displaySmallAsZero",
-      "displayDecimals",
-      "padZeros",
-    ]) {
+    for (let attr of ["fixed", ...Object.keys(returnRoundingAttributes())]) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr];
       }

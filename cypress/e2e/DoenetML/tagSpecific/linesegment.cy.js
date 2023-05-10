@@ -2718,8 +2718,8 @@ describe("LineSegment Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <linesegment endpoints="(-1,-0.05) (1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -3980,7 +3980,7 @@ describe("LineSegment Tag Tests", function () {
       <point name="B">(7,-2)</point>
       <linesegment name="l" endpoints="$A $B" />
     </graph>
-    <copy prop="length" target="l" assignNames="length" />
+    <copy prop="length" target="l" assignNames="length" displayDigits="10" />
     <point name="Ap" copySource="A" />
     <point name="Bp" copySource="B" />
     <mathinput name="milength" bindValueTo="$length" />

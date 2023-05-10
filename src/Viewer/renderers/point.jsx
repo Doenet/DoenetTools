@@ -5,6 +5,13 @@ import { MathJax } from "better-react-mathjax";
 import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 import { useRecoilValue } from "recoil";
 import { textRendererStyle } from "../../Core/utils/style";
+import { characterizeOffGraphPoint } from "./utils/offGraphIndicators";
+import {
+  adjustPointLabelPosition,
+  calculatePointLabelAnchor,
+  normalizePointSize,
+  normalizePointStyle,
+} from "./utils/graph";
 
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
@@ -30,11 +37,17 @@ export default React.memo(function Point(props) {
   let calculatedY = useRef(null);
 
   let lastPositionFromCore = useRef(null);
+
+  // for each coordinate, will be -1 or 1 if moved off graph in that direction
+  let offGraphIndicator = useRef([0, 0]);
+
+  // for each coordinate, will be -1 or 1 if near edge of graph (or off graph) in that direction
+  let nearEdgeOfGraph = useRef([0, 0]);
+
   let fixed = useRef(false);
   let fixLocation = useRef(false);
   let switchable = useRef(false);
 
-  lastPositionFromCore.current = SVs.numericalXs;
   fixed.current = SVs.fixed;
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   switchable.current = SVs.switchable && !SVs.fixed;
@@ -83,7 +96,6 @@ export default React.memo(function Point(props) {
 
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
-    //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
@@ -94,56 +106,28 @@ export default React.memo(function Point(props) {
       strokeColor,
       strokeOpacity: SVs.selectedStyle.markerOpacity,
       fillOpacity: SVs.selectedStyle.markerOpacity,
-      highlightFillColor: getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--mainGray"),
-      highlightStrokeColor: getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--lightBlue"),
-      size: normalizeSize(
+      highlightFillColor: "var(--mainGray)",
+      highlightStrokeColor: "var(--lightBlue)",
+      size: normalizePointSize(
         SVs.selectedStyle.markerSize,
         SVs.selectedStyle.markerStyle,
       ),
-      face: normalizeStyle(SVs.selectedStyle.markerStyle),
+      face: normalizePointStyle(
+        SVs.selectedStyle.markerStyle,
+        offGraphIndicator.current,
+      ),
       highlight: !fixLocation.current,
     };
 
     if (withlabel) {
-      let anchorx, anchory, offset;
-      if (SVs.labelPosition === "upperright") {
-        offset = [5, 5];
-        anchorx = "left";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "upperleft") {
-        offset = [-5, 5];
-        anchorx = "right";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "lowerright") {
-        offset = [5, -5];
-        anchorx = "left";
-        anchory = "top";
-      } else if (SVs.labelPosition === "lowerleft") {
-        offset = [-5, -5];
-        anchorx = "right";
-        anchory = "top";
-      } else if (SVs.labelPosition === "top") {
-        offset = [0, 10];
-        anchorx = "middle";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "bottom") {
-        offset = [0, -10];
-        anchorx = "middle";
-        anchory = "top";
-      } else if (SVs.labelPosition === "left") {
-        offset = [-10, 0];
-        anchorx = "right";
-        anchory = "middle";
-      } else {
-        // labelPosition === right
-        offset = [10, 0];
-        anchorx = "left";
-        anchory = "middle";
-      }
+      let labelPosition = adjustPointLabelPosition(
+        SVs.labelPosition,
+        nearEdgeOfGraph.current,
+      );
+      previousLabelPosition.current = labelPosition;
+
+      let { offset, anchorx, anchory } =
+        calculatePointLabelAnchor(labelPosition);
       jsxPointAttributes.label = {
         offset,
         anchorx,
@@ -175,7 +159,10 @@ export default React.memo(function Point(props) {
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     }
 
-    let coords = [SVs.numericalXs[0], SVs.numericalXs[1]];
+    let coords = [
+      lastPositionFromCore.current[0],
+      lastPositionFromCore.current[1],
+    ];
 
     if (!Number.isFinite(coords[0])) {
       coords[0] = 0;
@@ -295,6 +282,26 @@ export default React.memo(function Point(props) {
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
+      let xminAdjusted = xmin;
+      let xmaxAdjusted = xmax;
+      let yminAdjusted = ymin;
+      let ymaxAdjusted = ymax;
+
+      if (xmax < xmin) {
+        [xmaxAdjusted, xminAdjusted] = [xminAdjusted, xmaxAdjusted];
+      }
+      if (ymax < ymin) {
+        [ymaxAdjusted, yminAdjusted] = [yminAdjusted, ymaxAdjusted];
+      }
+
+      let xscale = xmaxAdjusted - xminAdjusted;
+      let yscale = ymaxAdjusted - yminAdjusted;
+
+      xmaxAdjusted -= xscale * 0.01;
+      xminAdjusted += xscale * 0.01;
+      ymaxAdjusted -= yscale * 0.01;
+      yminAdjusted += yscale * 0.01;
+
       if (viaPointer) {
         // the reason we calculate point position with this algorithm,
         // rather than using .X() and .Y() directly
@@ -317,8 +324,14 @@ export default React.memo(function Point(props) {
         calculatedY.current = newShadowPointJXG.Y();
       }
 
-      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
-      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
+      calculatedX.current = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, calculatedX.current),
+      );
+      calculatedY.current = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, calculatedY.current),
+      );
 
       callAction({
         action: actions.movePoint,
@@ -330,8 +343,14 @@ export default React.memo(function Point(props) {
         },
       });
 
-      let shadowX = Math.min(xmax, Math.max(xmin, newShadowPointJXG.X()));
-      let shadowY = Math.min(ymax, Math.max(ymin, newShadowPointJXG.Y()));
+      let shadowX = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, newShadowPointJXG.X()),
+      );
+      let shadowY = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, newShadowPointJXG.Y()),
+      );
       newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [
         shadowX,
         shadowY,
@@ -376,7 +395,6 @@ export default React.memo(function Point(props) {
 
     pointJXG.current = newPointJXG;
     shadowPointJXG.current = newShadowPointJXG;
-    previousLabelPosition.current = SVs.labelPosition;
     previousWithLabel.current = withlabel;
   }
 
@@ -393,6 +411,58 @@ export default React.memo(function Point(props) {
   }
 
   if (board) {
+    lastPositionFromCore.current = [...SVs.numericalXs];
+    offGraphIndicator.current = [0, 0];
+
+    if (!SVs.hideOffGraphIndicator) {
+      let { needIndicator, indicatorCoords, indicatorSides } =
+        characterizeOffGraphPoint(lastPositionFromCore.current, board);
+
+      if (needIndicator) {
+        lastPositionFromCore.current = indicatorCoords;
+        offGraphIndicator.current = indicatorSides;
+      }
+    }
+
+    // determine if near edge of graph
+    // which will be used to alter label position so that it is visible
+    nearEdgeOfGraph.current = [0, 0];
+
+    let flippedX = false;
+    let flippedY = false;
+
+    let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+
+    if (xmax < xmin) {
+      flippedX = true;
+      [xmax, xmin] = [xmin, xmax];
+    }
+    if (ymax < ymin) {
+      flippedY = true;
+      [ymax, ymin] = [ymin, ymax];
+    }
+
+    let xscale = xmax - xmin;
+    let yscale = ymax - ymin;
+
+    // TODO: use a measure of label width rather than 0.05 for x
+    let xminAdjusted = xmin + xscale * 0.05;
+    let xmaxAdjusted = xmax - xscale * 0.05;
+    let yminAdjusted = ymin + yscale * 0.05;
+    let ymaxAdjusted = ymax - yscale * 0.05;
+
+    if (lastPositionFromCore.current[0] < xminAdjusted) {
+      nearEdgeOfGraph.current[0] = flippedX ? 1 : -1;
+    } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
+      nearEdgeOfGraph.current[0] = flippedX ? -1 : 1;
+    }
+
+    if (lastPositionFromCore.current[1] < yminAdjusted) {
+      nearEdgeOfGraph.current[1] = flippedY ? 1 : -1;
+    } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
+      nearEdgeOfGraph.current[1] = flippedY ? -1 : 1;
+    }
+
     if (pointJXG.current === null) {
       createPointJXG();
     } else {
@@ -417,8 +487,8 @@ export default React.memo(function Point(props) {
       // TODO: is this a problem for which we should find a general fix?
 
       //if coordinates update
-      let x = SVs.numericalXs?.[0];
-      let y = SVs.numericalXs?.[1];
+      let x = lastPositionFromCore.current?.[0];
+      let y = lastPositionFromCore.current?.[1];
 
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
       if (!dragged.current) {
@@ -480,12 +550,15 @@ export default React.memo(function Point(props) {
         pointJXG.current.visProp.fillopacity = SVs.selectedStyle.markerOpacity;
       }
 
-      let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
+      let newFace = normalizePointStyle(
+        SVs.selectedStyle.markerStyle,
+        offGraphIndicator.current,
+      );
       if (pointJXG.current.visProp.face !== newFace) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
       }
-      let newSize = normalizeSize(
+      let newSize = normalizePointSize(
         SVs.selectedStyle.markerSize,
         SVs.selectedStyle.markerStyle,
       );
@@ -494,8 +567,13 @@ export default React.memo(function Point(props) {
         shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
-      if (fixLocation.current) {
+      if (
+        fixLocation.current ||
+        offGraphIndicator.current[0] ||
+        offGraphIndicator.current[1]
+      ) {
         pointJXG.current.visProp.showinfobox = false;
+        board.displayInfobox(false);
       } else {
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
       }
@@ -519,46 +597,19 @@ export default React.memo(function Point(props) {
         } else {
           pointJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
-        if (SVs.labelPosition !== previousLabelPosition.current) {
-          let anchorx, anchory, offset;
-          if (SVs.labelPosition === "upperright") {
-            offset = [5, 5];
-            anchorx = "left";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "upperleft") {
-            offset = [-5, 5];
-            anchorx = "right";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "lowerright") {
-            offset = [5, -5];
-            anchorx = "left";
-            anchory = "top";
-          } else if (SVs.labelPosition === "lowerleft") {
-            offset = [-5, -5];
-            anchorx = "right";
-            anchory = "top";
-          } else if (SVs.labelPosition === "top") {
-            offset = [0, 10];
-            anchorx = "middle";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "bottom") {
-            offset = [0, -10];
-            anchorx = "middle";
-            anchory = "top";
-          } else if (SVs.labelPosition === "left") {
-            offset = [-10, 0];
-            anchorx = "right";
-            anchory = "middle";
-          } else {
-            // labelPosition === right
-            offset = [10, 0];
-            anchorx = "left";
-            anchory = "middle";
-          }
+
+        let labelPosition = adjustPointLabelPosition(
+          SVs.labelPosition,
+          nearEdgeOfGraph.current,
+        );
+
+        if (labelPosition !== previousLabelPosition.current) {
+          let { offset, anchorx, anchory } =
+            calculatePointLabelAnchor(labelPosition);
           pointJXG.current.label.visProp.anchorx = anchorx;
           pointJXG.current.label.visProp.anchory = anchory;
           pointJXG.current.label.visProp.offset = offset;
-          previousLabelPosition.current = SVs.labelPosition;
+          previousLabelPosition.current = labelPosition;
           pointJXG.current.label.fullUpdate();
         } else {
           pointJXG.current.label.update();
@@ -596,22 +647,3 @@ export default React.memo(function Point(props) {
     </>
   );
 });
-
-function normalizeSize(size, style) {
-  if (style === "diamond") {
-    return size * 1.4;
-  } else if (style === "plus") {
-    return size * 1.2;
-  } else if (style === "square") {
-    return size * 1.1;
-  } else if (style.substring(0, 8) === "triangle") {
-    return size * 1.5;
-  } else return size;
-}
-function normalizeStyle(style) {
-  if (style === "triangle") {
-    return "triangleup";
-  } else {
-    return style;
-  }
-}

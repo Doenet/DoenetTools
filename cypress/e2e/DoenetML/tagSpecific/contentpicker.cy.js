@@ -6,6 +6,24 @@ describe("ContentPicker Tag Tests", function () {
     cy.visit("/src/Tools/cypressTest/");
   });
 
+  it("Empty contentPicker", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <contentPicker>
+        </contentPicker>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_contentpicker1")).should("contain.text", "Select:");
+
+    cy.get(cesc2("#/_contentpicker1") + " option").should('have.length', 0)
+  });
+
   it("No attributes", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -34,24 +52,19 @@ describe("ContentPicker Tag Tests", function () {
     cy.log("find titles in select");
     cy.get(cesc2("#/_contentpicker1")).should("contain.text", "Select:");
     cy.get(cesc2("#/_contentpicker1") + " option")
-      .eq(1)
+      .eq(0)
       .should("have.text", "First");
     cy.get(cesc2("#/_contentpicker1") + " option")
-      .eq(2)
+      .eq(1)
       .should("have.text", "Problem 2");
     cy.get(cesc2("#/_contentpicker1") + " option")
-      .eq(3)
+      .eq(2)
       .should("have.text", "Untitled");
     cy.get(cesc2("#/_contentpicker1") + " option")
-      .eq(4)
+      .eq(3)
       .should("have.text", "Final thought");
-    cy.get(cesc2("#/ex1")).should("not.exist");
-    cy.get(cesc2("#/pr2")).should("not.exist");
-    cy.get(cesc2("#/tx3")).should("not.exist");
-    cy.get(cesc2("#/as4")).should("not.exist");
 
-    cy.log("Select first option");
-    cy.get(cesc2(`#/_contentpicker1`) + ` select`).select(`1`);
+    cy.log("First option selected at beginning");
     cy.get(cesc2("#/ex1")).should("contain.text", "First example");
     cy.get(cesc2("#/pr2")).should("not.exist");
     cy.get(cesc2("#/tx3")).should("not.exist");
@@ -139,65 +152,52 @@ describe("ContentPicker Tag Tests", function () {
     });
 
     cy.log("find titles in select");
-    cy.get(cesc2("#/_contentpicker1") + " label")
+    cy.get(cesc2("#/_contentpicker1") + " optGroup")
       .eq(0)
-      .should("contain.text", "Topic A:");
-    cy.get(cesc2("#/_contentpicker1") + " label")
+      .should("have.attr", "label", "Topic A");
+    cy.get(cesc2("#/_contentpicker1") + " optGroup")
       .eq(1)
-      .should("contain.text", "Topic B:");
-    cy.get(cesc2("#/_contentpicker1") + " label")
+      .should("have.attr", "label", "Topic B");
+    cy.get(cesc2("#/_contentpicker1") + " optGroup")
       .eq(2)
-      .should("contain.text", "Other:");
-    cy.get(cesc2("#/_contentpicker1") + " p")
+      .should("have.attr", "label", "Other");
+    cy.get(cesc2("#/_contentpicker1") + " optGroup")
       .eq(0)
       .find("option")
-      .eq(1)
+      .eq(0)
       .should("have.text", "First");
-    cy.get(cesc2("#/_contentpicker1") + " p")
+    cy.get(cesc2("#/_contentpicker1") + " optgroup")
       .eq(0)
       .find("option")
-      .eq(2)
+      .eq(1)
       .should("have.text", "Untitled");
-    cy.get(cesc2("#/_contentpicker1") + " p")
+    cy.get(cesc2("#/_contentpicker1") + " optgroup")
       .eq(1)
       .find("option")
-      .eq(1)
+      .eq(0)
       .should("have.text", "Problem 2");
-    cy.get(cesc2("#/_contentpicker1") + " p")
+    cy.get(cesc2("#/_contentpicker1") + " optgroup")
       .eq(2)
       .find("option")
-      .eq(1)
+      .eq(0)
       .should("have.text", "Final thought");
-    cy.get(cesc2("#/ex1")).should("not.exist");
-    cy.get(cesc2("#/pr2")).should("not.exist");
-    cy.get(cesc2("#/tx3")).should("not.exist");
     cy.get(cesc2("#/as4")).should("not.exist");
 
-    cy.log("Select first option from first topic");
-    cy.get(cesc2(`#/_contentpicker1`) + ` p`)
-      .eq(0)
-      .find("select")
-      .select(`1`);
+    cy.log("First option from first topic should be selected");
     cy.get(cesc2("#/ex1")).should("contain.text", "First example");
     cy.get(cesc2("#/pr2")).should("not.exist");
     cy.get(cesc2("#/tx3")).should("not.exist");
     cy.get(cesc2("#/as4")).should("not.exist");
 
     cy.log("Select first option from second topic");
-    cy.get(cesc2(`#/_contentpicker1`) + ` p`)
-      .eq(1)
-      .find("select")
-      .select(`2`);
+    cy.get(cesc2(`#/_contentpicker1`) + ` select`).select(`2`);
     cy.get(cesc2("#/pr2")).should("contain.text", "Problem with no title");
     cy.get(cesc2("#/ex1")).should("not.exist");
     cy.get(cesc2("#/tx3")).should("not.exist");
     cy.get(cesc2("#/as4")).should("not.exist");
 
     cy.log("Select first option from third topic");
-    cy.get(cesc2(`#/_contentpicker1`) + ` p`)
-      .eq(2)
-      .find("select")
-      .select(`4`);
+    cy.get(cesc2(`#/_contentpicker1`) + ` select`).select(`4`);
     cy.get(cesc2("#/as4")).should("contain.text", "Final thought");
     cy.get(cesc2("#/ex1")).should("not.exist");
     cy.get(cesc2("#/pr2")).should("not.exist");
@@ -209,10 +209,7 @@ describe("ContentPicker Tag Tests", function () {
     cy.get(cesc2("#/as4")).should("contain.text", "Not much here");
 
     cy.log("Select second option from first topic");
-    cy.get(cesc2(`#/_contentpicker1`) + ` p`)
-      .eq(0)
-      .find("select")
-      .select(`3`);
+    cy.get(cesc2(`#/_contentpicker1`) + ` select`).select(`3`);
     cy.get(cesc2("#/tx3")).should("contain.text", "A text must be untitled");
     cy.get(cesc2("#/ex1")).should("not.exist");
     cy.get(cesc2("#/pr2")).should("not.exist");
@@ -250,14 +247,15 @@ describe("ContentPicker Tag Tests", function () {
     });
 
     cy.log("check new label");
-    cy.get(cesc2("#/_contentpicker1") + " label")
+
+    cy.get(cesc2("#/_contentpicker1") + " optGroup")
       .eq(0)
-      .should("contain.text", "Topic A:");
-    cy.get(cesc2("#/_contentpicker1") + " label")
+      .should("have.attr", "label", "Topic A");
+    cy.get(cesc2("#/_contentpicker1") + " optGroup")
       .eq(1)
-      .should("contain.text", "Topic B:");
-    cy.get(cesc2("#/_contentpicker1") + " label")
+      .should("have.attr", "label", "Topic B");
+    cy.get(cesc2("#/_contentpicker1") + " optGroup")
       .eq(2)
-      .should("contain.text", "Alternative topic:");
+      .should("have.attr", "label", "Alternative topic");
   });
 });

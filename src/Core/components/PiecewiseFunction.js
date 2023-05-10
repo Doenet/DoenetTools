@@ -4,6 +4,7 @@ import GraphicalComponent from "./abstract/GraphicalComponent";
 import me from "math-expressions";
 import { returnPiecewiseNumericalFunctionFromChildren } from "../utils/function";
 import { roundForDisplay } from "../utils/math";
+import { returnRoundingAttributeComponentShadowing } from "../utils/rounding";
 
 export default class PiecewiseFunction extends Function {
   static componentType = "piecewiseFunction";
@@ -231,12 +232,8 @@ export default class PiecewiseFunction extends Function {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { formula: me.fromAst("\uff3f") } }),
@@ -505,16 +502,15 @@ export default class PiecewiseFunction extends Function {
           variableName: "padZeros",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         let functionVariable = dependencyValues.variable;
 
         let toLatexParams = {};
         if (dependencyValues.padZeros) {
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            if (Number.isFinite(dependencyValues.displayDecimals)) {
-              toLatexParams.padToDecimals = dependencyValues.displayDecimals;
-            }
-          } else if (dependencyValues.displayDigits >= 1) {
+          if (Number.isFinite(dependencyValues.displayDecimals)) {
+            toLatexParams.padToDecimals = dependencyValues.displayDecimals;
+          }
+          if (dependencyValues.displayDigits >= 1) {
             toLatexParams.padToDigits = dependencyValues.displayDigits;
           }
         }
@@ -540,7 +536,6 @@ export default class PiecewiseFunction extends Function {
           let formulaLatex = roundForDisplay({
             value: formula,
             dependencyValues,
-            usedDefault,
           }).toLatex(toLatexParams);
 
           let fDomain = functionChild.stateValues.domain?.[0];
@@ -576,7 +571,6 @@ export default class PiecewiseFunction extends Function {
               let maxxLatex = roundForDisplay({
                 value: intervalMax,
                 dependencyValues,
-                usedDefault,
               }).toLatex(toLatexParams);
               childrenLatex.push(
                 `${formulaLatex} & \\text{if } ${functionVariable} ${operator} ${maxxLatex}`,
@@ -589,7 +583,6 @@ export default class PiecewiseFunction extends Function {
             let minxLatex = roundForDisplay({
               value: intervalMin,
               dependencyValues,
-              usedDefault,
             }).toLatex(toLatexParams);
             childrenLatex.push(
               `${formulaLatex} & \\text{if } ${functionVariable} ${operator} ${minxLatex}`,
@@ -603,7 +596,6 @@ export default class PiecewiseFunction extends Function {
             let maxxLatex = roundForDisplay({
               value: intervalMax,
               dependencyValues,
-              usedDefault,
             }).toLatex(toLatexParams);
             childrenLatex.push(
               `${formulaLatex} & \\text{if } ${functionVariable} = ${maxxLatex}`,
@@ -615,7 +607,6 @@ export default class PiecewiseFunction extends Function {
               roundForDisplay({
                 value: intervalMin,
                 dependencyValues,
-                usedDefault,
               }).toLatex(toLatexParams) +
               "}";
             if (intervalMinIsClosed) {
@@ -632,7 +623,6 @@ export default class PiecewiseFunction extends Function {
             domainString += roundForDisplay({
               value: intervalMax,
               dependencyValues,
-              usedDefault,
             }).toLatex(toLatexParams);
 
             childrenLatex.push(`${formulaLatex} & \\text{if } ${domainString}`);

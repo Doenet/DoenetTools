@@ -3,6 +3,11 @@ import { returnBreakStringsSugarFunction } from "./commonsugar/breakstrings";
 
 import me from "math-expressions";
 import { returnBezierFunctions } from "../utils/function";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class Curve extends GraphicalComponent {
   constructor(args) {
@@ -102,7 +107,7 @@ export default class Curve extends GraphicalComponent {
       validValues: ["centripetal", "uniform"],
     };
     attributes.variable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "variableForChild",
       defaultValue: me.fromAst("x"),
     };
@@ -122,6 +127,8 @@ export default class Curve extends GraphicalComponent {
       createStateVariable: "nearestPointAsCurvePrelim",
       defaultValue: false,
     };
+
+    Object.assign(attributes, returnRoundingAttributes());
 
     return attributes;
   }
@@ -255,6 +262,11 @@ export default class Curve extends GraphicalComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions({
       numerics,
     });
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -409,6 +421,8 @@ export default class Curve extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies: () => ({
@@ -513,6 +527,8 @@ export default class Curve extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         curveType: {
@@ -682,6 +698,8 @@ export default class Curve extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "throughPointX") {
             return [];
@@ -1127,6 +1145,8 @@ export default class Curve extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "controlVectorX") {
             return [];
@@ -1517,6 +1537,8 @@ export default class Curve extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "controlPointX") {
             return [];
@@ -2398,6 +2420,8 @@ export default class Curve extends GraphicalComponent {
             stateVariableToShadow: "domainForFunctions",
           },
         },
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnArraySizeDependencies: () => ({
         functionChildren: {
@@ -2662,6 +2686,8 @@ export default class Curve extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "xCriticalPointX") {
             return [];
@@ -2900,6 +2926,8 @@ export default class Curve extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "yCriticalPointX") {
             return [];
@@ -3140,6 +3168,8 @@ export default class Curve extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "curvatureChangePointX") {
             return [];

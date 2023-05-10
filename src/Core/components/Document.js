@@ -21,6 +21,8 @@ export default class Document extends BaseComponent {
 
   static createsVariants = true;
 
+  static includeBlankStringChildren = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -484,6 +486,13 @@ export default class Document extends BaseComponent {
       },
     };
 
+    stateVariableDefinitions.displayDecimalsForCreditAchieved = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: { displayDecimalsForCreditAchieved: -Infinity },
+      }),
+    };
+
     stateVariableDefinitions.creditAchieved = {
       public: true,
       forRenderer: true,
@@ -493,6 +502,9 @@ export default class Document extends BaseComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
+          },
+          displayDecimals: {
+            stateVariableToShadow: "displayDecimalsForCreditAchieved",
           },
         },
       },
@@ -505,6 +517,9 @@ export default class Document extends BaseComponent {
             addAttributeComponentsShadowingStateVariables: {
               displayDigits: {
                 stateVariableToShadow: "displayDigitsForCreditAchieved",
+              },
+              displayDecimals: {
+                stateVariableToShadow: "displayDecimalsForCreditAchieved",
               },
             },
           },
@@ -870,6 +885,4 @@ export default class Document extends BaseComponent {
       },
     };
   }
-
-  static includeBlankStringChildren = true;
 }

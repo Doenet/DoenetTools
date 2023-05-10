@@ -1,8 +1,8 @@
-import { isValidVariable } from "../utils/math";
-import MathComponent from "./Math";
+import { isValidVariable } from "../../utils/math";
+import MathComponent from "../Math";
 
 export default class Variable extends MathComponent {
-  static componentType = "variable";
+  static componentType = "_variableName";
   static rendererType = "math";
 
   static returnStateVariableDefinitions() {
