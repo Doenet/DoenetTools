@@ -76,6 +76,9 @@ export default class CodeEditor extends BlockComponent {
       validValues: ["bottom", "left", "right"],
     };
 
+    // Note: these attributes don't accomplish anything
+    // until we can find a way to communicate with the
+    // rendered DoenetML again
     attributes.renderedName = {
       createPrimitiveOfType: "string",
     };
@@ -108,24 +111,26 @@ export default class CodeEditor extends BlockComponent {
         };
       }
 
-      if (componentAttributes.staticName) {
-        let hiddenRenderDoenetML = {
-          componentType: "codeViewer",
-          attributes: {
-            hide: {
-              component: { componentType: "boolean", state: { value: true } },
-            },
-          },
-          children: [
-            {
-              componentType: "renderDoenetML",
-              props: { name: componentAttributes.staticName },
-            },
-          ],
-        };
-        //Update code depends on this being the 2nd index position
-        newChildren.push(hiddenRenderDoenetML);
-      }
+      // TODO: if we can come up with a way to communicate to the rendered doenetML
+      // we can revive the static version
+      // if (componentAttributes.staticName) {
+      //   let hiddenRenderDoenetML = {
+      //     componentType: "codeViewer",
+      //     attributes: {
+      //       hide: {
+      //         component: { componentType: "boolean", state: { value: true } },
+      //       },
+      //     },
+      //     children: [
+      //       {
+      //         componentType: "renderDoenetML",
+      //         props: { name: componentAttributes.staticName },
+      //       },
+      //     ],
+      //   };
+      //   //Update code depends on this being the 2nd index position
+      //   newChildren.push(hiddenRenderDoenetML);
+      // }
 
       newChildren.push(...matchedChildren);
 

@@ -6167,14 +6167,14 @@ export default class Core {
 
       if (Array.isArray()) {
         for (let arrayKey in result.markAsUsedDefault[varName]) {
-          if (result.markAsUsedDefault[varName][arrayKey]) {
-            component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
-          }
+          component.state[varName].usedDefaultByArrayKey[arrayKey] = Boolean(
+            result.markAsUsedDefault[varName][arrayKey],
+          );
         }
       } else {
-        if (result.markAsUsedDefault[varName]) {
-          component.state[varName].usedDefault = true;
-        }
+        component.state[varName].usedDefault = Boolean(
+          result.markAsUsedDefault[varName],
+        );
       }
     }
 
