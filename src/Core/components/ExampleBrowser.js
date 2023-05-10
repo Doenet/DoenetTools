@@ -1,3 +1,4 @@
+import { cesc } from "../../_utils/url";
 import Template from "./Template";
 import Video from "./Video";
 import BlockComponent from "./abstract/BlockComponent";
@@ -8,7 +9,6 @@ export class ExampleBrowser extends BlockComponent {
 
     Object.assign(this.actions, {
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
-      setInitial: this.setInitial.bind(this),
       setSelectedItemInd: this.setSelectedItemInd.bind(this),
     });
   }
@@ -59,6 +59,9 @@ export class ExampleBrowser extends BlockComponent {
     stateVariableDefinitions.itemsByInitial = {
       additionalStateVariablesDefined: [
         { variableName: "allInitials", forRenderer: true },
+        { variableName: "firstComponentNameByInitial", forRenderer: true },
+        { variableName: "labelByInd" },
+        { variableName: "indByEscapedComponentName", forRenderer: true },
       ],
       returnDependencies: () => ({
         exampleBrowserItems: {
@@ -69,6 +72,8 @@ export class ExampleBrowser extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         let items = [];
+        let labelByInd = {};
+        let indByEscapedComponentName = {};
 
         for (let [
           ind,
@@ -79,6 +84,8 @@ export class ExampleBrowser extends BlockComponent {
             componentName: item.componentName,
             label: item.stateValues.label,
           });
+          labelByInd[ind] = item.stateValues.label;
+          indByEscapedComponentName[cesc(item.componentName)] = ind;
         }
 
         items.sort((a, b) =>
@@ -87,6 +94,7 @@ export class ExampleBrowser extends BlockComponent {
 
         let itemsByInitial = {};
         let allInitials = [];
+        let firstComponentNameByInitial = {};
         let initial,
           initialList = [];
         for (let item of items) {
@@ -101,6 +109,7 @@ export class ExampleBrowser extends BlockComponent {
             }
             initial = newInitial;
             initialList = [item];
+            firstComponentNameByInitial[initial] = item.componentName;
           }
         }
         if (initial) {
@@ -108,7 +117,15 @@ export class ExampleBrowser extends BlockComponent {
           allInitials.push(initial);
         }
 
-        return { setValue: { itemsByInitial, allInitials } };
+        return {
+          setValue: {
+            itemsByInitial,
+            allInitials,
+            firstComponentNameByInitial,
+            labelByInd,
+            indByEscapedComponentName,
+          },
+        };
       },
     };
 
@@ -165,6 +182,7 @@ export class ExampleBrowser extends BlockComponent {
                 (x) => ({
                   label: x.label,
                   ind: x.ind,
+                  componentName: x.componentName,
                   selected: x.ind === dependencyValues.selectedItemInd,
                 }),
               ) || [],
@@ -211,23 +229,22 @@ export class ExampleBrowser extends BlockComponent {
 
     stateVariableDefinitions.selectedItemLabel = {
       forRenderer: true,
-      stateVariablesDeterminingDependencies: ["selectedItemInd"],
-      returnDependencies: ({ stateValues }) => ({
-        exampleBrowserItems: {
-          dependencyType: "child",
-          childGroups: ["exampleBrowserItems"],
-          variableNames: ["label"],
-          childIndices:
-            stateValues.selectedItemInd === null
-              ? []
-              : [stateValues.selectedItemInd],
+      returnDependencies: () => ({
+        selectedItemInd: {
+          dependencyType: "stateVariable",
+          variableName: "selectedItemInd",
+        },
+        labelByInd: {
+          dependencyType: "stateVariable",
+          variableName: "labelByInd",
         },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
             selectedItemLabel:
-              dependencyValues.exampleBrowserItems[0]?.stateValues.label || "",
+              dependencyValues.labelByInd[dependencyValues.selectedItemInd] ||
+              "",
           },
         };
       },
@@ -324,46 +341,6 @@ export class ExampleBrowser extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async setInitial({
-    initial,
-    actionId,
-    sourceInformation = {},
-    skipRendererUpdate = false,
-  }) {
-    if (!(await this.stateValues.disabled)) {
-      let updateInstructions = [
-        {
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "initial",
-          value: initial,
-        },
-      ];
-
-      let event = {
-        verb: "selected",
-        object: {
-          componentName: this.componentName,
-          componentType: this.componentType,
-        },
-        result: {
-          response: initial,
-          responseText: initial,
-        },
-      };
-
-      return await this.coreFunctions.performUpdate({
-        updateInstructions,
-        actionId,
-        sourceInformation,
-        skipRendererUpdate,
-        event,
-      });
-    } else {
-      return this.coreFunctions.resolveAction({ actionId });
-    }
-  }
-
   async setSelectedItemInd({
     ind,
     actionId,
@@ -371,7 +348,16 @@ export class ExampleBrowser extends BlockComponent {
     skipRendererUpdate = false,
   }) {
     if (!(await this.stateValues.disabled)) {
+      let newLabel = (await this.stateValues.labelByInd)[ind];
+      let newInitial = newLabel?.[0]?.toUpperCase() || "";
+
       let updateInstructions = [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "initial",
+          value: newInitial,
+        },
         {
           updateType: "updateValue",
           componentName: this.componentName,

@@ -1,10 +1,15 @@
 import React, { useEffect } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
+import { useLocation } from "react-router";
+import { Link } from "react-router-dom";
+import { cesc } from "../../_utils/url";
 
 export default React.memo(function ExampleBrowser(props) {
   let { name, id, SVs, children, actions, callAction } =
     useDoenetRenderer(props);
+
+  let { hash, search } = useLocation();
 
   let onChangeVisibility = (isVisible) => {
     if (actions.recordVisibilityChange) {
@@ -13,13 +18,6 @@ export default React.memo(function ExampleBrowser(props) {
         args: { isVisible },
       });
     }
-  };
-
-  let setInitial = (initial) => {
-    callAction({
-      action: actions.setInitial,
-      args: { initial },
-    });
   };
 
   let setSelectedItemInd = (ind) => {
@@ -40,12 +38,31 @@ export default React.memo(function ExampleBrowser(props) {
     };
   }, []);
 
+  useEffect(() => {
+    // Check to see if hash contains the component name of one of the items of the browser.
+    // If so, select that item
+    let hashFirstSlash = hash.indexOf("\\/");
+    if (hashFirstSlash !== -1) {
+      let hashTarget = hash.substring(hashFirstSlash);
+      let indFromHash = SVs.indByEscapedComponentName[hashTarget];
+
+      if (indFromHash !== undefined && indFromHash !== SVs.selectedItemInd) {
+        // have an item from the browser that isn't hte current selected one
+        setSelectedItemInd(indFromHash);
+      }
+    }
+  }, [hash]);
+
   if (SVs.hidden) {
     return null;
   }
 
+  let firstSlash = id.indexOf("\\/");
+  let prefix = id.substring(0, firstSlash);
+  let urlStart = search + "#" + prefix;
+
   let initials = SVs.allInitials.map((initial) => (
-    <div
+    <Link
       key={initial}
       style={{
         padding: "0 5px",
@@ -54,27 +71,29 @@ export default React.memo(function ExampleBrowser(props) {
         color: "var(--mainBlue)",
         textDecoration: initial === SVs.initial ? "underline" : "none",
       }}
-      onClick={() => setInitial(initial)}
+      to={urlStart + cesc(SVs.firstComponentNameByInitial[initial])}
     >
       {initial}
-    </div>
+    </Link>
   ));
 
   let labels = SVs.itemInfoForInitial.map((itemInfo) => (
-    <div
+    <Link
       key={itemInfo.ind}
       style={{
         padding: "4px",
         width: "100%",
         cursor: "pointer",
+        color: "var(--canvasText)",
+        textDecoration: "none",
         backgroundColor: itemInfo.selected
           ? "var(--mainGray)"
           : "var(--canvas)",
       }}
-      onClick={() => setSelectedItemInd(itemInfo.ind)}
+      to={urlStart + cesc(itemInfo.componentName)}
     >
       {itemInfo.label}
-    </div>
+    </Link>
   ));
 
   let labelPicker = (
